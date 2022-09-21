@@ -1,0 +1,14 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/m_blog
+    username: root
+    password: wzw006
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  mvc:
+    pathmatch:
+      # 配置swagger3需要以下配置
+      matching-strategy: ant_path_matcher
+mybatis-plus:
+  global-config:
+    db-config:
+      id-type: AUTO
