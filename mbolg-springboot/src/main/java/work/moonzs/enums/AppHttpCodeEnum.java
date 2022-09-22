@@ -5,16 +5,18 @@ package work.moonzs.enums;
  */
 public enum AppHttpCodeEnum {
     // 成功
-    SUCCESS(200, "操作成功");
-    final int code;
+    SUCCESS(200, "操作成功"),
+    // 失败
+    SERVER_INNER_ERR(500, "系统繁忙");
+    final Integer code;
     final String msg;
 
-    AppHttpCodeEnum(int code, String errorMessage) {
+    AppHttpCodeEnum(Integer code, String errorMessage) {
         this.code = code;
         this.msg = errorMessage;
     }
 
-    public int getCode() {
+    public Integer getCode() {
         return code;
     }
 

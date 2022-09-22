@@ -16,7 +16,7 @@ CREATE TABLE `t_user`
     `avatar`      VARCHAR(256)         DEFAULT NULL COMMENT '用户头像',
     `intro`       VARCHAR(256)         DEFAULT NULL COMMENT '个人简介',
     `birthday`    DATE                 DEFAULT NULL COMMENT '生日',
-    `status`      VARCHAR(2)  NOT NULL DEFAULT 0 COMMENT '账号状态(1正常,0停用)',
+    `status`      VARCHAR(2)  NOT NULL DEFAULT '1' COMMENT '账号状态(1正常,0停用)',
     `create_time` DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '注册时间',
     `update_time` DATETIME    NULL     DEFAULT NULL COMMENT '更新时间',
     PRIMARY KEY (`id`) USING BTREE
@@ -33,7 +33,7 @@ CREATE TABLE `t_role`
     `id`          BIGINT(20)   NOT NULL AUTO_INCREMENT COMMENT '主键',
     `role_name`   VARCHAR(32)  NOT NULL COMMENT '角色名',
     `description` VARCHAR(128) NULL     DEFAULT NULL COMMENT '角色描述',
-    `status`      VARCHAR(2)   NOT NULL DEFAULT 0 COMMENT '角色状态(1正常,0停用)',
+    `status`      VARCHAR(2)   NOT NULL DEFAULT '1' COMMENT '角色状态(1正常,0停用)',
     `create_time` DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     `update_time` DATETIME     NULL     DEFAULT NULL COMMENT '更新时间',
     PRIMARY KEY (`id`) USING BTREE
@@ -65,6 +65,7 @@ CREATE TABLE `t_menu`
     `url`         VARCHAR(128) NULL     DEFAULT NULL COMMENT '路由地址',
     `component`   VARCHAR(128) NULL     DEFAULT NULL COMMENT '组件',
     `icon`        VARCHAR(128) NULL     DEFAULT NULL COMMENT '菜单图标',
+    `status`      VARCHAR(2)   NOT NULL DEFAULT '1' COMMENT '菜单状态(1正常,0停用)',
     `create_time` DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     `update_time` DATETIME     NULL     DEFAULT NULL COMMENT '更新时间',
     PRIMARY KEY (`id`) USING BTREE
@@ -128,7 +129,7 @@ CREATE TABLE `t_article`
     `category_id`   BIGINT(20)    NULL     DEFAULT NULL COMMENT '所属分类',
     `thumbnail`     VARCHAR(256)  NULL     DEFAULT NULL COMMENT '缩略图',
     `is_top`        VARCHAR(2)             DEFAULT '0' COMMENT '是否置顶(1是,0否)',
-    `status`        VARCHAR(2)             DEFAULT '0' COMMENT '文章状态(1已发布,0草稿)',
+    `status`        VARCHAR(2)             DEFAULT '0' COMMENT '文章状态(1发布,0草稿)',
     `view_count`    BIGINT(20)    NULL     DEFAULT 0 COMMENT '浏览量',
     `is_comment`    VARCHAR(2)             DEFAULT '1' COMMENT '是否允许评论(1是,0否)',
     `comment_count` BIGINT(20)    NULL     DEFAULT 0 COMMENT '评论数',
@@ -156,6 +157,7 @@ CREATE TABLE `t_comment`
     `url`         VARCHAR(256)  NULL     DEFAULT NULL COMMENT '评论人网站地址',
     `support`     INT(16)       NULL     DEFAULT 0 COMMENT '支持(赞)',
     `oppose`      INT(16)       NULL     DEFAULT 0 COMMENT '反对(踩)',
+    `status`      VARCHAr(2)    NOT NULL DEFAULT '1' COMMENT '评论状态(1正常,0删除)',
     `create_time` DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     `update_time` DATETIME      NULL     DEFAULT NULL COMMENT '更新时间',
     PRIMARY KEY (`id`) USING BTREE
@@ -172,7 +174,7 @@ CREATE TABLE `t_category`
     `id`            BIGINT(20)   NOT NULL AUTO_INCREMENT COMMENT '主键',
     `category_name` VARCHAR(32)  NOT NULL COMMENT '分类名',
     `description`   VARCHAR(128) NULL     DEFAULT NULL COMMENT '分类描述',
-    `status`        VARCHAR(2)   NOT NULL DEFAULT 0 COMMENT '分类状态(1正常,0停用)',
+    `status`        VARCHAR(2)   NOT NULL DEFAULT '1' COMMENT '分类状态(1正常,0停用)',
     `create_time`   DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     `update_time`   DATETIME     NULL     DEFAULT NULL COMMENT '更新时间',
     PRIMARY KEY (`id`) USING BTREE
@@ -189,7 +191,7 @@ CREATE TABLE `t_tag`
     `id`          BIGINT(20)   NOT NULL AUTO_INCREMENT COMMENT '主键',
     `tag_name`    VARCHAR(32)  NOT NULL COMMENT '标签名',
     `description` VARCHAR(128) NULL     DEFAULT NULL COMMENT '标签描述',
-    `status`      VARCHAR(2)   NOT NULL DEFAULT 0 COMMENT '标签状态(1正常,0停用)',
+    `status`      VARCHAR(2)   NOT NULL DEFAULT '1' COMMENT '标签状态(1正常,0停用)',
     `create_time` DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     `update_time` DATETIME     NULL     DEFAULT NULL COMMENT '更新时间',
     PRIMARY KEY (`id`) USING BTREE
