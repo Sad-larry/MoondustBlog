@@ -57,9 +57,10 @@ DROP TABLE IF EXISTS `t_article_tag`;
 
 CREATE TABLE `t_article_tag`
 (
+    `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
     `article_id` bigint(20) NOT NULL COMMENT '文章id',
     `tag_id`     bigint(20) NOT NULL COMMENT '标签id',
-    PRIMARY KEY (`article_id`, `tag_id`) USING BTREE
+    PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_0900_ai_ci
@@ -220,9 +221,10 @@ DROP TABLE IF EXISTS `t_role_menu`;
 
 CREATE TABLE `t_role_menu`
 (
+    `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
     `role_id` bigint(20) NOT NULL COMMENT '角色id',
     `menu_id` bigint(20) NOT NULL COMMENT '菜单id',
-    PRIMARY KEY (`role_id`, `menu_id`) USING BTREE
+    PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_0900_ai_ci
@@ -254,9 +256,10 @@ DROP TABLE IF EXISTS `t_role_resource`;
 
 CREATE TABLE `t_role_resource`
 (
+    `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
     `role_id`     bigint(20) NOT NULL COMMENT '角色id',
     `resource_id` bigint(20) NOT NULL COMMENT '权限id',
-    PRIMARY KEY (`role_id`, `resource_id`) USING BTREE
+    PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_0900_ai_ci
@@ -329,9 +332,10 @@ DROP TABLE IF EXISTS `t_user_role`;
 
 CREATE TABLE `t_user_role`
 (
+    `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
     `user_id` bigint(20) NOT NULL COMMENT '用户id',
     `role_id` bigint(20) NOT NULL COMMENT '角色id',
-    PRIMARY KEY (`user_id`, `role_id`) USING BTREE
+    PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_0900_ai_ci
