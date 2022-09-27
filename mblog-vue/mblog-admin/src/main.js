@@ -8,6 +8,7 @@ import router from './router'
 // vuex配置
 import store from './store'
 
+// 阻止vue在启动时生成生产提示
 Vue.config.productionTip = false
 
 Vue.use(ElementUI);

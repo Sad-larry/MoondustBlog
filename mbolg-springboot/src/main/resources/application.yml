@@ -9,6 +9,8 @@ spring:
       # 配置swagger3需要以下配置
       matching-strategy: ant_path_matcher
 mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
   global-config:
     db-config:
       id-type: AUTO
