@@ -16,7 +16,12 @@ public enum AppHttpCodeEnum {
     // 分类不存在
     CATEGORY_NOT_EXIST(45003, "分类不存在"),
     // 标签不存在
-    TAG_NOT_EXIST(45004, "标签不存在");
+    TAG_NOT_EXIST(45004, "标签不存在"),
+    // 标签已存在
+    TAG_EXIST(45005, "标签已存在"),
+
+    // 警告：文章未添加标签
+    WARNING_TAG_EMPTY(54001, "警告：文章未添加标签");
 
     final Integer code;
     final String msg;

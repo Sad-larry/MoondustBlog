@@ -17,6 +17,11 @@ import java.util.List;
 @ApiModel(description = "文章DTO")
 public class ArticleDTO {
     /**
+     * id
+     */
+    @ApiModelProperty(notes = "id")
+    private Long id;
+    /**
      * 标题
      */
     @ApiModelProperty(notes = "文章标题")

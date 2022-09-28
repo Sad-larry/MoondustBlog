@@ -1,5 +1,6 @@
 package work.moonzs.service.impl;
 
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -57,21 +58,26 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
 
     /**
      * 文章列表
+     * 老老实实写模糊查询，不要总想着写彩蛋
      *
-     * @param pageNum  页面num
-     * @param pageSize 页面大小
-     * @param id       id
-     * @return {@link ResponseResult}<{@link PageVo}>
+     * @param pageNum    页面num
+     * @param pageSize   页面大小
+     * @param fuzzyField 模糊领域
+     * @return {@link ResponseResult}<{@link ?}>
      */
     @Override
-    public ResponseResult<?> listArticles(Integer pageNum, Integer pageSize, Long id) {
+    public ResponseResult<?> listArticles(Integer pageNum, Integer pageSize, String fuzzyField) {
         LambdaQueryWrapper<Article> queryWrapper = new LambdaQueryWrapper<>();
-        // id不为空才进行该字段查询
-        queryWrapper.eq(Objects.nonNull(id), Article::getId, id);
+        // fuzzyField不为空才进行模糊查询
+        if (!StrUtil.isBlank(fuzzyField)) {
+            queryWrapper.like(Article::getTitle, fuzzyField);
+            queryWrapper.or().like(Article::getSummary, fuzzyField);
+        }
         Page<Article> page = new Page<>(pageNum, pageSize);
         page(page, queryWrapper);
         // 查询文章的tag
         List<Article> records = page.getRecords();
+        // TODO 通过缓存获取当前的角色信息，给Article的userName设置值
         List<ArticleListVo> collect = records.stream()
                 .map(article -> {
                     ArticleListVo articleListVo = BeanCopyUtils.copyBean(article, ArticleListVo.class);

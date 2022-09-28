@@ -25,11 +25,11 @@ public interface ArticleService extends IService<Article> {
     /**
      * 文章列表
      *
-     * @param pageNum  页面num
-     * @param pageSize 页面大小
-     * @param id       id
-     * @return {@link ResponseResult}<{@link ArticleListVo}>
+     * @param pageNum    页面num
+     * @param pageSize   页面大小
+     * @param fuzzyField 模糊领域
+     * @return {@link ResponseResult}<{@link ?}>
      */
-    ResponseResult<?> listArticles(Integer pageNum, Integer pageSize, Long id);
+    ResponseResult<?> listArticles(Integer pageNum, Integer pageSize, String fuzzyField);
 }
 
