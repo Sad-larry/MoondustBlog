@@ -7,8 +7,11 @@ import work.moonzs.domain.ResponseResult;
 import work.moonzs.domain.dto.TagDTO;
 import work.moonzs.domain.entity.Tag;
 import work.moonzs.enums.AppHttpCodeEnum;
+import work.moonzs.enums.StatusConstants;
 import work.moonzs.service.TagService;
 import work.moonzs.utils.BeanCopyUtils;
+
+import java.util.List;
 
 /**
  * @author Moondust月尘
@@ -19,15 +22,22 @@ public class TagController {
     @Autowired
     private TagService tagService;
 
+    /**
+     * 添加标签
+     *
+     * @param tagDTO 标签dto
+     * @return {@link ResponseResult}<{@link ?}>
+     */
     @PostMapping
     public ResponseResult<?> addTag(@RequestBody TagDTO tagDTO) {
         // TODO 这里应该用字段校验，我先暂时手动检验
-        if (StrUtil.isBlank(tagDTO.getTagName()) && StrUtil.isBlank(tagDTO.getDescription())) {
-            return ResponseResult.fail();
+        if (StrUtil.isBlank(tagDTO.getTagName()) || StrUtil.isBlank(tagDTO.getDescription())) {
+            return ResponseResult.fail(AppHttpCodeEnum.FIELD_EMPTY);
         }
         // 判断标签名是否有相同的，有就不添加
         boolean isExistTag = tagService.isExistTagByTagName(tagDTO.getTagName());
         if (isExistTag) {
+            // TODO 新增的话，如果新增的标签跟删除的标签是一样的话就将删除的标签状态设置为1
             return ResponseResult.fail(AppHttpCodeEnum.TAG_EXIST);
         }
         tagDTO.setId(null);
@@ -51,26 +61,47 @@ public class TagController {
     }
 
 
+    /**
+     * 更新标签
+     *
+     * @param tagDTO 标签dto
+     * @return {@link ResponseResult}<{@link ?}>
+     */
     @PutMapping
     public ResponseResult<?> updateTag(@RequestBody TagDTO tagDTO) {
         // TODO 这里应该用字段校验，我先暂时手动检验
-        if (StrUtil.isBlank(tagDTO.getTagName()) && StrUtil.isBlank(tagDTO.getDescription())) {
-            return ResponseResult.fail();
+        // tagName，description，status不为空
+        if (StrUtil.isBlank(tagDTO.getTagName()) || StrUtil.isBlank(tagDTO.getDescription()) || StrUtil.isBlank(tagDTO.getStatus())) {
+            return ResponseResult.fail(AppHttpCodeEnum.FIELD_EMPTY);
         }
-        // 判断标签名是否有相同的，有就不添加
-        // boolean isExistTag = tagService.isExistTagByTagName(tagDTO.getTagName());
-        // if (isExistTag) {
-        //     return ResponseResult.fail(AppHttpCodeEnum.TAG_EXIST);
-        // }
-        tagDTO.setId(null);
+        // 判断该id标签是否存在
+        boolean isExistTagId = tagService.isExistTagByIds(List.of(tagDTO.getId()));
+        if (!isExistTagId) {
+            return ResponseResult.fail(AppHttpCodeEnum.TAG_NOT_EXIST);
+        }
+        // 判断是否存在相同标签名，标签描述可以该阿，标签状态可以改阿，你这么写，就只判断标签名，其他的不能改了是吧（旧版）
+        Tag byId = tagService.getById(tagDTO.getId());
         Tag tag = BeanCopyUtils.copyBean(tagDTO, Tag.class);
+        // 判断byId和tag中的tagName，description，status是否相等
+        if (tag.equals(byId)) {
+            return ResponseResult.fail(AppHttpCodeEnum.TAG_EXIST);
+        }
         tagService.updateById(tag);
         return ResponseResult.success();
     }
 
+    /**
+     * 如果硬要删除标签的话，不应该吧，修改状态不香吗
+     *
+     * @param tagId 标签id
+     * @return {@link ResponseResult}<{@link ?}>
+     */
     @DeleteMapping("/{id}")
     public ResponseResult<?> deleteTag(@PathVariable(value = "id") Long tagId) {
-
+        Tag tag = new Tag();
+        tag.setId(tagId);
+        tag.setStatus(StatusConstants.DISABLE);
+        tagService.updateById(tag);
         return ResponseResult.success();
     }
 }

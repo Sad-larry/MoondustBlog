@@ -12,26 +12,26 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@ApiModel(description = "标签DTO")
-public class TagDTO {
+@ApiModel(description = "分类DTO")
+public class CategoryDTO {
     /**
      * id
      */
     @ApiModelProperty(notes = "id")
     private Long id;
     /**
-     * 标签名
+     * 分类名
      */
-    @ApiModelProperty(notes = "标签名")
-    private String tagName;
+    @ApiModelProperty(notes = "分类名")
+    private String categoryName;
     /**
      * 描述
      */
-    @ApiModelProperty(notes = "标签描述")
+    @ApiModelProperty(notes = "分类描述")
     private String description;
     /**
      * 状态
      */
-    @ApiModelProperty(notes = "标签状态")
+    @ApiModelProperty(notes = "分类状态")
     private String status;
 }

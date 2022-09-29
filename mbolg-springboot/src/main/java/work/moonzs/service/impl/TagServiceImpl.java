@@ -32,10 +32,11 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, Tag> implements TagSe
      * @return boolean
      */
     @Override
-    public boolean isExistTagById(List<Long> tagIds) {
+    public boolean isExistTagByIds(List<Long> tagIds) {
         LambdaQueryWrapper<Tag> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.in(Tag::getId, tagIds);
-        queryWrapper.eq(Tag::getStatus, StatusConstants.NORMAL);
+        // 根据字段判断数据库数否存在数据不应该有其他字段吧，特别是status
+        // queryWrapper.eq(Tag::getStatus, StatusConstants.NORMAL);
         long count = count(queryWrapper);
         return count == tagIds.size();
     }

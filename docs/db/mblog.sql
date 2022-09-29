@@ -25,22 +25,22 @@ CREATE TABLE `t_article`
 (
     `id`            bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
     `user_id`       bigint(20) NOT NULL COMMENT '作者',
-    `title`         varchar(256)                                                DEFAULT NULL COMMENT '文章标题',
+    `title`         varchar(256)        DEFAULT NULL COMMENT '文章标题',
     `content`       longtext COMMENT '文章内容',
-    `summary`       varchar(1024)                                               DEFAULT NULL COMMENT '文章摘要',
-    `category_id`   bigint(20)                                                  DEFAULT NULL COMMENT '所属分类',
-    `thumbnail`     varchar(256)                                                DEFAULT NULL COMMENT '缩略图',
-    `is_top`        varchar(2)                                                  DEFAULT '0' COMMENT '是否置顶(1是,0否)',
-    `status`        varchar(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT '0' COMMENT '文章状态(1发布,0草稿,-1待删除)',
-    `view_count`    bigint(20)                                                  DEFAULT '0' COMMENT '浏览量',
-    `is_comment`    varchar(2)                                                  DEFAULT '1' COMMENT '是否允许评论(1是,0否)',
-    `comment_count` bigint(20)                                                  DEFAULT '0' COMMENT '评论数',
-    `star_count`    bigint(20)                                                  DEFAULT '0' COMMENT '点赞数',
-    `create_time`   datetime   NOT NULL                                         DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-    `update_time`   datetime                                                    DEFAULT NULL COMMENT '更新时间',
+    `summary`       varchar(1024)       DEFAULT NULL COMMENT '文章摘要',
+    `category_id`   bigint(20) NOT NULL COMMENT '所属分类',
+    `thumbnail`     varchar(256)        DEFAULT NULL COMMENT '缩略图',
+    `is_top`        varchar(2)          DEFAULT '0' COMMENT '是否置顶(1是,0否)',
+    `status`        varchar(2)          DEFAULT '0' COMMENT '文章状态(1发布,0草稿,-1待删除)',
+    `view_count`    bigint(20)          DEFAULT '0' COMMENT '浏览量',
+    `is_comment`    varchar(2)          DEFAULT '1' COMMENT '是否允许评论(1是,0否)',
+    `comment_count` bigint(20)          DEFAULT '0' COMMENT '评论数',
+    `star_count`    bigint(20)          DEFAULT '0' COMMENT '点赞数',
+    `create_time`   datetime   NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `update_time`   datetime            DEFAULT NULL COMMENT '更新时间',
     PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB
-  AUTO_INCREMENT = 2
+  AUTO_INCREMENT = 4
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_0900_ai_ci
   ROW_FORMAT = DYNAMIC;
@@ -49,7 +49,9 @@ CREATE TABLE `t_article`
 
 insert into `t_article`(`id`, `user_id`, `title`, `content`, `summary`, `category_id`, `thumbnail`, `is_top`, `status`,
                         `view_count`, `is_comment`, `comment_count`, `star_count`, `create_time`, `update_time`)
-values (1, 1, '第一篇测试博客', NULL, NULL, NULL, NULL, '0', '0', 0, '1', 0, 0, '2022-09-22 11:20:06', NULL);
+values (1, 1, '第一篇测试博客', 'test', 'summary', 1, 'https://...', '0', '0', 0, '1', 0, 0, '2022-09-22 11:20:06', NULL),
+       (2, 1, 'test', '文章内容', '文章摘要', 1, 'https://..', '0', '1', 0, '1', 0, 0, '2022-09-27 19:47:00', NULL),
+       (3, 1, 'test3', '文章内容test', '文章摘要', 3, 'https://..', '1', '1', 0, '1', 0, 0, '2022-09-27 19:54:55', NULL);
 
 /*Table structure for table `t_article_tag` */
 
@@ -57,21 +59,25 @@ DROP TABLE IF EXISTS `t_article_tag`;
 
 CREATE TABLE `t_article_tag`
 (
-    `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
+    `id`         bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
     `article_id` bigint(20) NOT NULL COMMENT '文章id',
     `tag_id`     bigint(20) NOT NULL COMMENT '标签id',
     PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB
+  AUTO_INCREMENT = 8
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_0900_ai_ci
   ROW_FORMAT = DYNAMIC;
 
 /*Data for the table `t_article_tag` */
 
-insert into `t_article_tag`(`article_id`, `tag_id`)
-values (1, 1),
-       (1, 2),
-       (1, 3);
+insert into `t_article_tag`(`id`, `article_id`, `tag_id`)
+values (1, 1, 1),
+       (2, 1, 2),
+       (3, 1, 3),
+       (4, 2, 1),
+       (5, 2, 2),
+       (6, 3, 1);
 
 /*Table structure for table `t_category` */
 
@@ -87,7 +93,7 @@ CREATE TABLE `t_category`
     `update_time`   datetime             DEFAULT NULL COMMENT '更新时间',
     PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB
-  AUTO_INCREMENT = 4
+  AUTO_INCREMENT = 5
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_0900_ai_ci
   ROW_FORMAT = DYNAMIC;
@@ -97,7 +103,8 @@ CREATE TABLE `t_category`
 insert into `t_category`(`id`, `category_name`, `description`, `status`, `create_time`, `update_time`)
 values (1, 'Java', 'java语言', '1', '2022-09-22 11:16:29', NULL),
        (2, 'Vue', 'vue框架', '1', '2022-09-22 11:16:43', NULL),
-       (3, 'Mini-Program', '微信小程序', '1', '2022-09-22 11:16:56', NULL);
+       (3, 'Mini-Program', '微信小程序', '1', '2022-09-22 11:16:56', NULL),
+       (4, 'Spring', 'java', '0', '2022-09-29 10:04:40', '2022-09-29 10:08:27');
 
 /*Table structure for table `t_comment` */
 
@@ -221,34 +228,35 @@ DROP TABLE IF EXISTS `t_role_menu`;
 
 CREATE TABLE `t_role_menu`
 (
-    `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
+    `id`      bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
     `role_id` bigint(20) NOT NULL COMMENT '角色id',
     `menu_id` bigint(20) NOT NULL COMMENT '菜单id',
     PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB
+  AUTO_INCREMENT = 17
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_0900_ai_ci
   ROW_FORMAT = DYNAMIC;
 
 /*Data for the table `t_role_menu` */
 
-insert into `t_role_menu`(`role_id`, `menu_id`)
-values (1, 100),
-       (1, 200),
-       (1, 201),
-       (1, 202),
-       (1, 203),
-       (1, 204),
-       (1, 300),
-       (1, 301),
-       (1, 302),
-       (1, 400),
-       (1, 401),
-       (1, 402),
-       (1, 403),
-       (1, 500),
-       (1, 501),
-       (1, 502);
+insert into `t_role_menu`(`id`, `role_id`, `menu_id`)
+values (1, 1, 100),
+       (2, 1, 200),
+       (3, 1, 201),
+       (4, 1, 202),
+       (5, 1, 203),
+       (6, 1, 204),
+       (7, 1, 300),
+       (8, 1, 301),
+       (9, 1, 302),
+       (10, 1, 400),
+       (11, 1, 401),
+       (12, 1, 402),
+       (13, 1, 403),
+       (14, 1, 500),
+       (15, 1, 501),
+       (16, 1, 502);
 
 /*Table structure for table `t_role_resource` */
 
@@ -256,7 +264,7 @@ DROP TABLE IF EXISTS `t_role_resource`;
 
 CREATE TABLE `t_role_resource`
 (
-    `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
+    `id`          bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
     `role_id`     bigint(20) NOT NULL COMMENT '角色id',
     `resource_id` bigint(20) NOT NULL COMMENT '权限id',
     PRIMARY KEY (`id`) USING BTREE
@@ -281,7 +289,7 @@ CREATE TABLE `t_tag`
     `update_time` datetime             DEFAULT NULL COMMENT '更新时间',
     PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB
-  AUTO_INCREMENT = 4
+  AUTO_INCREMENT = 7
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_0900_ai_ci
   ROW_FORMAT = DYNAMIC;
@@ -289,9 +297,11 @@ CREATE TABLE `t_tag`
 /*Data for the table `t_tag` */
 
 insert into `t_tag`(`id`, `tag_name`, `description`, `status`, `create_time`, `update_time`)
-values (1, 'Java', 'java', '1', '2022-09-22 11:18:36', NULL),
-       (2, 'Vue', 'vue', '1', '2022-09-22 11:18:44', NULL),
-       (3, 'mini-program', 'mini-program', '1', '2022-09-22 11:18:54', NULL);
+values (1, '其他', '默认标签', '1', '2022-09-27 18:50:59', NULL),
+       (2, 'Java', 'java', '1', '2022-09-22 11:18:36', NULL),
+       (3, 'mini-program', 'mini-program', '1', '2022-09-22 11:18:54', NULL),
+       (4, 'Vue', 'vue', '1', '2022-09-22 11:18:44', '2022-09-29 09:34:24'),
+       (6, 'Vue3', 'vue3', '0', '2022-09-29 09:37:42', '2022-09-29 09:38:01');
 
 /*Table structure for table `t_user` */
 
@@ -332,21 +342,22 @@ DROP TABLE IF EXISTS `t_user_role`;
 
 CREATE TABLE `t_user_role`
 (
-    `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
+    `id`      bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
     `user_id` bigint(20) NOT NULL COMMENT '用户id',
     `role_id` bigint(20) NOT NULL COMMENT '角色id',
     PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB
+  AUTO_INCREMENT = 4
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_0900_ai_ci
   ROW_FORMAT = DYNAMIC;
 
 /*Data for the table `t_user_role` */
 
-insert into `t_user_role`(`user_id`, `role_id`)
-values (1, 1),
-       (2, 2),
-       (2, 3);
+insert into `t_user_role`(`id`, `user_id`, `role_id`)
+values (1, 1, 1),
+       (2, 2, 2),
+       (3, 2, 3);
 
 /*!40101 SET SQL_MODE = @OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS = @OLD_FOREIGN_KEY_CHECKS */;

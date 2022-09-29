@@ -2,6 +2,7 @@ package work.moonzs.domain.vo;
 
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,21 +15,21 @@ import java.util.Date;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class TagListVo {
+public class CategoryListVo {
     /**
      * id
      */
     private Long id;
     /**
-     * 标签名
+     * 分类名
      */
-    private String tagName;
+    private String categoryName;
     /**
-     * 标签描述
+     * 分类描述
      */
     private String description;
     /**
-     * 标签状态(1正常,0停用)
+     * 分类状态(1正常,0停用)
      */
     private String status;
     /**

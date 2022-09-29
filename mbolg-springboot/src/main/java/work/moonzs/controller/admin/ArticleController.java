@@ -8,6 +8,7 @@ import work.moonzs.domain.dto.ArticleDTO;
 import work.moonzs.domain.entity.Article;
 import work.moonzs.domain.vo.ArticleListVo;
 import work.moonzs.enums.AppHttpCodeEnum;
+import work.moonzs.enums.StatusConstants;
 import work.moonzs.service.ArticleService;
 import work.moonzs.service.ArticleTagService;
 import work.moonzs.service.CategoryService;
@@ -121,6 +122,7 @@ public class ArticleController {
 
     /**
      * 更新或添加标签条
+     * TODO 文章标签应该设置上限，如果超过上限就只能删除不能添加
      *
      * @param articleDTO 文章dto
      * @return {@link ResponseResult}<{@link ?}>
@@ -128,7 +130,7 @@ public class ArticleController {
     @PutMapping("/updateTags")
     public ResponseResult<?> updateArticleTags(@RequestBody ArticleDTO articleDTO) {
         if (CollUtil.isNotEmpty(articleDTO.getTagList())) {
-            boolean existTags = tagService.isExistTagById(articleDTO.getTagList());
+            boolean existTags = tagService.isExistTagByIds(articleDTO.getTagList());
             if (!existTags) {
                 return ResponseResult.fail(AppHttpCodeEnum.TAG_NOT_EXIST);
             }
@@ -151,8 +153,14 @@ public class ArticleController {
     @DeleteMapping("/{id}")
     public ResponseResult<?> deleteArticle(@PathVariable(value = "id") Long articleId) {
         // article_tag表数据也要删除
-        articleService.removeById(articleId);
-        articleTagService.deleteArticleTagById(articleId);
+        // articleService.removeById(articleId);
+        // articleTagService.deleteArticleTagById(articleId);
+        // 9-29，删除应该是设置状态为-1
+        // TODO 定时任务删除状态为-1的文章，到时候在删除关联的tag表
+        Article article = new Article();
+        article.setId(articleId);
+        article.setStatus(StatusConstants.DELETE);
+        articleService.updateById(article);
         return ResponseResult.success();
     }
 }

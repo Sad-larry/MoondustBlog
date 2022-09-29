@@ -1,6 +1,7 @@
 package work.moonzs.domain.entity;
 
 import java.util.Date;
+import java.util.Objects;
 
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
@@ -36,5 +37,22 @@ public class Tag {
     //更新时间
     @TableField(fill = FieldFill.UPDATE)
     private Date updateTime;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Tag tag = (Tag) o;
+        return tagName.equals(tag.tagName) && description.equals(tag.description) && status.equals(tag.status);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(tagName, description, status);
+    }
 }
 

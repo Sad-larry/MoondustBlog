@@ -19,7 +19,7 @@ public interface TagService extends IService<Tag> {
      * @param tagIds 标签id
      * @return boolean
      */
-    boolean isExistTagById(List<Long> tagIds);
+    boolean isExistTagByIds(List<Long> tagIds);
 
     /**
      * 通过标签名字判断是否存在相同标签
