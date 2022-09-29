@@ -142,7 +142,7 @@ CREATE TABLE `t_menu`
     `id`          bigint(20)  NOT NULL AUTO_INCREMENT COMMENT '主键',
     `menu_name`   varchar(32) NOT NULL COMMENT '菜单名',
     `pid`         bigint(20)           DEFAULT NULL COMMENT '父级菜单id',
-    `url`         varchar(128)         DEFAULT NULL COMMENT '路由地址',
+    `path`        varchar(128)         DEFAULT NULL COMMENT '路由地址',
     `component`   varchar(128)         DEFAULT NULL COMMENT '组件',
     `icon`        varchar(128)         DEFAULT NULL COMMENT '菜单图标',
     `status`      varchar(2)  NOT NULL DEFAULT '1' COMMENT '菜单状态(1正常,0停用)',
@@ -157,7 +157,7 @@ CREATE TABLE `t_menu`
 
 /*Data for the table `t_menu` */
 
-insert into `t_menu`(`id`, `menu_name`, `pid`, `url`, `component`, `icon`, `status`, `create_time`, `update_time`)
+insert into `t_menu`(`id`, `menu_name`, `pid`, `path`, `component`, `icon`, `status`, `create_time`, `update_time`)
 values (100, '首页', 0, '/', '/home/Home.vue', NULL, '1', '2022-09-22 10:49:37', NULL),
        (200, '文章管理', 0, '/article-submenu', NULL, NULL, '1', '2022-09-22 10:52:42', NULL),
        (201, '发表文章', 200, '/article-push', '/article/Article.vue', NULL, '1', '2022-09-22 10:54:36', NULL),

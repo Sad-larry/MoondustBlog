@@ -13,7 +13,7 @@
             <el-main style="background: #f7f9fb">
                 <div class="fade-transform-box">
                     <transition name="fade-transform" mode="out-in">
-                        <router-view :key="$route.fullPath" />
+                        <router-view :key="key" />
                     </transition>
                 </div>
             </el-main>
@@ -22,6 +22,7 @@
 </template>
   
   <script>
+import ArticleListVue from "../views/article/ArticleList.vue";
 import NavBar from "./components/NavBar";
 import SideBar from "./components/SideBar";
 export default {
@@ -32,6 +33,10 @@ export default {
     computed: {
         isHide() {
             return this.$store.state.collapse ? "hideSideBar" : "";
+        },
+        key() {
+            console.log(this.$route.fullPath);
+            return this.$route.fullPath;
         },
     },
 };

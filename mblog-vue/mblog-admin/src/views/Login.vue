@@ -11,9 +11,9 @@
                 class="login-form"
             >
                 <!-- 用户名输入框 -->
-                <el-form-item prop="username">
+                <el-form-item prop="userName">
                     <el-input
-                        v-model="loginForm.username"
+                        v-model="loginForm.userName"
                         prefix-icon="el-icon-user-solid"
                         placeholder="用户名"
                         @keyup.enter.native="login"
@@ -38,15 +38,17 @@
   
   <script>
 // import { generaMenu } from "../../assets/js/menu";
+import { adminLogin } from "@/api/admin/login";
+import { organizeMenu } from "@/utils/menuToList";
 export default {
     data: function () {
         return {
             loginForm: {
-                username: "",
-                password: "",
+                userName: "md",
+                password: "1",
             },
             rules: {
-                username: [
+                userName: [
                     {
                         required: true,
                         message: "用户名不能为空",
@@ -65,54 +67,22 @@ export default {
     },
     methods: {
         login() {
-            console.log("login...");
-            this.$router.addRoute({path: '/', component: ()=>import('../layout/Index.vue')})
-            this.$router.push({path: '/'})
-            /* 
+            // 表单校验
             this.$refs.ruleForm.validate((valid) => {
                 if (valid) {
-                    const that = this;
-                    var captcha = new TencentCaptcha(
-                        this.config.TENCENT_CAPTCHA,
-                        function (res) {
-                            if (res.ret === 0) {
-                                // 发送登录请求
-                                let param = new URLSearchParams();
-                                param.append(
-                                    "username",
-                                    that.loginForm.username
-                                );
-                                param.append(
-                                    "password",
-                                    that.loginForm.password
-                                );
-                                that.axios
-                                    .post("/api/users/login", param)
-                                    .then(({ data }) => {
-                                        if (data.flag) {
-                                            // 登录后保存用户信息
-                                            that.$store.commit(
-                                                "login",
-                                                data.data
-                                            );
-                                            // 加载用户菜单
-                                            generaMenu();
-                                            that.$message.success("登录成功");
-                                            that.$router.push({ path: "/" });
-                                        } else {
-                                            that.$message.error(data.message);
-                                        }
-                                    });
-                            }
-                        }
-                    );
-                    // 显示验证码
-                    captcha.show();
+                    // 如果通过校验则登录
+                    adminLogin(this.loginForm).then(({ data }) => {
+                        // 数据成功返回应该保存一些数据，例如token什么的
+                        
+                        // 整理
+                        organizeMenu(data.data.menuList)
+                        this.$message.success("登录成功...");
+                        this.$router.push({ path: "/" });
+                    });
                 } else {
                     return false;
                 }
             });
-            */
         },
     },
 };

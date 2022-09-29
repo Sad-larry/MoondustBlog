@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="work.moonzs.mapper.UserMapper">
+    <!--查询用户菜单-->
+    <select id="selectUserMenus" resultType="work.moonzs.domain.entity.Menu">
+        select m.`id`, m.`menu_name`, m.`pid`, m.`path`, m.`component`, m.`icon`
+        from t_user u
+                 left join t_user_role ur on ur.`user_id` = u.`id`
+                 left join t_role_menu rm on rm.`role_id` = ur.`role_id`
+                 left join t_menu m on m.`id` = rm.`menu_id`
+        where u.`id` = #{userId};
+    </select>
+</mapper>

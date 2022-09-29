@@ -11,11 +11,6 @@ const routes = [
         name: '登录', // 命名路由标识
         hidden: true, // 当hidden为true时则不会显示在sidebar，默认为fasle
         component: () => import('../views/Login.vue') // 当前路由映射一个Login组件
-    },
-    {
-        path: '*',
-        name: '404',
-        component: () => import('../views/features/404.vue') // 匹配所有路径为404Not Found界面
     }
 ]
 
@@ -34,5 +29,22 @@ export function resetRouter() {
     const newRouter = createRouter()
     router.matcher = newRouter.matcher
 }
+
+import store from '@/store'
+// 配置路由守卫
+router.beforeEach((to, from, next) => {
+    // 按道理应该是利用Token判断的，这里我暂时用菜单栏列表判断
+    // console.log(store.state.userMenuList)
+    // if (store.state.userMenuList) {
+    //     if (to.path === '/login') {
+    //         next({path: '/'})
+    //     } else {
+    //         next()
+    //     }
+    // } else {
+    //     next({path: '/login'})
+    // }
+    next()
+})
 
 export default router

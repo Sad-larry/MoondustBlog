@@ -29,7 +29,7 @@ public class Menu {
     //父级菜单id
     private Long pid;
     //路由地址
-    private String url;
+    private String path;
     //组件
     private String component;
     //菜单图标

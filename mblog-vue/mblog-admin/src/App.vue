@@ -1,15 +1,19 @@
 <template>
-    <!-- <div id="app"> -->
-        <router-view />
-    <!-- </div> -->
+    <router-view />
 </template>
 
 <script>
+import { organizeMenu } from "@/utils/menuToList.js";
 export default {
     name: "App",
+    created() {
+        // 刷新页面重新渲染菜单
+        if (this.$store.state.userInfo != null) {
+            organizeMenu(this.$store.state.userMenuList);
+        }
+    }
 };
 </script>
-
 <style>
 #app {
     font-family: "Avenir", Helvetica, Arial, sans-serif;

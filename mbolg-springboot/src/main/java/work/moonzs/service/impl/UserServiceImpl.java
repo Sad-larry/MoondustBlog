@@ -1,7 +1,14 @@
 package work.moonzs.service.impl;
 
+import cn.hutool.core.lang.tree.Tree;
+import cn.hutool.core.lang.tree.TreeNodeConfig;
+import cn.hutool.core.lang.tree.TreeUtil;
+import cn.hutool.core.lang.tree.parser.NodeParser;
+import cn.hutool.json.JSON;
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import io.swagger.models.auth.In;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import work.moonzs.domain.ResponseResult;
@@ -20,6 +27,8 @@ import work.moonzs.service.UserService;
 import work.moonzs.utils.BeanCopyUtils;
 
 import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -31,11 +40,7 @@ import java.util.stream.Collectors;
 @Service("userService")
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
     @Autowired
-    private UserRoleService userRoleService;
-    @Autowired
-    private RoleMenuService roleMenuService;
-    @Autowired
-    private MenuService menuService;
+    private UserMapper userMapper;
 
     /**
      * 管理员登录
@@ -48,6 +53,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         // 根据用户名查询用户信息
         LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(User::getUserName, user.getUserName());
+        // TODO 暂时用这个
+        queryWrapper.eq(User::getPassword, user.getPassword());
         User oneUser = getOne(queryWrapper);
         // 判断是否查到用户，否则返回失败
         if (Objects.isNull(oneUser)) {
@@ -59,21 +66,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         // TODO jwt生成token
         String token = "待实现token";
         // 查询用户所具有的角色，每个用户都有一个角色
-        LambdaQueryWrapper<UserRole> queryWrapper1 = new LambdaQueryWrapper<>();
-        queryWrapper1.eq(UserRole::getUserId, oneUser.getId());
-        UserRole oneUserRole = userRoleService.getOne(queryWrapper1);
-        Long roleId = oneUserRole.getRoleId();
-        // 通过角色id查询菜单列表
-        LambdaQueryWrapper<RoleMenu> queryWrapper2 = new LambdaQueryWrapper<>();
-        queryWrapper2.eq(RoleMenu::getRoleId, roleId);
-        List<RoleMenu> listRoleMenu = roleMenuService.list(queryWrapper2);
-        List<Menu> menus = listRoleMenu.stream().map(roleMenu -> {
-            LambdaQueryWrapper<Menu> queryWrapper3 = new LambdaQueryWrapper<>();
-            queryWrapper3.eq(Menu::getId, roleMenu.getMenuId());
-            return menuService.getOne(queryWrapper3);
-        }).toList();
+        // 通过角色id查询菜单id列表
+        // 查询出所有的菜单，一一匹配存入到列表中
         // 对菜单列表进行整理
-        List<MenuListVo> menuList = finishingMenu(menus);
+        List<Menu> menus = userMapper.selectUserMenus(oneUser.getId());
+        List<MenuListVo> menuList = organizeMenu(menus);
         // 组装数据返回
         Map<String, Object> map = new HashMap<>();
         map.put("token", token);
@@ -83,12 +80,47 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     /**
+     * 组织菜单
+     * 以树形结构返回
+     *
+     * @param menus 菜单
+     * @return {@link List}<{@link MenuListVo}>
+     */
+    private List<MenuListVo> organizeMenu(List<Menu> menus) {
+        TreeNodeConfig treeNodeConfig = new TreeNodeConfig();
+        // 自定义属性名 都要默认值的
+        treeNodeConfig.setNameKey("menuName");
+        treeNodeConfig.setParentIdKey("pid");
+        treeNodeConfig.setChildrenKey("subMenuList");
+        // 最大递归深度
+        treeNodeConfig.setDeep(2);
+
+        List<Tree<Long>> build = TreeUtil.build(menus, 0L, treeNodeConfig, (treeNode, tree) -> {
+            tree.setId(treeNode.getId());
+            tree.setParentId(treeNode.getPid());
+            // tree.setWeight(treeNode.getWeight());
+            tree.setName(treeNode.getMenuName());
+            // 扩展属性 ...
+            tree.putExtra("path", treeNode.getPath());
+            tree.putExtra("component", treeNode.getComponent());
+            tree.putExtra("icon", treeNode.getIcon());
+        });
+        return build.stream().map(longTree -> {
+            // 将Tree<Long>对象转化为JSON字符串
+            String s = JSONUtil.toJsonStr(longTree);
+            // 然后把JSON字符串转化为MenuListVo对象
+            return JSONUtil.toBean(s, MenuListVo.class);
+        }).collect(Collectors.toList());
+    }
+
+    /**
      * 整理菜单列表
      * tree类型
      *
      * @param menus 菜单列表
      * @return {@link MenuListVo}
      */
+    @Deprecated
     private List<MenuListVo> finishingMenu(List<Menu> menus) {
         // 菜单列表以id排好序，虽然应该是正序的
         List<Menu> collectMenus = menus.stream().sorted(Comparator.comparing(Menu::getId)).toList();
