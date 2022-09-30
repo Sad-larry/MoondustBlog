@@ -15,13 +15,17 @@ const mutations = {
     saveUserMenus(state, userMenuTree) {
         state.userMenuTree = userMenuTree
     },
+    changeActiveProgressEnum(state) {
+        state.activeProgressEnum = 1
+    }
 
 }
 //准备state对象——保存具体的数据
 const state = {
+    activeProgressEnum: 0, // 用于判断用户是否刷新了，如果刷新了则vuex会回归初始化
     collapse: false, // 是否折叠菜单
     userMenuTree: [], // 菜单栏列表
-    userInfo: null // 用户信息
+    userInfo: null, // 用户信息
 }
 //vuex的插件 
 const plugins = [

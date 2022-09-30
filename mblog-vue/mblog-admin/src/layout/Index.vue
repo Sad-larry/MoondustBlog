@@ -34,7 +34,6 @@ export default {
             return this.$store.state.collapse ? "hideSideBar" : "";
         },
         key() {
-            console.log(this.$route.fullPath);
             return this.$route.fullPath;
         },
     },
