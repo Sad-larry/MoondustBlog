@@ -33,8 +33,8 @@ public class CategoryController {
             return ResponseResult.fail(AppHttpCodeEnum.FIELD_EMPTY);
         }
         // 判断分类名是否有相同的，有就不添加
-        boolean isExistTag = categoryService.isExistCategoryByCategoryName(categoryDTO.getCategoryName());
-        if (isExistTag) {
+        boolean isExistCategory = categoryService.isExistCategoryByCategoryName(categoryDTO.getCategoryName());
+        if (isExistCategory) {
             // TODO 新增的话，如果新增的标签跟删除的标签是一样的话就将删除的标签状态设置为1
             return ResponseResult.fail(AppHttpCodeEnum.CATEGORY_EXIST);
         }

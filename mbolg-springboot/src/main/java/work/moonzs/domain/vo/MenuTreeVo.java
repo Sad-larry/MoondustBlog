@@ -4,7 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Moondust月尘
@@ -12,7 +13,7 @@ import java.util.Date;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class MenuListVo {
+public class MenuTreeVo {
     /**
      * id
      */
@@ -21,10 +22,6 @@ public class MenuListVo {
      * 菜单名称
      */
     private String menuName;
-    /**
-     * pid
-     */
-    private Long pid;
     /**
      * url
      */
@@ -38,11 +35,7 @@ public class MenuListVo {
      */
     private String icon;
     /**
-     * 状态
+     * 子菜单列表
      */
-    private String status;
-    /**
-     * 创建时间
-     */
-    private Date createTime;
+    private List<MenuTreeVo> children = new ArrayList<>();
 }

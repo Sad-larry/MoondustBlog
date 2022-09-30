@@ -12,15 +12,15 @@ const actions = {}
 //准备mutations对象——修改state中的数据
 const mutations = {
     // 保存菜单栏列表
-    saveUserMenus(state, userMenuList) {
-        state.userMenuList = userMenuList
+    saveUserMenus(state, userMenuTree) {
+        state.userMenuTree = userMenuTree
     },
 
 }
 //准备state对象——保存具体的数据
 const state = {
     collapse: false, // 是否折叠菜单
-    userMenuList: [], // 菜单栏列表
+    userMenuTree: [], // 菜单栏列表
     userInfo: null // 用户信息
 }
 //vuex的插件 

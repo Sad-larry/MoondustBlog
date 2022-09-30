@@ -19,5 +19,23 @@ public interface UserService extends IService<User> {
      * @return {@link ResponseResult}<{@link ?}>
      */
     ResponseResult<?> adminLogin(User user);
+
+    /**
+     * 用户列表
+     *
+     * @param pageNum    页面num
+     * @param pageSize   页面大小
+     * @param fuzzyField 模糊领域
+     * @return {@link ResponseResult}<{@link ?}>
+     */
+    ResponseResult<?> listUsers(Integer pageNum, Integer pageSize, String fuzzyField);
+
+    /**
+     * 保存用户
+     *
+     * @param user 用户
+     * @return {@link Long}
+     */
+    Long saveUser(User user);
 }
 

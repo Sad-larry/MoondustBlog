@@ -22,7 +22,6 @@
 </template>
   
   <script>
-import ArticleListVue from "../views/article/ArticleList.vue";
 import NavBar from "./components/NavBar";
 import SideBar from "./components/SideBar";
 export default {

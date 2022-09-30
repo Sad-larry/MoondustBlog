@@ -11,5 +11,12 @@ import work.moonzs.domain.entity.UserRole;
  */
 public interface UserRoleService extends IService<UserRole> {
 
+    /**
+     * 更新用户id
+     *
+     * @param roleId 角色id
+     * @param userId 用户id
+     */
+    void updateByUserId(Long userId, Long roleId);
 }
 

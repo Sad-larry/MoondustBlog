@@ -10,7 +10,7 @@
             active-text-color="#409EFF"
         >
             <!-- 获取所有菜单列表 -->
-            <template v-for="route of this.$store.state.userMenuList">
+            <template v-for="route of this.$store.state.userMenuTree">
                 <template v-if="route.menuName">
                     <el-submenu :key="route.path" :index="route.path">
                         <!-- 一级菜单标题 -->
@@ -20,7 +20,7 @@
                         </template>
                         <!-- 二级菜单选项 -->
                         <div
-                            v-for="(item, index) of route.subMenuList"
+                            v-for="(item, index) of route.children"
                             :key="index"
                         >
                             <el-menu-item :index="item.path">

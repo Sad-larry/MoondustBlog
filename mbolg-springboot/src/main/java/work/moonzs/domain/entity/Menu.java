@@ -1,6 +1,7 @@
 package work.moonzs.domain.entity;
 
 import java.util.Date;
+import java.util.Objects;
 
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
@@ -42,5 +43,22 @@ public class Menu {
     private Date updateTime;
     //菜单状态(1正常,0停用)
     private String status;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Menu menu = (Menu) o;
+        return menuName.equals(menu.menuName) && path.equals(menu.path);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(menuName, path);
+    }
 }
 

@@ -35,11 +35,11 @@
         </div>
     </div>
 </template>
-  
+
   <script>
 // import { generaMenu } from "../../assets/js/menu";
 import { adminLogin } from "@/api/admin/login";
-import { organizeMenu } from "@/utils/menuToList";
+import { organizeMenu } from "@/utils/menuToTree";
 export default {
     data: function () {
         return {
@@ -73,9 +73,9 @@ export default {
                     // 如果通过校验则登录
                     adminLogin(this.loginForm).then(({ data }) => {
                         // 数据成功返回应该保存一些数据，例如token什么的
-                        
+
                         // 整理
-                        organizeMenu(data.data.menuList)
+                        organizeMenu(data.data.menuTree)
                         this.$message.success("登录成功...");
                         this.$router.push({ path: "/" });
                     });
@@ -87,7 +87,7 @@ export default {
     },
 };
 </script>
-  
+
   <style scoped>
 .login-container {
     position: absolute;
@@ -120,4 +120,3 @@ export default {
     width: 100%;
 }
 </style>
-  

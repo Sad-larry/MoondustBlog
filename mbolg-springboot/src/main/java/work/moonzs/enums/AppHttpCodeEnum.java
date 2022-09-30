@@ -21,6 +21,14 @@ public enum AppHttpCodeEnum {
     TAG_EXIST(45005, "标签已存在"),
     // 分类已存在
     CATEGORY_EXIST(45006, "分类已存在"),
+    // 角色不存在
+    ROLE_NOT_EXIST(45007, "角色不存在"),
+    // 菜单不存在
+    MENU_NOT_EXIST(45008, "菜单不存在"),
+    // 菜单已存在
+    MENU_EXIST(45009, "菜单已存在"),
+    ROLE_EXIST(45010, "角色已存在"),
+
 
     // 警告：文章未添加标签
     WARNING_TAG_EMPTY(54001, "警告：文章未添加标签");

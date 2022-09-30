@@ -1,10 +1,10 @@
-package work.moonzs.domain.vo;
+package work.moonzs.domain.dto;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.Date;
 
 /**
  * @author Moondust月尘
@@ -12,37 +12,36 @@ import java.util.Date;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class MenuListVo {
+@ApiModel(description = "菜单DTO")
+public class MenuDTO {
     /**
      * id
      */
+    @ApiModelProperty(notes = "id")
     private Long id;
     /**
      * 菜单名称
      */
+    @ApiModelProperty(notes = "菜单名称")
     private String menuName;
     /**
-     * pid
+     * 路径
      */
-    private Long pid;
-    /**
-     * url
-     */
+    @ApiModelProperty(notes = "路径")
     private String path;
     /**
      * 组件
      */
+    @ApiModelProperty(notes = "组件")
     private String component;
     /**
      * 图标
      */
+    @ApiModelProperty(notes = "图标")
     private String icon;
     /**
      * 状态
      */
+    @ApiModelProperty(notes = "分类状态")
     private String status;
-    /**
-     * 创建时间
-     */
-    private Date createTime;
 }

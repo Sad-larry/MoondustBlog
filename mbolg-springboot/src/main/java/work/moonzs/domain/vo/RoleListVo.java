@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author Moondust月尘
@@ -12,23 +13,31 @@ import java.util.Date;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class TagListVo {
+public class RoleListVo {
     /**
      * id
      */
     private Long id;
     /**
-     * 标签名
+     * 角色名
      */
-    private String tagName;
+    private String roleName;
     /**
-     * 标签描述
+     * 描述
      */
     private String description;
     /**
-     * 标签状态(1正常,0停用)
+     * 状态
      */
     private String status;
+    /**
+     * 菜单id
+     */
+    private List<Long> menuIds;
+    /**
+     * 资源id
+     */
+    private List<Long> resourceIds;
     /**
      * 创建时间
      */

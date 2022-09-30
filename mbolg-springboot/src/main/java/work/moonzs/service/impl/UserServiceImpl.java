@@ -3,32 +3,28 @@ package work.moonzs.service.impl;
 import cn.hutool.core.lang.tree.Tree;
 import cn.hutool.core.lang.tree.TreeNodeConfig;
 import cn.hutool.core.lang.tree.TreeUtil;
-import cn.hutool.core.lang.tree.parser.NodeParser;
-import cn.hutool.json.JSON;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import io.swagger.models.auth.In;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import work.moonzs.domain.ResponseResult;
 import work.moonzs.domain.entity.Menu;
-import work.moonzs.domain.entity.RoleMenu;
 import work.moonzs.domain.entity.User;
-import work.moonzs.domain.entity.UserRole;
-import work.moonzs.domain.vo.MenuListVo;
+import work.moonzs.domain.vo.MenuTreeVo;
+import work.moonzs.domain.vo.PageVo;
 import work.moonzs.domain.vo.UserInfoVo;
+import work.moonzs.domain.vo.UserListVo;
 import work.moonzs.enums.AppHttpCodeEnum;
+import work.moonzs.enums.StatusConstants;
+import work.moonzs.enums.UserRoleInfo;
 import work.moonzs.mapper.UserMapper;
-import work.moonzs.service.MenuService;
-import work.moonzs.service.RoleMenuService;
-import work.moonzs.service.UserRoleService;
 import work.moonzs.service.UserService;
 import work.moonzs.utils.BeanCopyUtils;
 
 import java.util.*;
-import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -70,13 +66,54 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         // 查询出所有的菜单，一一匹配存入到列表中
         // 对菜单列表进行整理
         List<Menu> menus = userMapper.selectUserMenus(oneUser.getId());
-        List<MenuListVo> menuList = organizeMenu(menus);
+        List<MenuTreeVo> menuTree = organizeMenu(menus);
         // 组装数据返回
         Map<String, Object> map = new HashMap<>();
         map.put("token", token);
         map.put("userInfo", userInfo);
-        map.put("menuList", menuList);
+        map.put("menuTree", menuTree);
         return ResponseResult.success(map);
+    }
+
+    /**
+     * 用户列表
+     *
+     * @param pageNum    页面num
+     * @param pageSize   页面大小
+     * @param fuzzyField 模糊领域
+     * @return {@link ResponseResult}<{@link ?}>
+     */
+    @Override
+    public ResponseResult<?> listUsers(Integer pageNum, Integer pageSize, String fuzzyField) {
+        LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
+        // 模糊字段为空则不匹配
+        if (!StrUtil.isBlank(fuzzyField)) {
+            queryWrapper.like(User::getUserName, fuzzyField);
+            queryWrapper.or().like(User::getNickName, fuzzyField);
+        }
+        queryWrapper.eq(User::getStatus, StatusConstants.NORMAL);
+        Page<User> page = new Page<>(pageNum, pageSize);
+        page(page, queryWrapper);
+        List<User> list = page.getRecords();
+        List<UserListVo> userListVos = BeanCopyUtils.copyBeanList(list, UserListVo.class);
+        // TODO 设置每个用户的角色信息
+        userListVos.forEach(userListVo -> userListVo.setRoles(UserRoleInfo.getRoleInfo(userListVo.getId())));
+        PageVo<UserListVo> pageVo = new PageVo<>(userListVos, page.getTotal(), page.getCurrent(), page.getSize());
+        return ResponseResult.success(pageVo);
+    }
+
+    /**
+     * 保存用户
+     *
+     * @param user 用户
+     * @return {@link ResponseResult}<{@link ?}>
+     */
+    @Override
+    public Long saveUser(User user) {
+        user.setPassword(user.getPassword());
+        // 保存用户返回用户id，并添加角色
+        userMapper.insert(user);
+        return user.getId();
     }
 
     /**
@@ -84,14 +121,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
      * 以树形结构返回
      *
      * @param menus 菜单
-     * @return {@link List}<{@link MenuListVo}>
+     * @return {@link List}<{@link MenuTreeVo}>
      */
-    private List<MenuListVo> organizeMenu(List<Menu> menus) {
+    private List<MenuTreeVo> organizeMenu(List<Menu> menus) {
         TreeNodeConfig treeNodeConfig = new TreeNodeConfig();
         // 自定义属性名 都要默认值的
         treeNodeConfig.setNameKey("menuName");
         treeNodeConfig.setParentIdKey("pid");
-        treeNodeConfig.setChildrenKey("subMenuList");
+        treeNodeConfig.setChildrenKey("children");
         // 最大递归深度
         treeNodeConfig.setDeep(2);
 
@@ -108,8 +145,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         return build.stream().map(longTree -> {
             // 将Tree<Long>对象转化为JSON字符串
             String s = JSONUtil.toJsonStr(longTree);
-            // 然后把JSON字符串转化为MenuListVo对象
-            return JSONUtil.toBean(s, MenuListVo.class);
+            // 然后把JSON字符串转化为MenuTreeVo对象
+            return JSONUtil.toBean(s, MenuTreeVo.class);
         }).collect(Collectors.toList());
     }
 
@@ -118,26 +155,25 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
      * tree类型
      *
      * @param menus 菜单列表
-     * @return {@link MenuListVo}
+     * @return {@link MenuTreeVo}
      */
     @Deprecated
-    private List<MenuListVo> finishingMenu(List<Menu> menus) {
+    private List<MenuTreeVo> finishingMenu(List<Menu> menus) {
         // 菜单列表以id排好序，虽然应该是正序的
         List<Menu> collectMenus = menus.stream().sorted(Comparator.comparing(Menu::getId)).toList();
-        List<MenuListVo> menuList = new ArrayList<>();
+        List<MenuTreeVo> menuTree = new ArrayList<>();
         for (Menu menu : collectMenus) {
-            // 将每个菜单转化为MenuListVo对象
-            MenuListVo menuListVo = BeanCopyUtils.copyBean(menu, MenuListVo.class);
+            // 将每个菜单转化为MenuTreeVo对象
+            MenuTreeVo menuTreeVo = BeanCopyUtils.copyBean(menu, MenuTreeVo.class);
             // 如果这个menu的pid为0，说明他是一级菜单，直接添加到返回列表
             // 否则获取列表的最后一个菜单添加到子菜单中
             if (menu.getPid() == 0) {
-                menuListVo.setSubMenuList(new ArrayList<>());
-                menuList.add(menuListVo);
+                menuTree.add(menuTreeVo);
             } else {
-                menuList.get(menuList.size() - 1).getSubMenuList().add(menuListVo);
+                menuTree.get(menuTree.size() - 1).getChildren().add(menuTreeVo);
             }
         }
-        return menuList;
+        return menuTree;
     }
 }
 

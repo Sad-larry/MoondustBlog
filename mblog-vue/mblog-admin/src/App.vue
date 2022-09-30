@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import { organizeMenu } from "@/utils/menuToList.js";
+import { organizeMenu } from "@/utils/menuToTree.js";
 export default {
     name: "App",
     created() {
