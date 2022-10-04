@@ -28,6 +28,7 @@
                 <el-dropdown @command="handleCommand">
                     <el-avatar
                         :size="40"
+                        src="..\..\..\..\static\images\avatar.jpg"
                         />
                         <!-- :src="this.$store.state.userInfo.avatar" -->
                     <i class="el-icon-caret-bottom" />
@@ -36,7 +37,7 @@
                             <i class="el-icon-s-custom" />个人中心
                         </el-dropdown-item>
                         <el-dropdown-item command="logout" divided>
-                            <i class="iconfont el-icon-mytuichu" />退出登录
+                            <i class="iconfont el-icon-switch-button" />退出登录
                         </el-dropdown-item>
                     </el-dropdown-menu>
                 </el-dropdown>
@@ -113,6 +114,8 @@ export default {
                 this.$router.push({ path: "/setting" });
             }
             if (command == "logout") {
+                this.$store.commit("logout")
+                this.$router.push({ path: "/login" });
                 // 调用注销接口
                 /*
                 this.axios.post("/api/users/logout").then(({ data }) => {

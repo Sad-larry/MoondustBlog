@@ -1,6 +1,7 @@
 // 1.导入Vue和VueRouter，并调用 Vue.use(VueRouter)
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+import store from '@/store'
 
 Vue.use(VueRouter)
 
@@ -10,8 +11,8 @@ const routes = [
         path: '/login',
         name: '登录', // 命名路由标识
         hidden: true, // 当hidden为true时则不会显示在sidebar，默认为fasle
-        component: () => import('../views/Login.vue') // 当前路由映射一个Login组件
-    }
+        component: () => import('@/views/Login.vue') // 当前路由映射一个Login组件
+    },
 ]
 
 // 3.创建 router 实例，然后传 `routes` 配置
@@ -30,9 +31,17 @@ export function resetRouter() {
     router.matcher = newRouter.matcher
 }
 
-import store from '@/store'
 // 配置路由守卫
 router.beforeEach((to, from, next) => {
+    if (store.state.activeProgressEnum === 0) {
+        if (to.path !== '/login') {
+            next({ path: '/login' })
+        } else {
+            next()
+        }
+    } else {
+        next()
+    }
     // 按道理应该是利用Token判断的，这里我暂时用菜单栏列表判断
     // console.log(store.state.userMenuList)
     // if (store.state.userMenuList) {
@@ -44,7 +53,14 @@ router.beforeEach((to, from, next) => {
     // } else {
     //     next({path: '/login'})
     // }
-    next()
+    // next()
 })
+
+
+// 解决相同地址路由跳转未报异常不捕获错误
+const originalPush = VueRouter.prototype.push
+VueRouter.prototype.push = function push(location) {
+    return originalPush.call(this, location).catch(err => err)
+}
 
 export default router

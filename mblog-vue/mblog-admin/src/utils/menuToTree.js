@@ -47,6 +47,10 @@ export function organizeMenu(menuData) {
   menuTree.forEach((item) => {
     router.addRoute(item)
   })
+  router.addRoute({
+    path: '*',
+    component: () => import('@/views/features/404.vue')
+  })
 }
 
 export const loadView = (view) => {

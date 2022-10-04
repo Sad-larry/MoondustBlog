@@ -38,8 +38,9 @@
 
   <script>
 // import { generaMenu } from "../../assets/js/menu";
-import { adminLogin } from "@/api/admin/login";
-import { organizeMenu } from "@/utils/menuToTree";
+import { adminLogin } from "@/api/admin/login"
+import { organizeMenu } from "@/utils/menuToTree"
+import ls from '@/utils/sessionStorageUtil.js'
 export default {
     data: function () {
         return {
@@ -67,6 +68,21 @@ export default {
     },
     methods: {
         login() {
+            if (this.$store.state.activeProgressEnum === 1) {
+                // 原来vuex才是插件帮忙保存的会话key
+                let vuex = ls.getItem("vuex");
+                if (vuex) {
+                    // 拿出菜单栏数据, 从sessionStorage中重新获取menuList数据
+                    let userMenuTree = vuex["userMenuTree"];
+                    if (userMenuTree && userMenuTree.length > 0) {
+                        organizeMenu();
+                        this.$message.success("登录成功...");
+                        this.$router.push({ path: "/" });
+                        return
+                    }
+                }
+            }
+
             // 表单校验
             this.$refs.ruleForm.validate((valid) => {
                 if (valid) {
@@ -75,7 +91,7 @@ export default {
                         // 数据成功返回应该保存一些数据，例如token什么的
 
                         // 整理
-                        organizeMenu(data.data.menuTree)
+                        organizeMenu(data.data.menuTree);
                         this.$message.success("登录成功...");
                         this.$router.push({ path: "/" });
                     });

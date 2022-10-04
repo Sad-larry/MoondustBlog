@@ -19,6 +19,7 @@ export default {
                 let userMenuTree = vuex["userMenuTree"];
                 if (userMenuTree && userMenuTree.length > 0) {
                     organizeMenu();
+                    this.$router.push({ path: "/" });
                 }
             }
         }

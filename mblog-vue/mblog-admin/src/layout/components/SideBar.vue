@@ -5,15 +5,17 @@
             router
             :collapse="this.$store.state.collapse"
             :default-active="this.$route.path"
+            unique-opened
             background-color="#304156"
             text-color="#BFCBD9"
             active-text-color="#409EFF"
         >
             <!-- 获取所有菜单列表 -->
             <template v-for="route of this.$store.state.userMenuTree">
-                <template v-if="route.menuName">
+                <!-- 二级菜单 -->
+                <template v-if="route.menuName && route.children && route.children.length > 0">
                     <el-submenu :key="route.path" :index="route.path">
-                        <!-- 一级菜单标题 -->
+                        <!-- 二级菜单标题 -->
                         <template slot="title">
                             <i :class="route.icon" />
                             <span>{{ route.menuName }}</span>
@@ -29,6 +31,13 @@
                             </el-menu-item>
                         </div>
                     </el-submenu>
+                </template>
+                <!-- 一级菜单 -->
+                <template v-else>
+                    <el-menu-item :index="route.path" :key="route.path">
+                        <i :class="route.children[0].icon" />
+                        <span slot="title">{{ route.children[0].menuName }}</span>
+                    </el-menu-item>
                 </template>
             </template>
         </el-menu>
