@@ -5,7 +5,7 @@
 <mapper namespace="work.moonzs.mapper.UserMapper">
     <!--查询用户菜单-->
     <select id="selectUserMenus" resultType="work.moonzs.domain.entity.Menu">
-        select m.`id`, m.`menu_name`, m.`pid`, m.`path`, m.`component`, m.`icon`
+        select m.`id`, m.`name`, m.`pid`, m.`path`, m.`component`, m.`icon`
         from t_user u
                  left join t_user_role ur on ur.`user_id` = u.`id`
                  left join t_role_menu rm on rm.`role_id` = ur.`role_id`

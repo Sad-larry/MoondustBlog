@@ -61,14 +61,14 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
     /**
      * 通过菜单名字和路径判断是否存在
      *
-     * @param menuName 菜单名称
-     * @param path     路径
+     * @param name 菜单名称
+     * @param path 路径
      * @return boolean
      */
     @Override
-    public boolean isExistMenuByCxNamePath(String menuName, String path) {
+    public boolean isExistMenuByCxNamePath(String name, String path) {
         LambdaQueryWrapper<Menu> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(Menu::getMenuName, menuName);
+        queryWrapper.eq(Menu::getName, name);
         queryWrapper.eq(Menu::getPath, path);
         // 不同判断状态
         long count = count(queryWrapper);

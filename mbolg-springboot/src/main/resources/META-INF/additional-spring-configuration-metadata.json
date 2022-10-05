@@ -1,0 +1,14 @@
+{
+  "properties": [
+    {
+      "name": "oss.qiniu.access-key",
+      "type": "java.lang.String",
+      "description": "Description for oss.qiniu.access-key."
+    },
+    {
+      "name": "oss.qiniu.secret-key",
+      "type": "java.lang.String",
+      "description": "Description for oss.qiniu.secret-key."
+    }
+  ]
+}

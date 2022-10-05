@@ -32,10 +32,10 @@ public interface MenuService extends IService<Menu> {
     /**
      * 通过菜单名字和路径判断是否存在
      *
-     * @param menuName 菜单名称
-     * @param path     路径
+     * @param name 菜单名称
+     * @param path 路径
      * @return boolean
      */
-    boolean isExistMenuByCxNamePath(String menuName, String path);
+    boolean isExistMenuByCxNamePath(String name, String path);
 }
 

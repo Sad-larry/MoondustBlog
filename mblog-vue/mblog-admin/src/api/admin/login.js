@@ -8,3 +8,4 @@ export function adminLogin(data) {
         data
     })
 }
+export default {adminLogin}

@@ -72,7 +72,7 @@
 </template>
   
   <script>
-import { resetRouter } from "../../router";
+
 export default {
     created() {
         //替换面包屑导航
@@ -83,7 +83,7 @@ export default {
         }
         this.breadcrumbList = matched;
         //保存当前页标签
-        // this.$store.commit("saveTab", this.$route);
+        this.$store.commit("saveTab", this.$route);
     },
     data() {
         return {
@@ -114,9 +114,10 @@ export default {
                 this.$router.push({ path: "/setting" });
             }
             if (command == "logout") {
-                this.$store.commit("logout")
-                this.$router.push({ path: "/login" });
                 // 调用注销接口
+                this.$store.commit("logout")
+                this.$store.commit("resetTab");
+                this.$router.push({ path: "/login" });
                 /*
                 this.axios.post("/api/users/logout").then(({ data }) => {
                     // 清空用户信息
@@ -130,8 +131,8 @@ export default {
             }
         },
         closeAllTab() {
-            // this.$store.commit("resetTab");
-            // this.$router.push({ path: "/" });
+            this.$store.commit("resetTab");
+            this.$router.push({ path: "/" });
         },
         fullScreen() {
             let element = document.documentElement;

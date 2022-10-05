@@ -13,7 +13,7 @@
                 size="medium"
                 class="save-btn"
                 @click="saveArticleDraft"
-                v-if="article.id == null || article.status == 3"
+                v-if="article.id == null || article.status == 0"
             >
                 保存草稿
             </el-button>
@@ -151,7 +151,7 @@
                     <el-upload
                         class="upload-cover"
                         drag
-                        action="/api/admin/articles/images"
+                        action="http://localhost:8080/admin/upload/image"
                         multiple
                         :headers="headers"
                         :before-upload="beforeUpload"
@@ -184,19 +184,10 @@
                         :inactive-value="0"
                     />
                 </el-form-item>
-                <el-form-item label="推荐">
-                    <el-switch
-                        v-model="article.isFeatured"
-                        active-color="#13ce66"
-                        inactive-color="#F4F4F5"
-                        :active-value="1"
-                        :inactive-value="0"
-                    />
-                </el-form-item>
-                <el-form-item label="发布形式">
-                    <el-radio-group v-model="article.status">
-                        <el-radio :label="1">公开</el-radio>
-                        <el-radio :label="2">私密</el-radio>
+                <el-form-item label="允许评论">
+                    <el-radio-group v-model="article.isComment">
+                        <el-radio :label="1">允许</el-radio>
+                        <el-radio :label="0">拒绝</el-radio>
                     </el-radio-group>
                 </el-form-item>
             </el-form>
@@ -211,14 +202,17 @@
 </template>
 
 <script>
-import * as imageConversion from "image-conversion"
-import CURDArticle from "@/api/admin/article"
+import * as imageConversion from "image-conversion";
+import CURDArticle from "@/api/admin/article";
+import { uploadImage } from "@/api/admin/uploadFile";
+import { listCategory } from "@/api/admin/category";
+import { listTag } from "@/api/admin/tag";
 export default {
     created() {
-        const articleId = this.$route.params.articleId
+        const articleId = this.$route.params.articleId;
         if (articleId) {
             // 当用户在文章列表编辑时，跳转过来携带编辑文章数据
-            this.article = this.$route.params.article
+            this.article = this.$route.params.article;
         } else {
             const article = sessionStorage.getItem("article");
             if (article) {
@@ -227,8 +221,8 @@ export default {
         }
     },
     destroyed() {
-        //文章自动保存功能
-        this.autoSaveArticle();
+        // TODO 文章自动保存功能(暂时关闭)
+        // this.autoSaveArticle();
     },
     data() {
         return {
@@ -240,28 +234,30 @@ export default {
             tagList: [],
             article: {
                 id: null,
-                title: '',
+                title: "",
                 content: "",
                 thumbnail: "",
                 categoryName: null,
+                categoryId: null,
                 tagListVo: [],
                 originalUrl: "",
                 isTop: 0,
                 status: 1,
+                isComment: "1"
             },
             headers: { token: sessionStorage.getItem("token") },
         };
     },
     methods: {
         listCategories() {
-            // this.axios.get("/api/admin/categories/search").then(({ data }) => {
-            //     this.categorys = data.data;
-            // });
+            listCategory().then(({ data }) => {
+                this.categorys = data.data.records;
+            });
         },
         listTags() {
-            // this.axios.get("/api/admin/tags/search").then(({ data }) => {
-            //     this.tagList = data.data;
-            // });
+            listTag().then(({ data }) => {
+                this.tagList = data.data.records;
+            });
         },
         openModel() {
             if (this.article.title.trim() == "") {
@@ -296,11 +292,9 @@ export default {
             var formdata = new FormData();
             if (file.size / 1024 < this.config.UPLOAD_SIZE) {
                 formdata.append("file", file);
-                // this.axios
-                //     .post("/api/admin/articles/images", formdata)
-                //     .then(({ data }) => {
-                //         this.$refs.md.$img2Url(pos, data.data);
-                //     });
+                uploadImage(formdata).then(({ data }) => {
+                    this.$refs.md.$img2Url(pos, data.data);
+                });
             } else {
                 // 压缩到200KB,这里的200就是要压缩的大小,可自定义
                 imageConversion
@@ -312,11 +306,9 @@ export default {
                                 type: file.type,
                             })
                         );
-                        // this.axios
-                        //     .post("/api/admin/articles/images", formdata)
-                        //     .then(({ data }) => {
-                        //         this.$refs.md.$img2Url(pos, data.data);
-                        //     });
+                        uploadImage(formdata).then(({ data }) => {
+                            this.$refs.md.$img2Url(pos, data.data);
+                        });
                     });
             }
         },
@@ -330,22 +322,21 @@ export default {
                 return false;
             }
             this.article.status = 0;
-            CURDArticle.publishArticle(this.article)
-                .then(({ data }) => {
-                    if (data.code === 200) {
-                        sessionStorage.removeItem("article");
-                        this.$router.push({ path: "/article-list" });
-                        this.$notify.success({
-                            title: "成功",
-                            message: "保存草稿成功",
-                        });
-                    } else {
-                        this.$notify.error({
-                            title: "失败",
-                            message: "保存草稿失败",
-                        });
-                    }
-                });
+            CURDArticle.publishArticle(this.article).then(({ data }) => {
+                if (data.code === 200) {
+                    sessionStorage.removeItem("article");
+                    this.$router.push({ path: "/article-list" });
+                    this.$notify.success({
+                        title: "成功",
+                        message: "保存草稿成功",
+                    });
+                } else {
+                    this.$notify.error({
+                        title: "失败",
+                        message: "保存草稿失败",
+                    });
+                }
+            });
 
             //关闭自动保存功能
             this.autoSave = false;
@@ -371,23 +362,23 @@ export default {
                 this.$message.error("文章封面不能为空");
                 return false;
             }
-            CURDArticle.publishArticle(this.article)
-                .then(({ data }) => {
-                    if (data.code === 200) {
-                        sessionStorage.removeItem("article");
-                        this.$router.push({ path: "/article-list" });
-                        this.$notify.success({
-                            title: "成功",
-                            message: data.message,
-                        });
-                    } else {
-                        this.$notify.error({
-                            title: "失败",
-                            message: data.message,
-                        });
-                    }
-                    this.addOrEdit = false;
-                });
+            CURDArticle.publishArticle(this.article).then(({ data }) => {
+
+                if (data.code === 200) {
+                    sessionStorage.removeItem("article");
+                    this.$router.push({ path: "/article-list" });
+                    this.$notify.success({
+                        title: "成功",
+                        message: data.message,
+                    });
+                } else {
+                    this.$notify.error({
+                        title: "失败",
+                        message: data.message,
+                    });
+                }
+                this.addOrEdit = false;
+            });
             //关闭自动保存功能
             this.autoSave = false;
         },
@@ -399,20 +390,19 @@ export default {
                 this.article.content.trim() != "" &&
                 this.article.id != null
             ) {
-              CURDArticle.publishArticle(this.article)
-                    .then(({ data }) => {
-                        if (data.code === 200) {
-                            this.$notify.success({
-                                title: "成功",
-                                message: "自动保存成功",
-                            });
-                        } else {
-                            this.$notify.error({
-                                title: "失败",
-                                message: "自动保存失败",
-                            });
-                        }
-                    });
+                CURDArticle.publishArticle(this.article).then(({ data }) => {
+                    if (data.code === 200) {
+                        this.$notify.success({
+                            title: "成功",
+                            message: "自动保存成功",
+                        });
+                    } else {
+                        this.$notify.error({
+                            title: "失败",
+                            message: "自动保存失败",
+                        });
+                    }
+                });
             }
             // 保存本地文章记录
             if (this.autoSave && this.article.id == null) {
@@ -420,45 +410,37 @@ export default {
             }
         },
         searchCategories(keywords, cb) {
-            // this.axios
-            //     .get("/api/admin/categories/search", {
-            //         params: {
-            //             keywords: keywords,
-            //         },
-            //     })
-            //     .then(({ data }) => {
-            //         cb(data.data);
-            //     });
+            listCategory({ fuzzyField: keywords }).then(({ data }) => {
+                cb(data.data.records);
+            });
         },
         handleSelectCategories(item) {
             this.addCategory({
                 categoryName: item.categoryName,
+                id: item.id
             });
         },
         saveCategory() {
             if (this.categoryName.trim() != "") {
                 this.addCategory({
                     categoryName: this.categoryName,
+                    id: this.categoryId
                 });
                 this.categoryName = "";
             }
         },
         addCategory(item) {
             this.article.categoryName = item.categoryName;
+            this.article.categoryId = item.id;
         },
         removeCategory() {
             this.article.categoryName = null;
+            this.article.categoryId = null;
         },
         searchTags(keywords, cb) {
-            // this.axios
-            //     .get("/api/admin/tags/search", {
-            //         params: {
-            //             keywords: keywords,
-            //         },
-            //     })
-            //     .then(({ data }) => {
-            //         cb(data.data);
-            //     });
+            listTag({ fuzzyField: keywords }).then(({ data }) => {
+                cb(data.data.records);
+            });
         },
         handleSelectTag(item) {
             this.addTag({

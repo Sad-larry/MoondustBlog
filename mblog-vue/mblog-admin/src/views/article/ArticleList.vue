@@ -23,7 +23,7 @@
         <!-- 表格操作 -->
         <div class="operation-container">
             <el-button
-                v-if="isDelete == 0"
+                v-if="status == 1"
                 type="danger"
                 size="small"
                 icon="el-icon-delete"
@@ -53,7 +53,7 @@
                 批量导出
             </el-button>
             <el-upload
-                action="/api/admin/articles/import"
+                action="null"
                 multiple
                 :limit="9"
                 :show-file-list="false"
@@ -66,22 +66,6 @@
             </el-upload>
             <!-- 条件筛选 -->
             <div style="margin-left: auto">
-                <!-- 文章类型 -->
-                <el-select
-                    clearable
-                    v-model="type"
-                    placeholder="请选择文章类型"
-                    size="small"
-                    style="margin-right: 1rem; width: 180px"
-                >
-                    <el-option label="全部" value="" />
-                    <el-option
-                        v-for="item in types"
-                        :key="item.value"
-                        :label="item.label"
-                        :value="item.value"
-                    />
-                </el-select>
                 <!-- 分类 -->
                 <el-select
                     clearable
@@ -110,7 +94,7 @@
                 >
                     <el-option label="全部" value="" />
                     <el-option
-                        v-for="item in tags"
+                        v-for="item in tagList"
                         :key="item.id"
                         :label="item.tagName"
                         :value="item.id"
@@ -148,7 +132,7 @@
             <el-table-column type="selection" width="55" />
             <!-- 文章修改时间 -->
             <el-table-column
-                prop="articleCover"
+                prop="thumbnail"
                 label="文章封面"
                 width="180"
                 align="center"
@@ -157,8 +141,8 @@
                     <el-image
                         class="article-cover"
                         :src="
-                            scope.row.articleCover
-                                ? scope.row.articleCover
+                            scope.row.thumbnail
+                                ? scope.row.thumbnail
                                 : 'https://static.talkxj.com/articles/c5cc2b2561bd0e3060a500198a4ad37d.png'
                         "
                     />
@@ -181,25 +165,25 @@
                 </template>
             </el-table-column>
             <!-- 文章标题 -->
-            <el-table-column prop="articleTitle" label="标题" align="center" />
+            <el-table-column prop="title" label="标题" align="center" />
             <!-- 文章分类 -->
             <el-table-column
-                prop="categoryName"
+                prop="categoryVo.categoryName"
                 label="分类"
                 width="110"
                 align="center"
             />
             <!-- 文章标签 -->
             <el-table-column
-                prop="tagDTOs"
+                prop="tagListVo"
                 label="标签"
                 width="170"
                 align="center"
             >
                 <template slot-scope="scope">
                     <el-tag
-                        v-for="item of scope.row.tagDTOs"
-                        :key="item.tagId"
+                        v-for="item of scope.row.tagListVo"
+                        :key="item.id"
                         style="margin-right: 0.2rem; margin-top: 0.2rem"
                     >
                         {{ item.tagName }}
@@ -218,14 +202,6 @@
                         {{ scope.row.viewsCount }}
                     </span>
                     <span v-else>0</span>
-                </template>
-            </el-table-column>
-            <!-- 文章类型 -->
-            <el-table-column prop="type" label="类型" width="80" align="center">
-                <template slot-scope="scope">
-                    <el-tag :type="articleType(scope.row.type).tagType">
-                        {{ articleType(scope.row.type).name }}
-                    </el-tag>
                 </template>
             </el-table-column>
             <!-- 文章发表时间 -->
@@ -252,25 +228,7 @@
                         v-model="scope.row.isTop"
                         active-color="#13ce66"
                         inactive-color="#F4F4F5"
-                        :disabled="scope.row.isDelete == 1"
-                        :active-value="1"
-                        :inactive-value="0"
-                        @change="changeTopAndFeatured(scope.row)"
-                    />
-                </template>
-            </el-table-column>
-            <el-table-column
-                prop="isFeatured"
-                label="推荐"
-                width="80"
-                align="center"
-            >
-                <template slot-scope="scope">
-                    <el-switch
-                        v-model="scope.row.isFeatured"
-                        active-color="#13ce66"
-                        inactive-color="#F4F4F5"
-                        :disabled="scope.row.isDelete == 1"
+                        :disabled="scope.row.status == 0"
                         :active-value="1"
                         :inactive-value="0"
                         @change="changeTopAndFeatured(scope.row)"
@@ -284,7 +242,7 @@
                         type="primary"
                         size="mini"
                         @click="editArticle(scope.row.id)"
-                        v-if="scope.row.isDelete == 0"
+                        v-if="scope.row.status == 1"
                     >
                         编辑
                     </el-button>
@@ -292,7 +250,7 @@
                         title="确定删除吗？"
                         style="margin-left: 10px"
                         @confirm="updateArticleDelete(scope.row.id)"
-                        v-if="scope.row.isDelete == 0"
+                        v-if="scope.row.status == 1"
                     >
                         <el-button size="mini" type="danger" slot="reference">
                             删除
@@ -300,7 +258,7 @@
                     </el-popconfirm>
                     <el-popconfirm
                         title="确定恢复吗？"
-                        v-if="scope.row.isDelete == 1"
+                        v-if="scope.row.status == 1"
                         @confirm="updateArticleDelete(scope.row.id)"
                     >
                         <el-button size="mini" type="success" slot="reference">
@@ -309,7 +267,7 @@
                     </el-popconfirm>
                     <el-popconfirm
                         style="margin-left: 10px"
-                        v-if="scope.row.isDelete == 1"
+                        v-if="scope.row.status == 1"
                         title="确定彻底删除吗？"
                         @confirm="deleteArticles(scope.row.id)"
                     >
@@ -375,6 +333,10 @@
 </template>
 
 <script>
+import CURDArticle from "@/api/admin/article";
+import { listCategory } from "@/api/admin/category";
+import { listTag } from "@/api/admin/tag";
+
 export default {
     created() {
         this.listArticles();
@@ -387,25 +349,11 @@ export default {
             loading: true,
             updateIsDelete: false,
             remove: false,
-            types: [
-                {
-                    value: 1,
-                    label: "原创",
-                },
-                {
-                    value: 2,
-                    label: "转载",
-                },
-                {
-                    value: 3,
-                    label: "翻译",
-                },
-            ],
             activeStatus: "all",
             articles: [],
             articleIds: [],
             categories: [],
-            tags: [],
+            tagList: [],
             keywords: null,
             type: null,
             categoryId: null,
@@ -431,9 +379,10 @@ export default {
         },
         // 编辑文章
         editArticle(id) {
+            console.log("editArticle", this.articles[id]);
             this.$router.push({
-                path: "/article-push",
-                params: { articleId: id, article: this.data.articles[id] },
+                name: "发表文章",
+                params: { articleId: id, article: this.articles[id] },
             });
         },
         updateArticleDelete(id) {
@@ -444,21 +393,22 @@ export default {
                 param.ids = this.articleIds;
             }
             param.isDelete = this.isDelete == 0 ? 1 : 0;
-            this.axios.put("/api/admin/articles", param).then(({ data }) => {
-                if (data.flag) {
-                    this.$notify.success({
-                        title: "成功",
-                        message: data.message,
-                    });
-                    this.listArticles();
-                } else {
-                    this.$notify.error({
-                        title: "失败",
-                        message: data.message,
-                    });
-                }
-                this.updateIsDelete = false;
-            });
+            console.log("updateArticleDelete");
+            // this.axios.put("/api/admin/articles", param).then(({ data }) => {
+            //     if (data.flag) {
+            //         this.$notify.success({
+            //             title: "成功",
+            //             message: data.message,
+            //         });
+            //         this.listArticles();
+            //     } else {
+            //         this.$notify.error({
+            //             title: "失败",
+            //             message: data.message,
+            //         });
+            //     }
+            //     this.updateIsDelete = false;
+            // });
         },
         deleteArticles(id) {
             let param = {};
@@ -467,23 +417,24 @@ export default {
             } else {
                 param = { data: [id] };
             }
-            this.axios
-                .delete("/api/admin/articles/delete", param)
-                .then(({ data }) => {
-                    if (data.flag) {
-                        this.$notify.success({
-                            title: "成功",
-                            message: data.message,
-                        });
-                        this.listArticles();
-                    } else {
-                        this.$notify.error({
-                            title: "失败",
-                            message: data.message,
-                        });
-                    }
-                    this.remove = false;
-                });
+            console.log("deleteArticles");
+            // this.axios
+            //     .delete("/api/admin/articles/delete", param)
+            //     .then(({ data }) => {
+            //         if (data.flag) {
+            //             this.$notify.success({
+            //                 title: "成功",
+            //                 message: data.message,
+            //             });
+            //             this.listArticles();
+            //         } else {
+            //             this.$notify.error({
+            //                 title: "失败",
+            //                 message: data.message,
+            //             });
+            //         }
+            //         this.remove = false;
+            //     });
         },
         exportArticles(id) {
             var param = {};
@@ -492,26 +443,27 @@ export default {
             } else {
                 param = [id];
             }
-            this.axios
-                .post("/api/admin/articles/export", param)
-                .then(({ data }) => {
-                    if (data.flag) {
-                        this.$notify.success({
-                            title: "成功",
-                            message: data.message,
-                        });
-                        data.data.forEach((item) => {
-                            this.downloadFile(item);
-                        });
-                        this.listArticles();
-                    } else {
-                        this.$notify.error({
-                            title: "失败",
-                            message: data.message,
-                        });
-                    }
-                    this.isExport = false;
-                });
+            console.log("exportArticles");
+            // this.axios
+            //     .post("/api/admin/articles/export", param)
+            //     .then(({ data }) => {
+            //         if (data.flag) {
+            //             this.$notify.success({
+            //                 title: "成功",
+            //                 message: data.message,
+            //             });
+            //             data.data.forEach((item) => {
+            //                 this.downloadFile(item);
+            //             });
+            //             this.listArticles();
+            //         } else {
+            //             this.$notify.error({
+            //                 title: "失败",
+            //                 message: data.message,
+            //             });
+            //         }
+            //         this.isExport = false;
+            //     });
         },
         downloadFile(url) {
             const iframe = document.createElement("iframe");
@@ -572,41 +524,39 @@ export default {
             this.activeStatus = status;
         },
         changeTopAndFeatured(article) {
-            this.axios
-                .put("/api/admin/articles/topAndFeatured", {
-                    id: article.id,
-                    isTop: article.isTop,
-                    isFeatured: article.isFeatured,
-                })
-                .then(({ data }) => {
-                    if (data.flag) {
-                        this.$notify.success({
-                            title: "成功",
-                            message: "修改成功",
-                        });
-                    } else {
-                        this.$notify.error({
-                            title: "失败",
-                            message: data.message,
-                        });
-                    }
-                    this.remove = false;
-                });
+            console.log("changeTopAndFeatured");
+            // this.axios
+            //     .put("/api/admin/articles/topAndFeatured", {
+            //         id: article.id,
+            //         isTop: article.isTop,
+            //         isFeatured: article.isFeatured,
+            //     })
+            //     .then(({ data }) => {
+            //         if (data.flag) {
+            //             this.$notify.success({
+            //                 title: "成功",
+            //                 message: "修改成功",
+            //             });
+            //         } else {
+            //             this.$notify.error({
+            //                 title: "失败",
+            //                 message: data.message,
+            //             });
+            //         }
+            //         this.remove = false;
+            //     });
         },
         listArticles() {
-            this.axios
-                .get("/api/admin/articles", {
-                    params: {
+            CURDArticle.listArticles({
                         current: this.current,
                         size: this.size,
-                        keywords: this.keywords,
+                        fuzzyField: this.keywords,
                         categoryId: this.categoryId,
                         status: this.status,
                         tagId: this.tagId,
                         type: this.type,
                         isDelete: this.isDelete,
-                    },
-                })
+                    })
                 .then(({ data }) => {
                     this.articles = data.data.records;
                     this.count = data.data.count;
@@ -614,13 +564,15 @@ export default {
                 });
         },
         listCategories() {
-            this.axios.get("/api/admin/categories/search").then(({ data }) => {
-                this.categories = data.data;
+            listCategory().then(({ data }) => {
+                console.log("listCategories", data);
+                this.categories = data.data.records;
             });
         },
         listTags() {
-            this.axios.get("/api/admin/tags/search").then(({ data }) => {
-                this.tags = data.data;
+            listTag().then(({ data }) => {
+                console.log("listTags", data);
+                this.tagList = data.data.records;
             });
         },
     },
@@ -647,30 +599,6 @@ export default {
         },
     },
     computed: {
-        articleType() {
-            return function (type) {
-                var tagType = "";
-                var name = "";
-                switch (type) {
-                    case 1:
-                        tagType = "danger";
-                        name = "原创";
-                        break;
-                    case 2:
-                        tagType = "success";
-                        name = "转载";
-                        break;
-                    case 3:
-                        tagType = "primary";
-                        name = "翻译";
-                        break;
-                }
-                return {
-                    tagType: tagType,
-                    name: name,
-                };
-            };
-        },
         isActive() {
             return function (status) {
                 return this.activeStatus == status ? "active-status" : "status";

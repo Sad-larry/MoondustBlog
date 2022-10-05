@@ -61,7 +61,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         UserInfoVo userInfo = BeanCopyUtils.copyBean(oneUser, UserInfoVo.class);
         // TODO jwt生成token
         String token = "待实现token";
-        // 查询用户所具有的角色，每个用户都有一个角色
+        //  查询用户所具有的角色，每个用户都有一个角色
         // 通过角色id查询菜单id列表
         // 查询出所有的菜单，一一匹配存入到列表中
         // 对菜单列表进行整理
@@ -126,7 +126,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     private List<MenuTreeVo> organizeMenu(List<Menu> menus) {
         TreeNodeConfig treeNodeConfig = new TreeNodeConfig();
         // 自定义属性名 都要默认值的
-        treeNodeConfig.setNameKey("menuName");
+        treeNodeConfig.setNameKey("name");
         treeNodeConfig.setParentIdKey("pid");
         treeNodeConfig.setChildrenKey("children");
         // 最大递归深度
@@ -136,7 +136,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             tree.setId(treeNode.getId());
             tree.setParentId(treeNode.getPid());
             // tree.setWeight(treeNode.getWeight());
-            tree.setName(treeNode.getMenuName());
+            tree.setName(treeNode.getName());
             // 扩展属性 ...
             tree.putExtra("path", treeNode.getPath());
             tree.putExtra("component", treeNode.getComponent());

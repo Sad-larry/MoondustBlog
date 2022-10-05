@@ -13,12 +13,12 @@
             <!-- 获取所有菜单列表 -->
             <template v-for="route of this.$store.state.userMenuTree">
                 <!-- 二级菜单 -->
-                <template v-if="route.menuName && route.children && route.children.length > 0">
+                <template v-if="route.name && route.children && route.children.length > 0">
                     <el-submenu :key="route.path" :index="route.path">
                         <!-- 二级菜单标题 -->
                         <template slot="title">
                             <i :class="route.icon" />
-                            <span>{{ route.menuName }}</span>
+                            <span>{{ route.name }}</span>
                         </template>
                         <!-- 二级菜单选项 -->
                         <div
@@ -27,7 +27,7 @@
                         >
                             <el-menu-item :index="item.path">
                                 <i :class="item.icon" />
-                                <span slot="title">{{ item.menuName }}</span>
+                                <span slot="title">{{ item.name }}</span>
                             </el-menu-item>
                         </div>
                     </el-submenu>
@@ -36,7 +36,7 @@
                 <template v-else>
                     <el-menu-item :index="route.path" :key="route.path">
                         <i :class="route.children[0].icon" />
-                        <span slot="title">{{ route.children[0].menuName }}</span>
+                        <span slot="title">{{ route.children[0].name }}</span>
                     </el-menu-item>
                 </template>
             </template>

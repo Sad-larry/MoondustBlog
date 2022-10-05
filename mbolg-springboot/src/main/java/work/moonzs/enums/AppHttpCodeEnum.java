@@ -27,7 +27,10 @@ public enum AppHttpCodeEnum {
     MENU_NOT_EXIST(45008, "菜单不存在"),
     // 菜单已存在
     MENU_EXIST(45009, "菜单已存在"),
+    // 角色已存在
     ROLE_EXIST(45010, "角色已存在"),
+    // 文件类型不匹配
+    FILE_TYPE_NOT_MATCH(45011, "文件类型不匹配"),
 
 
     // 警告：文章未添加标签

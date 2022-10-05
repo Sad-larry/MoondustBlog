@@ -23,7 +23,7 @@ public class MenuDTO {
      * 菜单名称
      */
     @ApiModelProperty(notes = "菜单名称")
-    private String menuName;
+    private String name;
     /**
      * 路径
      */

@@ -21,7 +21,7 @@ public class MenuTreeVo {
     /**
      * 菜单名称
      */
-    private String menuName;
+    private String name;
     /**
      * url
      */

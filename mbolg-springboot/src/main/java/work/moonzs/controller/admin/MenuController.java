@@ -44,7 +44,7 @@ public class MenuController {
         // TODO 这里应该用字段校验，我先暂时手动检验
 
         // 判断分类名是否有相同的，有就不添加
-        boolean isExistMenu = menuService.isExistMenuByCxNamePath(menuDTO.getMenuName(), menuDTO.getPath());
+        boolean isExistMenu = menuService.isExistMenuByCxNamePath(menuDTO.getName(), menuDTO.getPath());
         if (isExistMenu) {
             // TODO 新增的话，如果新增的标签跟删除的标签是一样的话就将删除的标签状态设置为1
             return ResponseResult.fail(AppHttpCodeEnum.MENU_EXIST);

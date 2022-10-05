@@ -20,6 +20,7 @@ export default {
                 if (userMenuTree && userMenuTree.length > 0) {
                     organizeMenu();
                     this.$router.push({ path: "/" });
+                    this.$store.commit('resetTab')
                 }
             }
         }

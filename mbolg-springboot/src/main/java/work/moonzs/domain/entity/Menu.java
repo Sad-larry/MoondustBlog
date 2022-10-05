@@ -26,7 +26,7 @@ public class Menu {
     @TableId
     private Long id;
     //菜单名
-    private String menuName;
+    private String name;
     //父级菜单id
     private Long pid;
     //路由地址
@@ -53,12 +53,12 @@ public class Menu {
             return false;
         }
         Menu menu = (Menu) o;
-        return menuName.equals(menu.menuName) && path.equals(menu.path);
+        return name.equals(menu.name) && path.equals(menu.path);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(menuName, path);
+        return Objects.hash(name, path);
     }
 }
 
