@@ -1,11 +1,9 @@
 package work.moonzs.controller.admin;
 
+import com.alibaba.druid.stat.DruidStatManagerFacade;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import work.moonzs.domain.ResponseResult;
 import work.moonzs.domain.dto.LoginUserDTO;
 import work.moonzs.domain.entity.User;
@@ -39,4 +37,11 @@ public class LoginController {
         // TODO SpringSecurity登录认证
         return userService.adminLogin(user);
     }
+
+    @GetMapping("/druid/stat")
+    public Object druidStat() {
+        // DruidStatManagerFacade#getDataSourceStatDataList 该方法可以获取所有数据源的监控数据，除此之外 DruidStatManagerFacade 还提供了一些其他方法，你可以按需选择使用。
+        return DruidStatManagerFacade.getInstance().getDataSourceStatDataList();
+    }
+    
 }

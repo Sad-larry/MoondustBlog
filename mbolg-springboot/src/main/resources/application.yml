@@ -4,6 +4,52 @@ spring:
     username: root
     password: wzw006
     driver-class-name: com.mysql.cj.jdbc.Driver
+    type: com.alibaba.druid.pool.DruidDataSource
+    # 连接池配置
+    druid:
+      initial-size: 5
+      min-idle: 10
+      max-active: 20
+      max-wait: 60000
+      # 配置间隔多久进行一次检测
+      time-between-eviction-runs-millis: 2000
+      # 配置一个连接在池中最小生存时间
+      min-evictable-idle-time-millis: 600000
+      max-evictable-idle-time-millis: 900000
+      # 用来测试是否成功连接数据库
+      validation-query: SELECT 1
+      keep-alive: true
+      # 启用内置过滤器
+      filters: stat
+      filter:
+        # 开启druiddatasource的状态监控
+        stat:
+          enabled: true
+          db-type: mysql
+          # 开启慢sql监控，超过2s就认为是慢sql
+          log-slow-sql: true
+          slow-sql-millis: 2000
+      # webstatfilter
+      web-stat-filter:
+        enabled: true
+        # 过滤所有url
+        url-pattern: /*
+        # 排除一些不必要的url
+        exclusions: "*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*"
+        # 开启session统计功能
+        session-stat-enable: true
+        # session最大个数，默认100
+        session-stat-max-count: 1000
+      # statviewservlet
+      stat-view-servlet:
+        enabled: true
+        url-pattern: /druid/*
+        # 不允许清空统计数据
+        reset-enable: false
+        login-username: root
+        login-password: 123
+        allow: 127.0.0.1
+        deny:
   mvc:
     pathmatch:
       # 配置swagger3需要以下配置
