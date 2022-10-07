@@ -3,13 +3,13 @@ package work.moonzs.controller.admin;
 import cn.hutool.core.util.StrUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import work.moonzs.base.enums.AppHttpCodeEnum;
+import work.moonzs.base.enums.StatusConstants;
+import work.moonzs.base.utils.BeanCopyUtils;
 import work.moonzs.domain.ResponseResult;
 import work.moonzs.domain.dto.CategoryDTO;
 import work.moonzs.domain.entity.Category;
-import work.moonzs.enums.AppHttpCodeEnum;
-import work.moonzs.enums.StatusConstants;
 import work.moonzs.service.CategoryService;
-import work.moonzs.utils.BeanCopyUtils;
 
 /**
  * @author Moondust月尘
@@ -57,7 +57,6 @@ public class CategoryController {
     public ResponseResult<?> listCategorys(@RequestParam(defaultValue = "1", required = false) Integer pageNum, @RequestParam(defaultValue = "10", required = false) Integer pageSize, @RequestParam(defaultValue = "", required = false) String fuzzyField) {
         return categoryService.listCategorys(pageNum, pageSize, fuzzyField);
     }
-
 
     /**
      * 更新类别

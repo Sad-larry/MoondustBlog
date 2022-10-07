@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import work.moonzs.domain.ResponseResult;
-import work.moonzs.enums.AppHttpCodeEnum;
+import work.moonzs.base.enums.AppHttpCodeEnum;
 import work.moonzs.service.UploadService;
 
 import java.io.IOException;

@@ -9,7 +9,6 @@ import com.qiniu.storage.Region;
 import com.qiniu.storage.UploadManager;
 import com.qiniu.storage.model.DefaultPutRet;
 import com.qiniu.util.Auth;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -18,9 +17,8 @@ import work.moonzs.domain.ResponseResult;
 import work.moonzs.domain.entity.Image;
 import work.moonzs.mapper.ImageMapper;
 import work.moonzs.service.UploadService;
-import work.moonzs.utils.PathUtils;
+import work.moonzs.base.utils.PathUtils;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 

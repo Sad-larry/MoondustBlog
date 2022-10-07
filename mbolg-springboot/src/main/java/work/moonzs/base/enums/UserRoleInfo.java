@@ -1,4 +1,4 @@
-package work.moonzs.enums;
+package work.moonzs.base.enums;
 
 import java.util.ArrayList;
 import java.util.HashMap;

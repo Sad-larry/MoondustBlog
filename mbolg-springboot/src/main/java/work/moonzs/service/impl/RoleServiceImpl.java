@@ -8,10 +8,10 @@ import work.moonzs.domain.ResponseResult;
 import work.moonzs.domain.entity.Role;
 import work.moonzs.domain.vo.PageVo;
 import work.moonzs.domain.vo.RoleListVo;
-import work.moonzs.enums.StatusConstants;
+import work.moonzs.base.enums.StatusConstants;
 import work.moonzs.mapper.RoleMapper;
 import work.moonzs.service.RoleService;
-import work.moonzs.utils.BeanCopyUtils;
+import work.moonzs.base.utils.BeanCopyUtils;
 
 import java.util.List;
 

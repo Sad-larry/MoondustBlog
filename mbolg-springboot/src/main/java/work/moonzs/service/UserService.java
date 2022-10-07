@@ -21,6 +21,13 @@ public interface UserService extends IService<User> {
     ResponseResult<?> adminLogin(User user);
 
     /**
+     * 管理员注销
+     *
+     * @return {@link ResponseResult}<{@link ?}>
+     */
+    ResponseResult<?> adminLogout();
+
+    /**
      * 用户列表
      *
      * @param pageNum    页面num

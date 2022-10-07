@@ -9,10 +9,10 @@ import work.moonzs.domain.ResponseResult;
 import work.moonzs.domain.entity.Category;
 import work.moonzs.domain.vo.CategoryListVo;
 import work.moonzs.domain.vo.PageVo;
-import work.moonzs.enums.StatusConstants;
+import work.moonzs.base.enums.StatusConstants;
 import work.moonzs.mapper.CategoryMapper;
 import work.moonzs.service.CategoryService;
-import work.moonzs.utils.BeanCopyUtils;
+import work.moonzs.base.utils.BeanCopyUtils;
 
 import java.util.List;
 

@@ -6,10 +6,10 @@ import org.springframework.web.bind.annotation.*;
 import work.moonzs.domain.ResponseResult;
 import work.moonzs.domain.dto.TagDTO;
 import work.moonzs.domain.entity.Tag;
-import work.moonzs.enums.AppHttpCodeEnum;
-import work.moonzs.enums.StatusConstants;
+import work.moonzs.base.enums.AppHttpCodeEnum;
+import work.moonzs.base.enums.StatusConstants;
 import work.moonzs.service.TagService;
-import work.moonzs.utils.BeanCopyUtils;
+import work.moonzs.base.utils.BeanCopyUtils;
 
 import java.util.List;
 

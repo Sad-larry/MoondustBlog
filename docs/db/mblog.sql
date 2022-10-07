@@ -363,7 +363,7 @@ CREATE TABLE `t_user`
     `id`          bigint(20)  NOT NULL AUTO_INCREMENT COMMENT '主键',
     `user_name`   varchar(32) NOT NULL COMMENT '用户名',
     `nick_name`   varchar(32)          DEFAULT NULL COMMENT '昵称',
-    `password`    varchar(32) NOT NULL COMMENT '密码',
+    `password`    varchar(64) NOT NULL COMMENT '密码',
     `mobile`      varchar(32)          DEFAULT NULL COMMENT '手机号',
     `email`       varchar(128)         DEFAULT NULL COMMENT '电子邮箱',
     `avatar`      varchar(256)         DEFAULT NULL COMMENT '用户头像',

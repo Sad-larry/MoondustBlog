@@ -8,10 +8,10 @@ import work.moonzs.domain.ResponseResult;
 import work.moonzs.domain.entity.Comment;
 import work.moonzs.domain.vo.CommentListVo;
 import work.moonzs.domain.vo.PageVo;
-import work.moonzs.enums.StatusConstants;
+import work.moonzs.base.enums.StatusConstants;
 import work.moonzs.mapper.CommentMapper;
 import work.moonzs.service.CommentService;
-import work.moonzs.utils.BeanCopyUtils;
+import work.moonzs.base.utils.BeanCopyUtils;
 
 import java.util.List;
 

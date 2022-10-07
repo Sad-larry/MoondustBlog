@@ -1,4 +1,4 @@
-package work.moonzs.utils;
+package work.moonzs.base.utils;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

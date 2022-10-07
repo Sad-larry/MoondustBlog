@@ -8,10 +8,10 @@ import work.moonzs.domain.ResponseResult;
 import work.moonzs.domain.entity.Menu;
 import work.moonzs.domain.vo.MenuListVo;
 import work.moonzs.domain.vo.PageVo;
-import work.moonzs.enums.StatusConstants;
+import work.moonzs.base.enums.StatusConstants;
 import work.moonzs.mapper.MenuMapper;
 import work.moonzs.service.MenuService;
-import work.moonzs.utils.BeanCopyUtils;
+import work.moonzs.base.utils.BeanCopyUtils;
 
 import java.util.List;
 

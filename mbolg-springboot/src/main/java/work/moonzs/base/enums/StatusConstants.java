@@ -1,4 +1,4 @@
-package work.moonzs.enums;
+package work.moonzs.base.enums;
 
 /**
  * 状态常量

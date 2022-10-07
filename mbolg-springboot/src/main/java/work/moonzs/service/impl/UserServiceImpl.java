@@ -3,26 +3,33 @@ package work.moonzs.service.impl;
 import cn.hutool.core.lang.tree.Tree;
 import cn.hutool.core.lang.tree.TreeNodeConfig;
 import cn.hutool.core.lang.tree.TreeUtil;
+import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import work.moonzs.base.enums.AppHttpCodeEnum;
+import work.moonzs.base.enums.StatusConstants;
+import work.moonzs.base.enums.UserRoleInfo;
+import work.moonzs.base.utils.BeanCopyUtils;
+import work.moonzs.base.utils.JwtUtil;
 import work.moonzs.domain.ResponseResult;
+import work.moonzs.domain.entity.LoginUser;
 import work.moonzs.domain.entity.Menu;
 import work.moonzs.domain.entity.User;
 import work.moonzs.domain.vo.MenuTreeVo;
 import work.moonzs.domain.vo.PageVo;
 import work.moonzs.domain.vo.UserInfoVo;
 import work.moonzs.domain.vo.UserListVo;
-import work.moonzs.enums.AppHttpCodeEnum;
-import work.moonzs.enums.StatusConstants;
-import work.moonzs.enums.UserRoleInfo;
 import work.moonzs.mapper.UserMapper;
 import work.moonzs.service.UserService;
-import work.moonzs.utils.BeanCopyUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -36,6 +43,9 @@ import java.util.stream.Collectors;
 @Service("userService")
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
     @Autowired
+    private AuthenticationManager authenticationManager;
+
+    @Autowired
     private UserMapper userMapper;
 
     /**
@@ -46,26 +56,26 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
      */
     @Override
     public ResponseResult<?> adminLogin(User user) {
-        // 根据用户名查询用户信息
-        LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(User::getUserName, user.getUserName());
-        // TODO 暂时用这个
-        queryWrapper.eq(User::getPassword, user.getPassword());
-        User oneUser = getOne(queryWrapper);
-        // 判断是否查到用户，否则返回失败
-        if (Objects.isNull(oneUser)) {
-            return ResponseResult.fail(AppHttpCodeEnum.USER_NOT_EXIST);
+        // SpringSecurity登录认证
+        Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUserName(), user.getPassword()));
+        // 认证没通过 authenticate为空
+        if (ObjectUtil.isNull(authenticate)) {
+            return ResponseResult.fail(AppHttpCodeEnum.USER_FAILED_CERTIFICATION);
         }
-        // TODO 判断密码是否正确
-        // 用户信息
-        UserInfoVo userInfo = BeanCopyUtils.copyBean(oneUser, UserInfoVo.class);
-        // TODO jwt生成token
-        String token = "待实现token";
-        //  查询用户所具有的角色，每个用户都有一个角色
+        // 获取登录用户
+        LoginUser loginUser = (LoginUser) authenticate.getPrincipal();
+        // 组装-用户信息
+        UserInfoVo userInfo = BeanCopyUtils.copyBean(loginUser.getUser(), UserInfoVo.class);
+        // 组装-token，jwt生成token，利用用户id作为主题
+        String token = JwtUtil.createJWT(String.valueOf(loginUser.getUser().getId()));
+        // TODO 把用户信息存入redis
+        // 组装-menu
+        // 查询用户所具有的角色，每个用户都有一个角色
         // 通过角色id查询菜单id列表
         // 查询出所有的菜单，一一匹配存入到列表中
         // 对菜单列表进行整理
-        List<Menu> menus = userMapper.selectUserMenus(oneUser.getId());
+        List<Menu> menus = userMapper.selectUserMenus(loginUser.getUser().getId());
+        // TODO BUG 当用户没有菜单得时候会报空指针异常
         List<MenuTreeVo> menuTree = organizeMenu(menus);
         // 组装数据返回
         Map<String, Object> map = new HashMap<>();
@@ -73,6 +83,24 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         map.put("userInfo", userInfo);
         map.put("menuTree", menuTree);
         return ResponseResult.success(map);
+    }
+
+    /**
+     * 管理员注销
+     *
+     * @return {@link ResponseResult}<{@link ?}>
+     */
+    @Override
+    public ResponseResult<?> adminLogout() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        // LoginUser loginUser = (LoginUser) authentication.getPrincipal();
+        // Long id = loginUser.getUser().getId();
+        String id = (String) authentication.getPrincipal();
+        //////
+        SecurityContextHolder.clearContext();
+        // TODO 从redis中删除用户
+        System.out.println("LOGIN USER:" + id);
+        return ResponseResult.success();
     }
 
     /**

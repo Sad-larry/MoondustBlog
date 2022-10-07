@@ -1,4 +1,4 @@
-package work.moonzs.enums;
+package work.moonzs.base.enums;
 
 /**
  * @author Moondust月尘
@@ -31,7 +31,14 @@ public enum AppHttpCodeEnum {
     ROLE_EXIST(45010, "角色已存在"),
     // 文件类型不匹配
     FILE_TYPE_NOT_MATCH(45011, "文件类型不匹配"),
-
+    // 用户密码错误
+    USER_FAILED_CERTIFICATION(45012, "用户密码错误"),
+    // 用户未登录
+    USER_NEED_LOGIN(45013, "用户未登录"),
+    // TOKEN异常
+    TOKEN_ABNORMAL(45014, "TOKEN异常"),
+    // 权限不足
+    NO_OPERATOR_AUTH(45015, "权限不足"),
 
     // 警告：文章未添加标签
     WARNING_TAG_EMPTY(54001, "警告：文章未添加标签");

@@ -20,7 +20,7 @@ import work.moonzs.service.ArticleService;
 import work.moonzs.service.ArticleTagService;
 import work.moonzs.service.CategoryService;
 import work.moonzs.service.TagService;
-import work.moonzs.utils.BeanCopyUtils;
+import work.moonzs.base.utils.BeanCopyUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;

@@ -1,7 +1,7 @@
 package work.moonzs.domain;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import work.moonzs.enums.AppHttpCodeEnum;
+import work.moonzs.base.enums.AppHttpCodeEnum;
 
 /**
  * 封装前端响应实体类
@@ -37,6 +37,20 @@ public class ResponseResult<T> {
     }
 
     /**
+     * 自定义消息
+     *
+     * @param code 代码
+     * @param msg  消息
+     * @return {@link ResponseResult}<{@link T}>
+     */
+    private static <T> ResponseResult<T> rspMsg(int code, String msg) {
+        ResponseResult<T> message = new ResponseResult<>();
+        message.setCode(code);
+        message.setMsg(msg);
+        return message;
+    }
+
+    /**
      * 成功消息
      *
      * @return {@link ResponseResult}<{@link T}>
@@ -55,6 +69,10 @@ public class ResponseResult<T> {
         return rspMsg(responseEnum);
     }
 
+    public static <T> ResponseResult<T> success(int code, String msg) {
+        return rspMsg(code, msg);
+    }
+
     /**
      * 失败消息
      *
@@ -66,6 +84,10 @@ public class ResponseResult<T> {
 
     public static <T> ResponseResult<T> fail(AppHttpCodeEnum responseEnum) {
         return rspMsg(responseEnum);
+    }
+
+    public static <T> ResponseResult<T> fail(int code, String msg) {
+        return rspMsg(code, msg);
     }
 
     public Integer getCode() {

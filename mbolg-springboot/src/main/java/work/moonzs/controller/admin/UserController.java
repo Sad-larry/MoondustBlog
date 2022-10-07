@@ -7,12 +7,12 @@ import work.moonzs.domain.dto.AddUserDTO;
 import work.moonzs.domain.dto.UserDTO;
 import work.moonzs.domain.entity.User;
 import work.moonzs.domain.entity.UserRole;
-import work.moonzs.enums.AppHttpCodeEnum;
-import work.moonzs.enums.StatusConstants;
-import work.moonzs.enums.UserRoleInfo;
+import work.moonzs.base.enums.AppHttpCodeEnum;
+import work.moonzs.base.enums.StatusConstants;
+import work.moonzs.base.enums.UserRoleInfo;
 import work.moonzs.service.UserRoleService;
 import work.moonzs.service.UserService;
-import work.moonzs.utils.BeanCopyUtils;
+import work.moonzs.base.utils.BeanCopyUtils;
 
 /**
  * @author Moondust月尘
