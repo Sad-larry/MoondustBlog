@@ -4,9 +4,13 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import work.moonzs.base.enums.StatusConstants;
 
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * 登录用户实体类
@@ -21,11 +25,16 @@ public class LoginUser implements UserDetails {
      * 用户信息
      */
     private User user;
-
+    /**
+     * 用户角色
+     */
+    private Role role;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        Set<GrantedAuthority> authorities = new HashSet<>();
+        authorities.add(new SimpleGrantedAuthority(role.getRoleName()));
+        return authorities;
     }
 
     @Override
@@ -55,6 +64,6 @@ public class LoginUser implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return StatusConstants.NORMAL.equals(user.getStatus());
     }
 }

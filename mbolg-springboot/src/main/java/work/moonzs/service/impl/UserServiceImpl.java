@@ -64,14 +64,21 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         }
         // 获取登录用户
         LoginUser loginUser = (LoginUser) authenticate.getPrincipal();
+        // TODO 判断是否是管理员
+        if (!"ROLE_admin".equals(loginUser.getRole().getRoleName())) {
+            return ResponseResult.fail(AppHttpCodeEnum.ILLEGAL_LOGIN);
+        }
         // 组装-用户信息
         UserInfoVo userInfo = BeanCopyUtils.copyBean(loginUser.getUser(), UserInfoVo.class);
         // 组装-token，jwt生成token，利用用户id作为主题
+        // TODO 如果用户选了remember me的话，要把token时长设为7天
         String token = JwtUtil.createJWT(String.valueOf(loginUser.getUser().getId()));
         // TODO 把用户信息存入redis
+        UserRoleInfo.user = loginUser;
+
         // 组装-menu
         // 查询用户所具有的角色，每个用户都有一个角色
-        // 通过角色id查询菜单id列表
+        // TODO 通过角色id查询菜单id列表
         // 查询出所有的菜单，一一匹配存入到列表中
         // 对菜单列表进行整理
         List<Menu> menus = userMapper.selectUserMenus(loginUser.getUser().getId());
@@ -97,9 +104,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         // Long id = loginUser.getUser().getId();
         String id = (String) authentication.getPrincipal();
         //////
-        SecurityContextHolder.clearContext();
+        // SecurityContextHolder.clearContext();
         // TODO 从redis中删除用户
-        System.out.println("LOGIN USER:" + id);
+        UserRoleInfo.user = null;
+        System.out.println("LOGOUT USER:" + id);
         return ResponseResult.success();
     }
 

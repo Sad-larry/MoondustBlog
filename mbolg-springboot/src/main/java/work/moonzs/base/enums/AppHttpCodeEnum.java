@@ -39,6 +39,11 @@ public enum AppHttpCodeEnum {
     TOKEN_ABNORMAL(45014, "TOKEN异常"),
     // 权限不足
     NO_OPERATOR_AUTH(45015, "权限不足"),
+    // 非法登录
+    ILLEGAL_LOGIN(45016, "非法登录"),
+    // 无效登录
+    INVALID_LOGIN(45017, "无效登录"),
+
 
     // 警告：文章未添加标签
     WARNING_TAG_EMPTY(54001, "警告：文章未添加标签");

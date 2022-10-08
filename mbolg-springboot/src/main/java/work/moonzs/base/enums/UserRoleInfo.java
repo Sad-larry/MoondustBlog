@@ -1,5 +1,7 @@
 package work.moonzs.base.enums;
 
+import work.moonzs.domain.entity.LoginUser;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -12,6 +14,7 @@ import java.util.Map;
  * @author Moondust月尘
  */
 public class UserRoleInfo {
+    public static LoginUser user = null;
 
     private static final Map<Long, String> roleInfo = new HashMap<>();
     private static final List<Long> roles = new ArrayList<>();

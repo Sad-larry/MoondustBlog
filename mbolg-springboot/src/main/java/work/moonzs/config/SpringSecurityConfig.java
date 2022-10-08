@@ -5,25 +5,32 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import work.moonzs.base.filter.JwtAuthenticationTokenFilter;
 import work.moonzs.service.impl.AccessDeniedHandlerImpl;
+import work.moonzs.service.impl.AuthenticationEntryPointImpl;
+
+import java.util.List;
 
 /**
  * @author Moondust月尘
  */
 @Configuration
-public class SecurityConfig {
-    @Autowired
-    private AuthenticationEntryPoint authenticationEntryPoint;
+@EnableMethodSecurity
+public class SpringSecurityConfig {
     @Autowired
     private JwtAuthenticationTokenFilter authenticationTokenFilter;
+    @Autowired
+    private AuthenticationEntryPointImpl authenticationEntryPoint;
     @Autowired
     private AccessDeniedHandlerImpl accessDeniedHandler;
 
@@ -53,7 +60,7 @@ public class SecurityConfig {
         // 默认logout取消
         httpSecurity.logout().disable();
         // 允许跨域
-        httpSecurity.cors();
+        httpSecurity.cors().configurationSource(corsConfigurationSource());
         return httpSecurity.build();
     }
 
@@ -81,5 +88,20 @@ public class SecurityConfig {
     @Bean
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return authenticationConfiguration().getAuthenticationManager();
+    }
+
+    /**
+     * 使用SpringSecurity的跨域处理
+     */
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration corsConfiguration = new CorsConfiguration();
+        corsConfiguration.setAllowedMethods(List.of("*"));
+        corsConfiguration.setAllowedHeaders(List.of("*"));
+        corsConfiguration.setMaxAge(3600L);
+        corsConfiguration.setAllowedOrigins(List.of("*"));
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", corsConfiguration);
+        return source;
     }
 }

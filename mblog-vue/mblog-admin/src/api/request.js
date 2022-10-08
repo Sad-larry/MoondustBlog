@@ -12,11 +12,17 @@ const service = axios.create({
 service.interceptors.request.use(
     config => {
         // 如果登录成功后有token，则应该携带token
+        const token = window.localStorage.getItem('token')
+        if (token != null && config?.headers) {
+            console.log("TOKEN:", token)
+            //后续采用将token作为请求头中的参数进行向后端请求
+            config.headers.token = token
+        }
         /////
         return config
     }, error => {
         // Do something with request error
-        console.log(error) // for debug
+        console.log("request error:",error) // for debug
         Promise.reject(error)
     })
 
@@ -33,7 +39,8 @@ service.interceptors.response.use(
                 center: true,
                 duration: 2000
             })
-            return Promise.reject('error')
+            // return Promise.reject('error')
+            return null
         } else {
             return response
         }
@@ -45,7 +52,8 @@ service.interceptors.response.use(
             center: true,
             duration: 2000
         })
-        return Promise.reject(error)
+        // return Promise.reject(error)
+        return null
     }
 )
 

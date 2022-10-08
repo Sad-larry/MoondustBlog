@@ -1,5 +1,6 @@
 package work.moonzs.base.filter;
 
+import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import io.jsonwebtoken.Claims;
@@ -8,9 +9,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import work.moonzs.base.enums.AppHttpCodeEnum;
+import work.moonzs.base.enums.UserRoleInfo;
 import work.moonzs.base.utils.JwtUtil;
 import work.moonzs.base.utils.WebUtils;
 import work.moonzs.domain.ResponseResult;
+import work.moonzs.domain.entity.LoginUser;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -46,11 +49,15 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
         }
         String userId = claims.getSubject();
         // TODO 从redis中读取用户数据
+        LoginUser user = UserRoleInfo.user;
+        if (ObjectUtil.isNull(user)) {
+            // 如果取不到说明登录过期
+            WebUtils.renderString(response, JSONUtil.toJsonStr(ResponseResult.fail(AppHttpCodeEnum.INVALID_LOGIN)));
+            return;
+        }
 
-        // 如果取不到说明登录过期
-
-        // TODO 暂时存userId 存入SecurityContextHolder
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userId, null, null);
+        // TODO 暂时存user 存入SecurityContextHolder
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword(), user.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
         filterChain.doFilter(request, response);
     }

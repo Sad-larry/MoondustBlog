@@ -89,7 +89,7 @@ export default {
                     // 如果通过校验则登录
                     adminLogin(this.loginForm).then(({ data }) => {
                         // 数据成功返回应该保存一些数据，例如token什么的
-
+                        window.localStorage.setItem('token', data.data.token)
                         // 整理
                         organizeMenu(data.data.menuTree);
                         this.$message.success("登录成功...");

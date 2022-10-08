@@ -2,6 +2,7 @@ package work.moonzs.controller.admin;
 
 import com.alibaba.druid.stat.DruidStatManagerFacade;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import work.moonzs.base.enums.AppHttpCodeEnum;
@@ -43,6 +44,7 @@ public class LoginController {
      *
      * @return {@link ResponseResult}<{@link ?}>
      */
+    @PreAuthorize("hasRole('admin')")
     @PostMapping("/logout")
     public ResponseResult<?> adminLogout() {
         return userService.adminLogout();
