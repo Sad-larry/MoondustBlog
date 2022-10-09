@@ -16,8 +16,8 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import work.moonzs.base.filter.JwtAuthenticationTokenFilter;
-import work.moonzs.service.impl.AccessDeniedHandlerImpl;
-import work.moonzs.service.impl.AuthenticationEntryPointImpl;
+import work.moonzs.base.handler.AccessDeniedHandlerImpl;
+import work.moonzs.base.handler.AuthenticationEntryPointImpl;
 
 import java.util.List;
 

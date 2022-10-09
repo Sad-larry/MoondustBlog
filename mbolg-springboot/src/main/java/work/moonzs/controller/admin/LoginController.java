@@ -3,14 +3,14 @@ package work.moonzs.controller.admin;
 import com.alibaba.druid.stat.DruidStatManagerFacade;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
-import work.moonzs.base.enums.AppHttpCodeEnum;
 import work.moonzs.base.utils.BeanCopyUtils;
 import work.moonzs.domain.ResponseResult;
 import work.moonzs.domain.dto.LoginUserDTO;
 import work.moonzs.domain.entity.User;
 import work.moonzs.service.UserService;
+
+import javax.validation.Valid;
 
 /**
  * @author Moondust月尘
@@ -28,12 +28,7 @@ public class LoginController {
      * @return {@link ResponseResult}<{@link ?}>
      */
     @PostMapping("/login")
-    public ResponseResult<?> adminLogin(@RequestBody LoginUserDTO loginUserDTO) {
-        // TODO 验证loginUserDTO字段，字段不能为空
-        if (!StringUtils.hasText(loginUserDTO.getUserName()) &&
-                !StringUtils.hasText(loginUserDTO.getUserName())) {
-            return ResponseResult.fail(AppHttpCodeEnum.FIELD_EMPTY);
-        }
+    public ResponseResult<?> adminLogin(@Valid @RequestBody LoginUserDTO loginUserDTO) {
         User user = BeanCopyUtils.copyBean(loginUserDTO, User.class);
         // SpringSecurity登录认证
         return userService.adminLogin(user);

@@ -5,10 +5,15 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import work.moonzs.base.validate.ValidateGroup;
 
+import javax.validation.constraints.*;
 import java.util.List;
 
 /**
+ * 我觉得吧，虽然字段校验挺好的，但是如果这样写，代码太冗余了，看的不舒服，看来得好好得思索思索
+ * 而且今天写的PatamCheck注解，感觉用处并不是很大阿，我写的这些DTO没有啥嵌套得对象
+ *
  * @author Moondust月尘
  */
 @Data
@@ -20,16 +25,20 @@ public class ArticleDTO {
      * id
      */
     @ApiModelProperty(notes = "id")
+    @Null(message = "添加文章id必须为NULL", groups = ValidateGroup.Insert.class)
+    @Min(value = 1L, groups = {ValidateGroup.Select.class, ValidateGroup.Delete.class, ValidateGroup.Update.class})
     private Long id;
     /**
      * 标题
      */
     @ApiModelProperty(notes = "文章标题")
+    @NotBlank(message = "文章'标题'不能为空", groups = {ValidateGroup.Insert.class, ValidateGroup.Update.class})
     private String title;
     /**
      * 内容
      */
     @ApiModelProperty(notes = "文章内容")
+    @NotBlank(message = "文章'内容'不能为空", groups = {ValidateGroup.Insert.class, ValidateGroup.Update.class})
     private String content;
     /**
      * 总结
@@ -40,30 +49,36 @@ public class ArticleDTO {
      * 分类id
      */
     @ApiModelProperty(notes = "分类id")
+    @NotNull(message = "文章'分类'不能为空", groups = {ValidateGroup.Insert.class, ValidateGroup.Update.class})
     private Long categoryId;
     /**
      * 标签列表
      */
     @ApiModelProperty(notes = "标签列表")
+    @NotEmpty(message = "标签列表不能为空", groups = {ValidateGroup.Insert.class, ValidateGroup.Update.class})
     private List<Long> tagList;
     /**
      * 缩略图
      */
     @ApiModelProperty(notes = "缩略图")
+    @NotBlank(message = "缩略图不能为空", groups = {ValidateGroup.Insert.class, ValidateGroup.Update.class})
     private String thumbnail;
     /**
      * 是否置顶
      */
     @ApiModelProperty(notes = "是否置顶")
+    @Pattern(regexp = "^[01]$", message = "设置状态只有0、1", groups = {ValidateGroup.Insert.class, ValidateGroup.Update.class})
     private String isTop;
     /**
      * 文章状态
      */
     @ApiModelProperty(notes = "文章状态")
+    @Pattern(regexp = "^[012]$", message = "设置状态只有0、1、2", groups = {ValidateGroup.Insert.class, ValidateGroup.Update.class})
     private String status;
     /**
-     * 是评论
+     * 是否评论
      */
     @ApiModelProperty(notes = "是否允许评论")
+    @Pattern(regexp = "^[01]$", message = "设置状态只有0、1", groups = {ValidateGroup.Insert.class, ValidateGroup.Update.class})
     private String isComment;
 }

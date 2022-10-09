@@ -1,6 +1,7 @@
 package work.moonzs.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.springframework.transaction.annotation.Transactional;
 import work.moonzs.domain.ResponseResult;
 import work.moonzs.domain.entity.User;
 
@@ -18,6 +19,7 @@ public interface UserService extends IService<User> {
      * @param user 用户
      * @return {@link ResponseResult}<{@link ?}>
      */
+    @Transactional
     ResponseResult<?> adminLogin(User user);
 
     /**

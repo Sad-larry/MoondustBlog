@@ -1,4 +1,4 @@
-package work.moonzs.service.impl;
+package work.moonzs.base.handler;
 
 import cn.hutool.json.JSONUtil;
 import org.springframework.security.authentication.BadCredentialsException;

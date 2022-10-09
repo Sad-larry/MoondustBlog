@@ -1,7 +1,5 @@
 package work.moonzs.domain.entity;
 
-import java.util.Date;
-
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -9,6 +7,8 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.Date;
 
 /**
  * (Article)表实体类
@@ -38,7 +38,7 @@ public class Article {
     private String thumbnail;
     //是否置顶(1是,0否)
     private String isTop;
-    //文章状态(1发布,0草稿,-1待删除)
+    //文章状态(1发布,0草稿,2待删除)
     private String status;
     //浏览量
     private Long viewCount;

@@ -82,6 +82,12 @@ public class ResponseResult<T> {
         return rspMsg(AppHttpCodeEnum.SERVER_INNER_ERR);
     }
 
+    public static <T> ResponseResult<T> fail(String msg) {
+        ResponseResult<T> rspMsg = fail();
+        rspMsg.setMsg(msg);
+        return rspMsg;
+    }
+
     public static <T> ResponseResult<T> fail(AppHttpCodeEnum responseEnum) {
         return rspMsg(responseEnum);
     }

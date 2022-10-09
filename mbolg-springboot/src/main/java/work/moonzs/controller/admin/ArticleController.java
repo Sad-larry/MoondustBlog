@@ -2,18 +2,20 @@ package work.moonzs.controller.admin;
 
 import cn.hutool.core.collection.CollUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import work.moonzs.base.enums.AppHttpCodeEnum;
+import work.moonzs.base.enums.StatusConstants;
+import work.moonzs.base.utils.BeanCopyUtils;
+import work.moonzs.base.validate.ValidateGroup;
 import work.moonzs.domain.ResponseResult;
 import work.moonzs.domain.dto.ArticleDTO;
 import work.moonzs.domain.entity.Article;
 import work.moonzs.domain.vo.ArticleListVo;
-import work.moonzs.base.enums.AppHttpCodeEnum;
-import work.moonzs.base.enums.StatusConstants;
 import work.moonzs.service.ArticleService;
 import work.moonzs.service.ArticleTagService;
 import work.moonzs.service.CategoryService;
 import work.moonzs.service.TagService;
-import work.moonzs.base.utils.BeanCopyUtils;
 
 import java.util.List;
 
@@ -39,10 +41,8 @@ public class ArticleController {
      * @return {@link ResponseResult}<{@link ?}>
      */
     @PostMapping
-    public ResponseResult<?> publishArticle(@RequestBody ArticleDTO articleDTO) {
-        // TODO 字段校验
+    public ResponseResult<?> publishArticle(@Validated(value = ValidateGroup.Insert.class) @RequestBody ArticleDTO articleDTO) {
         // 如果id不为空，应该为更新操作，这里的话就直接设置为空
-        articleDTO.setId(null);
         // 应该还要判断当前的分类和标签是否存在于数据库中，这两项默认是不会有问题的，就是怕有人不通过前端请求
         //  或者请求的时候刚好被删除了
         // 判断当前分类是否存在
