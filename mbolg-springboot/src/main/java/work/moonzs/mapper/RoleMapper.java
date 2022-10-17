@@ -10,6 +10,12 @@ import work.moonzs.domain.entity.Role;
  * @since 2022-09-27 14:48:04
  */
 public interface RoleMapper extends BaseMapper<Role> {
-
+    /**
+     * 通过用户id查询该用户的角色信息，
+     *
+     * @param userId 用户id
+     * @return {@link Role}
+     */
+    Role selectUserRole(Long userId);
 }
 

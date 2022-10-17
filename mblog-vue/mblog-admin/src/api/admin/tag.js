@@ -8,5 +8,3 @@ export function listTag(params) {
         params
     })
 }
-
-export default { listTag }

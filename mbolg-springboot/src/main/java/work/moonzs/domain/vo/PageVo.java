@@ -1,5 +1,6 @@
 package work.moonzs.domain.vo;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -29,4 +30,11 @@ public class PageVo<T> {
      * 每页显示条数
      */
     private Long size;
+
+    public PageVo(List<T> records, Page<?> page) {
+        this.records = records;
+        this.total = page.getTotal();
+        this.current = page.getCurrent();
+        this.size = page.getSize();
+    }
 }

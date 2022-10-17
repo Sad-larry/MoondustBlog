@@ -5,14 +5,14 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
+import work.moonzs.base.enums.StatusConstants;
+import work.moonzs.base.utils.BeanCopyUtils;
 import work.moonzs.domain.ResponseResult;
 import work.moonzs.domain.entity.Tag;
 import work.moonzs.domain.vo.PageVo;
-import work.moonzs.domain.vo.TagListVo;
-import work.moonzs.base.enums.StatusConstants;
+import work.moonzs.domain.vo.TagVo;
 import work.moonzs.mapper.TagMapper;
 import work.moonzs.service.TagService;
-import work.moonzs.base.utils.BeanCopyUtils;
 
 import java.util.List;
 
@@ -35,7 +35,8 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, Tag> implements TagSe
         LambdaQueryWrapper<Tag> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.in(Tag::getId, tagIds);
         // 根据字段判断数据库数否存在数据不应该有其他字段吧，特别是status
-        // queryWrapper.eq(Tag::getStatus, StatusConstants.NORMAL);
+        // 但是你判断存在数据存在肯定是要根据状态正常的数据判断的吧
+        queryWrapper.eq(Tag::getStatus, StatusConstants.NORMAL);
         long count = count(queryWrapper);
         return count == tagIds.size();
     }
@@ -75,8 +76,8 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, Tag> implements TagSe
         Page<Tag> page = new Page<>(pageNum, pageSize);
         page(page, queryWrapper);
         List<Tag> list = page.getRecords();
-        List<TagListVo> tagListVos = BeanCopyUtils.copyBeanList(list, TagListVo.class);
-        PageVo<TagListVo> pageVo = new PageVo<>(tagListVos, page.getTotal(), page.getCurrent(), page.getSize());
+        List<TagVo> tagListVos = BeanCopyUtils.copyBeanList(list, TagVo.class);
+        PageVo<TagVo> pageVo = new PageVo<>(tagListVos, page.getTotal(), page.getCurrent(), page.getSize());
         return ResponseResult.success(pageVo);
     }
 }

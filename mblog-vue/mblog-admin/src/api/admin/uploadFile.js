@@ -8,5 +8,3 @@ export function uploadImage(data) {
         data
     })
 }
-
-export default {uploadImage}

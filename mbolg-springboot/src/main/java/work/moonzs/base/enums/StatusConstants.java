@@ -7,15 +7,15 @@ package work.moonzs.base.enums;
  */
 public class StatusConstants {
     /**
-     * 正常状态为1
-     */
-    public static final String NORMAL = "1";
-    /**
      * 停用状态为0
      */
-    public static final String DISABLE = "0";
+    public static final Integer DISABLE = 0;
     /**
-     * 删除状态为-1
+     * 正常状态为1
      */
-    public static final String DELETE = "-1";
+    public static final Integer NORMAL = 1;
+    /**
+     * 删除状态为2
+     */
+    public static final Integer DELETE = 2;
 }

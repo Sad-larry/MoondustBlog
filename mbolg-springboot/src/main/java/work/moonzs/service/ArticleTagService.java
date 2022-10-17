@@ -19,7 +19,7 @@ public interface ArticleTagService extends IService<ArticleTag> {
      * @param tagList   标记列表
      * @param articleId 文章id
      */
-    void updateArticleTags(Long articleId, List<Long> tagList);
+    void updateArticleTag(Long articleId, List<Long> tagList);
 
     /**
      * 通过id删除文章关联的标签

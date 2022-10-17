@@ -1,20 +1,18 @@
 package work.moonzs.domain.entity;
 
-import java.util.Date;
-
-import com.baomidou.mybatisplus.annotation.FieldFill;
-import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 /**
  * (Resource)表实体类
  *
  * @author Moondust月尘
- * @since 2022-09-27 14:48:04
+ * @since 2022-10-17 14:28:15
  */
 @Data
 @AllArgsConstructor
@@ -33,10 +31,8 @@ public class Resource {
     //父模块id
     private Long pid;
     //创建时间
-    @TableField(fill = FieldFill.INSERT)
     private Date createTime;
     //更新时间
-    @TableField(fill = FieldFill.UPDATE)
     private Date updateTime;
 }
 

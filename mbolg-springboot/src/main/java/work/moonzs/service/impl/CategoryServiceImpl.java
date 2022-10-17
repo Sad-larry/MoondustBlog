@@ -5,16 +5,14 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
+import work.moonzs.base.enums.StatusConstants;
+import work.moonzs.base.utils.BeanCopyUtils;
 import work.moonzs.domain.ResponseResult;
 import work.moonzs.domain.entity.Category;
-import work.moonzs.domain.vo.CategoryListVo;
+import work.moonzs.domain.vo.CategoryVo;
 import work.moonzs.domain.vo.PageVo;
-import work.moonzs.base.enums.StatusConstants;
 import work.moonzs.mapper.CategoryMapper;
 import work.moonzs.service.CategoryService;
-import work.moonzs.base.utils.BeanCopyUtils;
-
-import java.util.List;
 
 /**
  * (Category)表服务实现类
@@ -25,7 +23,7 @@ import java.util.List;
 @Service("categoryService")
 public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> implements CategoryService {
     /**
-     * 通过id查询分类是否存在
+     * 通过id查询分类是否存在并且状态为正常使用
      *
      * @param categoryId 类别id
      * @return boolean
@@ -41,6 +39,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
 
     /**
      * 通过名称查询同名是否存在
+     * 不用判断状态，因为有人添加的可能和删除的分类同名了
      *
      * @param categoryName 类别名称
      * @return boolean
@@ -63,7 +62,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
      * @return {@link ResponseResult}<{@link ?}>
      */
     @Override
-    public ResponseResult<?> listCategorys(Integer pageNum, Integer pageSize, String fuzzyField) {
+    public ResponseResult<?> listCategory(Integer pageNum, Integer pageSize, String fuzzyField) {
         LambdaQueryWrapper<Category> queryWrapper = new LambdaQueryWrapper<>();
         // 模糊字段为空则不匹配
         if (!StrUtil.isBlank(fuzzyField)) {
@@ -73,9 +72,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
         queryWrapper.eq(Category::getStatus, StatusConstants.NORMAL);
         Page<Category> page = new Page<>(pageNum, pageSize);
         page(page, queryWrapper);
-        List<Category> list = page.getRecords();
-        List<CategoryListVo> categoryListVos = BeanCopyUtils.copyBeanList(list, CategoryListVo.class);
-        PageVo<CategoryListVo> pageVo = new PageVo<>(categoryListVos, page.getTotal(), page.getCurrent(), page.getSize());
+        PageVo<CategoryVo> pageVo = new PageVo<>(BeanCopyUtils.copyBeanList(page.getRecords(), CategoryVo.class), page);
         return ResponseResult.success(pageVo);
     }
 }

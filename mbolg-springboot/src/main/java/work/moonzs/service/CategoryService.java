@@ -1,6 +1,7 @@
 package work.moonzs.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.springframework.transaction.annotation.Transactional;
 import work.moonzs.domain.ResponseResult;
 import work.moonzs.domain.entity.Category;
 
@@ -18,6 +19,7 @@ public interface CategoryService extends IService<Category> {
      * @param categoryId 类别id
      * @return boolean
      */
+    @Transactional
     boolean isExistCategoryById(Long categoryId);
 
     /**
@@ -36,6 +38,6 @@ public interface CategoryService extends IService<Category> {
      * @param fuzzyField 模糊领域
      * @return {@link ResponseResult}<{@link ?}>
      */
-    ResponseResult<?> listCategorys(Integer pageNum, Integer pageSize, String fuzzyField);
+    ResponseResult<?> listCategory(Integer pageNum, Integer pageSize, String fuzzyField);
 }
 

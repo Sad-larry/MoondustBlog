@@ -26,16 +26,18 @@ public class ArticleTagServiceImpl extends ServiceImpl<ArticleTagMapper, Article
      * @param tagList   标记列表
      */
     @Override
-    public void updateArticleTags(Long articleId, List<Long> tagList) {
+    public void updateArticleTag(Long articleId, List<Long> tagList) {
         // 通过文章id查询文章标签
         LambdaQueryWrapper<ArticleTag> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(ArticleTag::getArticleId, articleId);
         List<ArticleTag> queryList = list(queryWrapper);
         // 如果有文章标签，说明是更新操作，否则插入新数据
         if (CollUtil.isEmpty(queryList)) {
-            tagList.stream()
+            List<ArticleTag> articleTags = tagList.stream()
                     // 去重
-                    .distinct().forEach(tagId -> save(new ArticleTag(null, articleId, tagId)));
+                    .distinct()
+                    .map(tagId -> new ArticleTag(null, articleId, tagId)).toList();
+            saveBatch(articleTags);
             return;
         }
         // 如果是更新操作，就查询出哪些是新增的，哪些是删除的
@@ -50,14 +52,18 @@ public class ArticleTagServiceImpl extends ServiceImpl<ArticleTagMapper, Article
         List<Long> deleteTags = CollUtil.subtractToList(collectList, tagList);
         // 更新的标签插入
         if (!CollUtil.isEmpty(saveTags)) {
-            saveTags.forEach(tagId -> save(new ArticleTag(null, articleId, tagId)));
+            List<ArticleTag> articleTags = saveTags.stream()
+                    .map(tagId -> new ArticleTag(null, articleId, tagId)).toList();
+            saveBatch(articleTags);
         }
         // 删除的标签删除
         if (!CollUtil.isEmpty(deleteTags)) {
             // 因为我不想用LambdaQuery查询并删除article_id=? And tag_id=?
-            //  所以我就把之前查询到的queryList找到要删除的article_tag数据的id
-            List<Long> deleteTagIds = queryList.stream().filter(articleTag -> CollUtil.contains(deleteTags, articleTag.getTagId())).map(ArticleTag::getId).toList();
-            deleteTagIds.forEach(this::removeById);
+            //   所以我就根据之前查询到的queryList找到要删除的article_tag数据的id
+            List<ArticleTag> articleTags = queryList.stream()
+                    .filter(articleTag -> CollUtil.contains(deleteTags, articleTag.getTagId()))
+                    .toList();
+            removeBatchByIds(articleTags);
         }
     }
 

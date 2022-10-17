@@ -1,20 +1,18 @@
 package work.moonzs.domain.entity;
 
-import java.util.Date;
-
-import com.baomidou.mybatisplus.annotation.FieldFill;
-import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 /**
  * (User)表实体类
  *
  * @author Moondust月尘
- * @since 2022-09-27 14:48:04
+ * @since 2022-10-17 14:28:17
  */
 @Data
 @AllArgsConstructor
@@ -40,13 +38,11 @@ public class User {
     private String intro;
     //生日
     private Date birthday;
-    //账号状态(1正常,0停用)
-    private String status;
+    //账号状态(0停用,1正常)
+    private Integer status;
     //注册时间
-    @TableField(fill = FieldFill.INSERT)
     private Date createTime;
     //更新时间
-    @TableField(fill = FieldFill.UPDATE)
     private Date updateTime;
 }
 

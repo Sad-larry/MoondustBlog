@@ -10,8 +10,8 @@ import org.springframework.stereotype.Service;
 import work.moonzs.domain.entity.LoginUser;
 import work.moonzs.domain.entity.Role;
 import work.moonzs.domain.entity.User;
+import work.moonzs.mapper.RoleMapper;
 import work.moonzs.mapper.UserMapper;
-import work.moonzs.mapper.UserRoleMapper;
 
 /**
  * @author Moondust月尘
@@ -21,7 +21,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Autowired
     private UserMapper userMapper;
     @Autowired
-    private UserRoleMapper userRoleMapper;
+    private RoleMapper roleMapper;
 
     /**
      * SpringSecurity通过用户用户名查询数据库
@@ -67,6 +67,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
      * @return {@link Role}
      */
     public Role getRoleByUserId(Long userId) {
-        return userRoleMapper.selectUserRole(userId);
+        return roleMapper.selectUserRole(userId);
     }
 }

@@ -2,6 +2,7 @@ package work.moonzs.controller.admin;
 
 import cn.hutool.core.util.StrUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import work.moonzs.base.enums.AppHttpCodeEnum;
 import work.moonzs.base.enums.StatusConstants;
@@ -14,6 +15,7 @@ import work.moonzs.service.CategoryService;
 /**
  * @author Moondust月尘
  */
+@PreAuthorize("hasRole('admin')")
 @RestController(value = "AdminCategoryC")
 @RequestMapping("/admin/category")
 public class CategoryController {
@@ -54,8 +56,8 @@ public class CategoryController {
      * @return {@link ResponseResult}<{@link ?}>
      */
     @GetMapping("/list")
-    public ResponseResult<?> listCategorys(@RequestParam(defaultValue = "1", required = false) Integer pageNum, @RequestParam(defaultValue = "10", required = false) Integer pageSize, @RequestParam(defaultValue = "", required = false) String fuzzyField) {
-        return categoryService.listCategorys(pageNum, pageSize, fuzzyField);
+    public ResponseResult<?> listCategory(@RequestParam(defaultValue = "1", required = false) Integer pageNum, @RequestParam(defaultValue = "10", required = false) Integer pageSize, @RequestParam(defaultValue = "", required = false) String fuzzyField) {
+        return categoryService.listCategory(pageNum, pageSize, fuzzyField);
     }
 
     /**

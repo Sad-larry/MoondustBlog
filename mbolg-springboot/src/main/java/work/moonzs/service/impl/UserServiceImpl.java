@@ -28,6 +28,7 @@ import work.moonzs.domain.vo.MenuTreeVo;
 import work.moonzs.domain.vo.PageVo;
 import work.moonzs.domain.vo.UserInfoVo;
 import work.moonzs.domain.vo.UserListVo;
+import work.moonzs.mapper.MenuMapper;
 import work.moonzs.mapper.UserMapper;
 import work.moonzs.service.UserService;
 
@@ -44,9 +45,10 @@ import java.util.stream.Collectors;
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
     @Autowired
     private AuthenticationManager authenticationManager;
-
     @Autowired
     private UserMapper userMapper;
+    @Autowired
+    private MenuMapper menuMapper;
 
     /**
      * 管理员登录
@@ -81,7 +83,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         // TODO 通过角色id查询菜单id列表
         // 查询出所有的菜单，一一匹配存入到列表中
         // 对菜单列表进行整理
-        List<Menu> menus = userMapper.selectUserMenus(loginUser.getUser().getId());
+        List<Menu> menus = menuMapper.selectUserMenus(loginUser.getUser().getId());
         // TODO BUG 当用户没有菜单得时候会报空指针异常
         List<MenuTreeVo> menuTree = organizeMenu(menus);
         // 组装数据返回

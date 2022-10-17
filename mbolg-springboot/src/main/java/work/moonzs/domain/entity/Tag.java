@@ -1,21 +1,18 @@
 package work.moonzs.domain.entity;
 
-import java.util.Date;
-import java.util.Objects;
-
-import com.baomidou.mybatisplus.annotation.FieldFill;
-import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 /**
  * (Tag)表实体类
  *
  * @author Moondust月尘
- * @since 2022-09-27 14:48:04
+ * @since 2022-10-17 14:28:17
  */
 @Data
 @AllArgsConstructor
@@ -29,30 +26,11 @@ public class Tag {
     private String tagName;
     //标签描述
     private String description;
-    //标签状态(1正常,0停用)
-    private String status;
+    //标签状态(0停用,1正常)
+    private Integer status;
     //创建时间
-    @TableField(fill = FieldFill.INSERT)
     private Date createTime;
     //更新时间
-    @TableField(fill = FieldFill.UPDATE)
     private Date updateTime;
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        Tag tag = (Tag) o;
-        return tagName.equals(tag.tagName) && description.equals(tag.description) && status.equals(tag.status);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(tagName, description, status);
-    }
 }
 

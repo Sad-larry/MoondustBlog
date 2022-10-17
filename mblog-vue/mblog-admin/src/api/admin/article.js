@@ -1,29 +1,41 @@
 import request from '@/api/request'
 
-// 发布文章
-export function publishArticle(data) {
+// 查询【请填写功能名称】列表
+export function listArticle(query) {
     return request({
-        url: '/admin/article',
-        method: 'POST',
-        data
+        url: '/system/article/list',
+        method: 'get',
+        params: query
     })
 }
-// 查询文章列表
-export function listArticles(params) {
+
+// 查询【请填写功能名称】详细
+export function getArticle(id) {
     return request({
-        url: '/admin/article/list',
-        method: 'GET',
-        params
+        url: '/system/article/' + id,
+        method: 'get'
     })
 }
-// 更新文章
+
+// 新增【请填写功能名称】
+export function addArticle(data) {
+    return request({
+        url: '/system/article',
+        method: 'post',
+        data: data
+    })
+}
+
+
+// 修改【请填写功能名称】
 export function updateArticle(data) {
     return request({
-        url: '/admin/article',
-        method: 'PUT',
-        data
+        url: '/system/article',
+        method: 'put',
+        data: data
     })
 }
+
 // 更新文章分类
 export function updateArticleCategory(data) {
     return request({
@@ -40,11 +52,12 @@ export function updateArticleTags(data) {
         data
     })
 }
-// 删除文章
-export function deleteArticle(id) {
+
+// 删除【请填写功能名称】
+export function delArticle(id) {
     return request({
-        url: '/admin/article/' + id,
-        method: 'DELETE'
+        url: '/system/article/' + id,
+        method: 'delete'
     })
 }
-export default { publishArticle, listArticles, updateArticle, updateArticleCategory, updateArticleTags, deleteArticle }
+

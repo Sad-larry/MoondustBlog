@@ -1,653 +1,308 @@
 <template>
-    <el-card class="main-card">
-        <div class="title">{{ this.$route.name }}</div>
-        <!-- 文章状态 -->
-        <div class="article-status-menu">
-            <span>状态</span>
-            <span @click="changeStatus('all')" :class="isActive('all')"
-                >全部</span
-            >
-            <span @click="changeStatus('public')" :class="isActive('public')">
-                公开
-            </span>
-            <span @click="changeStatus('secret')" :class="isActive('secret')">
-                私密
-            </span>
-            <span @click="changeStatus('draft')" :class="isActive('draft')">
-                草稿箱
-            </span>
-            <span @click="changeStatus('delete')" :class="isActive('delete')">
-                回收站
-            </span>
-        </div>
-        <!-- 表格操作 -->
-        <div class="operation-container">
-            <el-button
-                v-if="status == 1"
-                type="danger"
-                size="small"
-                icon="el-icon-delete"
-                :disabled="articleIds.length == 0"
-                @click="updateIsDelete = true"
-            >
-                批量删除
-            </el-button>
-            <el-button
-                v-else
-                type="danger"
-                size="small"
-                icon="el-icon-delete"
-                :disabled="articleIds.length == 0"
-                @click="remove = true"
-            >
-                批量删除
-            </el-button>
-            <el-button
-                type="success"
-                size="small"
-                icon="el-icon-download"
-                :disabled="articleIds.length == 0"
-                style="margin-right: 1rem"
-                @click="isExport = true"
-            >
-                批量导出
-            </el-button>
-            <el-upload
-                action="null"
-                multiple
-                :limit="9"
-                :show-file-list="false"
-                :headers="uploadHeaders"
-                :on-success="uploadArticle"
-            >
-                <el-button type="primary" size="small" icon="el-icon-upload">
-                    批量导入
-                </el-button>
-            </el-upload>
-            <!-- 条件筛选 -->
-            <div style="margin-left: auto">
-                <!-- 分类 -->
-                <el-select
-                    clearable
-                    size="small"
-                    v-model="categoryId"
-                    filterable
-                    placeholder="请选择分类"
-                    style="margin-right: 1rem; width: 180px"
-                >
-                    <el-option label="全部" value="" />
-                    <el-option
-                        v-for="item in categories"
-                        :key="item.id"
-                        :label="item.categoryName"
-                        :value="item.id"
-                    />
-                </el-select>
-                <!-- 标签 -->
-                <el-select
-                    clearable
-                    size="small"
-                    v-model="tagId"
-                    filterable
-                    placeholder="请选择标签"
-                    style="margin-right: 1rem; width: 180px"
-                >
-                    <el-option label="全部" value="" />
-                    <el-option
-                        v-for="item in tagList"
-                        :key="item.id"
-                        :label="item.tagName"
-                        :value="item.id"
-                    />
-                </el-select>
-                <!-- 文章名 -->
-                <el-input
-                    clearable
-                    v-model="keywords"
-                    prefix-icon="el-icon-search"
-                    size="small"
-                    placeholder="请输入文章名"
-                    style="width: 200px"
-                    @keyup.enter.native="searchArticles"
-                />
-                <el-button
-                    type="primary"
-                    size="small"
-                    icon="el-icon-search"
-                    style="margin-left: 1rem"
-                    @click="searchArticles"
-                >
-                    搜索
-                </el-button>
-            </div>
-        </div>
-        <!-- 表格展示 -->
-        <el-table
-            border
-            :data="articles"
-            @selection-change="selectionChange"
-            v-loading="loading"
-        >
-            <!-- 表格列 -->
-            <el-table-column type="selection" width="55" />
-            <!-- 文章修改时间 -->
-            <el-table-column
-                prop="thumbnail"
-                label="文章封面"
-                width="180"
-                align="center"
-            >
+    <div class="app-container">
+        <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch"
+            label-width="68px">
+            <el-form-item label="作者" prop="userId">
+                <el-input v-model="queryParams.userId" placeholder="请输入作者" clearable
+                    @keyup.enter.native="handleQuery" />
+            </el-form-item>
+            <el-form-item label="文章标题" prop="title">
+                <el-input v-model="queryParams.title" placeholder="请输入文章标题" clearable
+                    @keyup.enter.native="handleQuery" />
+            </el-form-item>
+            <el-form-item label="所属分类" prop="categoryId">
+                <el-input v-model="queryParams.categoryId" placeholder="请输入所属分类" clearable
+                    @keyup.enter.native="handleQuery" />
+            </el-form-item>
+            <el-form-item label="缩略图" prop="thumbnail">
+                <el-input v-model="queryParams.thumbnail" placeholder="请输入缩略图" clearable
+                    @keyup.enter.native="handleQuery" />
+            </el-form-item>
+            <el-form-item label="是否置顶(1是,0否)" prop="isTop">
+                <el-input v-model="queryParams.isTop" placeholder="请输入是否置顶(1是,0否)" clearable
+                    @keyup.enter.native="handleQuery" />
+            </el-form-item>
+            <el-form-item label="浏览量" prop="viewCount">
+                <el-input v-model="queryParams.viewCount" placeholder="请输入浏览量" clearable
+                    @keyup.enter.native="handleQuery" />
+            </el-form-item>
+            <el-form-item label="是否允许评论(1是,0否)" prop="isComment">
+                <el-input v-model="queryParams.isComment" placeholder="请输入是否允许评论(1是,0否)" clearable
+                    @keyup.enter.native="handleQuery" />
+            </el-form-item>
+            <el-form-item label="评论数" prop="commentCount">
+                <el-input v-model="queryParams.commentCount" placeholder="请输入评论数" clearable
+                    @keyup.enter.native="handleQuery" />
+            </el-form-item>
+            <el-form-item label="点赞数" prop="starCount">
+                <el-input v-model="queryParams.starCount" placeholder="请输入点赞数" clearable
+                    @keyup.enter.native="handleQuery" />
+            </el-form-item>
+            <el-form-item>
+                <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
+                <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
+            </el-form-item>
+        </el-form>
+
+        <el-row :gutter="10" class="mb8">
+            <el-col :span="1.5">
+                <el-button type="primary" plain icon="el-icon-plus" size="mini" @click="handleAdd"
+                    v-hasPermi="['system:article:add']">新增</el-button>
+            </el-col>
+            <el-col :span="1.5">
+                <el-button type="success" plain icon="el-icon-edit" size="mini" :disabled="single" @click="handleUpdate"
+                    v-hasPermi="['system:article:edit']">修改</el-button>
+            </el-col>
+            <el-col :span="1.5">
+                <el-button type="danger" plain icon="el-icon-delete" size="mini" :disabled="multiple"
+                    @click="handleDelete" v-hasPermi="['system:article:remove']">删除</el-button>
+            </el-col>
+            <el-col :span="1.5">
+                <el-button type="warning" plain icon="el-icon-download" size="mini" @click="handleExport"
+                    v-hasPermi="['system:article:export']">导出</el-button>
+            </el-col>
+            <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
+        </el-row>
+
+        <el-table v-loading="loading" :data="articleList" @selection-change="handleSelectionChange">
+            <el-table-column type="selection" width="55" align="center" />
+            <el-table-column label="主键" align="center" prop="id" />
+            <el-table-column label="作者" align="center" prop="userId" />
+            <el-table-column label="文章标题" align="center" prop="title" />
+            <el-table-column label="文章内容" align="center" prop="content" />
+            <el-table-column label="文章摘要" align="center" prop="summary" />
+            <el-table-column label="所属分类" align="center" prop="categoryId" />
+            <el-table-column label="缩略图" align="center" prop="thumbnail" />
+            <el-table-column label="是否置顶(1是,0否)" align="center" prop="isTop" />
+            <el-table-column label="文章状态(1发布,0草稿,2待删除)" align="center" prop="status" />
+            <el-table-column label="浏览量" align="center" prop="viewCount" />
+            <el-table-column label="是否允许评论(1是,0否)" align="center" prop="isComment" />
+            <el-table-column label="评论数" align="center" prop="commentCount" />
+            <el-table-column label="点赞数" align="center" prop="starCount" />
+            <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
                 <template slot-scope="scope">
-                    <el-image
-                        class="article-cover"
-                        :src="
-                            scope.row.thumbnail
-                                ? scope.row.thumbnail
-                                : 'https://static.talkxj.com/articles/c5cc2b2561bd0e3060a500198a4ad37d.png'
-                        "
-                    />
-                    <i
-                        v-if="scope.row.status == 1"
-                        class="iconfont el-icon-mygongkai article-status-icon"
-                    />
-                    <i
-                        v-if="scope.row.status == 2"
-                        class="iconfont el-icon-mymima article-status-icon"
-                    />
-                    <i
-                        v-if="scope.row.status == 3"
-                        class="
-                            iconfont
-                            el-icon-mycaogaoxiang
-                            article-status-icon
-                        "
-                    />
-                </template>
-            </el-table-column>
-            <!-- 文章标题 -->
-            <el-table-column prop="title" label="标题" align="center" />
-            <!-- 文章分类 -->
-            <el-table-column
-                prop="categoryVo.categoryName"
-                label="分类"
-                width="110"
-                align="center"
-            />
-            <!-- 文章标签 -->
-            <el-table-column
-                prop="tagListVo"
-                label="标签"
-                width="170"
-                align="center"
-            >
-                <template slot-scope="scope">
-                    <el-tag
-                        v-for="item of scope.row.tagListVo"
-                        :key="item.id"
-                        style="margin-right: 0.2rem; margin-top: 0.2rem"
-                    >
-                        {{ item.tagName }}
-                    </el-tag>
-                </template>
-            </el-table-column>
-            <!-- 文章浏览量 -->
-            <el-table-column
-                prop="viewsCount"
-                label="浏览量"
-                width="70"
-                align="center"
-            >
-                <template slot-scope="scope">
-                    <span v-if="scope.row.viewsCount">
-                        {{ scope.row.viewsCount }}
-                    </span>
-                    <span v-else>0</span>
-                </template>
-            </el-table-column>
-            <!-- 文章发表时间 -->
-            <el-table-column
-                prop="createTime"
-                label="发表时间"
-                width="130"
-                align="center"
-            >
-                <template slot-scope="scope">
-                    <i class="el-icon-time" style="margin-right: 5px" />
-                    {{ scope.row.createTime | date }}
-                </template>
-            </el-table-column>
-            <!-- 文章置顶 -->
-            <el-table-column
-                prop="isTop"
-                label="置顶"
-                width="80"
-                align="center"
-            >
-                <template slot-scope="scope">
-                    <el-switch
-                        v-model="scope.row.isTop"
-                        active-color="#13ce66"
-                        inactive-color="#F4F4F5"
-                        :disabled="scope.row.status == 0"
-                        :active-value="1"
-                        :inactive-value="0"
-                        @change="changeTopAndFeatured(scope.row)"
-                    />
-                </template>
-            </el-table-column>
-            <!-- 列操作 -->
-            <el-table-column label="操作" align="center" width="150">
-                <template slot-scope="scope">
-                    <el-button
-                        type="primary"
-                        size="mini"
-                        @click="editArticle(scope.row.id)"
-                        v-if="scope.row.status == 1"
-                    >
-                        编辑
-                    </el-button>
-                    <el-popconfirm
-                        title="确定删除吗？"
-                        style="margin-left: 10px"
-                        @confirm="updateArticleDelete(scope.row.id)"
-                        v-if="scope.row.status == 1"
-                    >
-                        <el-button size="mini" type="danger" slot="reference">
-                            删除
-                        </el-button>
-                    </el-popconfirm>
-                    <el-popconfirm
-                        title="确定恢复吗？"
-                        v-if="scope.row.status == 1"
-                        @confirm="updateArticleDelete(scope.row.id)"
-                    >
-                        <el-button size="mini" type="success" slot="reference">
-                            恢复
-                        </el-button>
-                    </el-popconfirm>
-                    <el-popconfirm
-                        style="margin-left: 10px"
-                        v-if="scope.row.status == 1"
-                        title="确定彻底删除吗？"
-                        @confirm="deleteArticles(scope.row.id)"
-                    >
-                        <el-button size="mini" type="danger" slot="reference">
-                            删除
-                        </el-button>
-                    </el-popconfirm>
+                    <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)"
+                        v-hasPermi="['system:article:edit']">修改</el-button>
+                    <el-button size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)"
+                        v-hasPermi="['system:article:remove']">删除</el-button>
                 </template>
             </el-table-column>
         </el-table>
-        <!-- 分页 -->
-        <el-pagination
-            class="pagination-container"
-            background
-            @size-change="sizeChange"
-            @current-change="currentChange"
-            :current-page="current"
-            :page-size="size"
-            :total="count"
-            :page-sizes="[10, 20]"
-            layout="total, sizes, prev, pager, next, jumper"
-        />
-        <!-- 批量逻辑删除对话框 -->
-        <el-dialog :visible.sync="updateIsDelete" width="30%">
-            <div class="dialog-title-container" slot="title">
-                <i class="el-icon-warning" style="color: #ff9900" />提示
-            </div>
-            <div style="font-size: 1rem">是否删除选中项？</div>
-            <div slot="footer">
-                <el-button @click="updateIsDelete = false">取 消</el-button>
-                <el-button type="primary" @click="updateArticleDelete(null)">
-                    确 定
-                </el-button>
-            </div>
-        </el-dialog>
-        <!-- 批量彻底删除对话框 -->
-        <el-dialog :visible.sync="remove" width="30%">
-            <div class="dialog-title-container" slot="title">
-                <i class="el-icon-warning" style="color: #ff9900" />提示
-            </div>
-            <div style="font-size: 1rem">是否彻底删除选中项？</div>
-            <div slot="footer">
-                <el-button @click="remove = false">取 消</el-button>
-                <el-button type="primary" @click="deleteArticles(null)">
-                    确 定
-                </el-button>
-            </div>
-        </el-dialog>
-        <!-- 批量导出对话框 -->
-        <el-dialog :visible.sync="isExport" width="30%">
-            <div class="dialog-title-container" slot="title">
-                <i class="el-icon-warning" style="color: #ff9900" />提示
-            </div>
-            <div style="font-size: 1rem">是否导出选中文章？</div>
-            <div slot="footer">
-                <el-button @click="isExport = false">取 消</el-button>
-                <el-button type="primary" @click="exportArticles(null)">
-                    确 定
-                </el-button>
-            </div>
-        </el-dialog>
-    </el-card>
-</template>
 
+        <pagination v-show="total>0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize"
+            @pagination="getList" />
+
+        <!-- 添加或修改【请填写功能名称】对话框 -->
+        <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
+            <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+                <el-form-item label="作者" prop="userId">
+                    <el-input v-model="form.userId" placeholder="请输入作者" />
+                </el-form-item>
+                <el-form-item label="文章标题" prop="title">
+                    <el-input v-model="form.title" placeholder="请输入文章标题" />
+                </el-form-item>
+                <el-form-item label="文章内容">
+                    <editor v-model="form.content" :min-height="192" />
+                </el-form-item>
+                <el-form-item label="文章摘要" prop="summary">
+                    <el-input v-model="form.summary" type="textarea" placeholder="请输入内容" />
+                </el-form-item>
+                <el-form-item label="所属分类" prop="categoryId">
+                    <el-input v-model="form.categoryId" placeholder="请输入所属分类" />
+                </el-form-item>
+                <el-form-item label="缩略图" prop="thumbnail">
+                    <el-input v-model="form.thumbnail" placeholder="请输入缩略图" />
+                </el-form-item>
+                <el-form-item label="是否置顶(1是,0否)" prop="isTop">
+                    <el-input v-model="form.isTop" placeholder="请输入是否置顶(1是,0否)" />
+                </el-form-item>
+                <el-form-item label="浏览量" prop="viewCount">
+                    <el-input v-model="form.viewCount" placeholder="请输入浏览量" />
+                </el-form-item>
+                <el-form-item label="是否允许评论(1是,0否)" prop="isComment">
+                    <el-input v-model="form.isComment" placeholder="请输入是否允许评论(1是,0否)" />
+                </el-form-item>
+                <el-form-item label="评论数" prop="commentCount">
+                    <el-input v-model="form.commentCount" placeholder="请输入评论数" />
+                </el-form-item>
+                <el-form-item label="点赞数" prop="starCount">
+                    <el-input v-model="form.starCount" placeholder="请输入点赞数" />
+                </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button type="primary" @click="submitForm">确 定</el-button>
+                <el-button @click="cancel">取 消</el-button>
+            </div>
+        </el-dialog>
+    </div>
+</template>
+  
 <script>
-import CURDArticle from "@/api/admin/article";
-import { listCategory } from "@/api/admin/category";
-import { listTag } from "@/api/admin/tag";
+import { listArticle, getArticle, delArticle, addArticle, updateArticle } from "@/api/system/article";
 
 export default {
-    created() {
-        this.listArticles();
-        this.listCategories();
-        this.listTags();
-    },
-    data: function () {
+    name: "Article",
+    data() {
         return {
-            uploadHeaders: { token: sessionStorage.getItem("token") },
+            // 遮罩层
             loading: true,
-            updateIsDelete: false,
-            remove: false,
-            activeStatus: "all",
-            articles: [],
-            articleIds: [],
-            categories: [],
-            tagList: [],
-            keywords: null,
-            type: null,
-            categoryId: null,
-            tagId: null,
-            isDelete: 0,
-            isExport: false,
-            status: null,
-            current: 1,
-            size: 10,
-            count: 0,
+            // 选中数组
+            ids: [],
+            // 非单个禁用
+            single: true,
+            // 非多个禁用
+            multiple: true,
+            // 显示搜索条件
+            showSearch: true,
+            // 总条数
+            total: 0,
+            // 【请填写功能名称】表格数据
+            articleList: [],
+            // 弹出层标题
+            title: "",
+            // 是否显示弹出层
+            open: false,
+            // 查询参数
+            queryParams: {
+                pageNum: 1,
+                pageSize: 10,
+                userId: null,
+                title: null,
+                content: null,
+                summary: null,
+                categoryId: null,
+                thumbnail: null,
+                isTop: null,
+                status: null,
+                viewCount: null,
+                isComment: null,
+                commentCount: null,
+                starCount: null,
+            },
+            // 表单参数
+            form: {},
+            // 表单校验
+            rules: {
+                userId: [
+                    { required: true, message: "作者不能为空", trigger: "blur" }
+                ],
+                categoryId: [
+                    { required: true, message: "所属分类不能为空", trigger: "blur" }
+                ],
+                createTime: [
+                    { required: true, message: "创建时间不能为空", trigger: "blur" }
+                ],
+            }
         };
     },
+    created() {
+        this.getList();
+    },
     methods: {
-        selectionChange(articles) {
-            this.articleIds = [];
-            articles.forEach((item) => {
-                this.articleIds.push(item.id);
+        /** 查询【请填写功能名称】列表 */
+        getList() {
+            this.loading = true;
+            listArticle(this.queryParams).then(response => {
+                this.articleList = response.rows;
+                this.total = response.total;
+                this.loading = false;
             });
         },
-        searchArticles() {
-            this.current = 1;
-            this.listArticles();
+        // 取消按钮
+        cancel() {
+            this.open = false;
+            this.reset();
         },
-        // 编辑文章
-        editArticle(id) {
-            console.log("editArticle", this.articles[id]);
-            this.$router.push({
-                name: "发表文章",
-                params: { articleId: id, article: this.articles[id] },
-            });
-        },
-        updateArticleDelete(id) {
-            let param = {};
-            if (id != null) {
-                param.ids = [id];
-            } else {
-                param.ids = this.articleIds;
-            }
-            param.isDelete = this.isDelete == 0 ? 1 : 0;
-            console.log("updateArticleDelete");
-            // this.axios.put("/api/admin/articles", param).then(({ data }) => {
-            //     if (data.flag) {
-            //         this.$notify.success({
-            //             title: "成功",
-            //             message: data.message,
-            //         });
-            //         this.listArticles();
-            //     } else {
-            //         this.$notify.error({
-            //             title: "失败",
-            //             message: data.message,
-            //         });
-            //     }
-            //     this.updateIsDelete = false;
-            // });
-        },
-        deleteArticles(id) {
-            let param = {};
-            if (id == null) {
-                param = { data: this.articleIds };
-            } else {
-                param = { data: [id] };
-            }
-            console.log("deleteArticles");
-            // this.axios
-            //     .delete("/api/admin/articles/delete", param)
-            //     .then(({ data }) => {
-            //         if (data.flag) {
-            //             this.$notify.success({
-            //                 title: "成功",
-            //                 message: data.message,
-            //             });
-            //             this.listArticles();
-            //         } else {
-            //             this.$notify.error({
-            //                 title: "失败",
-            //                 message: data.message,
-            //             });
-            //         }
-            //         this.remove = false;
-            //     });
-        },
-        exportArticles(id) {
-            var param = {};
-            if (id == null) {
-                param = this.articleIds;
-            } else {
-                param = [id];
-            }
-            console.log("exportArticles");
-            // this.axios
-            //     .post("/api/admin/articles/export", param)
-            //     .then(({ data }) => {
-            //         if (data.flag) {
-            //             this.$notify.success({
-            //                 title: "成功",
-            //                 message: data.message,
-            //             });
-            //             data.data.forEach((item) => {
-            //                 this.downloadFile(item);
-            //             });
-            //             this.listArticles();
-            //         } else {
-            //             this.$notify.error({
-            //                 title: "失败",
-            //                 message: data.message,
-            //             });
-            //         }
-            //         this.isExport = false;
-            //     });
-        },
-        downloadFile(url) {
-            const iframe = document.createElement("iframe");
-            iframe.style.display = "none"; // 防止影响页面
-            iframe.style.height = 0; // 防止影响页面
-            iframe.src = url;
-            document.body.appendChild(iframe);
-            setTimeout(() => {
-                iframe.remove();
-            }, 5 * 60 * 1000);
-        },
-        uploadArticle(data) {
-            if (data.flag) {
-                this.$notify.success({
-                    title: "成功",
-                    message: "导入成功",
-                });
-                this.listArticles();
-            } else {
-                this.$notify.error({
-                    title: "失败",
-                    message: data.message,
-                });
-            }
-        },
-        sizeChange(size) {
-            this.size = size;
-            this.listArticles();
-        },
-        currentChange(current) {
-            this.current = current;
-            this.listArticles();
-        },
-        changeStatus(status) {
-            switch (status) {
-                case "all":
-                    this.isDelete = 0;
-                    this.status = null;
-                    break;
-                case "public":
-                    this.isDelete = 0;
-                    this.status = 1;
-                    break;
-                case "secret":
-                    this.isDelete = 0;
-                    this.status = 2;
-                    break;
-                case "draft":
-                    this.isDelete = 0;
-                    this.status = 3;
-                    break;
-                case "delete":
-                    this.isDelete = 1;
-                    this.status = null;
-                    break;
-            }
-            this.current = 1;
-            this.activeStatus = status;
-        },
-        changeTopAndFeatured(article) {
-            console.log("changeTopAndFeatured");
-            // this.axios
-            //     .put("/api/admin/articles/topAndFeatured", {
-            //         id: article.id,
-            //         isTop: article.isTop,
-            //         isFeatured: article.isFeatured,
-            //     })
-            //     .then(({ data }) => {
-            //         if (data.flag) {
-            //             this.$notify.success({
-            //                 title: "成功",
-            //                 message: "修改成功",
-            //             });
-            //         } else {
-            //             this.$notify.error({
-            //                 title: "失败",
-            //                 message: data.message,
-            //             });
-            //         }
-            //         this.remove = false;
-            //     });
-        },
-        listArticles() {
-            CURDArticle.listArticles({
-                        current: this.current,
-                        size: this.size,
-                        fuzzyField: this.keywords,
-                        categoryId: this.categoryId,
-                        status: this.status,
-                        tagId: this.tagId,
-                        type: this.type,
-                        isDelete: this.isDelete,
-                    })
-                .then(({ data }) => {
-                    this.articles = data.data.records;
-                    this.count = data.data.count;
-                    this.loading = false;
-                });
-        },
-        listCategories() {
-            listCategory().then(({ data }) => {
-                console.log("listCategories", data);
-                this.categories = data.data.records;
-            });
-        },
-        listTags() {
-            listTag().then(({ data }) => {
-                console.log("listTags", data);
-                this.tagList = data.data.records;
-            });
-        },
-    },
-    watch: {
-        type() {
-            this.current = 1;
-            this.listArticles();
-        },
-        categoryId() {
-            this.current = 1;
-            this.listArticles();
-        },
-        tagId() {
-            this.current = 1;
-            this.listArticles();
-        },
-        status() {
-            this.current = 1;
-            this.listArticles();
-        },
-        isDelete() {
-            this.current = 1;
-            this.listArticles();
-        },
-    },
-    computed: {
-        isActive() {
-            return function (status) {
-                return this.activeStatus == status ? "active-status" : "status";
+        // 表单重置
+        reset() {
+            this.form = {
+                id: null,
+                userId: null,
+                title: null,
+                content: null,
+                summary: null,
+                categoryId: null,
+                thumbnail: null,
+                isTop: null,
+                status: "0",
+                viewCount: null,
+                isComment: null,
+                commentCount: null,
+                starCount: null,
+                createTime: null,
+                updateTime: null
             };
+            this.resetForm("form");
         },
-    },
+        /** 搜索按钮操作 */
+        handleQuery() {
+            this.queryParams.pageNum = 1;
+            this.getList();
+        },
+        /** 重置按钮操作 */
+        resetQuery() {
+            this.resetForm("queryForm");
+            this.handleQuery();
+        },
+        // 多选框选中数据
+        handleSelectionChange(selection) {
+            this.ids = selection.map(item => item.id)
+            this.single = selection.length !== 1
+            this.multiple = !selection.length
+        },
+        /** 新增按钮操作 */
+        handleAdd() {
+            this.reset();
+            this.open = true;
+            this.title = "添加【请填写功能名称】";
+        },
+        /** 修改按钮操作 */
+        handleUpdate(row) {
+            this.reset();
+            const id = row.id || this.ids
+            getArticle(id).then(response => {
+                this.form = response.data;
+                this.open = true;
+                this.title = "修改【请填写功能名称】";
+            });
+        },
+        /** 提交按钮 */
+        submitForm() {
+            this.$refs["form"].validate(valid => {
+                if (valid) {
+                    if (this.form.id != null) {
+                        updateArticle(this.form).then(response => {
+                            this.$modal.msgSuccess("修改成功");
+                            this.open = false;
+                            this.getList();
+                        });
+                    } else {
+                        addArticle(this.form).then(response => {
+                            this.$modal.msgSuccess("新增成功");
+                            this.open = false;
+                            this.getList();
+                        });
+                    }
+                }
+            });
+        },
+        /** 删除按钮操作 */
+        handleDelete(row) {
+            const ids = row.id || this.ids;
+            this.$modal.confirm('是否确认删除【请填写功能名称】编号为"' + ids + '"的数据项？').then(function () {
+                return delArticle(ids);
+            }).then(() => {
+                this.getList();
+                this.$modal.msgSuccess("删除成功");
+            }).catch(() => { });
+        },
+        /** 导出按钮操作 */
+        handleExport() {
+            this.download('system/article/export', {
+                ...this.queryParams
+            }, `article_${new Date().getTime()}.xlsx`)
+        }
+    }
 };
 </script>
-
-<style scoped>
-.operation-container {
-    margin-top: 1.5rem;
-}
-.article-status-menu {
-    font-size: 14px;
-    margin-top: 40px;
-    color: #999;
-}
-.article-status-menu span {
-    margin-right: 24px;
-}
-.status {
-    cursor: pointer;
-}
-.active-status {
-    cursor: pointer;
-    color: #333;
-    font-weight: bold;
-}
-.article-cover {
-    position: relative;
-    width: 100%;
-    height: 90px;
-    border-radius: 4px;
-}
-.article-cover::after {
-    content: "";
-    background: rgba(0, 0, 0, 0.3);
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-}
-.article-status-icon {
-    color: #fff;
-    font-size: 1.5rem;
-    position: absolute;
-    right: 1rem;
-    bottom: 1.4rem;
-}
-</style>
+  

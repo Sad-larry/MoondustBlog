@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 /**
  * @author Moondust月尘
  */
@@ -16,8 +18,19 @@ public class CategoryVo {
      */
     private Long id;
     /**
-     * 分类名称
+     * 分类名
      */
     private String categoryName;
+    /**
+     * 分类描述
+     */
+    private String description;
+    /**
+     * 分类状态(0停用,1正常)
+     */
+    private String status;
+    /**
+     * 创建时间
+     */
+    private Date createTime;
 }
-

@@ -1,7 +1,6 @@
 package work.moonzs.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import work.moonzs.domain.entity.Role;
 import work.moonzs.domain.entity.UserRole;
 
 /**
@@ -11,12 +10,6 @@ import work.moonzs.domain.entity.UserRole;
  * @since 2022-09-27 14:48:04
  */
 public interface UserRoleMapper extends BaseMapper<UserRole> {
-    /**
-     * 通过用户id查询该用户的角色信息，
-     *
-     * @param userId 用户id
-     * @return {@link Role}
-     */
-    Role selectUserRole(Long userId);
+
 }
 

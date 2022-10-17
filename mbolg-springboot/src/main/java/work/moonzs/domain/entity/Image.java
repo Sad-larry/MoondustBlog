@@ -1,18 +1,18 @@
 package work.moonzs.domain.entity;
 
-import java.util.Date;
-
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 /**
  * (Image)表实体类
  *
  * @author Moondust月尘
- * @since 2022-10-05 11:10:28
+ * @since 2022-10-17 14:28:14
  */
 @Data
 @AllArgsConstructor
@@ -28,8 +28,8 @@ public class Image {
     private String imageDesc;
     //图片地址
     private String imageSrc;
-    //图片状态(1正常,0停用)
-    private String status;
+    //图片状态(0停用,1正常)
+    private Integer status;
     //创建时间
     private Date createTime;
     //更新时间
