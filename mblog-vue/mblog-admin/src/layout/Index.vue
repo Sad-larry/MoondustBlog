@@ -1,72 +1,111 @@
 <template>
-    <el-container>
-        <!-- 侧边栏 -->
-        <el-aside width="auto">
-            <SideBar />
-        </el-aside>
-        <el-container :class="'main-container ' + isHide">
-            <!-- 导航栏 -->
-            <el-header height="84px" style="padding: 0">
-                <NavBar :key="$route.fullPath" />
-            </el-header>
-            <!-- 内容 -->
-            <el-main style="background: #f7f9fb">
-                <div class="fade-transform-box">
-                    <transition name="fade-transform" mode="out-in">
-                        <router-view :key="key" />
-                    </transition>
-                </div>
-            </el-main>
-        </el-container>
-    </el-container>
+  <div :class="classObj" class="app-wrapper" :style="{'--current-color': theme}">
+    <div v-if="device==='mobile'&&sidebar.opened" class="drawer-bg" @click="handleClickOutside"/>
+    <sidebar v-if="!sidebar.hide" class="sidebar-container" />
+    <div :class="{hasTagsView:needTagsView,sidebarHide:sidebar.hide}" class="main-container">
+      <div :class="{'fixed-header':fixedHeader}">
+        <navbar />
+        <tags-view v-if="needTagsView" />
+      </div>
+      <app-main />
+      <right-panel>
+        <settings />
+      </right-panel>
+    </div>
+  </div>
 </template>
-  
-  <script>
-import NavBar from "./components/NavBar";
-import SideBar from "./components/SideBar";
+
+<script>
+import RightPanel from '@/components/RightPanel'
+import { AppMain, Navbar, Settings, Sidebar, TagsView } from './components'
+import ResizeMixin from './mixin/ResizeHandler'
+import { mapState } from 'vuex'
+import variables from '@/assets/styles/variables.scss'
+
 export default {
-    components: {
-        NavBar,
-        SideBar,
+  name: 'Layout',
+  components: {
+    AppMain,
+    Navbar,
+    RightPanel,
+    Settings,
+    Sidebar,
+    TagsView
+  },
+  mixins: [ResizeMixin],
+  computed: {
+    ...mapState({
+      theme: state => state.settings.theme,
+      sideTheme: state => state.settings.sideTheme,
+      sidebar: state => state.app.sidebar,
+      device: state => state.app.device,
+      needTagsView: state => state.settings.tagsView,
+      fixedHeader: state => state.settings.fixedHeader
+    }),
+    classObj() {
+      return {
+        hideSidebar: !this.sidebar.opened,
+        openSidebar: this.sidebar.opened,
+        withoutAnimation: this.sidebar.withoutAnimation,
+        mobile: this.device === 'mobile'
+      }
     },
-    computed: {
-        isHide() {
-            return this.$store.state.collapse ? "hideSideBar" : "";
-        },
-        key() {
-            return this.$route.fullPath;
-        },
-    },
-};
+    variables() {
+      return variables;
+    }
+  },
+  methods: {
+    handleClickOutside() {
+      this.$store.dispatch('app/closeSideBar', { withoutAnimation: false })
+    }
+  }
+}
 </script>
-  
-  <style scoped>
-.main-container {
-    transition: margin-left 0.45s;
-    margin-left: 210px;
-    min-height: 100vh;
-}
-.hideSideBar {
-    margin-left: 64px;
-}
-.fade-transform-enter-active,
-.fade-transform-leave-active {
-    transition: all 0.5s ease 0s;
-}
-.fade-transform-enter {
-    opacity: 0;
-    transform: translateX(-30px);
-}
-.fade-transform-leave-to {
-    opacity: 0;
-    transform: translateX(30px);
-}
-.fade-transform-box {
+
+<style lang="scss" scoped>
+  @import "~@/assets/styles/mixin.scss";
+  @import "~@/assets/styles/variables.scss";
+
+  .app-wrapper {
+    @include clearfix;
     position: relative;
-    top: 0px;
-    bottom: 0px;
+    height: 100%;
     width: 100%;
-    overflow: hidden;
-}
+
+    &.mobile.openSidebar {
+      position: fixed;
+      top: 0;
+    }
+  }
+
+  .drawer-bg {
+    background: #000;
+    opacity: 0.3;
+    width: 100%;
+    top: 0;
+    height: 100%;
+    position: absolute;
+    z-index: 999;
+  }
+
+  .fixed-header {
+    position: fixed;
+    top: 0;
+    right: 0;
+    z-index: 9;
+    width: calc(100% - #{$base-sidebar-width});
+    transition: width 0.28s;
+  }
+
+  .hideSidebar .fixed-header {
+    width: calc(100% - 54px);
+  }
+
+  .sidebarHide .fixed-header {
+    width: 100%;
+  }
+
+  .mobile .fixed-header {
+    width: 100%;
+  }
 </style>
-  

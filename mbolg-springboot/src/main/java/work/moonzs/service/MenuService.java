@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import work.moonzs.domain.ResponseResult;
 import work.moonzs.domain.entity.Menu;
 
+import java.util.List;
+
 /**
  * (Menu)表服务接口
  *
@@ -37,5 +39,13 @@ public interface MenuService extends IService<Menu> {
      * @return boolean
      */
     boolean isExistMenuByCxNamePath(String name, String path);
+
+    /**
+     * 通过用户id查询菜单树
+     *
+     * @param userId 用户id
+     * @return {@link List}<{@link Menu}>
+     */
+    List<Menu> selectMenuTreeByUserId(Long userId);
 }
 

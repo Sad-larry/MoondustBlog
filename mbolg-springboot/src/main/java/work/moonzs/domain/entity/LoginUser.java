@@ -22,11 +22,15 @@ import java.util.Set;
 @NoArgsConstructor
 public class LoginUser implements UserDetails {
     /**
+     * 用户Id
+     */
+    private Long userId;
+    /**
      * 用户信息
      */
     private User user;
     /**
-     * 用户角色
+     * TODO 不用->用户角色，应该用权限
      */
     private Role role;
 

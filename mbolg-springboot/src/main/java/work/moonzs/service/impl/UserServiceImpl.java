@@ -28,7 +28,6 @@ import work.moonzs.domain.vo.MenuTreeVo;
 import work.moonzs.domain.vo.PageVo;
 import work.moonzs.domain.vo.UserInfoVo;
 import work.moonzs.domain.vo.UserListVo;
-import work.moonzs.mapper.MenuMapper;
 import work.moonzs.mapper.UserMapper;
 import work.moonzs.service.UserService;
 
@@ -47,8 +46,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     private AuthenticationManager authenticationManager;
     @Autowired
     private UserMapper userMapper;
-    @Autowired
-    private MenuMapper menuMapper;
 
     /**
      * 管理员登录
@@ -66,6 +63,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         }
         // 获取登录用户
         LoginUser loginUser = (LoginUser) authenticate.getPrincipal();
+        loginUser.setUserId(1L);
         // TODO 判断是否是管理员
         if (!"ROLE_admin".equals(loginUser.getRole().getRoleName())) {
             return ResponseResult.fail(AppHttpCodeEnum.ILLEGAL_LOGIN);
@@ -83,9 +81,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         // TODO 通过角色id查询菜单id列表
         // 查询出所有的菜单，一一匹配存入到列表中
         // 对菜单列表进行整理
-        List<Menu> menus = menuMapper.selectUserMenus(loginUser.getUser().getId());
+        // List<Menu> menus = menuMapper.selectUserMenus(loginUser.getUser().getId());
+        List<Menu> menus = null;
         // TODO BUG 当用户没有菜单得时候会报空指针异常
-        List<MenuTreeVo> menuTree = organizeMenu(menus);
+        // List<MenuTreeVo> menuTree = organizeMenu(menus);
+        List<MenuTreeVo> menuTree = null;
         // 组装数据返回
         Map<String, Object> map = new HashMap<>();
         map.put("token", token);
@@ -174,7 +174,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             tree.setId(treeNode.getId());
             tree.setParentId(treeNode.getPid());
             // tree.setWeight(treeNode.getWeight());
-            tree.setName(treeNode.getName());
+            tree.setName(treeNode.getMenuName());
             // 扩展属性 ...
             tree.putExtra("path", treeNode.getPath());
             tree.putExtra("component", treeNode.getComponent());

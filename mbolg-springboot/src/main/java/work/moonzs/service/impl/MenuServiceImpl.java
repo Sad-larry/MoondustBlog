@@ -4,14 +4,15 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
+import work.moonzs.base.enums.StatusConstants;
+import work.moonzs.base.utils.BeanCopyUtils;
+import work.moonzs.base.utils.SecurityUtils;
 import work.moonzs.domain.ResponseResult;
 import work.moonzs.domain.entity.Menu;
 import work.moonzs.domain.vo.MenuListVo;
 import work.moonzs.domain.vo.PageVo;
-import work.moonzs.base.enums.StatusConstants;
 import work.moonzs.mapper.MenuMapper;
 import work.moonzs.service.MenuService;
-import work.moonzs.base.utils.BeanCopyUtils;
 
 import java.util.List;
 
@@ -25,7 +26,7 @@ import java.util.List;
 public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements MenuService {
 
     /**
-     * 菜单列表
+     * 菜单列表，我用了别的方式实现
      *
      * @param pageNum  页面num
      * @param pageSize 页面大小
@@ -43,12 +44,6 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
         return ResponseResult.success(pageVo);
     }
 
-    /**
-     * 存在菜单通过id吗
-     *
-     * @param menuId 菜单id
-     * @return boolean
-     */
     @Override
     public boolean isExistMenuById(Long menuId) {
         LambdaQueryWrapper<Menu> queryWrapper = new LambdaQueryWrapper<>();
@@ -58,21 +53,41 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
         return count > 0;
     }
 
-    /**
-     * 通过菜单名字和路径判断是否存在
-     *
-     * @param name 菜单名称
-     * @param path 路径
-     * @return boolean
-     */
     @Override
     public boolean isExistMenuByCxNamePath(String name, String path) {
         LambdaQueryWrapper<Menu> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(Menu::getName, name);
+        queryWrapper.eq(Menu::getMenuName, name);
         queryWrapper.eq(Menu::getPath, path);
         // 不同判断状态
         long count = count(queryWrapper);
         return count > 0;
+    }
+
+    @Override
+    public List<Menu> selectMenuTreeByUserId(Long userId) {
+        List<Menu> menus = null;
+        if (SecurityUtils.isAdmin(userId)) {
+            menus = selectMenuTreeAll();
+        } else {
+            menus = getBaseMapper().selectMenuTreeByUserId(userId);
+        }
+        // return getChildPerms(menus, 0);
+        return menus;
+    }
+
+    /**
+     * 查询所有菜单树，一般是管理员调用的
+     *
+     * @return {@link List}<{@link Menu}>
+     */
+    private List<Menu> selectMenuTreeAll() {
+        LambdaQueryWrapper<Menu> queryWrapper = new LambdaQueryWrapper<>();
+        // 只选择目录和菜单部分
+        queryWrapper.in(Menu::getMenuType, "M", "C");
+        queryWrapper.eq(Menu::getStatus, StatusConstants.NORMAL);
+        queryWrapper.orderByAsc(Menu::getPid);
+        queryWrapper.orderByAsc(Menu::getOrderNum);
+        return list(queryWrapper);
     }
 }
 

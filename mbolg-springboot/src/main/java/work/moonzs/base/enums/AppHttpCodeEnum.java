@@ -48,7 +48,14 @@ public enum AppHttpCodeEnum {
 
 
     // 警告：文章未添加标签
-    WARNING_TAG_EMPTY(54001, "警告：文章未添加标签");
+    WARNING_TAG_EMPTY(54001, "警告：文章未添加标签"),
+
+    // 异常：获取用户异常
+    UNAUTHORIZED_USER(54001, "获取用户异常"),
+    // 异常：获取用户ID异常
+    UNAUTHORIZED_ID(54002, "获取用户ID异常"),
+    // 异常：获取用户Account异常
+    UNAUTHORIZED_ACCOUNT(54003, "获取用户账号异常");
 
     final Integer code;
     final String msg;
