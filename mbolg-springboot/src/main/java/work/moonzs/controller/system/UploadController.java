@@ -17,7 +17,7 @@ import java.io.InputStream;
 /**
  * @author Moondust月尘
  */
-@RestController(value = "SystemUploadC")
+@RestController("SystemUploadC")
 @RequestMapping("/system")
 public class UploadController {
     @Autowired

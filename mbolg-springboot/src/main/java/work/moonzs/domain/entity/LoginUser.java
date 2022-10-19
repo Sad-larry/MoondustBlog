@@ -10,6 +10,7 @@ import work.moonzs.base.enums.StatusConstants;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -32,12 +33,18 @@ public class LoginUser implements UserDetails {
     /**
      * TODO 不用->用户角色，应该用权限
      */
-    private Role role;
+    private List<String> roles;
+    /**
+     * 权限
+     */
+    private List<String> permissions;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Set<GrantedAuthority> authorities = new HashSet<>();
-        authorities.add(new SimpleGrantedAuthority(role.getRoleName()));
+        for (String role : roles) {
+            authorities.add(new SimpleGrantedAuthority(role));
+        }
         return authorities;
     }
 

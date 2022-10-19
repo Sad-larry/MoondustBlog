@@ -13,7 +13,7 @@ import work.moonzs.service.MenuService;
 /**
  * @author Moondust月尘
  */
-@RestController(value = "SystemMenuC")
+@RestController("SystemMenuC")
 @RequestMapping("/system/menu")
 public class MenuController {
     @Autowired

@@ -16,7 +16,7 @@ import java.util.List;
 /**
  * @author Moondust月尘
  */
-@RestController(value = "SystemTagC")
+@RestController("SystemTagC")
 @RequestMapping("/system/tag")
 public class TagController {
     @Autowired

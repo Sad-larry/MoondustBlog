@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import work.moonzs.base.enums.AppHttpCodeEnum;
 import work.moonzs.base.enums.UserRoleInfo;
-import work.moonzs.base.utils.JwtUtil;
 import work.moonzs.base.utils.WebUtils;
 import work.moonzs.domain.ResponseResult;
 import work.moonzs.domain.entity.LoginUser;
@@ -41,14 +40,16 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
         // 从token中解析用户id
         Claims claims = null;
         try {
-            claims = JwtUtil.parseJWT(token);
+            // TODO 为了能不用复制token而注解掉。但是还是得登录一下
+            // claims = JwtUtil.parseJWT(token);
+            claims = null;
         } catch (Exception e) {
             // token超时  token非法
             // 响应告诉前端需要重新登录
             WebUtils.renderString(response, JSONUtil.toJsonStr(ResponseResult.fail(AppHttpCodeEnum.TOKEN_ABNORMAL)));
             return;
         }
-        String userId = claims.getSubject();
+        // TODO String userId = claims.getSubject();
         // TODO 从redis中读取用户数据
         LoginUser user = UserRoleInfo.user;
         if (ObjectUtil.isNull(user)) {

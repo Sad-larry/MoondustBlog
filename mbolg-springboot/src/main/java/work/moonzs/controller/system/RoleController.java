@@ -16,7 +16,7 @@ import work.moonzs.service.RoleService;
 /**
  * @author Moondust月尘
  */
-@RestController(value = "SystemRoleC")
+@RestController("SystemRoleC")
 @RequestMapping("/system/role")
 public class RoleController {
     @Autowired

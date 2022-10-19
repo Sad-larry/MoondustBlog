@@ -46,9 +46,9 @@ export default {
         showLogo() {
             return this.$store.state.settings.sidebarLogo;
         },
-        variables() {
-            return variables;
-        },
+        // variables() {
+        //     return variables;
+        // },
         isCollapse() {
             return !this.sidebar.opened;
         }

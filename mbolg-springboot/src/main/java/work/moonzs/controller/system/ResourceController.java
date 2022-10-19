@@ -6,7 +6,7 @@ import work.moonzs.domain.ResponseResult;
 /**
  * @author Moondust月尘
  */
-@RestController(value = "SystemResourceC")
+@RestController("SystemResourceC")
 @RequestMapping("/system/resource")
 public class ResourceController {
 

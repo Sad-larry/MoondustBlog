@@ -3,6 +3,7 @@ package work.moonzs.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import work.moonzs.domain.ResponseResult;
 import work.moonzs.domain.entity.Menu;
+import work.moonzs.domain.vo.router.RouterVo;
 
 import java.util.List;
 
@@ -47,5 +48,13 @@ public interface MenuService extends IService<Menu> {
      * @return {@link List}<{@link Menu}>
      */
     List<Menu> selectMenuTreeByUserId(Long userId);
+
+    /**
+     * 根据菜单建立路由菜单
+     *
+     * @param menus 菜单
+     * @return {@link Object}
+     */
+    List<RouterVo> buildMenus(List<Menu> menus);
 }
 

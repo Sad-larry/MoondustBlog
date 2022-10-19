@@ -15,6 +15,7 @@ import java.util.Map;
  */
 public class UserRoleInfo {
     public static LoginUser user = null;
+    public static String code = "";
 
     private static final Map<Long, String> roleInfo = new HashMap<>();
     private static final List<Long> roles = new ArrayList<>();

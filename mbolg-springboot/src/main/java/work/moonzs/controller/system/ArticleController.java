@@ -24,8 +24,8 @@ import java.util.List;
  * @author Moondust月尘
  */
 @PreAuthorize("hasRole('admin')")
-@RestController(value = "SystemArtileC")
-@RequestMapping(value = "/system/article")
+@RestController("SystemArtileC")
+@RequestMapping("/system/article")
 public class ArticleController {
     // 建议用构造器注入而不是使用`@Autowired`注解
     private final ArticleService articleService;

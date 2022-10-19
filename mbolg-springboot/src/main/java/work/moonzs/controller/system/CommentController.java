@@ -12,7 +12,7 @@ import work.moonzs.service.CommentService;
 /**
  * @author Moondust月尘
  */
-@RestController(value = "SystemCommentC")
+@RestController("SystemCommentC")
 @RequestMapping("/system/comment")
 public class CommentController {
     @Autowired

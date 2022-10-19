@@ -65,9 +65,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         LoginUser loginUser = (LoginUser) authenticate.getPrincipal();
         loginUser.setUserId(1L);
         // TODO 判断是否是管理员
-        if (!"ROLE_admin".equals(loginUser.getRole().getRoleName())) {
-            return ResponseResult.fail(AppHttpCodeEnum.ILLEGAL_LOGIN);
-        }
+        // if (!"ROLE_admin".equals(loginUser.getRoles().getRoleName())) {
+        //     return ResponseResult.fail(AppHttpCodeEnum.ILLEGAL_LOGIN);
+        // }
         // 组装-用户信息
         UserInfoVo userInfo = BeanCopyUtils.copyBean(loginUser.getUser(), UserInfoVo.class);
         // 组装-token，jwt生成token，利用用户id作为主题
@@ -104,7 +104,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         // LoginUser loginUser = (LoginUser) authentication.getPrincipal();
         // Long id = loginUser.getUser().getId();
-        String id = (String) authentication.getPrincipal();
+        String id = ((LoginUser) authentication.getPrincipal()).getUserId().toString();
         //////
         // SecurityContextHolder.clearContext();
         // TODO 从redis中删除用户

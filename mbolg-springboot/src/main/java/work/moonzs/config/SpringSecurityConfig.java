@@ -48,7 +48,7 @@ public class SpringSecurityConfig {
         // 不通过session获取SecurityContext
         httpSecurity.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         // 登录接口可以匿名访问 其他接口需要认证
-        httpSecurity.authorizeRequests().antMatchers("/system/login").anonymous()
+        httpSecurity.authorizeRequests().antMatchers("/system/login", "/system/captchaImage").anonymous()
                 .anyRequest().authenticated();
         // 添加过滤器
         httpSecurity.addFilterBefore(authenticationTokenFilter, UsernamePasswordAuthenticationFilter.class);

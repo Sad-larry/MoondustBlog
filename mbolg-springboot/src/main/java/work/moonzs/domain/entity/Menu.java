@@ -1,12 +1,15 @@
 package work.moonzs.domain.entity;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * (Menu)表实体类
@@ -48,5 +51,8 @@ public class Menu {
     private String menuType;
     //权限标识
     private String perms;
+    // 子菜单
+    @TableField(exist = false)
+    private List<Menu> children = new ArrayList<>();
 }
 

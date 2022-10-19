@@ -16,7 +16,7 @@ import work.moonzs.service.CategoryService;
  * @author Moondust月尘
  */
 @PreAuthorize("hasRole('admin')")
-@RestController(value = "SystemCategoryC")
+@RestController("SystemCategoryC")
 @RequestMapping("/system/category")
 public class CategoryController {
     @Autowired

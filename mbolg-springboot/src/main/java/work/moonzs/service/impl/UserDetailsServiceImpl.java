@@ -13,6 +13,8 @@ import work.moonzs.domain.entity.User;
 import work.moonzs.mapper.RoleMapper;
 import work.moonzs.mapper.UserMapper;
 
+import java.util.List;
+
 /**
  * @author Moondust月尘
  */
@@ -43,7 +45,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         // 返回登录用户
         LoginUser loginUser = new LoginUser();
         loginUser.setUser(user);
-        loginUser.setRole(role);
+        loginUser.setRoles(List.of(role.getRoleName()));
         return loginUser;
     }
 

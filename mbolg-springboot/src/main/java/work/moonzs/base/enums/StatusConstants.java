@@ -18,4 +18,17 @@ public class StatusConstants {
      * 删除状态为2
      */
     public static final Integer DELETE = 2;
+    /**
+     * 菜单类型-目录
+     */
+    public static final String TYPE_DIR = "M";
+    /**
+     * 菜单类型-菜单
+     */
+    public static final String TYPE_MENU = "C";
+    /**
+     * 菜单类型-按钮
+     */
+    public static final String TYPE_BUTTON = "F";
+
 }

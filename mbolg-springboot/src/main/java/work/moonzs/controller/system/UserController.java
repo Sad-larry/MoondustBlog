@@ -17,7 +17,7 @@ import work.moonzs.service.UserService;
 /**
  * @author Moondust月尘
  */
-@RestController(value = "SystemUserC")
+@RestController("SystemUserC")
 @RequestMapping("/system/user")
 public class UserController {
     @Autowired
