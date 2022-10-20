@@ -18,6 +18,7 @@ import work.moonzs.domain.vo.router.RouterVo;
 import work.moonzs.mapper.MenuMapper;
 import work.moonzs.service.MenuService;
 
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -110,7 +111,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
         return menus.stream()
                 .filter(menu -> pid.equals(menu.getPid()))
                 // 通过OrderNum进行升序排序
-                .sorted((o1, o2) -> o2.getOrderNum() - o1.getOrderNum())
+                .sorted(Comparator.comparingInt(Menu::getOrderNum))
                 .collect(Collectors.toList());
     }
 

@@ -107,6 +107,11 @@ service.interceptors.response.use(res => {
       title: code,
       message: msg
     })
+    if (code === 45017) {
+      // 删除token
+      store.dispatch('FedLogOut');
+      return Promise.reject('error')
+    }
     // store.commit('SET_TOKEN', '')
     return Promise.reject('error')
   } else {

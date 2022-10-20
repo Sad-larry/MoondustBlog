@@ -1,7 +1,6 @@
 package work.moonzs.controller.system;
 
 import cn.hutool.core.collection.CollUtil;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import work.moonzs.base.enums.AppHttpCodeEnum;
@@ -23,7 +22,6 @@ import java.util.List;
 /**
  * @author Moondust月尘
  */
-@PreAuthorize("hasRole('admin')")
 @RestController("SystemArtileC")
 @RequestMapping("/system/article")
 public class ArticleController {

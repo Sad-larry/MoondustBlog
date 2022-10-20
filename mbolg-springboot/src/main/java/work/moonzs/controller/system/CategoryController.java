@@ -2,7 +2,6 @@ package work.moonzs.controller.system;
 
 import cn.hutool.core.util.StrUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import work.moonzs.base.enums.AppHttpCodeEnum;
 import work.moonzs.base.enums.StatusConstants;
@@ -15,7 +14,6 @@ import work.moonzs.service.CategoryService;
 /**
  * @author Moondust月尘
  */
-@PreAuthorize("hasRole('admin')")
 @RestController("SystemCategoryC")
 @RequestMapping("/system/category")
 public class CategoryController {
