@@ -4,14 +4,17 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import io.jsonwebtoken.Claims;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import work.moonzs.base.enums.AppHttpCodeEnum;
-import work.moonzs.base.enums.UserRoleInfo;
-import work.moonzs.base.utils.WebUtils;
+import work.moonzs.base.enums.CacheConstants;
+import work.moonzs.base.utils.JwtUtil;
+import work.moonzs.base.utils.RedisUtil;
+import work.moonzs.base.utils.WebUtil;
 import work.moonzs.domain.ResponseResult;
 import work.moonzs.domain.entity.LoginUser;
 
@@ -28,6 +31,9 @@ import java.io.IOException;
  */
 @Component
 public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
+    @Autowired
+    private RedisUtil redisUtil;
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String token = request.getHeader("token");
@@ -41,24 +47,22 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
         Claims claims = null;
         try {
             // TODO 为了能不用复制token而注解掉。但是还是得登录一下
-            // claims = JwtUtil.parseJWT(token);
-            claims = null;
+            claims = JwtUtil.parseJWT(token);
         } catch (Exception e) {
             // token超时  token非法
             // 响应告诉前端需要重新登录
-            WebUtils.renderString(response, JSONUtil.toJsonStr(ResponseResult.fail(AppHttpCodeEnum.TOKEN_ABNORMAL)));
+            WebUtil.renderString(response, JSONUtil.toJsonStr(ResponseResult.fail(AppHttpCodeEnum.TOKEN_ABNORMAL)));
             return;
         }
-        // TODO String userId = claims.getSubject();
-        // TODO 从redis中读取用户数据
-        LoginUser user = UserRoleInfo.user;
+        String userId = claims.getSubject();
+        // 从redis中读取用户数据
+        LoginUser user = (LoginUser) redisUtil.get(CacheConstants.LOGIN_USER_KEY + userId);
         if (ObjectUtil.isNull(user)) {
             // 如果取不到说明登录过期
-            WebUtils.renderString(response, JSONUtil.toJsonStr(ResponseResult.fail(AppHttpCodeEnum.INVALID_LOGIN)));
+            WebUtil.renderString(response, JSONUtil.toJsonStr(ResponseResult.fail(AppHttpCodeEnum.INVALID_LOGIN)));
             return;
         }
-
-        // TODO 暂时存user 存入SecurityContextHolder
+        // 存入SecurityContextHolder
         Authentication authenticationToken = new UsernamePasswordAuthenticationToken(user, null, null);
         // UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword(), user.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);

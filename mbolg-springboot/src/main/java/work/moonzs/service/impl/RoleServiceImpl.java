@@ -4,14 +4,14 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
+import work.moonzs.base.enums.StatusConstants;
+import work.moonzs.base.utils.BeanCopyUtil;
 import work.moonzs.domain.ResponseResult;
 import work.moonzs.domain.entity.Role;
 import work.moonzs.domain.vo.PageVo;
 import work.moonzs.domain.vo.RoleListVo;
-import work.moonzs.base.enums.StatusConstants;
 import work.moonzs.mapper.RoleMapper;
 import work.moonzs.service.RoleService;
-import work.moonzs.base.utils.BeanCopyUtils;
 
 import java.util.List;
 
@@ -38,7 +38,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
         Page<Role> page = new Page<>(pageNum, pageSize);
         page(page, queryWrapper);
         List<Role> list = page.getRecords();
-        List<RoleListVo> roleListVos = BeanCopyUtils.copyBeanList(list, RoleListVo.class);
+        List<RoleListVo> roleListVos = BeanCopyUtil.copyBeanList(list, RoleListVo.class);
         PageVo<RoleListVo> pageVo = new PageVo<>(roleListVos, page.getTotal(), page.getCurrent(), page.getSize());
         return ResponseResult.success(pageVo);
     }

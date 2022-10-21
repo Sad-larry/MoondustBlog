@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
  *
  * @author Moondust月尘
  */
-public class BeanCopyUtils {
+public class BeanCopyUtil {
     /**
      * 拷贝单个对象的bean
      *

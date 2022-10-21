@@ -14,13 +14,16 @@ import work.moonzs.domain.entity.User;
 public interface UserService extends IService<User> {
 
     /**
-     * 管理员登录
+     * 管理员登录，拿取指定令牌
      *
-     * @param user 用户
-     * @return {@link ResponseResult}<{@link ?}>
+     * @param username 用户名
+     * @param password 密码
+     * @param uuid     uuid
+     * @param code     代码
+     * @return {@link String}
      */
     @Transactional
-    ResponseResult<?> adminLogin(User user);
+    String adminLogin(String username, String password, String uuid, String code);
 
     /**
      * 管理员注销

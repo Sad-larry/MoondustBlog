@@ -3,7 +3,7 @@ package work.moonzs.controller.system;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import work.moonzs.base.enums.StatusConstants;
-import work.moonzs.base.utils.BeanCopyUtils;
+import work.moonzs.base.utils.BeanCopyUtil;
 import work.moonzs.domain.ResponseResult;
 import work.moonzs.domain.dto.CommentDTO;
 import work.moonzs.domain.entity.Comment;
@@ -39,7 +39,7 @@ public class CommentController {
      */
     @PutMapping
     public ResponseResult<?> updateComment(@RequestBody CommentDTO commentDTO) {
-        Comment comment = BeanCopyUtils.copyBean(commentDTO, Comment.class);
+        Comment comment = BeanCopyUtil.copyBean(commentDTO, Comment.class);
         commentService.updateById(comment);
         return ResponseResult.success();
     }

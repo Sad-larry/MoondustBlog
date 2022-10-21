@@ -16,22 +16,26 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import work.moonzs.base.enums.AppHttpCodeEnum;
+import work.moonzs.base.enums.CacheConstants;
 import work.moonzs.base.enums.StatusConstants;
 import work.moonzs.base.enums.UserRoleInfo;
-import work.moonzs.base.utils.BeanCopyUtils;
+import work.moonzs.base.exception.ServiceException;
+import work.moonzs.base.utils.BeanCopyUtil;
 import work.moonzs.base.utils.JwtUtil;
+import work.moonzs.base.utils.RedisUtil;
 import work.moonzs.domain.ResponseResult;
 import work.moonzs.domain.entity.LoginUser;
 import work.moonzs.domain.entity.Menu;
 import work.moonzs.domain.entity.User;
 import work.moonzs.domain.vo.MenuTreeVo;
 import work.moonzs.domain.vo.PageVo;
-import work.moonzs.domain.vo.UserInfoVo;
 import work.moonzs.domain.vo.UserListVo;
 import work.moonzs.mapper.UserMapper;
 import work.moonzs.service.UserService;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -46,52 +50,47 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     private AuthenticationManager authenticationManager;
     @Autowired
     private UserMapper userMapper;
+    @Autowired
+    private RedisUtil redisUtil;
 
-    /**
-     * 管理员登录
-     *
-     * @param user 用户
-     * @return {@link ResponseResult}<{@link ?}>
-     */
     @Override
-    public ResponseResult<?> adminLogin(User user) {
+    public String adminLogin(String username, String password, String uuid, String code) {
+        // 验证验证码是否正确
+        validateCaptcha(uuid, code);
         // SpringSecurity登录认证
-        Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUserName(), user.getPassword()));
+        Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
         // 认证没通过 authenticate为空
         if (ObjectUtil.isNull(authenticate)) {
-            return ResponseResult.fail(AppHttpCodeEnum.USER_FAILED_CERTIFICATION);
+            throw new ServiceException(AppHttpCodeEnum.USER_FAILED_CERTIFICATION);
         }
-        // 获取登录用户
         LoginUser loginUser = (LoginUser) authenticate.getPrincipal();
-        loginUser.setUserId(1L);
-        // TODO 判断是否是管理员
-        // if (!"ROLE_admin".equals(loginUser.getRoles().getRoleName())) {
-        //     return ResponseResult.fail(AppHttpCodeEnum.ILLEGAL_LOGIN);
-        // }
-        // 组装-用户信息
-        UserInfoVo userInfo = BeanCopyUtils.copyBean(loginUser.getUser(), UserInfoVo.class);
-        // 组装-token，jwt生成token，利用用户id作为主题
+        String userId = String.valueOf(loginUser.getUserId());
+        // jwt生成token，利用用户id作为主题
         // TODO 如果用户选了remember me的话，要把token时长设为7天
-        String token = JwtUtil.createJWT(String.valueOf(loginUser.getUser().getId()));
-        // TODO 把用户信息存入redis
-        UserRoleInfo.user = loginUser;
+        String token = JwtUtil.createJWT(userId);
+        // 把token存入redis
+        redisUtil.set(CacheConstants.TOKEN_KEY + userId, token);
+        // 将用户信息存入redis
+        redisUtil.set(CacheConstants.LOGIN_USER_KEY + userId, loginUser);
+        return token;
+    }
 
-        // 组装-menu
-        // 查询用户所具有的角色，每个用户都有一个角色
-        // TODO 通过角色id查询菜单id列表
-        // 查询出所有的菜单，一一匹配存入到列表中
-        // 对菜单列表进行整理
-        // List<Menu> menus = menuMapper.selectUserMenus(loginUser.getUser().getId());
-        List<Menu> menus = null;
-        // TODO BUG 当用户没有菜单得时候会报空指针异常
-        // List<MenuTreeVo> menuTree = organizeMenu(menus);
-        List<MenuTreeVo> menuTree = null;
-        // 组装数据返回
-        Map<String, Object> map = new HashMap<>();
-        map.put("token", token);
-        map.put("userInfo", userInfo);
-        map.put("menuTree", menuTree);
-        return ResponseResult.success(map);
+    /**
+     * 验证验证码
+     *
+     * @param uuid uuid
+     * @param code 代码
+     */
+    private void validateCaptcha(String uuid, String code) {
+        String verifyKey = CacheConstants.CAPTCHA_CODE_KEY + uuid;
+        String captcha = (String) redisUtil.get(verifyKey);
+        redisUtil.del(verifyKey);
+        if (captcha == null) {
+            throw new ServiceException(AppHttpCodeEnum.CAPTCHA_FAIL);
+        }
+        if (!code.equalsIgnoreCase(captcha)) {
+            throw new ServiceException(AppHttpCodeEnum.CAPTCHA_FAIL);
+        }
     }
 
     /**
@@ -102,14 +101,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Override
     public ResponseResult<?> adminLogout() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        // LoginUser loginUser = (LoginUser) authentication.getPrincipal();
-        // Long id = loginUser.getUser().getId();
-        String id = ((LoginUser) authentication.getPrincipal()).getUserId().toString();
-        //////
-        // SecurityContextHolder.clearContext();
-        // TODO 从redis中删除用户
-        UserRoleInfo.user = null;
-        System.out.println("LOGOUT USER:" + id);
+        String userId = ((LoginUser) authentication.getPrincipal()).getUserId().toString();
+        // 从redis中删除用户
+        redisUtil.del(CacheConstants.TOKEN_KEY + userId);
         return ResponseResult.success();
     }
 
@@ -133,7 +127,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         Page<User> page = new Page<>(pageNum, pageSize);
         page(page, queryWrapper);
         List<User> list = page.getRecords();
-        List<UserListVo> userListVos = BeanCopyUtils.copyBeanList(list, UserListVo.class);
+        List<UserListVo> userListVos = BeanCopyUtil.copyBeanList(list, UserListVo.class);
         // TODO 设置每个用户的角色信息
         userListVos.forEach(userListVo -> userListVo.setRoles(UserRoleInfo.getRoleInfo(userListVo.getId())));
         PageVo<UserListVo> pageVo = new PageVo<>(userListVos, page.getTotal(), page.getCurrent(), page.getSize());
@@ -202,7 +196,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         List<MenuTreeVo> menuTree = new ArrayList<>();
         for (Menu menu : collectMenus) {
             // 将每个菜单转化为MenuTreeVo对象
-            MenuTreeVo menuTreeVo = BeanCopyUtils.copyBean(menu, MenuTreeVo.class);
+            MenuTreeVo menuTreeVo = BeanCopyUtil.copyBean(menu, MenuTreeVo.class);
             // 如果这个menu的pid为0，说明他是一级菜单，直接添加到返回列表
             // 否则获取列表的最后一个菜单添加到子菜单中
             if (menu.getPid() == 0) {

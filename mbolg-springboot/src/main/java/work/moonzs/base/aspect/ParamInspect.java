@@ -13,7 +13,7 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.stereotype.Component;
 import work.moonzs.base.annotation.ParamCheck;
 import work.moonzs.base.exception.ValidateException;
-import work.moonzs.base.utils.VerifyUtils;
+import work.moonzs.base.utils.VerifyUtil;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -54,7 +54,7 @@ public class ParamInspect {
             if (ArrayUtil.isEmpty(clazzs) || ArrayUtil.isEmpty(params)) {
                 // 如果注解里面的参数为空，那么就把方法里面的参数进行校验，这里一般用的都是DTO，只会传一个参数，所以直接取[0]
                 LOG.info("校验参数: {}", point.getArgs()[0]);
-                VerifyUtils.validateField(errorMsg, point.getArgs()[0], group);
+                VerifyUtil.validateField(errorMsg, point.getArgs()[0], group);
             } else {
                 // 注解参数名
                 String[] parameterNames = methodSignature.getParameterNames();
@@ -69,7 +69,7 @@ public class ParamInspect {
                         if (parameters.contains(parameter)) {
                             LOG.info("校验对象: {}", clazzMap.get(parameter));
                             LOG.info("校验参数: {}", parameterMap.get(parameter));
-                            VerifyUtils.validateField(errorMsg, parameterMap.get(parameter), group);
+                            VerifyUtil.validateField(errorMsg, parameterMap.get(parameter), group);
                         }
                     }
                 }

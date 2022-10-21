@@ -6,7 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import work.moonzs.base.utils.BeanCopyUtils;
+import work.moonzs.base.utils.BeanCopyUtil;
 import work.moonzs.domain.ResponseResult;
 import work.moonzs.domain.entity.Article;
 import work.moonzs.domain.entity.Category;
@@ -74,14 +74,14 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         // TODO 通过缓存获取当前的角色信息，给Article的userName设置值
         List<ArticleVo> collect = records.stream()
                 .map(article -> {
-                    ArticleVo articleVo = BeanCopyUtils.copyBean(article, ArticleVo.class);
+                    ArticleVo articleVo = BeanCopyUtil.copyBean(article, ArticleVo.class);
                     // 通过categoryid查询分类
                     Category category = categoryService.getById(article.getCategoryId());
-                    CategoryVo categoryVo = BeanCopyUtils.copyBean(category, CategoryVo.class);
+                    CategoryVo categoryVo = BeanCopyUtil.copyBean(category, CategoryVo.class);
                     articleVo.setCategoryVo(categoryVo);
                     // 通过tagid查询标签
                     List<Tag> tags = tagMapper.selectByArticleId(article.getId());
-                    List<TagVo> tagVo = BeanCopyUtils.copyBeanList(tags, TagVo.class);
+                    List<TagVo> tagVo = BeanCopyUtil.copyBeanList(tags, TagVo.class);
                     articleVo.setTagListVo(tagVo);
                     return articleVo;
                 }).toList();

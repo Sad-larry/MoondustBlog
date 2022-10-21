@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import work.moonzs.base.enums.AppHttpCodeEnum;
 import work.moonzs.base.enums.StatusConstants;
 import work.moonzs.base.enums.UserRoleInfo;
-import work.moonzs.base.utils.BeanCopyUtils;
+import work.moonzs.base.utils.BeanCopyUtil;
 import work.moonzs.base.validate.ValidateGroup;
 import work.moonzs.domain.ResponseResult;
 import work.moonzs.domain.dto.ArticleDTO;
@@ -55,7 +55,7 @@ public class ArticleController {
             return ResponseResult.fail(AppHttpCodeEnum.CATEGORY_NOT_EXIST);
         }
         // 发布文章，当文章发布成功时才添加标签
-        Article article = BeanCopyUtils.copyBean(articleDTO, Article.class);
+        Article article = BeanCopyUtil.copyBean(articleDTO, Article.class);
         // TODO userid没有值，测试时，默认为1
         // article.setUserId(1L);
         article.setUserId(UserRoleInfo.user.getUser().getId());
@@ -98,7 +98,7 @@ public class ArticleController {
         if (!existCategory) {
             return ResponseResult.fail(AppHttpCodeEnum.CATEGORY_NOT_EXIST);
         }
-        Article article = BeanCopyUtils.copyBean(articleDTO, Article.class);
+        Article article = BeanCopyUtil.copyBean(articleDTO, Article.class);
         articleService.updateById(article);
         // 修改文章标签
         updateArticleTag(articleDTO);

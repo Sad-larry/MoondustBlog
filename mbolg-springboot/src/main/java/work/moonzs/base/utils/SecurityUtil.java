@@ -12,7 +12,7 @@ import work.moonzs.domain.entity.LoginUser;
  *
  * @author Moondust月尘
  */
-public class SecurityUtils {
+public class SecurityUtil {
     /**
      * 用户ID
      **/

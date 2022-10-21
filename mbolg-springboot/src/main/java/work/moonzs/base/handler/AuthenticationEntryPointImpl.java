@@ -8,7 +8,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 import work.moonzs.base.enums.AppHttpCodeEnum;
-import work.moonzs.base.utils.WebUtils;
+import work.moonzs.base.utils.WebUtil;
 import work.moonzs.domain.ResponseResult;
 
 import javax.servlet.ServletException;
@@ -41,6 +41,6 @@ public class AuthenticationEntryPointImpl implements AuthenticationEntryPoint {
             result = ResponseResult.fail(45000, "认证又出异常啦，快来找问题");
         }
         // 响应给前端
-        WebUtils.renderString(response, JSONUtil.toJsonStr(result));
+        WebUtil.renderString(response, JSONUtil.toJsonStr(result));
     }
 }

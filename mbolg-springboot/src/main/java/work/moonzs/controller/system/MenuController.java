@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import work.moonzs.base.enums.AppHttpCodeEnum;
 import work.moonzs.base.enums.StatusConstants;
-import work.moonzs.base.utils.BeanCopyUtils;
+import work.moonzs.base.utils.BeanCopyUtil;
 import work.moonzs.domain.ResponseResult;
 import work.moonzs.domain.dto.MenuDTO;
 import work.moonzs.domain.entity.Menu;
@@ -50,7 +50,7 @@ public class MenuController {
             return ResponseResult.fail(AppHttpCodeEnum.MENU_EXIST);
         }
         menuDTO.setId(null);
-        Menu menu = BeanCopyUtils.copyBean(menuDTO, Menu.class);
+        Menu menu = BeanCopyUtil.copyBean(menuDTO, Menu.class);
         menuService.save(menu);
         return ResponseResult.success();
     }
@@ -73,7 +73,7 @@ public class MenuController {
         }
         // 判断是否存在相同分类名
         Menu byId = menuService.getById(menuDTO.getId());
-        Menu menu = BeanCopyUtils.copyBean(menuDTO, Menu.class);
+        Menu menu = BeanCopyUtil.copyBean(menuDTO, Menu.class);
         // 判断byId和menu中的menuName, path是否相等
         if (menu.equals(byId)) {
             return ResponseResult.fail(AppHttpCodeEnum.MENU_EXIST);

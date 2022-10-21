@@ -5,7 +5,6 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import work.moonzs.base.annotation.UsernameValid;
 
 import javax.validation.constraints.NotBlank;
 
@@ -30,6 +29,16 @@ public class LoginUserDTO {
     @ApiModelProperty(notes = "用户密码")
     @NotBlank(message = "password不能为空")
     private String password;
+
+    /**
+     * 唯一标识id，存入redis的验证码的前缀
+     */
+    private String uuid;
+
+    /**
+     * 验证码
+     */
+    private String code;
 }
 
 

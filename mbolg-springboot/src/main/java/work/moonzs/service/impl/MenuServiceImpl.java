@@ -7,8 +7,8 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import work.moonzs.base.enums.StatusConstants;
-import work.moonzs.base.utils.BeanCopyUtils;
-import work.moonzs.base.utils.SecurityUtils;
+import work.moonzs.base.utils.BeanCopyUtil;
+import work.moonzs.base.utils.SecurityUtil;
 import work.moonzs.domain.ResponseResult;
 import work.moonzs.domain.entity.Menu;
 import work.moonzs.domain.vo.MenuListVo;
@@ -46,7 +46,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
         Page<Menu> page = new Page<>(pageNum, pageSize);
         page(page, queryWrapper);
         List<Menu> list = page.getRecords();
-        List<MenuListVo> menuListVos = BeanCopyUtils.copyBeanList(list, MenuListVo.class);
+        List<MenuListVo> menuListVos = BeanCopyUtil.copyBeanList(list, MenuListVo.class);
         PageVo<MenuListVo> pageVo = new PageVo<>(menuListVos, page.getTotal(), page.getCurrent(), page.getSize());
         return ResponseResult.success(pageVo);
     }
@@ -73,7 +73,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
     @Override
     public List<Menu> selectMenuTreeByUserId(Long userId) {
         List<Menu> menus;
-        if (SecurityUtils.isAdmin(userId)) {
+        if (SecurityUtil.isAdmin(userId)) {
             menus = selectMenuTreeAll();
         } else {
             menus = getBaseMapper().selectMenuTreeByUserId(userId);

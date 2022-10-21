@@ -13,7 +13,7 @@ import java.util.Set;
  * @author zhangYiCong
  * @date 2021-07-13 15:31:16
  */
-public class VerifyUtils {
+public class VerifyUtil {
     private static final ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
 
     /**

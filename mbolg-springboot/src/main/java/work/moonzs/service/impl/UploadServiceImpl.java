@@ -13,11 +13,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import work.moonzs.base.utils.PathUtil;
 import work.moonzs.domain.ResponseResult;
 import work.moonzs.domain.entity.Image;
 import work.moonzs.mapper.ImageMapper;
 import work.moonzs.service.UploadService;
-import work.moonzs.base.utils.PathUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -50,7 +50,7 @@ public class UploadServiceImpl implements UploadService {
         // 获取初始文件名
         String originalFilename = image.getOriginalFilename();
         // 通过
-        String filePath = PathUtils.generateFilePath(originalFilename);
+        String filePath = PathUtil.generateFilePath(originalFilename);
         // 如果判断通过上传到OSS
         String url = uploadOss(image, filePath);
         if (StrUtil.isBlank(url)) {

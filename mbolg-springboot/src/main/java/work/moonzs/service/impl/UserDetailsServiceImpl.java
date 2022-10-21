@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import work.moonzs.domain.entity.LoginUser;
 import work.moonzs.domain.entity.Role;
 import work.moonzs.domain.entity.User;
+import work.moonzs.mapper.MenuMapper;
 import work.moonzs.mapper.RoleMapper;
 import work.moonzs.mapper.UserMapper;
 
@@ -24,6 +25,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     private UserMapper userMapper;
     @Autowired
     private RoleMapper roleMapper;
+    @Autowired
+    private MenuMapper menuMapper;
 
     /**
      * SpringSecurity通过用户用户名查询数据库
@@ -40,12 +43,13 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             // 返回null会抛出“用户不存在异常，在认证处理器接收
             return null;
         }
-        // 获取用户角色信息
-        Role role = this.getRoleByUserId(user.getId());
+        // 获取用户权限信息
+        List<String> perms = this.getPermsByUserId(user.getId());
         // 返回登录用户
         LoginUser loginUser = new LoginUser();
+        loginUser.setUserId(user.getId());
         loginUser.setUser(user);
-        loginUser.setRoles(List.of(role.getRoleName()));
+        loginUser.setPermissions(perms);
         return loginUser;
     }
 
@@ -68,7 +72,18 @@ public class UserDetailsServiceImpl implements UserDetailsService {
      * @param userId 用户id
      * @return {@link Role}
      */
-    public Role getRoleByUserId(Long userId) {
+    public List<String> getRoleByUserId(Long userId) {
         return roleMapper.selectUserRole(userId);
     }
+
+    /**
+     * 通过用户id查询用户权限
+     *
+     * @param userId 用户id
+     * @return {@link List}<{@link String}>
+     */
+    private List<String> getPermsByUserId(Long userId) {
+        return menuMapper.selectUserPerms(userId);
+    }
+
 }

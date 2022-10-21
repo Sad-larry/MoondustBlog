@@ -45,6 +45,8 @@ public enum AppHttpCodeEnum {
     INVALID_LOGIN(45017, "无效登录"),
     // 请求体缺失
     REQUIRED_REQUEST_BODY(45018, "请求体缺失"),
+    // 验证码有误
+    CAPTCHA_FAIL(45019, "验证码有误"),
 
 
     // 警告：文章未添加标签

@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import work.moonzs.base.enums.AppHttpCodeEnum;
 import work.moonzs.base.enums.StatusConstants;
-import work.moonzs.base.utils.BeanCopyUtils;
+import work.moonzs.base.utils.BeanCopyUtil;
 import work.moonzs.domain.ResponseResult;
 import work.moonzs.domain.dto.RoleDTO;
 import work.moonzs.domain.entity.Role;
@@ -49,7 +49,7 @@ public class RoleController {
         // TODO 其他校验，是否存在同名等等
 
         roleDTO.setId(null);
-        Role role = BeanCopyUtils.copyBean(roleDTO, Role.class);
+        Role role = BeanCopyUtil.copyBean(roleDTO, Role.class);
         roleMapper.insert(role);
         Long roleId = role.getId();
         // TODO 如果菜单id不为空，则把关联表的也加上去
@@ -81,7 +81,7 @@ public class RoleController {
         }
         // 判断是否存在相同角色名
         Role byId = roleService.getById(roleDTO.getId());
-        Role role = BeanCopyUtils.copyBean(roleDTO, Role.class);
+        Role role = BeanCopyUtil.copyBean(roleDTO, Role.class);
         // 判断byId和role中的roleName, path是否相等
         if (role.equals(byId)) {
             return ResponseResult.fail(AppHttpCodeEnum.ROLE_EXIST);

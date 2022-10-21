@@ -6,7 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 import work.moonzs.base.enums.StatusConstants;
-import work.moonzs.base.utils.BeanCopyUtils;
+import work.moonzs.base.utils.BeanCopyUtil;
 import work.moonzs.domain.ResponseResult;
 import work.moonzs.domain.entity.Category;
 import work.moonzs.domain.vo.CategoryVo;
@@ -72,7 +72,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
         queryWrapper.eq(Category::getStatus, StatusConstants.NORMAL);
         Page<Category> page = new Page<>(pageNum, pageSize);
         page(page, queryWrapper);
-        PageVo<CategoryVo> pageVo = new PageVo<>(BeanCopyUtils.copyBeanList(page.getRecords(), CategoryVo.class), page);
+        PageVo<CategoryVo> pageVo = new PageVo<>(BeanCopyUtil.copyBeanList(page.getRecords(), CategoryVo.class), page);
         return ResponseResult.success(pageVo);
     }
 }

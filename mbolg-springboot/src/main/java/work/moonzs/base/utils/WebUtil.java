@@ -9,7 +9,7 @@ import java.nio.charset.StandardCharsets;
 /**
  * @author Moondust月尘
  */
-public class WebUtils {
+public class WebUtil {
     /**
      * 将字符串渲染到客户端
      *

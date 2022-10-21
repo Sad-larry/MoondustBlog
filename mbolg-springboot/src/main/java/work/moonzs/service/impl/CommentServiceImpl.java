@@ -4,14 +4,14 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
+import work.moonzs.base.enums.StatusConstants;
+import work.moonzs.base.utils.BeanCopyUtil;
 import work.moonzs.domain.ResponseResult;
 import work.moonzs.domain.entity.Comment;
 import work.moonzs.domain.vo.CommentListVo;
 import work.moonzs.domain.vo.PageVo;
-import work.moonzs.base.enums.StatusConstants;
 import work.moonzs.mapper.CommentMapper;
 import work.moonzs.service.CommentService;
-import work.moonzs.base.utils.BeanCopyUtils;
 
 import java.util.List;
 
@@ -38,7 +38,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         Page<Comment> page = new Page<>(pageNum, pageSize);
         page(page, queryWrapper);
         List<Comment> list = page.getRecords();
-        List<CommentListVo> commentListVos = BeanCopyUtils.copyBeanList(list, CommentListVo.class);
+        List<CommentListVo> commentListVos = BeanCopyUtil.copyBeanList(list, CommentListVo.class);
         PageVo<CommentListVo> pageVo = new PageVo<>(commentListVos, page.getTotal(), page.getCurrent(), page.getSize());
         return ResponseResult.success(pageVo);
     }

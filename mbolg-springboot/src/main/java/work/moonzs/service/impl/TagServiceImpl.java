@@ -6,7 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 import work.moonzs.base.enums.StatusConstants;
-import work.moonzs.base.utils.BeanCopyUtils;
+import work.moonzs.base.utils.BeanCopyUtil;
 import work.moonzs.domain.ResponseResult;
 import work.moonzs.domain.entity.Tag;
 import work.moonzs.domain.vo.PageVo;
@@ -76,7 +76,7 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, Tag> implements TagSe
         Page<Tag> page = new Page<>(pageNum, pageSize);
         page(page, queryWrapper);
         List<Tag> list = page.getRecords();
-        List<TagVo> tagListVos = BeanCopyUtils.copyBeanList(list, TagVo.class);
+        List<TagVo> tagListVos = BeanCopyUtil.copyBeanList(list, TagVo.class);
         PageVo<TagVo> pageVo = new PageVo<>(tagListVos, page.getTotal(), page.getCurrent(), page.getSize());
         return ResponseResult.success(pageVo);
     }

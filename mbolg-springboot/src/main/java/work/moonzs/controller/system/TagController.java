@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import work.moonzs.base.enums.AppHttpCodeEnum;
 import work.moonzs.base.enums.StatusConstants;
-import work.moonzs.base.utils.BeanCopyUtils;
+import work.moonzs.base.utils.BeanCopyUtil;
 import work.moonzs.domain.ResponseResult;
 import work.moonzs.domain.dto.TagDTO;
 import work.moonzs.domain.entity.Tag;
@@ -41,7 +41,7 @@ public class TagController {
             return ResponseResult.fail(AppHttpCodeEnum.TAG_EXIST);
         }
         tagDTO.setId(null);
-        Tag tag = BeanCopyUtils.copyBean(tagDTO, Tag.class);
+        Tag tag = BeanCopyUtil.copyBean(tagDTO, Tag.class);
         tagService.save(tag);
         return ResponseResult.success();
     }
@@ -81,7 +81,7 @@ public class TagController {
         }
         // 判断是否存在相同标签名，标签描述可以该阿，标签状态可以改阿，你这么写，就只判断标签名，其他的不能改了是吧（旧版）
         Tag byId = tagService.getById(tagDTO.getId());
-        Tag tag = BeanCopyUtils.copyBean(tagDTO, Tag.class);
+        Tag tag = BeanCopyUtil.copyBean(tagDTO, Tag.class);
         // 判断byId和tag中的tagName，description，status是否相等
         if (tag.equals(byId)) {
             return ResponseResult.fail(AppHttpCodeEnum.TAG_EXIST);

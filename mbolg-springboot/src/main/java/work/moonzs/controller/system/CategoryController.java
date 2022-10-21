@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import work.moonzs.base.enums.AppHttpCodeEnum;
 import work.moonzs.base.enums.StatusConstants;
-import work.moonzs.base.utils.BeanCopyUtils;
+import work.moonzs.base.utils.BeanCopyUtil;
 import work.moonzs.domain.ResponseResult;
 import work.moonzs.domain.dto.CategoryDTO;
 import work.moonzs.domain.entity.Category;
@@ -39,7 +39,7 @@ public class CategoryController {
             return ResponseResult.fail(AppHttpCodeEnum.CATEGORY_EXIST);
         }
         categoryDTO.setId(null);
-        Category category = BeanCopyUtils.copyBean(categoryDTO, Category.class);
+        Category category = BeanCopyUtil.copyBean(categoryDTO, Category.class);
         categoryService.save(category);
         return ResponseResult.success();
     }
@@ -78,7 +78,7 @@ public class CategoryController {
         }
         // 判断是否存在相同分类名
         Category byId = categoryService.getById(categoryDTO.getId());
-        Category category = BeanCopyUtils.copyBean(categoryDTO, Category.class);
+        Category category = BeanCopyUtil.copyBean(categoryDTO, Category.class);
         // 判断byId和category中的categoryName，description，status是否相等
         if (category.equals(byId)) {
             return ResponseResult.fail(AppHttpCodeEnum.CATEGORY_EXIST);

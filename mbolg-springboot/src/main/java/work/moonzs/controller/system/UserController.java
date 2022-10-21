@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import work.moonzs.base.enums.AppHttpCodeEnum;
 import work.moonzs.base.enums.StatusConstants;
 import work.moonzs.base.enums.UserRoleInfo;
-import work.moonzs.base.utils.BeanCopyUtils;
+import work.moonzs.base.utils.BeanCopyUtil;
 import work.moonzs.domain.ResponseResult;
 import work.moonzs.domain.dto.AddUserDTO;
 import work.moonzs.domain.dto.UserDTO;
@@ -33,7 +33,7 @@ public class UserController {
     @PostMapping
     public ResponseResult<?> addUser(@RequestBody AddUserDTO addUserDTO) {
         addUserDTO.setId(null);
-        User user = BeanCopyUtils.copyBean(addUserDTO, User.class);
+        User user = BeanCopyUtil.copyBean(addUserDTO, User.class);
         // TODO 密码应该加密存储
         Long userId = userService.saveUser(user);
         // 不存在roleId
@@ -83,7 +83,7 @@ public class UserController {
         if (userDTO.getId() == 1L) {
             userDTO.setStatus(null);
         }
-        User user = BeanCopyUtils.copyBean(userDTO, User.class);
+        User user = BeanCopyUtil.copyBean(userDTO, User.class);
         userService.updateById(user);
         return ResponseResult.success();
     }

@@ -7,7 +7,7 @@ import java.util.UUID;
 /**
  * @author Moondust月尘
  */
-public class PathUtils {
+public class PathUtil {
     /**
      * 生成文件路径
      *
