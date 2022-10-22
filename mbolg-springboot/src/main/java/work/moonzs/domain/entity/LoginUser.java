@@ -1,5 +1,6 @@
 package work.moonzs.domain.entity;
 
+import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,6 +19,8 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonIncludeProperties({"userId", "user", "permissions"})
+// @JsonIgnoreProperties({"enabled", "accountNonExpired", "password", "username", "accountNonLocked", "credentialsNonExpired", "authorities"})
 public class LoginUser implements UserDetails {
     /**
      * 用户Id

@@ -73,7 +73,7 @@ mybatis-plus:
       id-type: AUTO
 oss:
   qiniu:
-    domain-url: http://ri1bzqp09.bkt.clouddn.com/
+    domain-url: http://niu.moonzs.work/
     access-key: IzTywocCdtTl4ASlp5WRNDf4jPEDIESEy0W-NM53
     secret-key: cRTwVGhCWgHU4nipm-1sSMmgK9aksMWYxQuPn-OD
-    bucket: moondust
+    bucket: aqi-moon

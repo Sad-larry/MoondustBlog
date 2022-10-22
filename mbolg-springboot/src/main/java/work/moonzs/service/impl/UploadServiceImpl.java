@@ -73,11 +73,11 @@ public class UploadServiceImpl implements UploadService {
      */
     private String uploadOss(MultipartFile imageFile, String filePath) {
         //构造一个自动判断 Region 对象的配置类
-        Configuration cfg = new Configuration(Region.autoRegion());
+        Configuration cfg1 = new Configuration(Region.autoRegion());
         // 指定分片上传版本
-        cfg.resumableUploadAPIVersion = Configuration.ResumableUploadAPIVersion.V2;
+        cfg1.resumableUploadAPIVersion = Configuration.ResumableUploadAPIVersion.V2;
         //...其他参数参考类注释
-        UploadManager uploadManager = new UploadManager(cfg);
+        UploadManager uploadManager = new UploadManager(cfg1);
         //默认不指定key的情况下，以文件内容的hash值作为文件名
         String key = filePath;
         try {

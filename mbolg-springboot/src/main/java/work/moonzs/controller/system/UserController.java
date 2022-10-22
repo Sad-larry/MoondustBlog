@@ -2,9 +2,7 @@ package work.moonzs.controller.system;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import work.moonzs.base.enums.AppHttpCodeEnum;
 import work.moonzs.base.enums.StatusConstants;
-import work.moonzs.base.enums.UserRoleInfo;
 import work.moonzs.base.utils.BeanCopyUtil;
 import work.moonzs.domain.ResponseResult;
 import work.moonzs.domain.dto.AddUserDTO;
@@ -38,7 +36,7 @@ public class UserController {
         Long userId = userService.saveUser(user);
         // 不存在roleId
         // TODO 如果说，普通用户是进不了后台的，他们也就不需要任何角色，数据库中的默认角色就是普通用户，更新的时候，罢了罢了
-        if (addUserDTO.getRoleId() == 1L || !UserRoleInfo.isExistRole(addUserDTO.getRoleId())) {
+        if (addUserDTO.getRoleId() == 1L) {
             // 普通用户
             addUserDTO.setRoleId(2L);
         }
@@ -71,11 +69,8 @@ public class UserController {
 
         // 管理员不能更新角色信息
         if (userDTO.getId() != 1L) {
-            // 判断角色是否存在
-            boolean isExistRole = UserRoleInfo.isExistRole(userDTO.getRoleId());
-            if (!isExistRole) {
-                return ResponseResult.fail(AppHttpCodeEnum.ROLE_NOT_EXIST);
-            }
+            // TODO 判断角色是否存在
+            
             // 通过用户名更新角色信息
             userRoleService.updateByUserId(userDTO.getId(), userDTO.getRoleId());
         }

@@ -46,7 +46,6 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
         // 从token中解析用户id
         Claims claims = null;
         try {
-            // TODO 为了能不用复制token而注解掉。但是还是得登录一下
             claims = JwtUtil.parseJWT(token);
         } catch (Exception e) {
             // token超时  token非法

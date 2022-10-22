@@ -9,6 +9,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import work.moonzs.base.enums.AppHttpCodeEnum;
+import work.moonzs.base.exception.ServiceException;
 import work.moonzs.base.exception.ValidateException;
 import work.moonzs.domain.ResponseResult;
 
@@ -71,5 +72,16 @@ public class RestControllerExceptionHandler {
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseResult<?> handleHttpMessageNotReadable() {
         return ResponseResult.fail(AppHttpCodeEnum.REQUIRED_REQUEST_BODY);
+    }
+
+    /**
+     * 处理自定义服务异常
+     *
+     * @param e e
+     * @return {@link ResponseResult}<{@link ?}>
+     */
+    @ExceptionHandler(ServiceException.class)
+    public ResponseResult<?> handleService(ServiceException e) {
+        return ResponseResult.fail(e.getMsg());
     }
 }

@@ -1,7 +1,7 @@
 package work.moonzs.base.enums;
 
 /**
- * 状态常量
+ * 数据库中的状态常量
  *
  * @author Moondust月尘
  */

@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 import work.moonzs.base.enums.AppHttpCodeEnum;
 import work.moonzs.base.enums.CacheConstants;
 import work.moonzs.base.enums.StatusConstants;
-import work.moonzs.base.enums.UserRoleInfo;
 import work.moonzs.base.exception.ServiceException;
 import work.moonzs.base.utils.BeanCopyUtil;
 import work.moonzs.base.utils.JwtUtil;
@@ -129,7 +128,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         List<User> list = page.getRecords();
         List<UserListVo> userListVos = BeanCopyUtil.copyBeanList(list, UserListVo.class);
         // TODO 设置每个用户的角色信息
-        userListVos.forEach(userListVo -> userListVo.setRoles(UserRoleInfo.getRoleInfo(userListVo.getId())));
+        
         PageVo<UserListVo> pageVo = new PageVo<>(userListVos, page.getTotal(), page.getCurrent(), page.getSize());
         return ResponseResult.success(pageVo);
     }

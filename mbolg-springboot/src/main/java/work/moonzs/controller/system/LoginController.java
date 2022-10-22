@@ -66,7 +66,7 @@ public class LoginController {
     public ResponseResult<?> adminLogin(@Valid @RequestBody LoginUserDTO loginUserDTO) {
         // SpringSecurity登录认证
         String token = userService.adminLogin(loginUserDTO.getUserName(), loginUserDTO.getPassword(), loginUserDTO.getUuid(), loginUserDTO.getCode());
-        // TODO 登录只为了拿去令牌
+        // 登录只为了拿去令牌
         return ResponseResult.success(token);
     }
 
@@ -78,7 +78,6 @@ public class LoginController {
     @GetMapping("/getInfo")
     public ResponseResult<?> getInfo() {
         LoginUser loginUser = SecurityUtil.getLoginUser();
-        System.out.println(loginUser);
         // TODO 这里应该是获取具体的用户信息
         return ResponseResult.success(loginUser);
     }

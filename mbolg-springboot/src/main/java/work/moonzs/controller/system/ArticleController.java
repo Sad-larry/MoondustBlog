@@ -5,7 +5,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import work.moonzs.base.enums.AppHttpCodeEnum;
 import work.moonzs.base.enums.StatusConstants;
-import work.moonzs.base.enums.UserRoleInfo;
 import work.moonzs.base.utils.BeanCopyUtil;
 import work.moonzs.base.validate.ValidateGroup;
 import work.moonzs.domain.ResponseResult;
@@ -57,8 +56,7 @@ public class ArticleController {
         // 发布文章，当文章发布成功时才添加标签
         Article article = BeanCopyUtil.copyBean(articleDTO, Article.class);
         // TODO userid没有值，测试时，默认为1
-        // article.setUserId(1L);
-        article.setUserId(UserRoleInfo.user.getUser().getId());
+        article.setUserId(1L);
 
         Long articleId = articleService.publishArticle(article);
         System.out.println("文章id，看看是不是可以不用返回值：" + article.getId());

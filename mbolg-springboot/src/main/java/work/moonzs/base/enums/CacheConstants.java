@@ -1,6 +1,8 @@
 package work.moonzs.base.enums;
 
 /**
+ * redis键值常量
+ *
  * @author Moondust月尘
  */
 public class CacheConstants {
