@@ -2,8 +2,9 @@ package work.moonzs.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.springframework.transaction.annotation.Transactional;
-import work.moonzs.domain.ResponseResult;
 import work.moonzs.domain.entity.User;
+import work.moonzs.domain.vo.PageVo;
+import work.moonzs.domain.vo.UserListVo;
 
 /**
  * (User)表服务接口
@@ -27,10 +28,8 @@ public interface UserService extends IService<User> {
 
     /**
      * 管理员注销
-     *
-     * @return {@link ResponseResult}<{@link ?}>
      */
-    ResponseResult<?> adminLogout();
+    void adminLogout();
 
     /**
      * 用户列表
@@ -38,9 +37,9 @@ public interface UserService extends IService<User> {
      * @param pageNum    页面num
      * @param pageSize   页面大小
      * @param fuzzyField 模糊领域
-     * @return {@link ResponseResult}<{@link ?}>
+     * @return {@link PageVo}<{@link UserListVo}>
      */
-    ResponseResult<?> listUsers(Integer pageNum, Integer pageSize, String fuzzyField);
+    PageVo<UserListVo> listUsers(Integer pageNum, Integer pageSize, String fuzzyField);
 
     /**
      * 保存用户

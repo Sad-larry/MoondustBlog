@@ -12,12 +12,15 @@ import com.qiniu.storage.UploadManager;
 import com.qiniu.storage.model.DefaultPutRet;
 import com.qiniu.storage.model.FileInfo;
 import com.qiniu.util.Auth;
+import com.qiniu.util.StringMap;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import work.moonzs.base.enums.SystemConstants;
 import work.moonzs.base.utils.PathUtil;
-import work.moonzs.service.QiniuService;
+import work.moonzs.service.IQiNiuService;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,15 +29,25 @@ import java.io.InputStream;
  * @author Moondust月尘
  */
 @Service("qiniuService")
-public class QiniuServiceImpl implements QiniuService {
-    @Value("${oss.qiniu.domain-url}")
-    private String DOMAIN_URL;
+public class QiNiuServiceImpl implements IQiNiuService, InitializingBean {
+    private final UploadManager uploadManager;
+    private final Auth auth;
+    @Value("${oss.qiniu.bucket}")
+    private String BUCKET;
+    private StringMap putPolicy;
+
+    @Autowired
+    public QiNiuServiceImpl(UploadManager uploadManager, Auth auth) {
+        this.uploadManager = uploadManager;
+        this.auth = auth;
+    }
+
+    @Value("${oss.qiniu.domain}")
+    private String DOMAIN;
     @Value("${oss.qiniu.access-key}")
     private String ACCESS_KEY;
     @Value("${oss.qiniu.secret-key}")
     private String SECRET_KEY;
-    @Value("${oss.qiniu.bucket}")
-    private String BUCKET;
 
     private static volatile BucketManager bucketManager;
 
@@ -55,6 +68,17 @@ public class QiniuServiceImpl implements QiniuService {
             }
         }
         return bucketManager;
+    }
+
+    @Override
+    public Response uploadFile(MultipartFile file, String fileKey) throws IOException {
+        Response response = this.uploadManager.put(file.getInputStream(), fileKey, getUploadToken(), null, null);
+        int retry = 0;
+        while (response.needRetry() && retry < 3) {
+            response = this.uploadManager.put(file.getInputStream(), fileKey, getUploadToken(), null, null);
+            retry++;
+        }
+        return response;
     }
 
     @Override
@@ -184,5 +208,20 @@ public class QiniuServiceImpl implements QiniuService {
             e.printStackTrace();
         }
         return null;
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        this.putPolicy = new StringMap();
+        putPolicy.put("returnBody", "{\"key\":\"$(key)\",\"hash\":\"$(etag)\",\"bucket\":\"$(bucket)\",\"width\":$(imageInfo.width), \"height\":${imageInfo.height}}");
+    }
+
+    /**
+     * 获取上传凭证
+     *
+     * @return {@link String}
+     */
+    private String getUploadToken() {
+        return this.auth.uploadToken(BUCKET, null, 3600, putPolicy);
     }
 }

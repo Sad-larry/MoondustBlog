@@ -38,7 +38,7 @@ public class LoginController {
      * @return {@link ResponseResult}<{@link ?}>
      */
     @GetMapping("/captchaImage")
-    public ResponseResult<?> captchaImage() {
+    public ResponseResult captchaImage() {
         //定义图形验证码的长、宽、验证码字符数、干扰线宽度
         // GifCaptcha captcha = CaptchaUtil.createGifCaptcha(200, 100, 1);
         ShearCaptcha captcha = CaptchaUtil.createShearCaptcha(200, 100, 1, 1);
@@ -63,11 +63,11 @@ public class LoginController {
      * @return {@link ResponseResult}<{@link ?}>
      */
     @PostMapping("/login")
-    public ResponseResult<?> adminLogin(@Valid @RequestBody LoginUserDTO loginUserDTO) {
+    public ResponseResult adminLogin(@Valid @RequestBody LoginUserDTO loginUserDTO) {
         // SpringSecurity登录认证
         String token = userService.adminLogin(loginUserDTO.getUserName(), loginUserDTO.getPassword(), loginUserDTO.getUuid(), loginUserDTO.getCode());
         // 登录只为了拿去令牌
-        return ResponseResult.success(token);
+        return ResponseResult.success().put("token", token);
     }
 
     /**
@@ -76,7 +76,7 @@ public class LoginController {
      * @return 用户信息
      */
     @GetMapping("/getInfo")
-    public ResponseResult<?> getInfo() {
+    public ResponseResult getInfo() {
         LoginUser loginUser = SecurityUtil.getLoginUser();
         // TODO 这里应该是获取具体的用户信息
         return ResponseResult.success(loginUser);
@@ -88,7 +88,7 @@ public class LoginController {
      * @return {@link ResponseResult}<{@link ?}>
      */
     @GetMapping("/getRouters")
-    public ResponseResult<?> getRouters() {
+    public ResponseResult getRouters() {
         Long userId = SecurityUtil.getUserId();
         List<Menu> menus = menuService.selectMenuTreeByUserId(userId);
         return ResponseResult.success(menuService.buildMenus(menus));
@@ -100,8 +100,9 @@ public class LoginController {
      * @return {@link ResponseResult}<{@link ?}>
      */
     @PostMapping("/logout")
-    public ResponseResult<?> adminLogout() {
-        return userService.adminLogout();
+    public ResponseResult adminLogout() {
+        userService.adminLogout();
+        return ResponseResult.success();
     }
 
 }

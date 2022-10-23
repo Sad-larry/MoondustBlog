@@ -1,8 +1,9 @@
 package work.moonzs.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import work.moonzs.domain.ResponseResult;
 import work.moonzs.domain.entity.Tag;
+import work.moonzs.domain.vo.PageVo;
+import work.moonzs.domain.vo.TagVo;
 
 import java.util.List;
 
@@ -35,8 +36,8 @@ public interface TagService extends IService<Tag> {
      * @param pageNum    页面num
      * @param pageSize   页面大小
      * @param fuzzyField 模糊领域
-     * @return {@link ResponseResult}<{@link ?}>
+     * @return {@link PageVo}<{@link TagVo}>
      */
-    ResponseResult<?> listTags(Integer pageNum, Integer pageSize, String fuzzyField);
+    PageVo<TagVo> listTags(Integer pageNum, Integer pageSize, String fuzzyField);
 }
 

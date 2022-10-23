@@ -3,6 +3,8 @@ package work.moonzs.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import work.moonzs.domain.ResponseResult;
 import work.moonzs.domain.entity.Comment;
+import work.moonzs.domain.vo.CommentVo;
+import work.moonzs.domain.vo.PageVo;
 
 /**
  * 评论服务
@@ -21,6 +23,6 @@ public interface CommentService extends IService<Comment> {
      * @param pageSize 页面大小
      * @return {@link ResponseResult}<{@link ?}>
      */
-    ResponseResult<?> listComments(Integer pageNum, Integer pageSize);
+    PageVo<CommentVo> listComments(Integer pageNum, Integer pageSize);
 }
 

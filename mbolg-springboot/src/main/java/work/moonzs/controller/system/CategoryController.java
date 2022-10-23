@@ -9,6 +9,8 @@ import work.moonzs.base.utils.BeanCopyUtil;
 import work.moonzs.domain.ResponseResult;
 import work.moonzs.domain.dto.CategoryDTO;
 import work.moonzs.domain.entity.Category;
+import work.moonzs.domain.vo.CategoryVo;
+import work.moonzs.domain.vo.PageVo;
 import work.moonzs.service.CategoryService;
 
 /**
@@ -27,7 +29,7 @@ public class CategoryController {
      * @return {@link ResponseResult}<{@link ?}>
      */
     @PostMapping
-    public ResponseResult<?> addCategory(@RequestBody CategoryDTO categoryDTO) {
+    public ResponseResult addCategory(@RequestBody CategoryDTO categoryDTO) {
         // TODO 这里应该用字段校验，我先暂时手动检验
         if (StrUtil.isBlank(categoryDTO.getCategoryName()) || StrUtil.isBlank(categoryDTO.getDescription())) {
             return ResponseResult.fail(AppHttpCodeEnum.FIELD_EMPTY);
@@ -54,8 +56,9 @@ public class CategoryController {
      * @return {@link ResponseResult}<{@link ?}>
      */
     @GetMapping("/list")
-    public ResponseResult<?> listCategory(@RequestParam(defaultValue = "1", required = false) Integer pageNum, @RequestParam(defaultValue = "10", required = false) Integer pageSize, @RequestParam(defaultValue = "", required = false) String fuzzyField) {
-        return categoryService.listCategory(pageNum, pageSize, fuzzyField);
+    public ResponseResult listCategory(@RequestParam(defaultValue = "1", required = false) Integer pageNum, @RequestParam(defaultValue = "10", required = false) Integer pageSize, @RequestParam(defaultValue = "", required = false) String fuzzyField) {
+        PageVo<CategoryVo> categoryList = categoryService.listCategory(pageNum, pageSize, fuzzyField);
+        return ResponseResult.success(categoryList);
     }
 
     /**
@@ -65,7 +68,7 @@ public class CategoryController {
      * @return {@link ResponseResult}<{@link ?}>
      */
     @PutMapping
-    public ResponseResult<?> updateCategory(@RequestBody CategoryDTO categoryDTO) {
+    public ResponseResult updateCategory(@RequestBody CategoryDTO categoryDTO) {
         // TODO 这里应该用字段校验，我先暂时手动检验
         // tagName，description，status不为空
         if (StrUtil.isBlank(categoryDTO.getCategoryName()) || StrUtil.isBlank(categoryDTO.getDescription()) || StrUtil.isBlank(categoryDTO.getStatus())) {
@@ -94,7 +97,7 @@ public class CategoryController {
      * @return {@link ResponseResult}<{@link ?}>
      */
     @DeleteMapping("/{id}")
-    public ResponseResult<?> deleteCategory(@PathVariable(value = "id") Long categoryId) {
+    public ResponseResult deleteCategory(@PathVariable(value = "id") Long categoryId) {
         Category category = new Category();
         category.setId(categoryId);
         category.setStatus(StatusConstants.DISABLE);

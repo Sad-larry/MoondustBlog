@@ -11,6 +11,7 @@ import work.moonzs.domain.ResponseResult;
 import work.moonzs.domain.dto.ArticleDTO;
 import work.moonzs.domain.entity.Article;
 import work.moonzs.domain.vo.ArticleVo;
+import work.moonzs.domain.vo.PageVo;
 import work.moonzs.service.ArticleService;
 import work.moonzs.service.ArticleTagService;
 import work.moonzs.service.CategoryService;
@@ -44,7 +45,7 @@ public class ArticleController {
      * @return {@link ResponseResult}<{@link ?}>
      */
     @PostMapping
-    public ResponseResult<?> publishArticle(@Validated(value = ValidateGroup.Insert.class) @RequestBody ArticleDTO articleDTO) {
+    public ResponseResult publishArticle(@Validated(value = ValidateGroup.Insert.class) @RequestBody ArticleDTO articleDTO) {
         // 如果id不为空，应该为更新操作，这里的话就直接设置为空
         // 应该还要判断当前的分类和标签是否存在于数据库中，这两项默认是不会有问题的，就是怕有人不通过前端请求，
         //   或者请求的时候刚好被删除了
@@ -75,11 +76,12 @@ public class ArticleController {
      * @return {@link ResponseResult}<{@link ArticleVo}>
      */
     @GetMapping("/list")
-    public ResponseResult<?> listArticle(
+    public ResponseResult listArticle(
             @RequestParam(defaultValue = "1", required = false) Integer pageNum,
             @RequestParam(defaultValue = "10", required = false) Integer pageSize,
             @RequestParam(defaultValue = "", required = false) String fuzzyField) {
-        return articleService.listArticle(pageNum, pageSize, fuzzyField);
+        PageVo<ArticleVo> articleList = articleService.listArticle(pageNum, pageSize, fuzzyField);
+        return ResponseResult.success(articleList);
     }
 
     /**
@@ -91,7 +93,7 @@ public class ArticleController {
      * @return {@link ResponseResult}<{@link ?}>
      */
     @PutMapping
-    public ResponseResult<?> updateArticle(@Validated(value = {ValidateGroup.Update.class}) @RequestBody ArticleDTO articleDTO) {
+    public ResponseResult updateArticle(@Validated(value = {ValidateGroup.Update.class}) @RequestBody ArticleDTO articleDTO) {
         boolean existCategory = categoryService.isExistCategoryById(articleDTO.getCategoryId());
         if (!existCategory) {
             return ResponseResult.fail(AppHttpCodeEnum.CATEGORY_NOT_EXIST);
@@ -110,7 +112,7 @@ public class ArticleController {
      * @return {@link ResponseResult}<{@link ?}>
      */
     @PutMapping("/updateCategory")
-    public ResponseResult<?> updateArticleCategory(@RequestBody ArticleDTO articleDTO) {
+    public ResponseResult updateArticleCategory(@RequestBody ArticleDTO articleDTO) {
         boolean existCategory = categoryService.isExistCategoryById(articleDTO.getCategoryId());
         if (!existCategory) {
             return ResponseResult.fail(AppHttpCodeEnum.CATEGORY_NOT_EXIST);
@@ -130,7 +132,7 @@ public class ArticleController {
      * @return {@link ResponseResult}<{@link ?}>
      */
     @PutMapping("/updateTags")
-    public ResponseResult<?> updateArticleTag(@RequestBody ArticleDTO articleDTO) {
+    public ResponseResult updateArticleTag(@RequestBody ArticleDTO articleDTO) {
         if (CollUtil.isNotEmpty(articleDTO.getTagList())) {
             boolean existTags = tagService.isExistTagByIds(articleDTO.getTagList());
             if (!existTags) {
@@ -153,7 +155,7 @@ public class ArticleController {
      * @return {@link ResponseResult}<{@link ?}>
      */
     @DeleteMapping("/{id}")
-    public ResponseResult<?> deleteArticle(@PathVariable(value = "id") Long articleId) {
+    public ResponseResult deleteArticle(@PathVariable(value = "id") Long articleId) {
         // article_tag表数据也要删除
         // articleService.removeById(articleId);
         // articleTagService.deleteArticleTagById(articleId);

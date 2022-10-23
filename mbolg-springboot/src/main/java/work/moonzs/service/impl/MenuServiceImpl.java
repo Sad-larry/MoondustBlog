@@ -9,7 +9,6 @@ import org.springframework.util.StringUtils;
 import work.moonzs.base.enums.StatusConstants;
 import work.moonzs.base.utils.BeanCopyUtil;
 import work.moonzs.base.utils.SecurityUtil;
-import work.moonzs.domain.ResponseResult;
 import work.moonzs.domain.entity.Menu;
 import work.moonzs.domain.vo.MenuListVo;
 import work.moonzs.domain.vo.PageVo;
@@ -37,18 +36,17 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
      *
      * @param pageNum  页面num
      * @param pageSize 页面大小
-     * @return {@link ResponseResult}<{@link ?}>
+     * @return {@link PageVo}<{@link MenuListVo}>
      */
     @Override
-    public ResponseResult<?> listMenus(Integer pageNum, Integer pageSize) {
+    public PageVo<MenuListVo> listMenus(Integer pageNum, Integer pageSize) {
         LambdaQueryWrapper<Menu> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Menu::getStatus, StatusConstants.NORMAL);
         Page<Menu> page = new Page<>(pageNum, pageSize);
         page(page, queryWrapper);
         List<Menu> list = page.getRecords();
         List<MenuListVo> menuListVos = BeanCopyUtil.copyBeanList(list, MenuListVo.class);
-        PageVo<MenuListVo> pageVo = new PageVo<>(menuListVos, page.getTotal(), page.getCurrent(), page.getSize());
-        return ResponseResult.success(pageVo);
+        return new PageVo<>(menuListVos, page.getTotal(), page.getCurrent(), page.getSize());
     }
 
     @Override

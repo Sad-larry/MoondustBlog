@@ -13,8 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import work.moonzs.base.enums.AppHttpCodeEnum;
+import work.moonzs.base.exception.ServiceException;
 import work.moonzs.base.utils.PathUtil;
-import work.moonzs.domain.ResponseResult;
 import work.moonzs.domain.entity.Image;
 import work.moonzs.mapper.ImageMapper;
 import work.moonzs.service.UploadService;
@@ -27,7 +28,7 @@ import java.io.InputStream;
  */
 @Service("uploadService")
 public class UploadServiceImpl implements UploadService {
-    @Value("${oss.qiniu.domain-url}")
+    @Value("${oss.qiniu.domain}")
     private String DOMAIN_URL;
     @Value("${oss.qiniu.access-key}")
     private String ACCESS_KEY;
@@ -39,14 +40,8 @@ public class UploadServiceImpl implements UploadService {
     @Autowired
     private ImageMapper imageMapper;
 
-    /**
-     * 上传图片具体实现方法
-     *
-     * @param image 图像
-     * @return {@link ResponseResult}<{@link ?}>
-     */
     @Override
-    public ResponseResult<?> uploadImage(MultipartFile image) {
+    public String uploadImage(MultipartFile image) {
         // 获取初始文件名
         String originalFilename = image.getOriginalFilename();
         // 通过
@@ -54,14 +49,14 @@ public class UploadServiceImpl implements UploadService {
         // 如果判断通过上传到OSS
         String url = uploadOss(image, filePath);
         if (StrUtil.isBlank(url)) {
-            return ResponseResult.fail();
+            throw new ServiceException(AppHttpCodeEnum.SERVER_INNER_ERR);
         }
         // 还应该上传到数据库中，把filePath上传上去而不是url
         Image sqlImage = new Image();
         sqlImage.setImageName(originalFilename);
         sqlImage.setImageSrc(filePath);
         imageMapper.insert(sqlImage);
-        return ResponseResult.success(url);
+        return url;
     }
 
     /**

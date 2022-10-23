@@ -1,7 +1,6 @@
 package work.moonzs.service;
 
 import org.springframework.web.multipart.MultipartFile;
-import work.moonzs.domain.ResponseResult;
 
 /**
  * 文件上传接口
@@ -14,7 +13,7 @@ public interface UploadService {
      * 上传图片
      *
      * @param image 图像
-     * @return {@link ResponseResult}<{@link ?}>
+     * @return {@link String}
      */
-    ResponseResult<?> uploadImage(MultipartFile image);
+    String uploadImage(MultipartFile image);
 }

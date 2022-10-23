@@ -81,7 +81,7 @@ public class ParamInspect {
         } else {
             LOG.info("参数校验失败");
             LOG.info("<<<<<Inspect.before");
-            throw new ValidateException(errorMsg.toString());
+            throw new ValidateException(45000, errorMsg.toString());
         }
     }
 

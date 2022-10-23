@@ -9,6 +9,16 @@
       "name": "oss.qiniu.secret-key",
       "type": "java.lang.String",
       "description": "Description for oss.qiniu.secret-key."
+    },
+    {
+      "name": "oss.qiniu.domain",
+      "type": "java.lang.String",
+      "description": "Description for oss.qiniu.domain."
+    },
+    {
+      "name": "oss.qiniu.bucket",
+      "type": "java.lang.String",
+      "description": "Description for oss.qiniu.bucket."
     }
   ]
 }

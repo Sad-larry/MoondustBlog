@@ -10,6 +10,8 @@ import work.moonzs.base.utils.BeanCopyUtil;
 import work.moonzs.domain.ResponseResult;
 import work.moonzs.domain.dto.RoleDTO;
 import work.moonzs.domain.entity.Role;
+import work.moonzs.domain.vo.PageVo;
+import work.moonzs.domain.vo.RoleVo;
 import work.moonzs.mapper.RoleMapper;
 import work.moonzs.service.RoleService;
 
@@ -33,8 +35,9 @@ public class RoleController {
      * @return {@link ResponseResult}<{@link ?}>
      */
     @GetMapping("/list")
-    public ResponseResult<?> listRoles(@RequestParam(defaultValue = "1", required = false) Integer pageNum, @RequestParam(defaultValue = "10", required = false) Integer pageSize) {
-        return roleService.listRoles(pageNum, pageSize);
+    public ResponseResult listRoles(@RequestParam(defaultValue = "1", required = false) Integer pageNum, @RequestParam(defaultValue = "10", required = false) Integer pageSize) {
+        PageVo<RoleVo> roleList = roleService.listRoles(pageNum, pageSize);
+        return ResponseResult.success(roleList);
     }
 
     /**
@@ -44,7 +47,7 @@ public class RoleController {
      * @return {@link ResponseResult}<{@link ?}>
      */
     @PostMapping
-    public ResponseResult<?> addRole(@RequestBody RoleDTO roleDTO) {
+    public ResponseResult addRole(@RequestBody RoleDTO roleDTO) {
         // TODO 这里应该用字段校验，我先暂时手动检验
         // TODO 其他校验，是否存在同名等等
 
@@ -71,7 +74,7 @@ public class RoleController {
      * @return {@link ResponseResult}<{@link ?}>
      */
     @PutMapping
-    public ResponseResult<?> updateRole(@RequestBody RoleDTO roleDTO) {
+    public ResponseResult updateRole(@RequestBody RoleDTO roleDTO) {
         // TODO 这里应该用字段校验，我先暂时手动检验
 
         // 判断该id角色是否存在
@@ -98,7 +101,7 @@ public class RoleController {
      * @return {@link ResponseResult}<{@link ?}>
      */
     @DeleteMapping("/{id}")
-    public ResponseResult<?> deleteRole(@PathVariable(value = "id") Long roleId) {
+    public ResponseResult deleteRole(@PathVariable(value = "id") Long roleId) {
         Role role = new Role();
         role.setId(roleId);
         role.setStatus(StatusConstants.DISABLE);

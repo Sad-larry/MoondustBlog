@@ -47,7 +47,18 @@ public enum AppHttpCodeEnum {
     REQUIRED_REQUEST_BODY(45018, "请求体缺失"),
     // 验证码有误
     CAPTCHA_FAIL(45019, "验证码有误"),
-
+    // 账号已在别的地方登录，请重新登录
+    REPEAT_LOGIN(45020, "账号已在别的地方登录，请重新登录"),
+    // token已过期
+    TOKEN_OVERDUE(45021, "TOKEN已过期"),
+    // 文件内容为空
+    FILE_IS_EMPTY(45022, "文件内容为空"),
+    // 文件上传成功
+    FILE_UPLOAD_SUCCESS(45023, "文件上传成功"),
+    // 文件上传失败
+    FILE_UPLOAD_FAIL(45024, "文件上传失败"),
+    // 系统找不到指定文件或路径
+    NOT_FIND_SPECIFIED_PATH(45025, "系统找不到指定文件或路径"),
 
     // 警告：文章未添加标签
     WARNING_TAG_EMPTY(54001, "警告：文章未添加标签"),
@@ -62,9 +73,9 @@ public enum AppHttpCodeEnum {
     final Integer code;
     final String msg;
 
-    AppHttpCodeEnum(Integer code, String errorMessage) {
+    AppHttpCodeEnum(Integer code, String msg) {
         this.code = code;
-        this.msg = errorMessage;
+        this.msg = msg;
     }
 
     public Integer getCode() {

@@ -8,6 +8,8 @@ import work.moonzs.base.utils.BeanCopyUtil;
 import work.moonzs.domain.ResponseResult;
 import work.moonzs.domain.dto.MenuDTO;
 import work.moonzs.domain.entity.Menu;
+import work.moonzs.domain.vo.MenuListVo;
+import work.moonzs.domain.vo.PageVo;
 import work.moonzs.service.MenuService;
 
 /**
@@ -25,11 +27,12 @@ public class MenuController {
      *
      * @param pageNum  页面num
      * @param pageSize 页面大小
-     * @return {@link ResponseResult}<{@link ?}>
+     * @return {@link ResponseResult}
      */
     @GetMapping("/list")
-    public ResponseResult<?> listMenus(@RequestParam(defaultValue = "1", required = false) Integer pageNum, @RequestParam(defaultValue = "10", required = false) Integer pageSize) {
-        return menuService.listMenus(pageNum, pageSize);
+    public ResponseResult listMenus(@RequestParam(defaultValue = "1", required = false) Integer pageNum, @RequestParam(defaultValue = "10", required = false) Integer pageSize) {
+        PageVo<MenuListVo> menuList = menuService.listMenus(pageNum, pageSize);
+        return ResponseResult.success(menuList);
     }
 
 
@@ -37,10 +40,10 @@ public class MenuController {
      * 添加菜单
      *
      * @param menuDTO 菜单dto
-     * @return {@link ResponseResult}<{@link ?}>
+     * @return {@link ResponseResult}
      */
     @PostMapping
-    public ResponseResult<?> addMenu(@RequestBody MenuDTO menuDTO) {
+    public ResponseResult addMenu(@RequestBody MenuDTO menuDTO) {
         // TODO 这里应该用字段校验，我先暂时手动检验
 
         // 判断分类名是否有相同的，有就不添加
@@ -60,10 +63,10 @@ public class MenuController {
      * 更新菜单
      *
      * @param menuDTO 菜单dto
-     * @return {@link ResponseResult}<{@link ?}>
+     * @return {@link ResponseResult}
      */
     @PutMapping
-    public ResponseResult<?> updateMenu(@RequestBody MenuDTO menuDTO) {
+    public ResponseResult updateMenu(@RequestBody MenuDTO menuDTO) {
         // TODO 这里应该用字段校验，我先暂时手动检验
 
         // 判断该id分类是否存在
@@ -86,10 +89,10 @@ public class MenuController {
      * 删除菜单
      *
      * @param menuId 菜单id
-     * @return {@link ResponseResult}<{@link ?}>
+     * @return {@link ResponseResult}
      */
     @DeleteMapping("/{id}")
-    public ResponseResult<?> deleteMenu(@PathVariable(value = "id") Long menuId) {
+    public ResponseResult deleteMenu(@PathVariable(value = "id") Long menuId) {
         Menu menu = new Menu();
         menu.setId(menuId);
         menu.setStatus(StatusConstants.DISABLE);

@@ -1,122 +1,149 @@
 package work.moonzs.domain;
 
+import cn.hutool.core.util.ObjectUtil;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import work.moonzs.base.enums.AppHttpCodeEnum;
+import work.moonzs.base.exception.BaseException;
+
+import java.util.HashMap;
 
 /**
  * 封装前端响应实体类
  *
  * @author Moondust月尘
+ * @date 2022/10/23
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ResponseResult<T> {
-    /**
-     * 返回数据
-     */
-    private T data;
-    /**
-     * 返回消息体
-     */
-    private String msg;
+public class ResponseResult extends HashMap<String, Object> {
     /**
      * 返回状态码
      */
-    private Integer code;
+    public static final String CODE_TAG = "code";
+    /**
+     * 返回消息体
+     */
+    public static final String MSG_TAG = "msg";
+    /**
+     * 返回数据
+     */
+    public static final String DATA_TAG = "data";
+
+
+    /**
+     * 创建一个空消息响应
+     */
+    private ResponseResult() {
+
+    }
+
+    private ResponseResult(Integer code, String msg) {
+        super.put(CODE_TAG, code);
+        super.put(MSG_TAG, msg);
+    }
 
     /**
      * 自定义消息
      *
      * @param responseEnum 响应枚举
-     * @return {@link ResponseResult}<{@link T}>
      */
-    private static <T> ResponseResult<T> rspMsg(AppHttpCodeEnum responseEnum) {
-        ResponseResult<T> message = new ResponseResult<>();
-        message.setCode(responseEnum.getCode());
-        message.setMsg(responseEnum.getMsg());
-        return message;
+    private ResponseResult(AppHttpCodeEnum responseEnum) {
+        super.put(CODE_TAG, responseEnum.getCode());
+        super.put(MSG_TAG, responseEnum.getMsg());
+    }
+
+    private ResponseResult(AppHttpCodeEnum responseEnum, Object data) {
+        super.put(CODE_TAG, responseEnum.getCode());
+        super.put(MSG_TAG, responseEnum.getMsg());
+        // 本来不知道为啥要加这个，知道想到，如果我data为空，取而代之的是其他数据字段，那么这个就可以用了，比如token
+        if (ObjectUtil.isNotEmpty(data)) {
+            super.put(DATA_TAG, data);
+        }
+    }
+
+    private ResponseResult(Integer code, String msg, Object data) {
+        super.put(CODE_TAG, code);
+        super.put(MSG_TAG, msg);
+        if (ObjectUtil.isNotEmpty(data)) {
+            super.put(DATA_TAG, data);
+        }
     }
 
     /**
-     * 自定义消息
-     *
-     * @param code 代码
-     * @param msg  消息
-     * @return {@link ResponseResult}<{@link T}>
+     * 自定义返回消息
      */
-    private static <T> ResponseResult<T> rspMsg(int code, String msg) {
-        ResponseResult<T> message = new ResponseResult<>();
-        message.setCode(code);
-        message.setMsg(msg);
-        return message;
+    public static ResponseResult result(AppHttpCodeEnum responseEnum) {
+        return new ResponseResult(responseEnum);
+    }
+
+    public static ResponseResult result(Integer code, String msg, Object data) {
+        return new ResponseResult(code, msg, data);
     }
 
     /**
      * 成功消息
      *
-     * @return {@link ResponseResult}<{@link T}>
+     * @return {@link ResponseResult}
      */
-    public static <T> ResponseResult<T> success() {
-        return rspMsg(AppHttpCodeEnum.SUCCESS);
+    public static ResponseResult success() {
+        return success(AppHttpCodeEnum.SUCCESS);
     }
 
-    public static <T> ResponseResult<T> success(T data) {
-        ResponseResult<T> rspMsg = success();
-        rspMsg.setData(data);
-        return rspMsg;
+    public static ResponseResult success(Object data) {
+        return success(AppHttpCodeEnum.SUCCESS, data);
     }
 
-    public static <T> ResponseResult<T> success(AppHttpCodeEnum responseEnum) {
-        return rspMsg(responseEnum);
+    public static ResponseResult success(AppHttpCodeEnum responseEnum) {
+        return success(responseEnum, null);
     }
 
-    public static <T> ResponseResult<T> success(int code, String msg) {
-        return rspMsg(code, msg);
+    public static ResponseResult success(AppHttpCodeEnum responseEnum, Object data) {
+        return new ResponseResult(responseEnum, data);
     }
 
     /**
      * 失败消息
      *
-     * @return {@link ResponseResult}<{@link T}>
+     * @return {@link ResponseResult}
      */
-    public static <T> ResponseResult<T> fail() {
-        return rspMsg(AppHttpCodeEnum.SERVER_INNER_ERR);
+    public static ResponseResult fail() {
+        return fail(AppHttpCodeEnum.SERVER_INNER_ERR);
     }
 
-    public static <T> ResponseResult<T> fail(String msg) {
-        ResponseResult<T> rspMsg = fail();
-        rspMsg.setMsg(msg);
-        return rspMsg;
+    public static ResponseResult fail(AppHttpCodeEnum responseEnum) {
+        return fail(responseEnum, null);
     }
 
-    public static <T> ResponseResult<T> fail(AppHttpCodeEnum responseEnum) {
-        return rspMsg(responseEnum);
+    public static ResponseResult fail(AppHttpCodeEnum responseEnum, Object data) {
+        return new ResponseResult(responseEnum, data);
     }
 
-    public static <T> ResponseResult<T> fail(int code, String msg) {
-        return rspMsg(code, msg);
+    public static ResponseResult fail(Integer code, String msg) {
+        return new ResponseResult(code, msg, null);
     }
 
-    public Integer getCode() {
-        return code;
+    /**
+     * 方便链式调用，也可以自己添加
+     *
+     * @param key   key
+     * @param value value
+     * @return {@link ResponseResult}
+     */
+    @Override
+    public ResponseResult put(String key, Object value) {
+        super.put(key, value);
+        return this;
     }
 
-    public void setCode(Integer code) {
-        this.code = code;
+    /**
+     * 构造一个异常且带数据的API返回
+     *
+     * @return {@link ResponseResult}
+     */
+    public static <T extends BaseException> ResponseResult ofException(T t, Object data) {
+        return new ResponseResult(t.getCode(), t.getMsg(), data);
     }
 
-    public String getMsg() {
-        return msg;
-    }
-
-    public void setMsg(String msg) {
-        this.msg = msg;
-    }
-
-    public T getData() {
-        return data;
-    }
-
-    public void setData(T data) {
-        this.data = data;
+    public static <T extends BaseException> ResponseResult ofException(T t) {
+        return ofException(t, null);
     }
 }

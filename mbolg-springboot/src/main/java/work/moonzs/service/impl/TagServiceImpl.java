@@ -7,7 +7,6 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 import work.moonzs.base.enums.StatusConstants;
 import work.moonzs.base.utils.BeanCopyUtil;
-import work.moonzs.domain.ResponseResult;
 import work.moonzs.domain.entity.Tag;
 import work.moonzs.domain.vo.PageVo;
 import work.moonzs.domain.vo.TagVo;
@@ -24,12 +23,7 @@ import java.util.List;
  */
 @Service("tagService")
 public class TagServiceImpl extends ServiceImpl<TagMapper, Tag> implements TagService {
-    /**
-     * 通过标签id判断是否存在于数据库
-     *
-     * @param tagIds 标签id
-     * @return boolean
-     */
+
     @Override
     public boolean isExistTagByIds(List<Long> tagIds) {
         LambdaQueryWrapper<Tag> queryWrapper = new LambdaQueryWrapper<>();
@@ -41,12 +35,6 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, Tag> implements TagSe
         return count == tagIds.size();
     }
 
-    /**
-     * 通过标签名字判断是否存在相同标签
-     *
-     * @param tagName 标签名
-     * @return boolean
-     */
     @Override
     public boolean isExistTagByTagName(String tagName) {
         LambdaQueryWrapper<Tag> queryWrapper = new LambdaQueryWrapper<>();
@@ -56,16 +44,8 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, Tag> implements TagSe
         return count > 0;
     }
 
-    /**
-     * 列表标签
-     *
-     * @param pageNum    页面num
-     * @param pageSize   页面大小
-     * @param fuzzyField 模糊领域
-     * @return {@link ResponseResult}<{@link ?}>
-     */
     @Override
-    public ResponseResult<?> listTags(Integer pageNum, Integer pageSize, String fuzzyField) {
+    public PageVo<TagVo> listTags(Integer pageNum, Integer pageSize, String fuzzyField) {
         LambdaQueryWrapper<Tag> queryWrapper = new LambdaQueryWrapper<>();
         // 模糊字段为空则不匹配
         if (!StrUtil.isBlank(fuzzyField)) {
@@ -77,8 +57,7 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, Tag> implements TagSe
         page(page, queryWrapper);
         List<Tag> list = page.getRecords();
         List<TagVo> tagListVos = BeanCopyUtil.copyBeanList(list, TagVo.class);
-        PageVo<TagVo> pageVo = new PageVo<>(tagListVos, page.getTotal(), page.getCurrent(), page.getSize());
-        return ResponseResult.success(pageVo);
+        return new PageVo<>(tagListVos, page.getTotal(), page.getCurrent(), page.getSize());
     }
 }
 

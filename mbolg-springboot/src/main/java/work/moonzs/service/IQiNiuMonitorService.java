@@ -7,7 +7,7 @@ import com.qiniu.cdn.CdnResult;
  *
  * @author Moondust月尘
  */
-public interface QiniuMonitorService {
+public interface IQiNiuMonitorService {
     /**
      * 刷新文件
      *

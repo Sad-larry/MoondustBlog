@@ -7,6 +7,8 @@ import work.moonzs.base.utils.BeanCopyUtil;
 import work.moonzs.domain.ResponseResult;
 import work.moonzs.domain.dto.CommentDTO;
 import work.moonzs.domain.entity.Comment;
+import work.moonzs.domain.vo.CommentVo;
+import work.moonzs.domain.vo.PageVo;
 import work.moonzs.service.CommentService;
 
 /**
@@ -26,8 +28,9 @@ public class CommentController {
      * @return {@link ResponseResult}<{@link ?}>
      */
     @GetMapping("/list")
-    public ResponseResult<?> listComments(@RequestParam(defaultValue = "1", required = false) Integer pageNum, @RequestParam(defaultValue = "10", required = false) Integer pageSize) {
-        return commentService.listComments(pageNum, pageSize);
+    public ResponseResult listComments(@RequestParam(defaultValue = "1", required = false) Integer pageNum, @RequestParam(defaultValue = "10", required = false) Integer pageSize) {
+        PageVo<CommentVo> commentList = commentService.listComments(pageNum, pageSize);
+        return ResponseResult.success(commentList);
     }
 
     /**
@@ -38,7 +41,7 @@ public class CommentController {
      * @return {@link ResponseResult}<{@link ?}>
      */
     @PutMapping
-    public ResponseResult<?> updateComment(@RequestBody CommentDTO commentDTO) {
+    public ResponseResult updateComment(@RequestBody CommentDTO commentDTO) {
         Comment comment = BeanCopyUtil.copyBean(commentDTO, Comment.class);
         commentService.updateById(comment);
         return ResponseResult.success();
@@ -51,7 +54,7 @@ public class CommentController {
      * @return {@link ResponseResult}<{@link ?}>
      */
     @DeleteMapping("/{id}")
-    public ResponseResult<?> deleteComment(@PathVariable(value = "id") Long commentId) {
+    public ResponseResult deleteComment(@PathVariable(value = "id") Long commentId) {
         Comment comment = new Comment();
         comment.setId(commentId);
         comment.setStatus(StatusConstants.DISABLE);

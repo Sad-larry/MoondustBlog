@@ -14,10 +14,6 @@ import org.springframework.context.annotation.Configuration;
 @ConfigurationProperties(prefix = "oss.qiniu")
 public class CustomProperties {
     /**
-     * 域名地址
-     */
-    private String domainUrl;
-    /**
      * 七牛云公有密钥
      */
     private String accessKey;
@@ -25,6 +21,10 @@ public class CustomProperties {
      * 七牛云私有密钥
      */
     private String secretKey;
+    /**
+     * 域名地址
+     */
+    private String domain;
     /**
      * 七牛云空间名
      */

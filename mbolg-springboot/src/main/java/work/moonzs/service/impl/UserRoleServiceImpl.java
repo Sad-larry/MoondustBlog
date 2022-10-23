@@ -16,13 +16,6 @@ import work.moonzs.service.UserRoleService;
 @Service("userRoleService")
 public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRole> implements UserRoleService {
 
-
-    /**
-     * 更新用户id
-     *
-     * @param userId 用户id
-     * @param roleId 角色id
-     */
     @Override
     public void updateByUserId(Long userId, Long roleId) {
         LambdaQueryWrapper<UserRole> queryWrapper = new LambdaQueryWrapper<>();

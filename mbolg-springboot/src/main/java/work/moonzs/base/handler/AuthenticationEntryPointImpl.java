@@ -26,7 +26,7 @@ public class AuthenticationEntryPointImpl implements AuthenticationEntryPoint {
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
         // authException.printStackTrace();
-        ResponseResult<?> result = null;
+        ResponseResult result = null;
         if (authException instanceof InsufficientAuthenticationException) {
             // 用户未登录
             result = ResponseResult.fail(AppHttpCodeEnum.USER_NEED_LOGIN);

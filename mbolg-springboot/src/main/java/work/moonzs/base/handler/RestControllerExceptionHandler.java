@@ -3,6 +3,7 @@ package work.moonzs.base.handler;
 import cn.hutool.log.Log;
 import cn.hutool.log.LogFactory;
 import cn.hutool.log.dialect.console.ConsoleLogFactory;
+import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -39,7 +40,7 @@ public class RestControllerExceptionHandler {
      * @return {@link ResponseResult}<{@link ?}>
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseResult<?> handleMethodArgumentNotValid(MethodArgumentNotValidException e) {
+    public ResponseResult handleMethodArgumentNotValid(MethodArgumentNotValidException e) {
         BindingResult result = e.getBindingResult();
         List<String> list = new LinkedList<>();
         result.getFieldErrors().forEach(error -> {
@@ -49,7 +50,7 @@ public class RestControllerExceptionHandler {
             LOG.error("错误字段 -> {} 错误值 -> {} 原因 -> {}", field, value, msg);
             list.add(msg);
         });
-        return ResponseResult.fail(list.toString());
+        return ResponseResult.fail(45000, list.toString());
     }
 
     /**
@@ -59,9 +60,9 @@ public class RestControllerExceptionHandler {
      * @return {@link ResponseResult}<{@link ?}>
      */
     @ExceptionHandler(ValidateException.class)
-    public ResponseResult<?> handleValidate(ValidateException e) {
+    public ResponseResult handleValidate(ValidateException e) {
         LOG.error("失败原因: {}", e.getMessage());
-        return ResponseResult.fail(e.getMessage());
+        return ResponseResult.ofException(e);
     }
 
     /**
@@ -70,7 +71,7 @@ public class RestControllerExceptionHandler {
      * @return {@link ResponseResult}<{@link ?}>
      */
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseResult<?> handleHttpMessageNotReadable() {
+    public ResponseResult handleHttpMessageNotReadable() {
         return ResponseResult.fail(AppHttpCodeEnum.REQUIRED_REQUEST_BODY);
     }
 
@@ -81,7 +82,19 @@ public class RestControllerExceptionHandler {
      * @return {@link ResponseResult}<{@link ?}>
      */
     @ExceptionHandler(ServiceException.class)
-    public ResponseResult<?> handleService(ServiceException e) {
-        return ResponseResult.fail(e.getMsg());
+    public ResponseResult handleService(ServiceException e) {
+        LOG.error("失败原因: {}", e.getMessage());
+        return ResponseResult.ofException(e);
+    }
+
+    /**
+     * 处理JWT过期异常
+     *
+     * @param e e
+     * @return {@link ResponseResult}
+     */
+    @ExceptionHandler(ExpiredJwtException.class)
+    public ResponseResult handleExpiredJwt(ExpiredJwtException e) {
+        return ResponseResult.fail(AppHttpCodeEnum.TOKEN_ABNORMAL);
     }
 }

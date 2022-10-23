@@ -7,7 +7,6 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 import work.moonzs.base.enums.StatusConstants;
 import work.moonzs.base.utils.BeanCopyUtil;
-import work.moonzs.domain.ResponseResult;
 import work.moonzs.domain.entity.Category;
 import work.moonzs.domain.vo.CategoryVo;
 import work.moonzs.domain.vo.PageVo;
@@ -22,12 +21,7 @@ import work.moonzs.service.CategoryService;
  */
 @Service("categoryService")
 public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> implements CategoryService {
-    /**
-     * 通过id查询分类是否存在并且状态为正常使用
-     *
-     * @param categoryId 类别id
-     * @return boolean
-     */
+
     @Override
     public boolean isExistCategoryById(Long categoryId) {
         LambdaQueryWrapper<Category> queryWrapper = new LambdaQueryWrapper<>();
@@ -53,16 +47,8 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
         return count > 0;
     }
 
-    /**
-     * 类别列表
-     *
-     * @param pageNum    页面num
-     * @param pageSize   页面大小
-     * @param fuzzyField 模糊领域
-     * @return {@link ResponseResult}<{@link ?}>
-     */
     @Override
-    public ResponseResult<?> listCategory(Integer pageNum, Integer pageSize, String fuzzyField) {
+    public PageVo<CategoryVo> listCategory(Integer pageNum, Integer pageSize, String fuzzyField) {
         LambdaQueryWrapper<Category> queryWrapper = new LambdaQueryWrapper<>();
         // 模糊字段为空则不匹配
         if (!StrUtil.isBlank(fuzzyField)) {
@@ -72,8 +58,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
         queryWrapper.eq(Category::getStatus, StatusConstants.NORMAL);
         Page<Category> page = new Page<>(pageNum, pageSize);
         page(page, queryWrapper);
-        PageVo<CategoryVo> pageVo = new PageVo<>(BeanCopyUtil.copyBeanList(page.getRecords(), CategoryVo.class), page);
-        return ResponseResult.success(pageVo);
+        return new PageVo<>(BeanCopyUtil.copyBeanList(page.getRecords(), CategoryVo.class), page);
     }
 }
 

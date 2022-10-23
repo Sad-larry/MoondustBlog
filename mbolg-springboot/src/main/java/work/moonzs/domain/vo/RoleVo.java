@@ -13,7 +13,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class RoleListVo {
+public class RoleVo {
     /**
      * id
      */

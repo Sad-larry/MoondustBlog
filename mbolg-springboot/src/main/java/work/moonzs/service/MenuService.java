@@ -1,8 +1,9 @@
 package work.moonzs.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import work.moonzs.domain.ResponseResult;
 import work.moonzs.domain.entity.Menu;
+import work.moonzs.domain.vo.MenuListVo;
+import work.moonzs.domain.vo.PageVo;
 import work.moonzs.domain.vo.router.RouterVo;
 
 import java.util.List;
@@ -20,9 +21,9 @@ public interface MenuService extends IService<Menu> {
      *
      * @param pageNum  页面num
      * @param pageSize 页面大小
-     * @return {@link ResponseResult}<{@link ?}>
+     * @return {@link PageVo}<{@link MenuListVo}>
      */
-    ResponseResult<?> listMenus(Integer pageNum, Integer pageSize);
+    PageVo<MenuListVo> listMenus(Integer pageNum, Integer pageSize);
 
     /**
      * 通过id查询menu是否存在
@@ -53,7 +54,7 @@ public interface MenuService extends IService<Menu> {
      * 根据菜单建立路由菜单
      *
      * @param menus 菜单
-     * @return {@link Object}
+     * @return {@link List}<{@link RouterVo}>
      */
     List<RouterVo> buildMenus(List<Menu> menus);
 }

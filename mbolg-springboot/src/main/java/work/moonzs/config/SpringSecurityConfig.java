@@ -16,6 +16,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import work.moonzs.base.filter.JwtAuthenticationTokenFilter;
+import work.moonzs.base.filter.RepeatLoginFilter;
 import work.moonzs.base.handler.AccessDeniedHandlerImpl;
 import work.moonzs.base.handler.AuthenticationEntryPointImpl;
 
@@ -29,6 +30,8 @@ import java.util.List;
 public class SpringSecurityConfig {
     @Autowired
     private JwtAuthenticationTokenFilter authenticationTokenFilter;
+    @Autowired
+    private RepeatLoginFilter repeatLoginFilter;
     @Autowired
     private AuthenticationEntryPointImpl authenticationEntryPoint;
     @Autowired
@@ -51,7 +54,9 @@ public class SpringSecurityConfig {
         httpSecurity.authorizeRequests().antMatchers("/system/login", "/system/captchaImage").anonymous()
                 .anyRequest().authenticated();
         // 添加过滤器
-        httpSecurity.addFilterBefore(authenticationTokenFilter, UsernamePasswordAuthenticationFilter.class);
+        httpSecurity.addFilterBefore(authenticationTokenFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(repeatLoginFilter, JwtAuthenticationTokenFilter.class);
+
         httpSecurity.exceptionHandling()
                 // 认证失败处理器
                 .authenticationEntryPoint(authenticationEntryPoint)

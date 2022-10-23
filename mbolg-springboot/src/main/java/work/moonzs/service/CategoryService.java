@@ -2,8 +2,9 @@ package work.moonzs.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.springframework.transaction.annotation.Transactional;
-import work.moonzs.domain.ResponseResult;
 import work.moonzs.domain.entity.Category;
+import work.moonzs.domain.vo.CategoryVo;
+import work.moonzs.domain.vo.PageVo;
 
 /**
  * (Category)表服务接口
@@ -14,7 +15,7 @@ import work.moonzs.domain.entity.Category;
 public interface CategoryService extends IService<Category> {
 
     /**
-     * 通过id查询分类是否存在
+     * 通过id查询分类是否存在并且状态为正常使用
      *
      * @param categoryId 类别id
      * @return boolean
@@ -36,8 +37,8 @@ public interface CategoryService extends IService<Category> {
      * @param pageNum    页面num
      * @param pageSize   页面大小
      * @param fuzzyField 模糊领域
-     * @return {@link ResponseResult}<{@link ?}>
+     * @return {@link PageVo}<{@link CategoryVo}>
      */
-    ResponseResult<?> listCategory(Integer pageNum, Integer pageSize, String fuzzyField);
+    PageVo<CategoryVo> listCategory(Integer pageNum, Integer pageSize, String fuzzyField);
 }
 

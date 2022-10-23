@@ -60,7 +60,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
      * @return {@link ResponseResult}<{@link ?}>
      */
     @Override
-    public ResponseResult<?> listArticle(Integer pageNum, Integer pageSize, String fuzzyField) {
+    public PageVo<ArticleVo> listArticle(Integer pageNum, Integer pageSize, String fuzzyField) {
         LambdaQueryWrapper<Article> queryWrapper = new LambdaQueryWrapper<>();
         // fuzzyField不为空才进行模糊查询
         if (!StrUtil.isBlank(fuzzyField)) {
@@ -86,8 +86,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
                     return articleVo;
                 }).toList();
         // 分页封装
-        PageVo<ArticleVo> pageVo = new PageVo<>(collect, page);
-        return ResponseResult.success(pageVo);
+        return new PageVo<>(collect, page);
     }
 }
 

@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
-import work.moonzs.service.QiniuService;
+import work.moonzs.service.IQiNiuService;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -28,7 +28,7 @@ import java.nio.charset.StandardCharsets;
  */
 @SpringBootTest
 public class QiniuTest {
-    @Value("${oss.qiniu.domain-url}")
+    @Value("${oss.qiniu.domain}")
     private String DOMAIN_URL;
     @Value("${oss.qiniu.access-key}")
     private String ACCESS_KEY;
@@ -38,7 +38,7 @@ public class QiniuTest {
     private String BUCKET;
 
     @Autowired
-    private QiniuService qiniuService;
+    private IQiNiuService qiniuService;
 
     @Test
     public void test3() throws IOException {

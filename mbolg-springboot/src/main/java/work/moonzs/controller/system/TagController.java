@@ -9,6 +9,8 @@ import work.moonzs.base.utils.BeanCopyUtil;
 import work.moonzs.domain.ResponseResult;
 import work.moonzs.domain.dto.TagDTO;
 import work.moonzs.domain.entity.Tag;
+import work.moonzs.domain.vo.PageVo;
+import work.moonzs.domain.vo.TagVo;
 import work.moonzs.service.TagService;
 
 import java.util.List;
@@ -23,13 +25,27 @@ public class TagController {
     private TagService tagService;
 
     /**
+     * 列表标签
+     *
+     * @param pageNum    页面num
+     * @param pageSize   页面大小
+     * @param fuzzyField 模糊领域
+     * @return {@link ResponseResult}<{@link ?}>
+     */
+    @GetMapping("/list")
+    public ResponseResult listTags(@RequestParam(defaultValue = "1", required = false) Integer pageNum, @RequestParam(defaultValue = "10", required = false) Integer pageSize, @RequestParam(defaultValue = "", required = false) String fuzzyField) {
+        PageVo<TagVo> tagList = tagService.listTags(pageNum, pageSize, fuzzyField);
+        return ResponseResult.success(tagList);
+    }
+
+    /**
      * 添加标签
      *
      * @param tagDTO 标签dto
      * @return {@link ResponseResult}<{@link ?}>
      */
     @PostMapping
-    public ResponseResult<?> addTag(@RequestBody TagDTO tagDTO) {
+    public ResponseResult addTag(@RequestBody TagDTO tagDTO) {
         // TODO 这里应该用字段校验，我先暂时手动检验
         if (StrUtil.isBlank(tagDTO.getTagName()) || StrUtil.isBlank(tagDTO.getDescription())) {
             return ResponseResult.fail(AppHttpCodeEnum.FIELD_EMPTY);
@@ -46,21 +62,6 @@ public class TagController {
         return ResponseResult.success();
     }
 
-
-    /**
-     * 列表标签
-     *
-     * @param pageNum    页面num
-     * @param pageSize   页面大小
-     * @param fuzzyField 模糊领域
-     * @return {@link ResponseResult}<{@link ?}>
-     */
-    @GetMapping("/list")
-    public ResponseResult<?> listTags(@RequestParam(defaultValue = "1", required = false) Integer pageNum, @RequestParam(defaultValue = "10", required = false) Integer pageSize, @RequestParam(defaultValue = "", required = false) String fuzzyField) {
-        return tagService.listTags(pageNum, pageSize, fuzzyField);
-    }
-
-
     /**
      * 更新标签
      *
@@ -68,7 +69,7 @@ public class TagController {
      * @return {@link ResponseResult}<{@link ?}>
      */
     @PutMapping
-    public ResponseResult<?> updateTag(@RequestBody TagDTO tagDTO) {
+    public ResponseResult updateTag(@RequestBody TagDTO tagDTO) {
         // TODO 这里应该用字段校验，我先暂时手动检验
         // tagName，description，status不为空
         if (StrUtil.isBlank(tagDTO.getTagName()) || StrUtil.isBlank(tagDTO.getDescription()) || StrUtil.isBlank(tagDTO.getStatus())) {
@@ -97,7 +98,7 @@ public class TagController {
      * @return {@link ResponseResult}<{@link ?}>
      */
     @DeleteMapping("/{id}")
-    public ResponseResult<?> deleteTag(@PathVariable(value = "id") Long tagId) {
+    public ResponseResult deleteTag(@PathVariable(value = "id") Long tagId) {
         Tag tag = new Tag();
         tag.setId(tagId);
         tag.setStatus(StatusConstants.DISABLE);

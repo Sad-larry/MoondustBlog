@@ -9,6 +9,8 @@ import work.moonzs.domain.dto.AddUserDTO;
 import work.moonzs.domain.dto.UserDTO;
 import work.moonzs.domain.entity.User;
 import work.moonzs.domain.entity.UserRole;
+import work.moonzs.domain.vo.PageVo;
+import work.moonzs.domain.vo.UserListVo;
 import work.moonzs.service.UserRoleService;
 import work.moonzs.service.UserService;
 
@@ -29,7 +31,7 @@ public class UserController {
      * @return {@link ResponseResult}<{@link ?}>
      */
     @PostMapping
-    public ResponseResult<?> addUser(@RequestBody AddUserDTO addUserDTO) {
+    public ResponseResult addUser(@RequestBody AddUserDTO addUserDTO) {
         addUserDTO.setId(null);
         User user = BeanCopyUtil.copyBean(addUserDTO, User.class);
         // TODO 密码应该加密存储
@@ -53,8 +55,9 @@ public class UserController {
      * @return {@link ResponseResult}<{@link ?}>
      */
     @GetMapping("/list")
-    public ResponseResult<?> listUsers(@RequestParam(defaultValue = "1", required = false) Integer pageNum, @RequestParam(defaultValue = "10", required = false) Integer pageSize, @RequestParam(defaultValue = "", required = false) String fuzzyField) {
-        return userService.listUsers(pageNum, pageSize, fuzzyField);
+    public ResponseResult listUsers(@RequestParam(defaultValue = "1", required = false) Integer pageNum, @RequestParam(defaultValue = "10", required = false) Integer pageSize, @RequestParam(defaultValue = "", required = false) String fuzzyField) {
+        PageVo<UserListVo> userList = userService.listUsers(pageNum, pageSize, fuzzyField);
+        return ResponseResult.success(userList);
     }
 
     /**
@@ -64,13 +67,13 @@ public class UserController {
      * @return {@link ResponseResult}<{@link ?}>
      */
     @PutMapping
-    public ResponseResult<?> updateUser(@RequestBody UserDTO userDTO) {
+    public ResponseResult updateUser(@RequestBody UserDTO userDTO) {
         // TODO 校验userDTO都不为空
 
         // 管理员不能更新角色信息
         if (userDTO.getId() != 1L) {
             // TODO 判断角色是否存在
-            
+
             // 通过用户名更新角色信息
             userRoleService.updateByUserId(userDTO.getId(), userDTO.getRoleId());
         }
@@ -90,7 +93,7 @@ public class UserController {
      * @return {@link ResponseResult}<{@link ?}>
      */
     @DeleteMapping("/{id}")
-    public ResponseResult<?> deleteUser(@PathVariable(value = "id") Long userId) {
+    public ResponseResult deleteUser(@PathVariable(value = "id") Long userId) {
         // 管理员不能被删
         if (userId == 1L) {
             return ResponseResult.fail();

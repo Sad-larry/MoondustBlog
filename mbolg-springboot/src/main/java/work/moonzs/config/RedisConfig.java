@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.jsontype.impl.LaissezFaireSubTypeValidator;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -20,6 +22,7 @@ import java.text.SimpleDateFormat;
  * @author sheng
  */
 @Configuration
+@AutoConfigureAfter(RedisAutoConfiguration.class)
 public class RedisConfig {
     /**
      * 将 RedisTemplate 对象注册到容器中
@@ -39,11 +42,11 @@ public class RedisConfig {
         redisTemplate.setHashKeySerializer(stringRedisSerializer);
         /*
             2. 对值进行序列化
+            也可以使用 com.alibaba.fastjson.support.spring.FastJsonRedisSerializer; 来序列化
+            FastJsonRedisSerializer<Object> fastJsonRedisSerializer = new FastJsonRedisSerializer<>(Object.class);
+            redisTemplate.setValueSerializer(fastJsonRedisSerializer);
+            redisTemplate.setHashValueSerializer(fastJsonRedisSerializer);
          */
-        // 也可以使用 com.alibaba.fastjson.support.spring.FastJsonRedisSerializer; 来序列化
-        // FastJsonRedisSerializer<Object> fastJsonRedisSerializer = new FastJsonRedisSerializer<>(Object.class);
-        // redisTemplate.setValueSerializer(fastJsonRedisSerializer);
-        // redisTemplate.setHashValueSerializer(fastJsonRedisSerializer);
         Jackson2JsonRedisSerializer<Object> jackson2JsonRedisSerializer = new Jackson2JsonRedisSerializer<>(Object.class);
         ObjectMapper objectMapper = new ObjectMapper();
         // 指定要序列化的域：field、get 和 set,以及修饰符范围：ANY是都要，包括 private 和 public

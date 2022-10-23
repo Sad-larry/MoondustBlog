@@ -12,7 +12,7 @@ import java.util.Date;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CommentListVo {
+public class CommentVo {
     /**
      * 主键
      */

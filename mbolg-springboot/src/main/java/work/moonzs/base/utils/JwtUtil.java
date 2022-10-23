@@ -20,9 +20,9 @@ import java.util.UUID;
 public class JwtUtil {
 
     /**
-     * 有效期为 60 * 60 *1000  一个小时
+     * 有效期为 24 * 60 * 60 *1000  一个小时不够，一天
      */
-    public static final Long JWT_TTL = 60 * 60 * 1000L;
+    public static final Long JWT_TTL = 24 * 60 * 60 * 1000L;
     /**
      * 设置秘钥明文
      */
@@ -102,7 +102,17 @@ public class JwtUtil {
      * @return boolean
      */
     public static boolean checkToken(String jwt) {
-        return StringUtils.hasText(jwt);
+        if (StringUtils.hasText(jwt)) {
+            Claims claims = null;
+            try {
+                claims = parseJWT(jwt);
+                String subject = claims.getSubject();
+                return StringUtils.hasText(subject);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return false;
     }
 
     /**
@@ -128,6 +138,23 @@ public class JwtUtil {
                 .setSigningKey(secretKey)
                 .parseClaimsJws(jwt)
                 .getBody();
+    }
+
+    /**
+     * 获取token的创建时间
+     *
+     * @param jwt jwt
+     * @return {@link Date}
+     */
+    public static Date getIssueAt(String jwt) {
+        Claims claims = null;
+        try {
+            claims = parseJWT(jwt);
+            return claims.getIssuedAt();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }
 

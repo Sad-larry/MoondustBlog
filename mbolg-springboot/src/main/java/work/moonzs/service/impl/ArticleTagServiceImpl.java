@@ -19,12 +19,6 @@ import java.util.List;
 @Service("articleTagService")
 public class ArticleTagServiceImpl extends ServiceImpl<ArticleTagMapper, ArticleTag> implements ArticleTagService {
 
-    /**
-     * 更新标签条
-     *
-     * @param articleId 文章id
-     * @param tagList   标记列表
-     */
     @Override
     public void updateArticleTag(Long articleId, List<Long> tagList) {
         // 通过文章id查询文章标签
@@ -67,11 +61,6 @@ public class ArticleTagServiceImpl extends ServiceImpl<ArticleTagMapper, Article
         }
     }
 
-    /**
-     * 通过文章id删除文章关联的标签
-     *
-     * @param articleId 文章id
-     */
     @Override
     public void deleteArticleTagById(Long articleId) {
         LambdaQueryWrapper<ArticleTag> queryWrapper = new LambdaQueryWrapper<>();

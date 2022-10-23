@@ -1,14 +1,27 @@
 package work.moonzs.service;
 
+import com.qiniu.http.Response;
 import com.qiniu.storage.model.FileInfo;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 /**
  * 七牛云存储空间的操作接口
  *
  * @author Moondust月尘
  */
-public interface QiniuService {
+public interface IQiNiuService {
+    /**
+     * 七牛云上传文件
+     *
+     * @param file    文件
+     * @param fileKey 文件关键
+     * @return 七牛上传Response
+     * @throws IOException ioe
+     */
+    Response uploadFile(MultipartFile file, String fileKey) throws IOException;
+
     /**
      * 上传图片并返回是否成功上传
      *

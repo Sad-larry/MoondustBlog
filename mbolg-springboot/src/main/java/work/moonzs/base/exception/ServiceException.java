@@ -1,27 +1,21 @@
 package work.moonzs.base.exception;
 
+import lombok.Getter;
 import work.moonzs.base.enums.AppHttpCodeEnum;
 
 /**
- * 负责抛出错误响应异常
+ * 负责抛出服务异常
  *
  * @author Moondust月尘
  */
-public class ServiceException extends RuntimeException {
-    private final int code;
-    private final String msg;
-
-    public int getCode() {
-        return code;
-    }
-
-    public String getMsg() {
-        return msg;
-    }
+@Getter
+public class ServiceException extends BaseException {
 
     public ServiceException(AppHttpCodeEnum httpCodeEnum) {
-        super(httpCodeEnum.getMsg());
-        this.code = httpCodeEnum.getCode();
-        this.msg = httpCodeEnum.getMsg();
+        super(httpCodeEnum);
+    }
+
+    public ServiceException(Integer code, String msg) {
+        super(code, msg);
     }
 }
