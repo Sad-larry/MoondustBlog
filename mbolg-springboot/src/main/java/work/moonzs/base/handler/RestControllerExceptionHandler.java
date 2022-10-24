@@ -10,6 +10,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import work.moonzs.base.enums.AppHttpCodeEnum;
+import work.moonzs.base.exception.SecurityException;
 import work.moonzs.base.exception.ServiceException;
 import work.moonzs.base.exception.ValidateException;
 import work.moonzs.domain.ResponseResult;
@@ -96,5 +97,17 @@ public class RestControllerExceptionHandler {
     @ExceptionHandler(ExpiredJwtException.class)
     public ResponseResult handleExpiredJwt(ExpiredJwtException e) {
         return ResponseResult.fail(AppHttpCodeEnum.TOKEN_ABNORMAL);
+    }
+
+    /**
+     * 处理自定义安全异常
+     *
+     * @param e e
+     * @return {@link ResponseResult}
+     */
+    @ExceptionHandler(SecurityException.class)
+    public ResponseResult handleSecurity(SecurityException e) {
+        LOG.error("失败原因: {}", e.getMessage());
+        return ResponseResult.ofException(e);
     }
 }

@@ -11,7 +11,7 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 @Component
-public final class RedisUtil {
+public final class RedisCache {
 
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
@@ -482,7 +482,6 @@ public final class RedisUtil {
             e.printStackTrace();
             return false;
         }
-
     }
 
     /**
@@ -499,7 +498,6 @@ public final class RedisUtil {
             e.printStackTrace();
             return false;
         }
-
     }
 
     /**
@@ -554,7 +552,5 @@ public final class RedisUtil {
             e.printStackTrace();
             return 0;
         }
-
     }
-
 }

@@ -19,7 +19,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@JsonIncludeProperties({"userId", "user", "permissions"})
+@JsonIncludeProperties({"userId", "user", "loginTime", "expireTime", "userUid", "permissions"})
 // @JsonIgnoreProperties({"enabled", "accountNonExpired", "password", "username", "accountNonLocked", "credentialsNonExpired", "authorities"})
 public class LoginUser implements UserDetails {
     /**
@@ -30,6 +30,18 @@ public class LoginUser implements UserDetails {
      * 用户信息
      */
     private User user;
+    /**
+     * 登录时间
+     */
+    private Long loginTime;
+    /**
+     * 过期时间
+     */
+    private Long expireTime;
+    /**
+     * 用户唯一标识
+     */
+    private String userUid;
     /**
      * 用户权限
      */

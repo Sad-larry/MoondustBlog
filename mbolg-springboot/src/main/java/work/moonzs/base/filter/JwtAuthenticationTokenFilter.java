@@ -1,21 +1,13 @@
 package work.moonzs.base.filter;
 
 import cn.hutool.core.util.ObjectUtil;
-import cn.hutool.core.util.StrUtil;
-import cn.hutool.json.JSONUtil;
-import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import work.moonzs.base.enums.AppHttpCodeEnum;
-import work.moonzs.base.enums.CacheConstants;
-import work.moonzs.base.utils.JwtUtil;
-import work.moonzs.base.utils.RedisUtil;
-import work.moonzs.base.utils.WebUtil;
-import work.moonzs.domain.ResponseResult;
+import work.moonzs.base.web.service.ITokenService;
 import work.moonzs.domain.entity.LoginUser;
 
 import javax.servlet.FilterChain;
@@ -32,39 +24,25 @@ import java.io.IOException;
 @Component
 public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
     @Autowired
-    private RedisUtil redisUtil;
+    private ITokenService iTokenService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String token = request.getHeader("token");
-        if (StrUtil.isEmpty(token)) {
-            // 如果用户没有携带token，可能是不需要登录的接口，其他可能会报异常
-            filterChain.doFilter(request, response);
-            // 用户认证之后，返回来不需要执行后面代码
-            return;
+        LoginUser loginUser = iTokenService.getLoginUser(request);
+        // 如果用户没有携带token，也就没用登录用户，可能是不需要登录的接口，直接放行
+        // 否则将登录用户的信息存入SecurityContext
+        if (ObjectUtil.isNotNull(loginUser)) {
+            // 验证用户令牌是否在有效期
+            boolean isVerify = iTokenService.verifyToken(loginUser);
+            // 有效则将用户信息从redis中读取出来并存入SecurityContext
+            if (isVerify) {
+                // 存入SecurityContextHolder
+                UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginUser, null, null);
+                // 设置服务认证细节，Authentication.getDetails()获取的就是WebAuthenticationDetails，获取ip，sessionId
+                authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+            }
         }
-        // 从token中解析用户id
-        Claims claims = null;
-        try {
-            claims = JwtUtil.parseJWT(token);
-        } catch (Exception e) {
-            // token超时  token非法
-            // 响应告诉前端需要重新登录
-            WebUtil.renderString(response, JSONUtil.toJsonStr(ResponseResult.fail(AppHttpCodeEnum.TOKEN_ABNORMAL)));
-            return;
-        }
-        String userId = claims.getSubject();
-        // 从redis中读取用户数据
-        LoginUser user = (LoginUser) redisUtil.get(CacheConstants.LOGIN_USER_KEY + userId);
-        if (ObjectUtil.isNull(user)) {
-            // 如果取不到说明登录过期
-            WebUtil.renderString(response, JSONUtil.toJsonStr(ResponseResult.fail(AppHttpCodeEnum.INVALID_LOGIN)));
-            return;
-        }
-        // 存入SecurityContextHolder
-        Authentication authenticationToken = new UsernamePasswordAuthenticationToken(user, null, null);
-        // UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword(), user.getAuthorities());
-        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
         filterChain.doFilter(request, response);
     }
 }

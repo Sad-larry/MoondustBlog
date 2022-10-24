@@ -6,7 +6,7 @@ import cn.hutool.core.util.IdUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import work.moonzs.base.enums.CacheConstants;
-import work.moonzs.base.utils.RedisUtil;
+import work.moonzs.base.utils.RedisCache;
 import work.moonzs.base.utils.SecurityUtil;
 import work.moonzs.domain.ResponseResult;
 import work.moonzs.domain.dto.LoginUserDTO;
@@ -30,7 +30,7 @@ public class LoginController {
     @Autowired
     private MenuService menuService;
     @Autowired
-    private RedisUtil redisUtil;
+    private RedisCache redisCache;
 
     /**
      * 获取验证码图片并存入缓存
@@ -45,7 +45,7 @@ public class LoginController {
         String code = captcha.getCode();
         String uuid = IdUtil.simpleUUID();
         // 将验证码结构存入redis,设置唯一标识，用户用这个唯一标识去redis中查找验证码进行验证
-        redisUtil.set(CacheConstants.CAPTCHA_CODE_KEY + uuid, code);
+        redisCache.set(CacheConstants.CAPTCHA_CODE_KEY + uuid, code);
 
         CaptchaVo captchaVo = new CaptchaVo();
         // TODO 是否开启验证应该从系统中读取判断

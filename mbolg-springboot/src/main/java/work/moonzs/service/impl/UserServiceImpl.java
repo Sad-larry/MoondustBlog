@@ -15,9 +15,9 @@ import work.moonzs.base.enums.CacheConstants;
 import work.moonzs.base.enums.StatusConstants;
 import work.moonzs.base.exception.ServiceException;
 import work.moonzs.base.utils.BeanCopyUtil;
-import work.moonzs.base.utils.JwtUtil;
-import work.moonzs.base.utils.RedisUtil;
+import work.moonzs.base.utils.RedisCache;
 import work.moonzs.base.utils.SecurityUtil;
+import work.moonzs.base.web.service.ITokenService;
 import work.moonzs.domain.entity.LoginUser;
 import work.moonzs.domain.entity.User;
 import work.moonzs.domain.vo.PageVo;
@@ -40,7 +40,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Autowired
     private UserMapper userMapper;
     @Autowired
-    private RedisUtil redisUtil;
+    private RedisCache redisCache;
+    @Autowired
+    private ITokenService iTokenService;
 
     @Override
     public String adminLogin(String username, String password, String uuid, String code) {
@@ -53,15 +55,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             throw new ServiceException(AppHttpCodeEnum.USER_FAILED_CERTIFICATION);
         }
         LoginUser loginUser = (LoginUser) authenticate.getPrincipal();
-        String userId = String.valueOf(loginUser.getUserId());
-        // jwt生成token，利用用户id作为主题
-        // TODO 如果用户选了remember me的话，要把token时长设为7天
-        String token = JwtUtil.createJWT(userId);
-        // 把token存入redis
-        redisUtil.set(CacheConstants.TOKEN_KEY + userId, token);
-        // 将用户信息存入redis
-        redisUtil.set(CacheConstants.LOGIN_USER_KEY + userId, loginUser);
-        return token;
+        return iTokenService.createToken(loginUser);
     }
 
     /**
@@ -72,8 +66,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
      */
     private void validateCaptcha(String uuid, String code) {
         String verifyKey = CacheConstants.CAPTCHA_CODE_KEY + uuid;
-        String captcha = (String) redisUtil.get(verifyKey);
-        redisUtil.del(verifyKey);
+        String captcha = (String) redisCache.get(verifyKey);
+        redisCache.del(verifyKey);
         if (captcha == null) {
             throw new ServiceException(AppHttpCodeEnum.CAPTCHA_FAIL);
         }
@@ -84,9 +78,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Override
     public void adminLogout() {
-        Long userId = SecurityUtil.getUserId();
-        // 从redis中删除用户
-        redisUtil.del(CacheConstants.TOKEN_KEY + userId);
+        LoginUser loginUser = SecurityUtil.getLoginUser();
+        // 从redis中删除用户token以及用户login信息
+        iTokenService.delLoginUser(loginUser.getUserUid());
     }
 
     @Override
