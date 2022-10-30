@@ -1,6 +1,5 @@
 package work.moonzs.service.impl;
 
-import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -28,10 +27,10 @@ import work.moonzs.service.UserService;
 import java.util.List;
 
 /**
- * (User)表服务实现类
+ * 用户基础信息表(User)表服务实现类
  *
  * @author Moondust月尘
- * @since 2022-09-27 14:48:04
+ * @since 2022-10-30 10:39:30
  */
 @Service("userService")
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
@@ -49,11 +48,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         // TODO 验证验证码是否正确
         // validateCaptcha(uuid, code);
         // SpringSecurity登录认证
+        // 认证不通过时，SpringSecurity会主动抛出异常
         Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
-        // 认证没通过 authenticate为空
-        if (ObjectUtil.isNull(authenticate)) {
-            throw new ServiceException(AppHttpCodeEnum.USER_FAILED_CERTIFICATION);
-        }
         LoginUser loginUser = (LoginUser) authenticate.getPrincipal();
         return iTokenService.createToken(loginUser);
     }
@@ -88,8 +84,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
         // 模糊字段为空则不匹配
         if (!StrUtil.isBlank(fuzzyField)) {
-            queryWrapper.like(User::getUserName, fuzzyField);
-            queryWrapper.or().like(User::getNickName, fuzzyField);
+            queryWrapper.like(User::getUsername, fuzzyField);
         }
         queryWrapper.eq(User::getStatus, StatusConstants.NORMAL);
         Page<User> page = new Page<>(pageNum, pageSize);

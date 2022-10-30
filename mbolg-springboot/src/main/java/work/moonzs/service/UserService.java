@@ -7,10 +7,10 @@ import work.moonzs.domain.vo.PageVo;
 import work.moonzs.domain.vo.UserListVo;
 
 /**
- * (User)表服务接口
+ * 用户基础信息表(User)表服务接口
  *
  * @author Moondust月尘
- * @since 2022-09-27 14:48:04
+ * @since 2022-10-30 10:37:18
  */
 public interface UserService extends IService<User> {
 

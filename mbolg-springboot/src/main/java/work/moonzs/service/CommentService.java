@@ -7,12 +7,10 @@ import work.moonzs.domain.vo.CommentVo;
 import work.moonzs.domain.vo.PageVo;
 
 /**
- * 评论服务
- * (Comment)表服务接口
+ * 评论表(Comment)表服务接口
  *
  * @author Moondust月尘
- * @date 2022/09/30
- * @since 2022-09-27 14:48:04
+ * @since 2022-10-30 10:36:23
  */
 public interface CommentService extends IService<Comment> {
 

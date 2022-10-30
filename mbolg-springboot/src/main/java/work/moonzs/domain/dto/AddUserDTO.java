@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 import java.util.Date;
 
 /**
+ * TODO article,comment,loginuser,user基本可以，其他的还需要添加删除或者修改
+ *
  * @author Moondust月尘
  */
 @Data
@@ -25,7 +27,7 @@ public class AddUserDTO {
      * 用户名
      */
     @ApiModelProperty(notes = "用户名")
-    private String userName;
+    private String username;
     /**
      * 昵称
      */

@@ -23,10 +23,10 @@ import work.moonzs.service.CategoryService;
 import java.util.List;
 
 /**
- * (Article)表服务实现类
+ * 博客文章表(Article)表服务实现类
  *
  * @author Moondust月尘
- * @since 2022-09-27 14:48:03
+ * @since 2022-10-30 10:38:42
  */
 @Service("articleService")
 public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> implements ArticleService {
@@ -71,20 +71,19 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         page(page, queryWrapper);
         // 查询文章的tag
         List<Article> records = page.getRecords();
-        // TODO 通过缓存获取当前的角色信息，给Article的userName设置值
-        List<ArticleVo> collect = records.stream()
-                .map(article -> {
-                    ArticleVo articleVo = BeanCopyUtil.copyBean(article, ArticleVo.class);
-                    // 通过categoryid查询分类
-                    Category category = categoryService.getById(article.getCategoryId());
-                    CategoryVo categoryVo = BeanCopyUtil.copyBean(category, CategoryVo.class);
-                    articleVo.setCategoryVo(categoryVo);
-                    // 通过tagid查询标签
-                    List<Tag> tags = tagMapper.selectByArticleId(article.getId());
-                    List<TagVo> tagVo = BeanCopyUtil.copyBeanList(tags, TagVo.class);
-                    articleVo.setTagListVo(tagVo);
-                    return articleVo;
-                }).toList();
+        // TODO 通过缓存获取当前的角色信息，给Article的username设置值
+        List<ArticleVo> collect = records.stream().map(article -> {
+            ArticleVo articleVo = BeanCopyUtil.copyBean(article, ArticleVo.class);
+            // 通过categoryid查询分类
+            Category category = categoryService.getById(article.getCategoryId());
+            CategoryVo categoryVo = BeanCopyUtil.copyBean(category, CategoryVo.class);
+            articleVo.setCategoryVo(categoryVo);
+            // 通过tagid查询标签
+            List<Tag> tags = tagMapper.selectByArticleId(article.getId());
+            List<TagVo> tagVo = BeanCopyUtil.copyBeanList(tags, TagVo.class);
+            articleVo.setTagListVo(tagVo);
+            return articleVo;
+        }).toList();
         // 分页封装
         return new PageVo<>(collect, page);
     }

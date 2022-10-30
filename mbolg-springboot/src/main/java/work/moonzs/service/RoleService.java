@@ -6,10 +6,10 @@ import work.moonzs.domain.vo.PageVo;
 import work.moonzs.domain.vo.RoleVo;
 
 /**
- * (Role)表服务接口
+ * 角色表(Role)表服务接口
  *
  * @author Moondust月尘
- * @since 2022-09-27 14:48:04
+ * @since 2022-10-30 10:36:45
  */
 public interface RoleService extends IService<Role> {
 

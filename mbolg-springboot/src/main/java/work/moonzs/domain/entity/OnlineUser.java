@@ -20,7 +20,7 @@ public class OnlineUser {
     // id
     private Long id;
     //用户名
-    private String userName;
+    private String username;
     //昵称
     private String nickName;
     //手机号
@@ -32,10 +32,10 @@ public class OnlineUser {
     //生日
     private Date birthday;
 
-    public static OnlineUser create(User user) {
+    public static OnlineUser create(UserAuth user) {
         OnlineUser onlineUser = BeanCopyUtil.copyBean(user, OnlineUser.class);
         // 脱敏
-        onlineUser.setMobile(DesensitizedUtil.mobilePhone(user.getMobile()));
+        // onlineUser.setMobile(DesensitizedUtil.mobilePhone(user.getMobile()));
         onlineUser.setEmail(DesensitizedUtil.email(user.getEmail()));
         return onlineUser;
     }

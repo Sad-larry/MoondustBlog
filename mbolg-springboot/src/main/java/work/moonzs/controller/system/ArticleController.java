@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import work.moonzs.base.enums.AppHttpCodeEnum;
 import work.moonzs.base.enums.StatusConstants;
 import work.moonzs.base.utils.BeanCopyUtil;
-import work.moonzs.base.validate.ValidateGroup;
+import work.moonzs.base.validate.VG;
 import work.moonzs.domain.ResponseResult;
 import work.moonzs.domain.dto.ArticleDTO;
 import work.moonzs.domain.entity.Article;
@@ -45,12 +45,12 @@ public class ArticleController {
      * @return {@link ResponseResult}<{@link ?}>
      */
     @PostMapping
-    public ResponseResult publishArticle(@Validated(value = ValidateGroup.Insert.class) @RequestBody ArticleDTO articleDTO) {
+    public ResponseResult publishArticle(@Validated(value = VG.Insert.class) @RequestBody ArticleDTO articleDTO) {
         // 如果id不为空，应该为更新操作，这里的话就直接设置为空
         // 应该还要判断当前的分类和标签是否存在于数据库中，这两项默认是不会有问题的，就是怕有人不通过前端请求，
         //   或者请求的时候刚好被删除了
         // 判断当前分类是否存在
-        boolean existCategory = categoryService.isExistCategoryById(articleDTO.getCategoryId());
+        boolean existCategory = categoryService.isExistCategoryById(1L);
         if (!existCategory) {
             return ResponseResult.fail(AppHttpCodeEnum.CATEGORY_NOT_EXIST);
         }
@@ -93,8 +93,8 @@ public class ArticleController {
      * @return {@link ResponseResult}<{@link ?}>
      */
     @PutMapping
-    public ResponseResult updateArticle(@Validated(value = {ValidateGroup.Update.class}) @RequestBody ArticleDTO articleDTO) {
-        boolean existCategory = categoryService.isExistCategoryById(articleDTO.getCategoryId());
+    public ResponseResult updateArticle(@Validated(value = {VG.Update.class}) @RequestBody ArticleDTO articleDTO) {
+        boolean existCategory = categoryService.isExistCategoryById(1L);
         if (!existCategory) {
             return ResponseResult.fail(AppHttpCodeEnum.CATEGORY_NOT_EXIST);
         }
@@ -113,13 +113,13 @@ public class ArticleController {
      */
     @PutMapping("/updateCategory")
     public ResponseResult updateArticleCategory(@RequestBody ArticleDTO articleDTO) {
-        boolean existCategory = categoryService.isExistCategoryById(articleDTO.getCategoryId());
+        boolean existCategory = categoryService.isExistCategoryById(1L);
         if (!existCategory) {
             return ResponseResult.fail(AppHttpCodeEnum.CATEGORY_NOT_EXIST);
         }
         Article article = new Article();
         article.setId(articleDTO.getId());
-        article.setCategoryId(articleDTO.getCategoryId());
+        article.setCategoryId(1L);
         articleService.updateById(article);
         return ResponseResult.success();
     }
@@ -133,14 +133,14 @@ public class ArticleController {
      */
     @PutMapping("/updateTags")
     public ResponseResult updateArticleTag(@RequestBody ArticleDTO articleDTO) {
-        if (CollUtil.isNotEmpty(articleDTO.getTagList())) {
-            boolean existTags = tagService.isExistTagByIds(articleDTO.getTagList());
+        if (CollUtil.isNotEmpty(articleDTO.getTags())) {
+            boolean existTags = tagService.isExistTagByIds(List.of(1L));
             if (!existTags) {
                 return ResponseResult.fail(AppHttpCodeEnum.TAG_NOT_EXIST);
             }
             // 通过文章id和标签集合更新标签
             Long id = articleDTO.getId();
-            List<Long> tagList = articleDTO.getTagList();
+            List<Long> tagList = null;
             articleTagService.updateArticleTag(id, tagList);
             return ResponseResult.success();
         } else {
@@ -163,7 +163,8 @@ public class ArticleController {
         // TODO 定时任务删除状态为2的文章，到时候在删除关联的tag表
         Article article = new Article();
         article.setId(articleId);
-        article.setStatus(StatusConstants.DELETE);
+        // 设置私密文章了
+        article.setIsSecret(StatusConstants.NORMAL);
         articleService.updateById(article);
         return ResponseResult.success();
     }

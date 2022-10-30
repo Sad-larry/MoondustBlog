@@ -6,10 +6,10 @@ import work.moonzs.domain.entity.Menu;
 import java.util.List;
 
 /**
- * (Menu)表数据库访问层
+ * 权限资源表 (Menu)表数据库访问层
  *
  * @author Moondust月尘
- * @since 2022-09-27 14:48:04
+ * @since 2022-10-30 10:33:21
  */
 public interface MenuMapper extends BaseMapper<Menu> {
     /**

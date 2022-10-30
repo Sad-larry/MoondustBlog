@@ -6,6 +6,7 @@ import cn.hutool.core.util.IdUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import work.moonzs.base.enums.CacheConstants;
+import work.moonzs.base.enums.SystemConstants;
 import work.moonzs.base.utils.RedisCache;
 import work.moonzs.base.utils.SecurityUtil;
 import work.moonzs.domain.ResponseResult;
@@ -33,7 +34,9 @@ public class LoginController {
     private RedisCache redisCache;
 
     /**
-     * 获取验证码图片并存入缓存
+     * 获取验证码图片并存入redis缓存
+     * 将uuid存入redis缓存，前端用户通过uuid与缓存中保存的验证码进行匹配
+     * 验证码设置有效期1小时，如果缓存中的验证码还没有验证，则失效
      *
      * @return {@link ResponseResult}<{@link ?}>
      */
@@ -65,9 +68,9 @@ public class LoginController {
     @PostMapping("/login")
     public ResponseResult adminLogin(@Valid @RequestBody LoginUserDTO loginUserDTO) {
         // SpringSecurity登录认证
-        String token = userService.adminLogin(loginUserDTO.getUserName(), loginUserDTO.getPassword(), loginUserDTO.getUuid(), loginUserDTO.getCode());
+        String token = userService.adminLogin(loginUserDTO.getUsername(), loginUserDTO.getPassword(), loginUserDTO.getUuid(), loginUserDTO.getCode());
         // 登录只为了拿去令牌
-        return ResponseResult.success().put("token", token);
+        return ResponseResult.success().put(SystemConstants.TOKEN, token);
     }
 
     /**

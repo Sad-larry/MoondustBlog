@@ -4,7 +4,6 @@ import cn.hutool.core.util.StrUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import work.moonzs.base.enums.AppHttpCodeEnum;
-import work.moonzs.base.enums.StatusConstants;
 import work.moonzs.base.utils.BeanCopyUtil;
 import work.moonzs.domain.ResponseResult;
 import work.moonzs.domain.dto.TagDTO;
@@ -101,7 +100,6 @@ public class TagController {
     public ResponseResult deleteTag(@PathVariable(value = "id") Long tagId) {
         Tag tag = new Tag();
         tag.setId(tagId);
-        tag.setStatus(StatusConstants.DISABLE);
         tagService.updateById(tag);
         return ResponseResult.success();
     }

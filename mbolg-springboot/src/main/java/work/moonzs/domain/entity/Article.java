@@ -9,46 +9,52 @@ import lombok.NoArgsConstructor;
 import java.util.Date;
 
 /**
- * (Article)表实体类
+ * 博客文章表(Article)表实体类
  *
  * @author Moondust月尘
- * @since 2022-10-17 14:28:05
+ * @since 2022-10-30 10:17:44
  */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @TableName("t_article")
 public class Article {
-    //主键    
+    //主键ID    
     @TableId
     private Long id;
-    //作者
+    //用户ID
     private Long userId;
     //文章标题
     private String title;
     //文章内容
     private String content;
-    //文章摘要
+    //文章简介
     private String summary;
-    //所属分类
+    //分类ID
     private Long categoryId;
-    //缩略图
-    private String thumbnail;
-    //是否置顶(0否,1是)
-    private Integer isTop;
-    //文章状态(0草稿,1发布,2待删除)
-    private Integer status;
-    //浏览量
-    private Long viewCount;
-    //是否允许评论(0否,1是)
-    private Integer isComment;
-    //评论数
-    private Long commentCount;
-    //点赞数
-    private Long starCount;
     //创建时间
     private Date createTime;
     //更新时间
     private Date updateTime;
+    //文章封面地址
+    private String avatar;
+    //文章内容md版
+    private String contentMd;
+    //是否是私密文章(0否,1是)
+    private Integer isSecret;
+    //是否置顶(0否,1是)
+    private Integer isStick;
+    //是否发布(0草稿,1发布)
+    private Integer isPublish;
+    //是否原创(0转载,1原创)
+    private Integer isOriginal;
+    //转载地址
+    private String originalUrl;
+    //文章阅读量
+    private Integer quantity;
+    //说明
+    private String remark;
+    //SEO关键词
+    private String keywords;
 }
 

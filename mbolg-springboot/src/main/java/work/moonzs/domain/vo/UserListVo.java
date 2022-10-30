@@ -22,7 +22,7 @@ public class UserListVo {
     /**
      * 用户名
      */
-    private String userName;
+    private String username;
     /**
      * 昵称
      */

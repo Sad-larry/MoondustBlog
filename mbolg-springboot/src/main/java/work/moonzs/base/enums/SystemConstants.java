@@ -18,4 +18,8 @@ public class SystemConstants {
      * 登录用户关键，在token创建过程中需要，解析时需要
      */
     public static final String LOGIN_USER_KEY = "login_user_uid";
+    /**
+     * 登录用户令牌
+     */
+    public static final String TOKEN = "token";
 }

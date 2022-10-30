@@ -23,10 +23,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * (Menu)表服务实现类
+ * 权限资源表 (Menu)表服务实现类
  *
  * @author Moondust月尘
- * @since 2022-09-27 14:48:04
+ * @since 2022-10-30 10:39:16
  */
 @Service("menuService")
 public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements MenuService {
@@ -41,7 +41,6 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
     @Override
     public PageVo<MenuListVo> listMenus(Integer pageNum, Integer pageSize) {
         LambdaQueryWrapper<Menu> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(Menu::getStatus, StatusConstants.NORMAL);
         Page<Menu> page = new Page<>(pageNum, pageSize);
         page(page, queryWrapper);
         List<Menu> list = page.getRecords();
@@ -53,7 +52,6 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
     public boolean isExistMenuById(Long menuId) {
         LambdaQueryWrapper<Menu> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Menu::getId, menuId);
-        queryWrapper.eq(Menu::getStatus, StatusConstants.NORMAL);
         long count = count(queryWrapper);
         return count > 0;
     }
@@ -61,8 +59,8 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
     @Override
     public boolean isExistMenuByCxNamePath(String name, String path) {
         LambdaQueryWrapper<Menu> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(Menu::getMenuName, name);
-        queryWrapper.eq(Menu::getPath, path);
+        queryWrapper.eq(Menu::getName, name);
+        queryWrapper.eq(Menu::getUrl, path);
         // 不同判断状态
         long count = count(queryWrapper);
         return count > 0;
@@ -107,9 +105,9 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
      */
     private List<Menu> getChildList(List<Menu> menus, Long pid) {
         return menus.stream()
-                .filter(menu -> pid.equals(menu.getPid()))
+                .filter(menu -> pid.equals(menu.getParentId()))
                 // 通过OrderNum进行升序排序
-                .sorted(Comparator.comparingInt(Menu::getOrderNum))
+                .sorted(Comparator.comparingInt(Menu::getSortNo))
                 .collect(Collectors.toList());
     }
 
@@ -123,10 +121,9 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
             router.setName(getRouterName(menu));
             router.setPath(getRouterPath(menu));
             router.setComponent(menu.getComponent());
-            router.setQuery(menu.getQuery());
-            router.setMeta(new MetaVo(menu.getMenuName(), menu.getIcon(), StatusConstants.DISABLE.equals(menu.getIsCache())));
+            router.setMeta(new MetaVo(menu.getName(), menu.getIcon(), StatusConstants.DISABLE.equals(menu.getIsCache())));
             List<Menu> children = menu.getChildren();
-            if (CollUtil.isNotEmpty(children) && StatusConstants.TYPE_DIR.equals(menu.getMenuType())) {
+            if (CollUtil.isNotEmpty(children) && StatusConstants.TYPE_DIR.equals(menu.getType())) {
                 router.setAlwaysShow(true);
                 router.setRedirect("noRedirect");
                 router.setChildren(buildMenus(children));
@@ -143,10 +140,10 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
      * @return {@link String}
      */
     private String getRouterPath(Menu menu) {
-        String routerPath = menu.getPath();
+        String routerPath = menu.getUrl();
         // 如果是一级目录，则需要加"/"
-        if (0 == menu.getPid().intValue() && StatusConstants.TYPE_DIR.equals(menu.getMenuType())) {
-            routerPath = "/" + menu.getPath();
+        if (0 == menu.getParentId().intValue() && StatusConstants.TYPE_DIR.equals(menu.getType())) {
+            routerPath = "/" + menu.getUrl();
         }
         return routerPath;
     }
@@ -158,7 +155,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
      * @return {@link String}
      */
     private String getRouterName(Menu menu) {
-        return StringUtils.capitalize(menu.getPath());
+        return StringUtils.capitalize(menu.getUrl());
     }
 
     /**
@@ -169,10 +166,9 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
     private List<Menu> selectMenuTreeAll() {
         LambdaQueryWrapper<Menu> queryWrapper = new LambdaQueryWrapper<>();
         // 只选择目录和菜单部分
-        queryWrapper.in(Menu::getMenuType, "M", "C");
-        queryWrapper.eq(Menu::getStatus, StatusConstants.NORMAL);
-        queryWrapper.orderByAsc(Menu::getPid);
-        queryWrapper.orderByAsc(Menu::getOrderNum);
+        queryWrapper.in(Menu::getType, "M", "C");
+        queryWrapper.orderByAsc(Menu::getParentId);
+        queryWrapper.orderByAsc(Menu::getSortNo);
         return list(queryWrapper);
     }
 }

@@ -12,47 +12,51 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * (Menu)表实体类
+ * 权限资源表 (Menu)表实体类
  *
  * @author Moondust月尘
- * @since 2022-10-18 20:37:04
+ * @since 2022-10-30 10:17:48
  */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @TableName("t_menu")
 public class Menu {
-    //菜单ID    
+    //主键ID    
     @TableId
     private Long id;
-    //父菜单ID
-    private Long pid;
-    //组件路径
+    //资源组件
     private String component;
-    //菜单图标
+    //资源图标
     private String icon;
-    //创建时间
-    private Date createTime;
     //更新时间
     private Date updateTime;
-    //菜单状态（0停用,1正常）
-    private Integer status;
+    //上级资源ID
+    private Long parentId;
+    //资源名称
+    private String title;
     //路由地址
-    private String path;
-    //菜单名称
-    private String menuName;
+    private String url;
+    //资源级别
+    private Integer level;
     //显示顺序
-    private Integer orderNum;
-    //路由参数
-    private String query;
+    private Integer sortNo;
+    //菜单类型(M菜单,F按钮)
+    private String type;
+    //重定向地址
+    private String redirect;
+    //跳转地址
+    private String name;
+    //是否隐藏(0否,1是)
+    private Integer hidden;
+    //备注
+    private String remark;
+    //创建时间
+    private Date createdTime;
     //是否缓存（0不缓存,1缓存）
     private Integer isCache;
-    //菜单类型（M目录,C菜单,F按钮）
-    private String menuType;
-    //权限标识
-    private String perms;
-    // 子菜单
+    //子菜单列表
     @TableField(exist = false)
-    private List<Menu> children = new ArrayList<>();
+    List<Menu> children = new ArrayList<>();
 }
 

@@ -75,11 +75,11 @@ public class UserController {
             // TODO 判断角色是否存在
 
             // 通过用户名更新角色信息
-            userRoleService.updateByUserId(userDTO.getId(), userDTO.getRoleId());
+            userRoleService.updateByUserId(userDTO.getId(), userDTO.getId());
         }
         // 管理员不能修改状态
         if (userDTO.getId() == 1L) {
-            userDTO.setStatus(null);
+            userDTO.setId(null);
         }
         User user = BeanCopyUtil.copyBean(userDTO, User.class);
         userService.updateById(user);

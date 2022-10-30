@@ -3,21 +3,19 @@ package work.moonzs.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import work.moonzs.domain.entity.Role;
 
-import java.util.List;
-
 /**
- * (Role)表数据库访问层
+ * 角色表(Role)表数据库访问层
  *
  * @author Moondust月尘
- * @since 2022-09-27 14:48:04
+ * @since 2022-10-30 10:34:09
  */
 public interface RoleMapper extends BaseMapper<Role> {
     /**
      * 通过用户id查询该用户的角色信息，
      *
      * @param userId 用户id
-     * @return {@link List}<{@link String}>
+     * @return {@link String}
      */
-    List<String> selectUserRole(Long userId);
+    String selectUserRole(Long userId);
 }
 

@@ -8,10 +8,10 @@ import work.moonzs.domain.vo.TagVo;
 import java.util.List;
 
 /**
- * (Tag)表服务接口
+ * 博客标签表(Tag)表服务接口
  *
  * @author Moondust月尘
- * @since 2022-09-27 14:48:04
+ * @since 2022-10-30 10:36:53
  */
 public interface TagService extends IService<Tag> {
     /**

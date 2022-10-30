@@ -9,38 +9,42 @@ import lombok.NoArgsConstructor;
 import java.util.Date;
 
 /**
- * (User)表实体类
+ * 用户基础信息表(User)表实体类
  *
  * @author Moondust月尘
- * @since 2022-10-17 14:28:17
+ * @since 2022-10-30 10:17:49
  */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @TableName("t_user")
 public class User {
-    //主键    
+    //主键ID    
     @TableId
     private Long id;
-    //用户名
-    private String userName;
-    //昵称
-    private String nickName;
-    //密码
+    //账号
+    private String username;
+    //登录密码
     private String password;
-    //手机号
-    private String mobile;
-    //电子邮箱
-    private String email;
-    //用户头像
-    private String avatar;
-    //个人简介
-    private String intro;
-    //生日
-    private Date birthday;
-    //账号状态(0停用,1正常)
+    //用户详情ID
+    private Long userAuthId;
+    //角色ID
+    private Long roleId;
+    //用户状态(0禁用,1正常)
     private Integer status;
-    //注册时间
+    //ip地址
+    private String ipAddress;
+    //ip来源
+    private String ipSource;
+    //登录系统
+    private String os;
+    //登录方式
+    private Integer loginType;
+    //浏览器
+    private String browser;
+    //最后登录时间
+    private Date lastLoginTime;
+    //创建时间
     private Date createTime;
     //更新时间
     private Date updateTime;

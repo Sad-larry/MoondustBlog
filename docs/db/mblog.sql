@@ -1,467 +1,477 @@
-/*
-SQLyog Enterprise v12.09 (64 bit)
-MySQL - 8.0.12 : Database - m_blog
-*********************************************************************
-*/
-
-
-/*!40101 SET NAMES utf8 */;
-
-/*!40101 SET SQL_MODE = ''*/;
-
-/*!40014 SET @OLD_UNIQUE_CHECKS = @@UNIQUE_CHECKS, UNIQUE_CHECKS = 0 */;
-/*!40014 SET @OLD_FOREIGN_KEY_CHECKS = @@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS = 0 */;
-/*!40101 SET @OLD_SQL_MODE = @@SQL_MODE, SQL_MODE = 'NO_AUTO_VALUE_ON_ZERO' */;
-/*!40111 SET @OLD_SQL_NOTES = @@SQL_NOTES, SQL_NOTES = 0 */;
-CREATE DATABASE /*!32312 IF NOT EXISTS */`m_blog` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */;
-
+CREATE DATABASE `m_blog`;
 USE `m_blog`;
-
-/*Table structure for table `t_article` */
-
+DROP TABLE IF EXISTS `t_admin_log`;
+CREATE TABLE `t_admin_log`
+(
+    `id`             bigint(20)   NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+    `username`       varchar(255) NULL     DEFAULT NULL COMMENT '操作用户',
+    `request_url`    varchar(255) NULL     DEFAULT NULL COMMENT '请求接口',
+    `type`           varchar(255) NULL     DEFAULT NULL COMMENT '请求方式',
+    `operation_name` varchar(255) NULL     DEFAULT NULL COMMENT '操作名称',
+    `ip`             varchar(255) NULL     DEFAULT NULL COMMENT 'ip',
+    `source`         varchar(255) NULL     DEFAULT NULL COMMENT 'ip来源',
+    `spend_time`     bigint(20)   NULL     DEFAULT NULL COMMENT '请求接口耗时',
+    `params_json`    mediumtext   NULL COMMENT '请求参数',
+    `class_path`     varchar(255) NULL     DEFAULT NULL COMMENT '类地址',
+    `method_name`    varchar(255) NULL     DEFAULT NULL COMMENT '方法名',
+    `create_time`    datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB
+  CHARACTER SET = utf8mb4
+  COLLATE = utf8mb4_general_ci COMMENT = '操作日志表'
+  ROW_FORMAT = Dynamic;
 DROP TABLE IF EXISTS `t_article`;
-
 CREATE TABLE `t_article`
 (
-    `id`            bigint(20)   NOT NULL AUTO_INCREMENT COMMENT '主键',
-    `user_id`       bigint(20)   NOT NULL COMMENT '作者',
-    `title`         varchar(256) NOT NULL COMMENT '文章标题',
-    `content`       longtext     NOT NULL COMMENT '文章内容',
-    `summary`       varchar(1024)         DEFAULT NULL COMMENT '文章摘要',
-    `category_id`   bigint(20)   NOT NULL COMMENT '所属分类',
-    `thumbnail`     varchar(256)          DEFAULT NULL COMMENT '缩略图',
-    `is_top`        tinyint(1)            DEFAULT '0' COMMENT '是否置顶(0否,1是)',
-    `status`        tinyint(1)            DEFAULT '0' COMMENT '文章状态(0草稿,1发布,2待删除)',
-    `view_count`    bigint(20)            DEFAULT '0' COMMENT '浏览量',
-    `is_comment`    tinyint(1)            DEFAULT '1' COMMENT '是否允许评论(0否,1是)',
-    `comment_count` bigint(20)            DEFAULT '0' COMMENT '评论数',
-    `star_count`    bigint(20)            DEFAULT '0' COMMENT '点赞数',
-    `create_time`   datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-    `update_time`   datetime              DEFAULT NULL COMMENT '更新时间',
+    `id`           bigint(20)   NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+    `user_id`      bigint(20)   NULL     DEFAULT NULL COMMENT '用户ID',
+    `category_id`  bigint(20)   NULL     DEFAULT NULL COMMENT '分类ID',
+    `title`        varchar(255) NOT NULL DEFAULT '' COMMENT '文章标题',
+    `avatar`       varchar(255) NULL     DEFAULT NULL COMMENT '文章封面地址',
+    `summary`      varchar(255) NOT NULL DEFAULT '' COMMENT '文章简介',
+    `content`      longtext     NULL COMMENT '文章内容',
+    `content_md`   longtext     NULL COMMENT '文章内容md版',
+    `is_secret`    tinyint(1)   NULL     DEFAULT 0 COMMENT '是否是私密文章(0否,1是)',
+    `is_stick`     tinyint(1)   NULL     DEFAULT 0 COMMENT '是否置顶(0否,1是)',
+    `is_publish`   tinyint(1)   NULL     DEFAULT 1 COMMENT '是否发布(0草稿,1发布)',
+    `is_original`  tinyint(1)   NULL     DEFAULT 1 COMMENT '是否原创(0转载,1原创)',
+    `original_url` varchar(255) NULL     DEFAULT NULL COMMENT '转载地址',
+    `quantity`     int(16)      NULL     DEFAULT 0 COMMENT '文章阅读量',
+    `remark`       varchar(255) NULL     DEFAULT '' COMMENT '说明',
+    `keywords`     varchar(255) NULL     DEFAULT NULL COMMENT 'SEO关键词',
+    `create_time`  datetime     NULL     DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `update_time`  datetime     NULL     DEFAULT NULL COMMENT '更新时间',
     PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB
-  AUTO_INCREMENT = 5
-  DEFAULT CHARSET = utf8mb4
-  COLLATE = utf8mb4_0900_ai_ci
+) ENGINE = INNODB
+  CHARACTER SET = UTF8MB4
+  COLLATE = UTF8MB4_GENERAL_CI COMMENT = '博客文章表'
   ROW_FORMAT = DYNAMIC;
-
-/*Data for the table `t_article` */
-
-insert into `t_article`(`id`, `user_id`, `title`, `content`, `summary`, `category_id`, `thumbnail`, `is_top`, `status`,
-                        `view_count`, `is_comment`, `comment_count`, `star_count`, `create_time`, `update_time`)
-values (1, 1, '第一篇测试博客', 'test', 'summary', 1,
-        'http://ri1bzqp09.bkt.clouddn.com/2022/10/05/7f77b44f5342433d96c1528941f5706b.jpg', 0, 0, 0, 1, 0, 0,
-        '2022-09-22 11:20:06', NULL),
-       (2, 1, 'test', '文章内容', '文章摘要', 1,
-        'http://ri1bzqp09.bkt.clouddn.com/2022/10/05/08cd891e21bd4918b910a2ce217b99d4.jpg', 0, 1, 0, 1, 0, 0,
-        '2022-09-27 19:47:00', NULL),
-       (3, 1, 'test3', '文章内容test', '文章摘要', 3,
-        'http://ri1bzqp09.bkt.clouddn.com/2022/10/05/072e3150e0584340a0114eb970a3eefc.jpg', 1, 1, 0, 1, 0, 0,
-        '2022-09-27 19:54:55', NULL),
-       (4, 1, '网页测试，我觉得可以了',
-        '![what.jpg](http://ri1bzqp09.bkt.clouddn.com/2022/10/05/ebe2d9de8d9e4b3daca157149acedcad.jpg)', NULL, 2,
-        'http://ri1bzqp09.bkt.clouddn.com/2022/10/05/ebe2d9de8d9e4b3daca157149acedcad.jpg', 0, 1, 0, 1, 0, 0,
-        '2022-10-05 14:44:36', NULL);
-
-/*Table structure for table `t_article_tag` */
-
 DROP TABLE IF EXISTS `t_article_tag`;
-
 CREATE TABLE `t_article_tag`
 (
-    `id`         bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
-    `article_id` bigint(20) NOT NULL COMMENT '文章id',
-    `tag_id`     bigint(20) NOT NULL COMMENT '标签id',
-    PRIMARY KEY (`id`) USING BTREE
+    `id`         bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+    `article_id` bigint(20) NOT NULL COMMENT '文章ID',
+    `tag_id`     bigint(20) NOT NULL COMMENT '标签ID',
+    PRIMARY KEY (`id`) USING BTREE,
+    UNIQUE INDEX `uk_article_tag` (`article_id`, `tag_id`) USING BTREE
 ) ENGINE = InnoDB
-  AUTO_INCREMENT = 9
-  DEFAULT CHARSET = utf8mb4
-  COLLATE = utf8mb4_0900_ai_ci
-  ROW_FORMAT = DYNAMIC;
-
-/*Data for the table `t_article_tag` */
-
-insert into `t_article_tag`(`id`, `article_id`, `tag_id`)
-values (1, 1, 1),
-       (2, 1, 2),
-       (3, 1, 3),
-       (4, 2, 1),
-       (5, 2, 2),
-       (6, 3, 1),
-       (8, 4, 1);
-
-/*Table structure for table `t_category` */
-
+  CHARACTER SET = utf8mb4
+  COLLATE = utf8mb4_general_ci COMMENT = '博客-标签关联表'
+  ROW_FORMAT = Dynamic;
 DROP TABLE IF EXISTS `t_category`;
-
 CREATE TABLE `t_category`
 (
-    `id`            bigint(20)  NOT NULL AUTO_INCREMENT COMMENT '主键',
-    `category_name` varchar(32) NOT NULL COMMENT '分类名',
-    `description`   varchar(128)         DEFAULT NULL COMMENT '分类描述',
-    `status`        tinyint(1)  NOT NULL DEFAULT '1' COMMENT '分类状态(0停用,1正常)',
-    `create_time`   datetime    NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-    `update_time`   datetime             DEFAULT NULL COMMENT '更新时间',
-    PRIMARY KEY (`id`) USING BTREE
+    `id`           bigint(20)  NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+    `name`         varchar(64) NOT NULL DEFAULT '' COMMENT '分类名称',
+    `click_volume` int(16)     NULL     DEFAULT 0 COMMENT '分类点击量',
+    `sort`         int(16)     NULL     DEFAULT 0 COMMENT '排序',
+    `create_time`  datetime    NULL     DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `update_time`  datetime    NULL     DEFAULT NULL COMMENT '更新时间',
+    PRIMARY KEY (`id`) USING BTREE,
+    INDEX `category_name` (`name`) USING BTREE COMMENT '博客分类名称'
 ) ENGINE = InnoDB
-  AUTO_INCREMENT = 5
-  DEFAULT CHARSET = utf8mb4
-  COLLATE = utf8mb4_0900_ai_ci
-  ROW_FORMAT = DYNAMIC;
-
-/*Data for the table `t_category` */
-
-insert into `t_category`(`id`, `category_name`, `description`, `status`, `create_time`, `update_time`)
-values (1, 'Java', 'java语言', 1, '2022-09-22 11:16:29', NULL),
-       (2, 'Vue', 'vue框架', 1, '2022-09-22 11:16:43', NULL),
-       (3, 'Mini-Program', '微信小程序', 1, '2022-09-22 11:16:56', NULL),
-       (4, 'Spring', 'java', 0, '2022-09-29 10:04:40', '2022-09-29 10:08:27');
-
-/*Table structure for table `t_comment` */
-
+  CHARACTER SET = utf8mb4
+  COLLATE = utf8mb4_general_ci COMMENT = '博客分类表'
+  ROW_FORMAT = Dynamic;
 DROP TABLE IF EXISTS `t_comment`;
-
 CREATE TABLE `t_comment`
 (
-    `id`          bigint(20)    NOT NULL AUTO_INCREMENT COMMENT '主键',
-    `pid`         bigint(20)    NOT NULL DEFAULT '0' COMMENT '父级评论id',
-    `article_id`  bigint(20)    NOT NULL COMMENT '文章id',
-    `user_id`     bigint(20)    NOT NULL COMMENT '评论人id',
-    `content`     varchar(1024) NOT NULL COMMENT '评论内容',
-    `avatar`      varchar(256)           DEFAULT NULL COMMENT '评论人头像',
-    `nickname`    varchar(256)           DEFAULT NULL COMMENT '评论人昵称',
-    `url`         varchar(256)           DEFAULT NULL COMMENT '评论人网站地址',
-    `support`     int(16)                DEFAULT '0' COMMENT '支持(赞)',
-    `oppose`      int(16)                DEFAULT '0' COMMENT '反对(踩)',
-    `status`      tinyint(1)    NOT NULL DEFAULT '1' COMMENT '评论状态(0删除,1正常)',
-    `create_time` datetime      NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-    `update_time` datetime               DEFAULT NULL COMMENT '更新时间',
+    `id`            bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+    `parent_id`     bigint(20) NULL     DEFAULT NULL COMMENT '父评论ID',
+    `article_id`    bigint(20) NOT NULL COMMENT '文章ID',
+    `user_id`       bigint(20) NOT NULL COMMENT '评论人ID',
+    `reply_user_id` bigint(20) NULL     DEFAULT NULL COMMENT '回复人ID',
+    `content`       mediumtext NOT NULL COMMENT '评论内容',
+    `create_time`   datetime   NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '评论时间',
     PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB
-  AUTO_INCREMENT = 2
-  DEFAULT CHARSET = utf8mb4
-  COLLATE = utf8mb4_0900_ai_ci
-  ROW_FORMAT = DYNAMIC;
-
-/*Data for the table `t_comment` */
-
-insert into `t_comment`(`id`, `pid`, `article_id`, `user_id`, `content`, `avatar`, `nickname`, `url`, `support`,
-                        `oppose`, `status`, `create_time`, `update_time`)
-values (1, 1, 0, 1, 'test', NULL, 'md', NULL, 0, 0, 1, '2022-09-30 10:34:50', '2022-09-30 11:03:36');
-
-/*Table structure for table `t_image` */
-
-DROP TABLE IF EXISTS `t_image`;
-
-CREATE TABLE `t_image`
+  CHARACTER SET = utf8mb4
+  COLLATE = utf8mb4_general_ci COMMENT = '评论表'
+  ROW_FORMAT = Dynamic;
+DROP TABLE IF EXISTS `t_dict`;
+CREATE TABLE `t_dict`
 (
-    `id`          bigint(20)   NOT NULL AUTO_INCREMENT COMMENT '主键',
-    `image_name`  varchar(32)  NOT NULL COMMENT '图片名称',
-    `image_desc`  varchar(128)          DEFAULT NULL COMMENT '图片描述',
-    `image_src`   varchar(128) NOT NULL COMMENT '图片地址',
-    `status`      tinyint(1)   NOT NULL DEFAULT '1' COMMENT '图片状态(0停用,1正常)',
+    `id`          bigint(20)   NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+    `name`        varchar(64)  NULL     DEFAULT NULL COMMENT '字典名称',
+    `type`        varchar(100) NOT NULL COMMENT '字典类型',
+    `is_publish`  tinyint(1)   NULL     DEFAULT 1 COMMENT '是否发布(0否,1是)',
+    `sort`        int(16)      NULL     DEFAULT 0 COMMENT '排序',
+    `remark`      varchar(255) NULL     DEFAULT NULL COMMENT '备注',
     `create_time` datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-    `update_time` datetime              DEFAULT NULL COMMENT '更新时间',
+    `update_time` datetime     NULL     DEFAULT NULL COMMENT '更新时间',
     PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB
-  AUTO_INCREMENT = 7
-  DEFAULT CHARSET = utf8mb4
-  COLLATE = utf8mb4_0900_ai_ci
-  ROW_FORMAT = DYNAMIC;
-
-/*Data for the table `t_image` */
-
-insert into `t_image`(`id`, `image_name`, `image_desc`, `image_src`, `status`, `create_time`, `update_time`)
-values (1, '可爱.gif', NULL, '2022/10/05/2cc55f4dff7345bbaec09f4e7c75b56d.gif', 1, '2022-10-05 11:13:33', NULL),
-       (2, '毁灭吧.jpg', NULL, '2022/10/05/7f77b44f5342433d96c1528941f5706b.jpg', 1, '2022-10-05 13:45:10', NULL),
-       (3, '呃.jpg', NULL, '2022/10/05/08cd891e21bd4918b910a2ce217b99d4.jpg', 1, '2022-10-05 13:46:06', NULL),
-       (4, 'what.jpg', NULL, '2022/10/05/ebe2d9de8d9e4b3daca157149acedcad.jpg', 1, '2022-10-05 13:46:43', NULL),
-       (5, '大理寺日志.jpg', NULL, '2022/10/05/072e3150e0584340a0114eb970a3eefc.jpg', 1, '2022-10-05 14:26:39', NULL),
-       (6, '大理寺日志.jpg', NULL, '2022/10/05/91b9da94eb4a4393a31ba8fd351f4c4f.jpg', 1, '2022-10-05 14:32:49', NULL);
-
-/*Table structure for table `t_menu` */
-
+  CHARACTER SET = utf8mb4
+  COLLATE = utf8mb4_general_ci COMMENT = '字典表'
+  ROW_FORMAT = Dynamic;
+DROP TABLE IF EXISTS `t_dict_data`;
+CREATE TABLE `t_dict_data`
+(
+    `id`         bigint(20)   NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+    `dict_id`    bigint(20)   NOT NULL COMMENT '字典类型ID',
+    `label`      varchar(100) NOT NULL COMMENT '字典标签',
+    `value`      varchar(100) NOT NULL COMMENT '字典键值',
+    `style`      varchar(50)  NULL DEFAULT NULL COMMENT '回显样式',
+    `is_default` tinyint(1)   NULL DEFAULT 1 COMMENT '是否默认(0否,1是)',
+    `is_publish` tinyint(1)   NULL DEFAULT 1 COMMENT '是否发布(0否,1是)',
+    `sort`       int(16)      NULL DEFAULT 0 COMMENT '排序',
+    `remark`     varchar(255) NULL DEFAULT NULL COMMENT '备注',
+    PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB
+  CHARACTER SET = utf8mb4
+  COLLATE = utf8mb4_general_ci COMMENT = '字典数据表'
+  ROW_FORMAT = Dynamic;
+DROP TABLE IF EXISTS `t_exception_log`;
+CREATE TABLE `t_exception_log`
+(
+    `id`                bigint(20)   NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+    `username`          varchar(255) NULL     DEFAULT NULL COMMENT '用户名',
+    `ip`                varchar(255) NULL     DEFAULT NULL COMMENT 'IP',
+    `ip_source`         varchar(255) NULL     DEFAULT NULL COMMENT 'ip来源',
+    `method`            varchar(255) NULL     DEFAULT NULL COMMENT '请求方法',
+    `operation`         mediumtext   NULL COMMENT '描述',
+    `params`            mediumtext   NULL COMMENT '参数',
+    `exception_json`    mediumtext   NULL COMMENT '异常对象json格式',
+    `exception_message` mediumtext   NULL COMMENT '异常简单信息,等同于e.getMessage',
+    `create_time`       datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '发生时间',
+    PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB
+  CHARACTER SET = utf8mb4
+  COLLATE = utf8mb4_general_ci COMMENT = '异常日志表'
+  ROW_FORMAT = Dynamic;
+DROP TABLE IF EXISTS `t_feed_back`;
+CREATE TABLE `t_feed_back`
+(
+    `id`          bigint(20)   NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+    `email`       varchar(100) NOT NULL COMMENT '邮箱',
+    `title`       varchar(100) NOT NULL COMMENT '标题',
+    `content`     varchar(255) NULL     DEFAULT NULL COMMENT '详细内容',
+    `img_url`     varchar(255) NULL     DEFAULT NULL COMMENT '图片地址',
+    `type`        tinyint(1)   NOT NULL COMMENT '反馈类型(1需求,2缺陷)',
+    `create_time` datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '添加时间',
+    PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB
+  CHARACTER SET = utf8mb4
+  COLLATE = utf8mb4_general_ci COMMENT = '用户反馈表'
+  ROW_FORMAT = Dynamic;
+DROP TABLE IF EXISTS `t_friend_link`;
+CREATE TABLE `t_friend_link`
+(
+    `id`          bigint(20)   NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+    `name`        varchar(64)  NOT NULL COMMENT '网站名称',
+    `url`         varchar(100) NOT NULL COMMENT '网站地址',
+    `avatar`      varchar(255) NULL     DEFAULT NULL COMMENT '网站头像地址',
+    `info`        varchar(255) NOT NULL COMMENT '网站描述',
+    `email`       varchar(100) NOT NULL COMMENT '邮箱',
+    `sort`        int(16)      NULL     DEFAULT 0 COMMENT '排序',
+    `status`      tinyint(1)   NOT NULL DEFAULT 0 COMMENT 'ENUM-状态(0待审核,1通过)',
+    `create_time` datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `update_time` datetime     NULL     DEFAULT NULL COMMENT '修改时间',
+    PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB
+  CHARACTER SET = utf8mb4
+  COLLATE = utf8mb4_general_ci COMMENT = '友情链接表'
+  ROW_FORMAT = Dynamic;
+DROP TABLE IF EXISTS `t_job`;
+CREATE TABLE `t_job`
+(
+    `job_id`          bigint(20)   NOT NULL AUTO_INCREMENT COMMENT '任务ID',
+    `job_name`        varchar(64)  NOT NULL DEFAULT '' COMMENT '任务名称',
+    `job_group`       varchar(64)  NOT NULL DEFAULT 'DEFAULT' COMMENT '任务组名',
+    `invoke_target`   varchar(500) NOT NULL COMMENT '调用目标字符串',
+    `cron_expression` varchar(255) NULL     DEFAULT '' COMMENT 'cron执行表达式',
+    `misfire_policy`  tinyint(1)   NULL     DEFAULT 3 COMMENT '计划执行错误策略(1立即执行,2执行一次,3放弃执行)',
+    `concurrent`      tinyint(1)   NULL     DEFAULT 0 COMMENT '是否并发执行(0禁止,1允许)',
+    `status`          tinyint(1)   NULL     DEFAULT 1 COMMENT '任务状态(0暂停,1正常)',
+    `remark`          varchar(500) NULL     DEFAULT '' COMMENT '备注信息',
+    `create_time`     datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `update_time`     datetime     NULL     DEFAULT NULL COMMENT '更新时间',
+    PRIMARY KEY (`job_id`) USING BTREE
+) ENGINE = InnoDB
+  CHARACTER SET = utf8mb4
+  COLLATE = utf8mb4_general_ci COMMENT = '定时任务调度表'
+  ROW_FORMAT = Dynamic;
+DROP TABLE IF EXISTS `t_job_log`;
+CREATE TABLE `t_job_log`
+(
+    `id`             bigint(20)    NOT NULL AUTO_INCREMENT COMMENT '任务日志ID',
+    `job_id`         bigint(20)    NOT NULL COMMENT '任务ID',
+    `job_name`       varchar(64)   NOT NULL COMMENT '任务名称',
+    `job_group`      varchar(64)   NOT NULL COMMENT '任务组名',
+    `invoke_target`  varchar(500)  NOT NULL COMMENT '调用目标字符串',
+    `job_message`    varchar(500)  NULL     DEFAULT NULL COMMENT '日志信息',
+    `status`         tinyint(1)    NULL     DEFAULT 1 COMMENT '执行状态(0失败,1正常)',
+    `exception_info` varchar(2000) NULL     DEFAULT '' COMMENT '异常信息',
+    `start_time`     datetime      NULL     DEFAULT NULL COMMENT '开始时间',
+    `stop_time`      datetime      NULL     DEFAULT NULL COMMENT '结束时间',
+    `create_time`    datetime      NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB
+  CHARACTER SET = utf8mb4
+  COLLATE = utf8mb4_general_ci COMMENT = '定时任务调度日志表'
+  ROW_FORMAT = Dynamic;
 DROP TABLE IF EXISTS `t_menu`;
-
 CREATE TABLE `t_menu`
 (
-    `id`          bigint(20)  NOT NULL AUTO_INCREMENT COMMENT '菜单ID',
-    `menu_name`   varchar(32) NOT NULL COMMENT '菜单名称',
-    `pid`         bigint(20)           DEFAULT '0' COMMENT '父菜单ID',
-    `order_num`   int(4)               DEFAULT '0' COMMENT '显示顺序',
-    `path`        varchar(128)         DEFAULT '' COMMENT '路由地址',
-    `component`   varchar(128)         DEFAULT NULL COMMENT '组件路径',
-    `query`       varchar(256)         DEFAULT NULL COMMENT '路由参数',
-    `is_cache`    tinyint(1)           DEFAULT '1' COMMENT '是否缓存（0不缓存,1缓存）',
-    `menu_type`   char(1)              DEFAULT '' COMMENT '菜单类型（M目录,C菜单,F按钮）',
-    `status`      tinyint(1)           DEFAULT '1' COMMENT '菜单状态（0停用,1正常）',
-    `perms`       varchar(128)         DEFAULT NULL COMMENT '权限标识',
-    `icon`        varchar(64)          DEFAULT '#' COMMENT '菜单图标',
-    `create_time` datetime    NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-    `update_time` datetime             DEFAULT NULL COMMENT '更新时间',
-    PRIMARY KEY (`id`)
-) ENGINE = InnoDB
-  AUTO_INCREMENT = 3004
-  DEFAULT CHARSET = utf8mb4
-  COLLATE = utf8mb4_0900_ai_ci
-  ROW_FORMAT = DYNAMIC;
-
-/*Data for the table `t_menu` */
-
-insert into `t_menu`(`id`, `menu_name`, `pid`, `order_num`, `path`, `component`, `query`, `is_cache`, `menu_type`,
-                     `status`, `perms`, `icon`, `create_time`, `update_time`)
-values (1, '博客管理', 0, 1, 'blog', 'Layout', '', 1, 'M', 1, '', 'blog', '2022-10-18 19:58:13', NULL),
-       (2, '资源管理', 0, 2, 'resource', 'Layout', '', 1, 'M', 1, '', 'resource', '2022-10-18 19:58:13', NULL),
-       (3, '系统监控', 0, 3, 'monitor', 'Layout', '', 1, 'M', 1, '', 'monitor', '2022-10-18 19:58:13', NULL),
-       (100, '发布文章', 1, 1, 'publish', 'blog/article/publish/index', '', 1, 'C', 1, 'blog:article:publish', 'publish',
-        '2022-10-18 19:58:13', NULL),
-       (101, '文章列表', 1, 2, 'article', 'blog/article/index', '', 1, 'C', 1, 'blog:article:list', 'article',
-        '2022-10-18 19:58:13', NULL),
-       (102, '分类列表', 1, 3, 'category', 'blog/category/index', '', 1, 'C', 1, 'blog:category:list', 'category',
-        '2022-10-18 19:58:13', NULL),
-       (103, '标签列表', 1, 4, 'tag', 'blog/tag/index', '', 1, 'C', 1, 'blog:tag:list', 'tag', '2022-10-18 19:58:13', NULL),
-       (104, '评论列表', 1, 5, 'comment', 'blog/comment/index', '', 1, 'C', 1, 'blog:comment:list', 'comment',
-        '2022-10-18 19:58:13', NULL),
-       (200, '用户列表', 2, 1, 'user', 'resource/user/index', '', 1, 'C', 1, 'resource:user:list', 'user',
-        '2022-10-18 19:58:13', NULL),
-       (201, '角色列表', 2, 2, 'role', 'resource/role/index', '', 1, 'C', 1, 'resource:role:list', 'role',
-        '2022-10-18 19:58:13', NULL),
-       (202, '菜单列表', 2, 3, 'menu', 'resource/menu/index', '', 1, 'C', 1, 'resource:menu:list', 'menu',
-        '2022-10-18 19:58:13', NULL),
-       (300, '定时任务', 3, 1, 'job', 'monitor/job/index', '', 1, 'C', 1, 'monitor:job:list', 'job', '2022-10-18 19:58:13',
-        NULL),
-       (301, '系统接口', 3, 2, 'swagger', 'monitor/swagger/index', '', 1, 'C', 1, 'monitor:swagger:list', 'swagger',
-        '2022-10-18 19:58:13', NULL),
-       (302, '数据监控', 3, 3, 'druid', 'monitor/druid/index', '', 1, 'C', 1, 'monitor:druid:list', 'druid',
-        '2022-10-18 19:58:13', NULL),
-       (1010, '文章查询', 101, 1, '', '', '', 1, 'F', 1, 'blog:article:query', '#', '2022-10-18 19:58:13', NULL),
-       (1011, '文章新增', 101, 2, '', '', '', 1, 'F', 1, 'blog:article:add', '#', '2022-10-18 19:58:13', NULL),
-       (1012, '文章修改', 101, 3, '', '', '', 1, 'F', 1, 'blog:article:edit', '#', '2022-10-18 19:58:13', NULL),
-       (1013, '文章删除', 101, 4, '', '', '', 1, 'F', 1, 'blog:article:delete', '#', '2022-10-18 19:58:13', NULL),
-       (1014, '文章导出', 101, 5, '', '', '', 1, 'F', 1, 'blog:article:export', '#', '2022-10-18 19:58:13', NULL),
-       (1015, '文章导入', 101, 6, '', '', '', 1, 'F', 1, 'blog:article:import', '#', '2022-10-18 19:58:13', NULL),
-       (1020, '分类查询', 102, 1, '', '', '', 1, 'F', 1, 'blog:category:query', '#', '2022-10-18 19:58:13', NULL),
-       (1021, '分类新增', 102, 2, '', '', '', 1, 'F', 1, 'blog:category:add', '#', '2022-10-18 19:58:13', NULL),
-       (1022, '分类修改', 102, 3, '', '', '', 1, 'F', 1, 'blog:category:edit', '#', '2022-10-18 19:58:13', NULL),
-       (1023, '分类删除', 102, 4, '', '', '', 1, 'F', 1, 'blog:category:delete', '#', '2022-10-18 19:58:13', NULL),
-       (1024, '分类导出', 102, 5, '', '', '', 1, 'F', 1, 'blog:category:export', '#', '2022-10-18 19:58:13', NULL),
-       (1030, '标签查询', 103, 1, '', '', '', 1, 'F', 1, 'blog:tag:query', '#', '2022-10-18 19:58:13', NULL),
-       (1031, '标签新增', 103, 2, '', '', '', 1, 'F', 1, 'blog:tag:add', '#', '2022-10-18 19:58:13', NULL),
-       (1032, '标签修改', 103, 3, '', '', '', 1, 'F', 1, 'blog:tag:edit', '#', '2022-10-18 19:58:13', NULL),
-       (1033, '标签删除', 103, 4, '', '', '', 1, 'F', 1, 'blog:tag:delete', '#', '2022-10-18 19:58:13', NULL),
-       (1034, '标签导出', 103, 5, '', '', '', 1, 'F', 1, 'blog:tag:export', '#', '2022-10-18 19:58:13', NULL),
-       (1040, '评论查询', 104, 1, '', '', '', 1, 'F', 1, 'blog:comment:query', '#', '2022-10-18 19:58:13', NULL),
-       (1041, '评论新增', 104, 2, '', '', '', 1, 'F', 1, 'blog:comment:add', '#', '2022-10-18 19:58:13', NULL),
-       (1042, '评论修改', 104, 3, '', '', '', 1, 'F', 1, 'blog:comment:edit', '#', '2022-10-18 19:58:14', NULL),
-       (1043, '评论删除', 104, 4, '', '', '', 1, 'F', 1, 'blog:comment:delete', '#', '2022-10-18 19:58:14', NULL),
-       (1044, '评论导出', 104, 5, '', '', '', 1, 'F', 1, 'blog:comment:export', '#', '2022-10-18 19:58:14', NULL),
-       (2000, '用户查询', 200, 1, '', '', '', 1, 'F', 1, 'resource:user:query', '#', '2022-10-18 19:58:14', NULL),
-       (2001, '用户新增', 200, 2, '', '', '', 1, 'F', 1, 'resource:user:add', '#', '2022-10-18 19:58:14', NULL),
-       (2002, '用户修改', 200, 3, '', '', '', 1, 'F', 1, 'resource:user:edit', '#', '2022-10-18 19:58:14', NULL),
-       (2003, '用户删除', 200, 4, '', '', '', 1, 'F', 1, 'resource:user:delete', '#', '2022-10-18 19:58:14', NULL),
-       (2004, '用户导出', 200, 5, '', '', '', 1, 'F', 1, 'resource:user:export', '#', '2022-10-18 19:58:14', NULL),
-       (2010, '角色查询', 201, 1, '', '', '', 1, 'F', 1, 'resource:role:query', '#', '2022-10-18 19:58:14', NULL),
-       (2011, '角色新增', 201, 2, '', '', '', 1, 'F', 1, 'resource:role:add', '#', '2022-10-18 19:58:14', NULL),
-       (2012, '角色修改', 201, 3, '', '', '', 1, 'F', 1, 'resource:role:edit', '#', '2022-10-18 19:58:14', NULL),
-       (2013, '角色删除', 201, 4, '', '', '', 1, 'F', 1, 'resource:role:delete', '#', '2022-10-18 19:58:14', NULL),
-       (2020, '菜单查询', 202, 1, '', '', '', 1, 'F', 1, 'resource:menu:query', '#', '2022-10-18 19:58:14', NULL),
-       (2021, '菜单新增', 202, 2, '', '', '', 1, 'F', 1, 'resource:menu:add', '#', '2022-10-18 19:58:14', NULL),
-       (2022, '菜单修改', 202, 3, '', '', '', 1, 'F', 1, 'resource:menu:edit', '#', '2022-10-18 19:58:14', NULL),
-       (2023, '菜单删除', 202, 4, '', '', '', 1, 'F', 1, 'resource:menu:delete', '#', '2022-10-18 19:58:14', NULL),
-       (3000, '任务查询', 300, 1, '', '', '', 1, 'F', 1, 'monitor:job:query', '#', '2022-10-18 19:58:14', NULL),
-       (3001, '任务新增', 300, 2, '', '', '', 1, 'F', 1, 'monitor:job:add', '#', '2022-10-18 19:58:14', NULL),
-       (3002, '任务修改', 300, 3, '', '', '', 1, 'F', 1, 'monitor:job:edit', '#', '2022-10-18 19:58:14', NULL),
-       (3003, '任务删除', 300, 4, '', '', '', 1, 'F', 1, 'monitor:job:delete', '#', '2022-10-18 19:58:14', NULL);
-
-/*Table structure for table `t_resource` */
-
-DROP TABLE IF EXISTS `t_resource`;
-
-CREATE TABLE `t_resource`
-(
-    `id`             bigint(20)  NOT NULL AUTO_INCREMENT COMMENT '主键',
-    `resource_name`  varchar(32) NOT NULL COMMENT '资源名',
-    `url`            varchar(128)         DEFAULT NULL COMMENT '权限路径',
-    `request_method` varchar(128)         DEFAULT NULL COMMENT '请求方式',
-    `pid`            bigint(20)           DEFAULT NULL COMMENT '父模块id',
-    `create_time`    datetime    NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-    `update_time`    datetime             DEFAULT NULL COMMENT '更新时间',
+    `id`           bigint(20)   NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+    `parent_id`    bigint(20)   NULL     DEFAULT 0 COMMENT '上级资源ID',
+    `title`        varchar(100) NULL     DEFAULT NULL COMMENT '资源名称',
+    `url`          varchar(255) NULL     DEFAULT '' COMMENT '路由地址',
+    `component`    varchar(255) NULL     DEFAULT NULL COMMENT '资源组件',
+    `level`        int(8)       NULL     DEFAULT 0 COMMENT '资源级别',
+    `sort_no`      int(8)       NULL     DEFAULT 0 COMMENT '显示顺序',
+    `icon`         varchar(64)  NULL     DEFAULT '#' COMMENT '资源图标',
+    `type`         char(1)      NULL     DEFAULT '' COMMENT '菜单类型(M菜单,F按钮)',
+    `redirect`     varchar(255) NULL     DEFAULT NULL COMMENT '重定向地址',
+    `name`         varchar(255) NULL     DEFAULT NULL COMMENT '跳转地址',
+    `hidden`       tinyint(1)   NULL     DEFAULT 0 COMMENT '是否隐藏(0否,1是)',
+    `remark`       varchar(255) NULL     DEFAULT '' COMMENT '备注',
+    `created_time` datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `update_time`  datetime     NULL     DEFAULT NULL COMMENT '更新时间',
     PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB
-  DEFAULT CHARSET = utf8mb4
-  COLLATE = utf8mb4_0900_ai_ci
-  ROW_FORMAT = DYNAMIC;
-
-/*Data for the table `t_resource` */
-
-/*Table structure for table `t_role` */
-
+  CHARACTER SET = utf8mb4
+  COLLATE = utf8mb4_general_ci COMMENT = '权限资源表 '
+  ROW_FORMAT = Dynamic;
+DROP TABLE IF EXISTS `t_message`;
+CREATE TABLE `t_message`
+(
+    `id`          bigint(20)   NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+    `content`     mediumtext   NOT NULL COMMENT '内容',
+    `nickname`    varchar(255) NULL     DEFAULT NULL COMMENT '用户昵称',
+    `avatar`      varchar(255) NULL     DEFAULT NULL COMMENT '用户头像',
+    `ip_address`  varchar(255) NULL     DEFAULT NULL COMMENT 'ip地址',
+    `ip_source`   varchar(255) NULL     DEFAULT NULL COMMENT 'ip来源',
+    `time`        bigint(20)   NULL     DEFAULT NULL COMMENT '留言时间',
+    `status`      tinyint(1)   NOT NULL DEFAULT 0 COMMENT '状态(0审核,1正常)',
+    `create_time` datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB
+  CHARACTER SET = utf8mb4
+  COLLATE = utf8mb4_general_ci COMMENT = '留言板表'
+  ROW_FORMAT = Dynamic;
+DROP TABLE IF EXISTS `t_page`;
+CREATE TABLE `t_page`
+(
+    `id`          bigint(20)   NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+    `page_name`   varchar(20)  NULL     DEFAULT NULL COMMENT '页面名称',
+    `page_label`  varchar(20)  NULL     DEFAULT NULL COMMENT '页面标签',
+    `page_cover`  varchar(255) NULL     DEFAULT NULL COMMENT '页面图源',
+    `create_time` datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `update_time` datetime     NULL     DEFAULT NULL COMMENT '更新时间',
+    PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB
+  CHARACTER SET = utf8mb4
+  COLLATE = utf8mb4_general_ci COMMENT = '前端页面表'
+  ROW_FORMAT = Dynamic;
+DROP TABLE IF EXISTS `t_photo`;
+CREATE TABLE `t_photo`
+(
+    `id`          bigint(20)   NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+    `album_id`    bigint(20)   NOT NULL COMMENT '相册ID',
+    `name`        varchar(20)  NOT NULL COMMENT '照片名',
+    `info`        varchar(50)  NULL     DEFAULT NULL COMMENT '照片描述',
+    `url`         varchar(255) NOT NULL COMMENT '照片地址',
+    `create_time` datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `update_time` datetime     NULL     DEFAULT NULL COMMENT '更新时间',
+    PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB
+  CHARACTER SET = utf8mb4
+  COLLATE = utf8mb4_general_ci COMMENT = '照片'
+  ROW_FORMAT = Dynamic;
+DROP TABLE IF EXISTS `t_photo_album`;
+CREATE TABLE `t_photo_album`
+(
+    `id`          bigint(20)   NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+    `name`        varchar(20)  NOT NULL COMMENT '相册名',
+    `info`        varchar(64)  NULL     DEFAULT NULL COMMENT '相册描述',
+    `cover`       varchar(255) NOT NULL COMMENT '相册封面',
+    `status`      tinyint(1)   NOT NULL DEFAULT 0 COMMENT '状态值(0公开,1私密)',
+    `create_time` datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `update_time` datetime     NULL     DEFAULT NULL COMMENT '更新时间',
+    PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB
+  CHARACTER SET = utf8mb4
+  COLLATE = utf8mb4_general_ci COMMENT = '相册'
+  ROW_FORMAT = Dynamic;
 DROP TABLE IF EXISTS `t_role`;
-
 CREATE TABLE `t_role`
 (
-    `id`          bigint(20)  NOT NULL AUTO_INCREMENT COMMENT '主键',
-    `role_name`   varchar(32) NOT NULL COMMENT '角色名',
-    `description` varchar(128)         DEFAULT NULL COMMENT '角色描述',
-    `status`      tinyint(1)  NOT NULL DEFAULT '1' COMMENT '角色状态(0停用,1正常)',
-    `create_time` datetime    NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-    `update_time` datetime             DEFAULT NULL COMMENT '更新时间',
+    `id`           bigint(20)   NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+    `code`         varchar(32)  NULL     DEFAULT NULL COMMENT '角色编码',
+    `name`         varchar(32)  NULL     DEFAULT NULL COMMENT '角色名称',
+    `remark`       varchar(255) NULL     DEFAULT NULL COMMENT '角色描述',
+    `created_time` datetime(0)  NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `update_time`  datetime(0)  NULL     DEFAULT NULL COMMENT '更新时间',
     PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB
-  AUTO_INCREMENT = 4
-  DEFAULT CHARSET = utf8mb4
-  COLLATE = utf8mb4_0900_ai_ci
-  ROW_FORMAT = DYNAMIC;
-
-/*Data for the table `t_role` */
-
-insert into `t_role`(`id`, `role_name`, `description`, `status`, `create_time`, `update_time`)
-values (1, 'ROLE_admin', '管理员', 1, '2022-09-22 09:51:36', NULL),
-       (2, 'ROLE_user', '普通用户', 1, '2022-09-22 11:09:14', NULL),
-       (3, 'ROLE_atest', '测试的管理员', 1, '2022-09-22 11:12:59', NULL);
-
-/*Table structure for table `t_role_menu` */
-
+  CHARACTER SET = utf8mb4
+  COLLATE = utf8mb4_general_ci COMMENT = '角色表'
+  ROW_FORMAT = Dynamic;
 DROP TABLE IF EXISTS `t_role_menu`;
-
 CREATE TABLE `t_role_menu`
 (
-    `id`      bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
-    `role_id` bigint(20) NOT NULL COMMENT '角色id',
-    `menu_id` bigint(20) NOT NULL COMMENT '菜单id',
-    PRIMARY KEY (`id`) USING BTREE
+    `id`      bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+    `role_id` bigint(20) NOT NULL COMMENT '角色ID',
+    `menu_id` bigint(20) NOT NULL COMMENT '菜单ID',
+    PRIMARY KEY (`id`) USING BTREE,
+    UNIQUE INDEX `uk_role_menu` (`role_id`, `menu_id`) USING BTREE
 ) ENGINE = InnoDB
-  AUTO_INCREMENT = 8112
-  DEFAULT CHARSET = utf8mb4
-  COLLATE = utf8mb4_0900_ai_ci
-  ROW_FORMAT = DYNAMIC;
-
-/*Data for the table `t_role_menu` */
-
-insert into `t_role_menu`(`id`, `role_id`, `menu_id`)
-values (1, 1, 100),
-       (2, 1, 101),
-       (3, 1, 200),
-       (4, 1, 201),
-       (5, 1, 202),
-       (6, 1, 203),
-       (7, 1, 204),
-       (8, 1, 300),
-       (9, 1, 301),
-       (10, 1, 302),
-       (11, 1, 400),
-       (12, 1, 401),
-       (13, 1, 402),
-       (14, 1, 403),
-       (15, 1, 500),
-       (16, 1, 501),
-       (17, 1, 502);
-
-/*Table structure for table `t_role_resource` */
-
-DROP TABLE IF EXISTS `t_role_resource`;
-
-CREATE TABLE `t_role_resource`
-(
-    `id`          bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
-    `role_id`     bigint(20) NOT NULL COMMENT '角色id',
-    `resource_id` bigint(20) NOT NULL COMMENT '权限id',
-    PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB
-  DEFAULT CHARSET = utf8mb4
-  COLLATE = utf8mb4_0900_ai_ci
-  ROW_FORMAT = DYNAMIC;
-
-/*Data for the table `t_role_resource` */
-
-/*Table structure for table `t_tag` */
-
+  CHARACTER SET = utf8mb4
+  COLLATE = utf8mb4_general_ci COMMENT = '角色-权限资源关联表'
+  ROW_FORMAT = Dynamic;
 DROP TABLE IF EXISTS `t_tag`;
-
 CREATE TABLE `t_tag`
 (
-    `id`          bigint(20)  NOT NULL AUTO_INCREMENT COMMENT '主键',
-    `tag_name`    varchar(32) NOT NULL COMMENT '标签名',
-    `description` varchar(128)         DEFAULT NULL COMMENT '标签描述',
-    `status`      tinyint(1)  NOT NULL DEFAULT '1' COMMENT '标签状态(0停用,1正常)',
-    `create_time` datetime    NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-    `update_time` datetime             DEFAULT NULL COMMENT '更新时间',
-    PRIMARY KEY (`id`) USING BTREE
+    `id`           bigint(20)  NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+    `name`         varchar(64) NOT NULL DEFAULT '' COMMENT '标签名称',
+    `click_volume` int(16)     NULL     DEFAULT 0 COMMENT '标签点击量',
+    `sort`         int(16)     NULL     DEFAULT 0 COMMENT '排序',
+    `create_time`  datetime    NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `update_time`  datetime    NULL     DEFAULT NULL COMMENT '更新时间',
+    PRIMARY KEY (`id`) USING BTREE,
+    INDEX `tag_name` (`name`) USING BTREE COMMENT '博客标签名称'
 ) ENGINE = InnoDB
-  AUTO_INCREMENT = 7
-  DEFAULT CHARSET = utf8mb4
-  COLLATE = utf8mb4_0900_ai_ci
-  ROW_FORMAT = DYNAMIC;
-
-/*Data for the table `t_tag` */
-
-insert into `t_tag`(`id`, `tag_name`, `description`, `status`, `create_time`, `update_time`)
-values (1, '其他', '默认标签', 1, '2022-09-27 18:50:59', NULL),
-       (2, 'Java', 'java', 1, '2022-09-22 11:18:36', NULL),
-       (3, 'mini-program', 'mini-program', 1, '2022-09-22 11:18:54', NULL),
-       (4, 'Vue', 'vue', 1, '2022-09-22 11:18:44', '2022-09-29 09:34:24'),
-       (6, 'Vue3', 'vue3', 0, '2022-09-29 09:37:42', '2022-09-29 09:38:01');
-
-/*Table structure for table `t_user` */
-
+  CHARACTER SET = utf8mb4
+  COLLATE = utf8mb4_general_ci COMMENT = '博客标签表'
+  ROW_FORMAT = Dynamic;
 DROP TABLE IF EXISTS `t_user`;
-
 CREATE TABLE `t_user`
 (
-    `id`          bigint(20)  NOT NULL AUTO_INCREMENT COMMENT '主键',
-    `user_name`   varchar(32) NOT NULL COMMENT '用户名',
-    `nick_name`   varchar(32)          DEFAULT NULL COMMENT '昵称',
-    `password`    varchar(64) NOT NULL COMMENT '密码',
-    `mobile`      varchar(32)          DEFAULT NULL COMMENT '手机号',
-    `email`       varchar(128)         DEFAULT NULL COMMENT '电子邮箱',
-    `avatar`      varchar(256)         DEFAULT NULL COMMENT '用户头像',
-    `intro`       varchar(256)         DEFAULT NULL COMMENT '个人简介',
-    `birthday`    date                 DEFAULT NULL COMMENT '生日',
-    `status`      tinyint(1)  NOT NULL DEFAULT '1' COMMENT '账号状态(0停用,1正常)',
-    `create_time` datetime    NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '注册时间',
-    `update_time` datetime             DEFAULT NULL COMMENT '更新时间',
+    `id`              bigint(20)   NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+    `username`        varchar(64)  NULL     DEFAULT NULL COMMENT '账号',
+    `password`        varchar(64)  NULL     DEFAULT NULL COMMENT '登录密码',
+    `status`          tinyint(1)   NOT NULL DEFAULT 1 COMMENT '用户状态(0禁用,1正常)',
+    `login_type`      int(16)      NULL     DEFAULT NULL COMMENT '登录方式',
+    `user_auth_id`    bigint(20)   NULL     DEFAULT NULL COMMENT '用户详情ID',
+    `role_id`         bigint(20)   NULL     DEFAULT NULL COMMENT '角色ID',
+    `ip_address`      varchar(255) NULL     DEFAULT NULL COMMENT 'ip地址',
+    `ip_source`       varchar(255) NULL     DEFAULT NULL COMMENT 'ip来源',
+    `os`              varchar(100) NULL     DEFAULT NULL COMMENT '登录系统',
+    `last_login_time` datetime     NULL     DEFAULT CURRENT_TIMESTAMP COMMENT '最后登录时间',
+    `browser`         varchar(255) NULL     DEFAULT NULL COMMENT '浏览器',
+    `create_time`     datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `update_time`     datetime     NULL     DEFAULT NULL COMMENT '更新时间',
+    PRIMARY KEY (`id`) USING BTREE,
+    UNIQUE INDEX `username` (`username`) USING BTREE
+) ENGINE = InnoDB
+  CHARACTER SET = utf8mb4
+  COLLATE = utf8mb4_general_ci COMMENT = '用户基础信息表'
+  ROW_FORMAT = Dynamic;
+DROP TABLE IF EXISTS `t_user_auth`;
+CREATE TABLE `t_user_auth`
+(
+    `id`          bigint(20)    NOT NULL AUTO_INCREMENT COMMENT '用户ID',
+    `email`       varchar(50)   NULL     DEFAULT NULL COMMENT '邮箱号',
+    `nickname`    varchar(50)   NOT NULL COMMENT '用户昵称',
+    `avatar`      varchar(1024) NOT NULL DEFAULT '' COMMENT '用户头像',
+    `intro`       varchar(255)  NULL     DEFAULT NULL COMMENT '用户简介',
+    `web_site`    varchar(255)  NULL     DEFAULT NULL COMMENT '个人网站',
+    `is_disable`  tinyint(1)    NOT NULL DEFAULT 0 COMMENT '是否禁用(0否,1是)',
+    `create_time` datetime      NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `update_time` datetime      NULL     DEFAULT NULL COMMENT '更新时间',
     PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB
-  AUTO_INCREMENT = 4
-  DEFAULT CHARSET = utf8mb4
-  COLLATE = utf8mb4_0900_ai_ci
-  ROW_FORMAT = DYNAMIC;
-
-/*Data for the table `t_user` */
-
-insert into `t_user`(`id`, `user_name`, `nick_name`, `password`, `mobile`, `email`, `avatar`, `intro`, `birthday`,
-                     `status`, `create_time`, `update_time`)
-values (1, 'md', 'moondust', '$2a$10$VOhxzs12DI63zXfbJpnJ3u7ec8lJLxPz/.1KbLgufBCp1f/YTtKAS', '15179853855', 'md@md.md',
-        NULL, '管理员', '2022-09-21', 1, '2022-09-22 09:44:38', '2022-09-30 09:56:04'),
-       (2, 'test', 'testName', '$2a$10$VOhxzs12DI63zXfbJpnJ3u7ec8lJLxPz/.1KbLgufBCp1f/YTtKAS', '1111', '1@1.1', NULL,
-        '测试的普通用户', '2022-09-22', 1, '2022-09-22 11:10:02', '2022-09-30 09:55:46'),
-       (3, 'moondust', NULL, '$2a$10$VOhxzs12DI63zXfbJpnJ3u7ec8lJLxPz/.1KbLgufBCp1f/YTtKAS', '15179853855', 'md@md.md',
-        NULL, NULL, NULL, 1, '2022-09-30 10:23:10', NULL);
-
-/*Table structure for table `t_user_role` */
-
+  CHARACTER SET = utf8mb4
+  COLLATE = utf8mb4_general_ci COMMENT = '用户信息表'
+  ROW_FORMAT = Dynamic;
+DROP TABLE IF EXISTS `t_user_log`;
+CREATE TABLE `t_user_log`
+(
+    `id`          bigint(20)   NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+    `user_id`     bigint(20)   NULL     DEFAULT NULL COMMENT '操作用户ID',
+    `ip`          varchar(64)  NULL     DEFAULT NULL COMMENT 'ip地址',
+    `address`     varchar(255) NULL     DEFAULT NULL COMMENT '操作地址',
+    `type`        varchar(100) NULL     DEFAULT NULL COMMENT '操作类型',
+    `description` varchar(255) NULL     DEFAULT NULL COMMENT '操作日志',
+    `model`       varchar(255) NULL     DEFAULT NULL COMMENT '操作模块',
+    `result`      varchar(255) NULL     DEFAULT NULL COMMENT '操作结果',
+    `access_os`   varchar(255) NULL     DEFAULT NULL COMMENT '操作系统',
+    `browser`     varchar(255) NULL     DEFAULT NULL COMMENT '浏览器',
+    `client_type` varchar(255) NULL     DEFAULT NULL COMMENT '客户端类型',
+    `create_time` datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '操作时间',
+    PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB
+  CHARACTER SET = utf8mb4
+  COLLATE = utf8mb4_general_ci COMMENT = '日志表'
+  ROW_FORMAT = Dynamic;
 DROP TABLE IF EXISTS `t_user_role`;
-
 CREATE TABLE `t_user_role`
 (
-    `id`      bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
-    `user_id` bigint(20) NOT NULL COMMENT '用户id',
-    `role_id` bigint(20) NOT NULL COMMENT '角色id',
+    `id`      bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+    `user_id` bigint(20) NOT NULL COMMENT '用户ID',
+    `role_id` bigint(20) NOT NULL COMMENT '角色ID',
+    PRIMARY KEY (`id`) USING BTREE,
+    UNIQUE INDEX `uk_user_role` (`user_id`, `role_id`) USING BTREE
+) ENGINE = InnoDB
+  CHARACTER SET = utf8mb4
+  COLLATE = utf8mb4_general_ci COMMENT = '用户角色关联表'
+  ROW_FORMAT = Dynamic;
+DROP TABLE IF EXISTS `t_system_config`;
+CREATE TABLE `t_system_config`
+(
+    `id`                          bigint(20)   NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+    `qi_niu_access_key`           varchar(255) NULL     DEFAULT NULL COMMENT '七牛云公钥',
+    `qi_niu_secret_key`           varchar(255) NULL     DEFAULT NULL COMMENT '七牛云私钥',
+    `qi_niu_area`                 varchar(20)  NULL     DEFAULT NULL COMMENT '七牛云存储区域',
+    `qi_niu_bucket`               varchar(255) NULL     DEFAULT NULL COMMENT '七牛云上传空间',
+    `qi_niu_picture_base_url`     varchar(255) NULL     DEFAULT NULL COMMENT '七牛云域名前缀+http',
+    `upload_qi_niu`               tinyint(1)   NULL     DEFAULT NULL COMMENT '文件上传七牛云(0否,1是)',
+    `open_email_activate`         tinyint(1)   NULL     DEFAULT NULL COMMENT '是否开启注册用户邮件激活(0否,1是)',
+    `start_email_notification`    tinyint(1)   NOT NULL DEFAULT 0 COMMENT '是否开启邮件通知(0否,1是)',
+    `open_dashboard_notification` tinyint(1)   NOT NULL DEFAULT 0 COMMENT '是否开启仪表盘通知(0否,1是)',
+    `dashboard_notification_md`   longtext     NULL COMMENT '仪表盘通知【用于首次登录弹框】MD',
+    `dashboard_notification`      longtext     NULL COMMENT '仪表盘通知【用于首次登录弹框】',
+    `search_model`                tinyint(1)   NOT NULL DEFAULT 0 COMMENT '搜索模式(0SQL搜索,1全文检索)',
+    `email_host`                  varchar(100) NULL     DEFAULT NULL COMMENT '邮箱地址',
+    `email_username`              varchar(100) NULL     DEFAULT NULL COMMENT '邮箱发件人',
+    `email_password`              varchar(255) NULL     DEFAULT NULL COMMENT '邮箱授权码',
+    `email_port`                  int(8)       NULL     DEFAULT NULL COMMENT '邮箱发送端口',
+    `open_email`                  tinyint(1)   NULL     DEFAULT NULL COMMENT '启用邮箱发送(0否,1是)',
+    `local_file_url`              varchar(255) NULL     DEFAULT NULL COMMENT '本地文件地址',
+    `file_upload_way`             tinyint(1)   NULL     DEFAULT NULL COMMENT '文件上传方式(1本地,2七牛云)',
+    `ali_yun_access_key`          varchar(100)          DEFAULT NULL COMMENT '阿里云ak',
+    `ali_yun_secret_key`          varchar(100)          DEFAULT NULL COMMENT '阿里云sk',
+    `ali_yun_bucket`              varchar(100)          DEFAULT NULL COMMENT '阿里云存储桶名',
+    `ali_yun_endpoint`            varchar(100)          DEFAULT NULL COMMENT '阿里云Endpoint',
+    `create_time`                 datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `update_time`                 datetime     NULL     DEFAULT NULL COMMENT '更新时间',
     PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB
-  AUTO_INCREMENT = 5
-  DEFAULT CHARSET = utf8mb4
-  COLLATE = utf8mb4_0900_ai_ci
-  ROW_FORMAT = DYNAMIC;
-
-/*Data for the table `t_user_role` */
-
-insert into `t_user_role`(`id`, `user_id`, `role_id`)
-values (1, 1, 1),
-       (2, 2, 3),
-       (4, 3, 2);
-
-/*!40101 SET SQL_MODE = @OLD_SQL_MODE */;
-/*!40014 SET FOREIGN_KEY_CHECKS = @OLD_FOREIGN_KEY_CHECKS */;
-/*!40014 SET UNIQUE_CHECKS = @OLD_UNIQUE_CHECKS */;
-/*!40111 SET SQL_NOTES = @OLD_SQL_NOTES */;
+  CHARACTER SET = utf8mb4
+  COLLATE = utf8mb4_general_ci COMMENT = '系统配置表'
+  ROW_FORMAT = Dynamic;
+DROP TABLE IF EXISTS `t_web_config`;
+CREATE TABLE `t_web_config`
+(
+    `id`              bigint(20)   NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+    `logo`            varchar(255) NOT NULL COMMENT 'logo(文件UID)',
+    `name`            varchar(255) NOT NULL COMMENT '网站名称',
+    `summary`         varchar(255) NOT NULL COMMENT '介绍',
+    `keyword`         varchar(255) NOT NULL COMMENT '关键字',
+    `author`          varchar(255) NOT NULL COMMENT '作者',
+    `record_num`      varchar(255) NOT NULL COMMENT '备案号',
+    `web_url`         varchar(255) NULL     DEFAULT NULL COMMENT '网站地址',
+    `ali_pay`         varchar(64)  NULL     DEFAULT NULL COMMENT '支付宝收款码FileId',
+    `weixin_pay`      varchar(64)  NULL     DEFAULT NULL COMMENT '微信收款码FileId',
+    `github`          varchar(255) NULL     DEFAULT NULL COMMENT 'github地址',
+    `gitee`           varchar(255) NULL     DEFAULT NULL COMMENT 'gitee地址',
+    `qq_number`       varchar(20)  NULL     DEFAULT NULL COMMENT 'QQ号',
+    `email`           varchar(255) NULL     DEFAULT NULL COMMENT '邮箱',
+    `show_list`       varchar(255) NULL     DEFAULT NULL COMMENT '显示的列表(用于控制邮箱、QQ、QQ群、Github、Gitee、微信是否显示在前端)',
+    `login_type_list` varchar(255) NULL     DEFAULT NULL COMMENT '登录方式列表(用于控制前端登录方式，如账号密码,码云,Github,QQ,微信)',
+    `open_comment`    tinyint(1)   NULL     DEFAULT 1 COMMENT '是否开启评论(0否,1是)',
+    `open_admiration` tinyint(1)   NOT NULL DEFAULT 0 COMMENT '是否开启赞赏(0否,1是)',
+    `tourist_avatar`  varchar(255) NULL     DEFAULT NULL COMMENT '游客头像',
+    `bulletin`        varchar(255) NULL     DEFAULT NULL COMMENT '公告',
+    `author_info`     varchar(100) NULL     DEFAULT NULL COMMENT '作者简介',
+    `author_avatar`   varchar(255) NULL     DEFAULT NULL COMMENT '作者头像',
+    `about_me`        varchar(500) NULL     DEFAULT NULL COMMENT '关于我',
+    `is_music_player` tinyint(1)   NULL     DEFAULT 0 COMMENT '是否开启音乐播放器(0否,1是)',
+    `create_time`     datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `update_time`     datetime     NULL     DEFAULT NULL COMMENT '更新时间',
+    PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB
+  CHARACTER SET = utf8mb4
+  COLLATE = utf8mb4_general_ci COMMENT = '网站配置表'
+  ROW_FORMAT = Dynamic;

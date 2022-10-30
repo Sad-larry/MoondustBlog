@@ -18,7 +18,7 @@ public enum AppHttpCodeEnum {
      */
     FIELD_EMPTY(45001, "字段不能为空"),
     /**
-     * 用户名不存在
+     * 用户不存在
      */
     USER_NOT_EXIST(45002, "用户不存在"),
     /**
@@ -133,6 +133,10 @@ public enum AppHttpCodeEnum {
      * Token 参数不存在
      */
     TOKEN_NO_SUCH_PARAMETER(45030, "Token 参数不存在"),
+    /**
+     * 用户被冻结，请联系管理员
+     */
+    USER_INVALID(45031, "用户被冻结，请联系管理员"),
 
     /**
      * 警告：文章未添加标签

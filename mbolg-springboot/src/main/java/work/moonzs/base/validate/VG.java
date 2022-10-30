@@ -1,6 +1,7 @@
 package work.moonzs.base.validate;
 
 /**
+ * VG:全称ValidateGroup，为了简化代码，虽然VG看起来有点迷惑，但是其后面还带着标识字段，绝对能看懂
  * 分组校验接口
  * 实现效果为：
  * validation注解的groups传入ValidateGroup时，表示添加、更新、删除、查询都不允许为空
@@ -9,30 +10,30 @@ package work.moonzs.base.validate;
  * validation注解的groups传入Delete时，表示删除时不允许为空
  * validation注解的groups传入Select时，表示查询时不允许为空
  */
-public interface ValidateGroup {
+public interface VG {
 
     /**
      * 分组校验，用于标记新建时字段校验
      */
-    interface Insert extends ValidateGroup {
+    interface Insert extends VG {
     }
 
     /**
      * 分组校验，用于标记更新时字段校验
      */
-    interface Update extends ValidateGroup {
+    interface Update extends VG {
     }
 
     /**
      * 分组校验，用于标记删除时字段校验
      */
-    interface Delete extends ValidateGroup {
+    interface Delete extends VG {
     }
 
     /**
      * 分组校验，用于标记查询时字段校验
      */
-    interface Select extends ValidateGroup {
+    interface Select extends VG {
     }
 }
 

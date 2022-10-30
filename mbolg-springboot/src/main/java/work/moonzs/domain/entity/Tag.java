@@ -9,25 +9,25 @@ import lombok.NoArgsConstructor;
 import java.util.Date;
 
 /**
- * (Tag)表实体类
+ * 博客标签表(Tags)表实体类
  *
  * @author Moondust月尘
- * @since 2022-10-17 14:28:17
+ * @since 2022-10-30 10:17:49
  */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @TableName("t_tag")
 public class Tag {
-    //主键    
+    //主键ID    
     @TableId
     private Long id;
-    //标签名
-    private String tagName;
-    //标签描述
-    private String description;
-    //标签状态(0停用,1正常)
-    private Integer status;
+    //标签名称
+    private String name;
+    //标签点击量
+    private Integer clickVolume;
+    //排序
+    private Integer sort;
     //创建时间
     private Date createTime;
     //更新时间

@@ -9,10 +9,10 @@ import work.moonzs.domain.vo.PageVo;
 import java.util.List;
 
 /**
- * (Article)表服务接口
+ * 博客文章表(Article)表服务接口
  *
  * @author Moondust月尘
- * @since 2022-09-27 14:48:03
+ * @since 2022-10-30 10:36:01
  */
 public interface ArticleService extends IService<Article> {
 

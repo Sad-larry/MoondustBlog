@@ -4,10 +4,10 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import work.moonzs.domain.entity.UserRole;
 
 /**
- * (UserRole)表服务接口
+ * 用户角色关联表(UserRole)表服务接口
  *
  * @author Moondust月尘
- * @since 2022-09-27 14:48:04
+ * @since 2022-10-30 10:37:24
  */
 public interface UserRoleService extends IService<UserRole> {
 

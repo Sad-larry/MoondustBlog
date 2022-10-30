@@ -9,27 +9,29 @@ import lombok.NoArgsConstructor;
 import java.util.Date;
 
 /**
- * (Image)表实体类
+ * 字典表(Dict)表实体类
  *
  * @author Moondust月尘
- * @since 2022-10-17 14:28:14
+ * @since 2022-10-30 10:17:47
  */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@TableName("t_image")
-public class Image {
-    //主键    
+@TableName("t_dict")
+public class Dict {
+    //主键ID    
     @TableId
     private Long id;
-    //图片名称
-    private String imageName;
-    //图片描述
-    private String imageDesc;
-    //图片地址
-    private String imageSrc;
-    //图片状态(0停用,1正常)
-    private Integer status;
+    //字典名称
+    private String name;
+    //字典类型
+    private String type;
+    //是否发布(0否,1是)
+    private Integer isPublish;
+    //排序
+    private Integer sort;
+    //备注
+    private String remark;
     //创建时间
     private Date createTime;
     //更新时间

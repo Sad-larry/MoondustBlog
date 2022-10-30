@@ -7,10 +7,10 @@ import work.moonzs.mapper.RoleMenuMapper;
 import work.moonzs.service.RoleMenuService;
 
 /**
- * (RoleMenu)表服务实现类
+ * 角色-权限资源关联表(RoleMenu)表服务实现类
  *
  * @author Moondust月尘
- * @since 2022-09-27 14:48:04
+ * @since 2022-10-30 10:39:24
  */
 @Service("roleMenuService")
 public class RoleMenuServiceImpl extends ServiceImpl<RoleMenuMapper, RoleMenu> implements RoleMenuService {

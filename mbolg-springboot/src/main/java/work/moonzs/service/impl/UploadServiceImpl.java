@@ -9,15 +9,12 @@ import com.qiniu.storage.Region;
 import com.qiniu.storage.UploadManager;
 import com.qiniu.storage.model.DefaultPutRet;
 import com.qiniu.util.Auth;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import work.moonzs.base.enums.AppHttpCodeEnum;
 import work.moonzs.base.exception.ServiceException;
 import work.moonzs.base.utils.PathUtil;
-import work.moonzs.domain.entity.Image;
-import work.moonzs.mapper.ImageMapper;
 import work.moonzs.service.UploadService;
 
 import java.io.IOException;
@@ -37,9 +34,6 @@ public class UploadServiceImpl implements UploadService {
     @Value("${oss.qiniu.bucket}")
     private String BUCKET;
 
-    @Autowired
-    private ImageMapper imageMapper;
-
     @Override
     public String uploadImage(MultipartFile image) {
         // 获取初始文件名
@@ -52,10 +46,6 @@ public class UploadServiceImpl implements UploadService {
             throw new ServiceException(AppHttpCodeEnum.SERVER_INNER_ERR);
         }
         // 还应该上传到数据库中，把filePath上传上去而不是url
-        Image sqlImage = new Image();
-        sqlImage.setImageName(originalFilename);
-        sqlImage.setImageSrc(filePath);
-        imageMapper.insert(sqlImage);
         return url;
     }
 

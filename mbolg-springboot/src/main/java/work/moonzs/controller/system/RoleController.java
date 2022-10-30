@@ -5,7 +5,6 @@ import cn.hutool.core.collection.CollUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import work.moonzs.base.enums.AppHttpCodeEnum;
-import work.moonzs.base.enums.StatusConstants;
 import work.moonzs.base.utils.BeanCopyUtil;
 import work.moonzs.domain.ResponseResult;
 import work.moonzs.domain.dto.RoleDTO;
@@ -59,10 +58,6 @@ public class RoleController {
         if (CollUtil.isNotEmpty(roleDTO.getMenuIds())) {
             // RoleMenuService.insert(new RoleMenu(null, roleId, menuIds.stream().forEach))
         }
-        // TODO 如果资源id不为空，则把关联表的也加上去
-        if (CollUtil.isNotEmpty(roleDTO.getResourceIds())) {
-            // RoleResource.insert(new RoleResource(null, roleId, resourceIds.stream().forEach))
-        }
         return ResponseResult.success();
     }
 
@@ -104,7 +99,6 @@ public class RoleController {
     public ResponseResult deleteRole(@PathVariable(value = "id") Long roleId) {
         Role role = new Role();
         role.setId(roleId);
-        role.setStatus(StatusConstants.DISABLE);
         roleService.updateById(role);
         return ResponseResult.success();
     }

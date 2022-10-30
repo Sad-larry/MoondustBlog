@@ -25,7 +25,7 @@ public class ArticleVo {
     /**
      * 用户名
      */
-    private String userName;
+    private String username;
     /**
      * 标题
      */

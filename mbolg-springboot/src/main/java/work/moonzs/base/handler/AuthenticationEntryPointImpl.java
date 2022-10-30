@@ -2,6 +2,7 @@ package work.moonzs.base.handler;
 
 import cn.hutool.json.JSONUtil;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.core.AuthenticationException;
@@ -25,7 +26,7 @@ import java.io.IOException;
 public class AuthenticationEntryPointImpl implements AuthenticationEntryPoint {
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
-        // authException.printStackTrace();
+        authException.printStackTrace();
         ResponseResult result = null;
         if (authException instanceof InsufficientAuthenticationException) {
             // 用户未登录
@@ -36,6 +37,9 @@ public class AuthenticationEntryPointImpl implements AuthenticationEntryPoint {
         } else if (authException instanceof BadCredentialsException) {
             // 用户名密码错误
             result = ResponseResult.fail(AppHttpCodeEnum.USER_FAILED_CERTIFICATION);
+        } else if (authException instanceof DisabledException) {
+            // 用户已失效，不能使用了，被冻结了，请联系管理员
+            result = ResponseResult.fail(AppHttpCodeEnum.USER_INVALID);
         } else {
             // TODO 不知名异常，等出现的时候再抛出
             result = ResponseResult.fail(45000, "认证又出异常啦，快来找问题");

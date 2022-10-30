@@ -7,10 +7,10 @@ import work.moonzs.domain.vo.CategoryVo;
 import work.moonzs.domain.vo.PageVo;
 
 /**
- * (Category)表服务接口
+ * 博客分类表(Category)表服务接口
  *
  * @author Moondust月尘
- * @since 2022-09-27 14:48:04
+ * @since 2022-10-30 10:36:19
  */
 public interface CategoryService extends IService<Category> {
 

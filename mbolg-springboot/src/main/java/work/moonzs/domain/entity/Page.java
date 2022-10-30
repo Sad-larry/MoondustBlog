@@ -9,27 +9,25 @@ import lombok.NoArgsConstructor;
 import java.util.Date;
 
 /**
- * (Resource)表实体类
+ * 前端页面表(Page)表实体类
  *
  * @author Moondust月尘
- * @since 2022-10-17 14:28:15
+ * @since 2022-10-30 10:17:48
  */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@TableName("t_resource")
-public class Resource {
-    //主键    
+@TableName("t_page")
+public class Page {
+    //主键ID    
     @TableId
     private Long id;
-    //资源名
-    private String resourceName;
-    //权限路径
-    private String url;
-    //请求方式
-    private String requestMethod;
-    //父模块id
-    private Long pid;
+    //页面名称
+    private String pageName;
+    //页面标签
+    private String pageLabel;
+    //页面图源
+    private String pageCover;
     //创建时间
     private Date createTime;
     //更新时间

@@ -2,7 +2,6 @@ package work.moonzs.controller.system;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import work.moonzs.base.enums.StatusConstants;
 import work.moonzs.base.utils.BeanCopyUtil;
 import work.moonzs.domain.ResponseResult;
 import work.moonzs.domain.dto.CommentDTO;
@@ -57,7 +56,6 @@ public class CommentController {
     public ResponseResult deleteComment(@PathVariable(value = "id") Long commentId) {
         Comment comment = new Comment();
         comment.setId(commentId);
-        comment.setStatus(StatusConstants.DISABLE);
         commentService.updateById(comment);
         return ResponseResult.success();
     }

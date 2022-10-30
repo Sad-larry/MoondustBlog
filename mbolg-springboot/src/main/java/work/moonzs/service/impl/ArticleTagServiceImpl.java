@@ -11,10 +11,10 @@ import work.moonzs.service.ArticleTagService;
 import java.util.List;
 
 /**
- * (ArticleTag)表服务实现类
+ * 博客-标签关联表(ArticleTag)表服务实现类
  *
  * @author Moondust月尘
- * @since 2022-09-27 14:48:04
+ * @since 2022-10-30 10:39:01
  */
 @Service("articleTagService")
 public class ArticleTagServiceImpl extends ServiceImpl<ArticleTagMapper, ArticleTag> implements ArticleTagService {

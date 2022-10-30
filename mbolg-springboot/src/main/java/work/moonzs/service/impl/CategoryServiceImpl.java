@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
-import work.moonzs.base.enums.StatusConstants;
 import work.moonzs.base.utils.BeanCopyUtil;
 import work.moonzs.domain.entity.Category;
 import work.moonzs.domain.vo.CategoryVo;
@@ -14,10 +13,10 @@ import work.moonzs.mapper.CategoryMapper;
 import work.moonzs.service.CategoryService;
 
 /**
- * (Category)表服务实现类
+ * 博客分类表(Category)表服务实现类
  *
  * @author Moondust月尘
- * @since 2022-09-27 14:48:04
+ * @since 2022-10-30 10:39:06
  */
 @Service("categoryService")
 public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> implements CategoryService {
@@ -26,7 +25,6 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
     public boolean isExistCategoryById(Long categoryId) {
         LambdaQueryWrapper<Category> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Category::getId, categoryId);
-        queryWrapper.eq(Category::getStatus, StatusConstants.NORMAL);
         long count = count(queryWrapper);
         return count > 0;
     }
@@ -41,7 +39,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
     @Override
     public boolean isExistCategoryByCategoryName(String categoryName) {
         LambdaQueryWrapper<Category> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(Category::getCategoryName, categoryName);
+        queryWrapper.eq(Category::getName, categoryName);
         // 不同判断状态
         long count = count(queryWrapper);
         return count > 0;
@@ -49,15 +47,15 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
 
     @Override
     public PageVo<CategoryVo> listCategory(Integer pageNum, Integer pageSize, String fuzzyField) {
-        LambdaQueryWrapper<Category> queryWrapper = new LambdaQueryWrapper<>();
+        Page<Category> page = new Page<>(pageNum, pageSize);
         // 模糊字段为空则不匹配
         if (!StrUtil.isBlank(fuzzyField)) {
-            queryWrapper.like(Category::getCategoryName, fuzzyField);
-            queryWrapper.or().like(Category::getDescription, fuzzyField);
+            LambdaQueryWrapper<Category> queryWrapper = new LambdaQueryWrapper<>();
+            queryWrapper.like(Category::getName, fuzzyField);
+            page(page, queryWrapper);
+        } else {
+            page(page);
         }
-        queryWrapper.eq(Category::getStatus, StatusConstants.NORMAL);
-        Page<Category> page = new Page<>(pageNum, pageSize);
-        page(page, queryWrapper);
         return new PageVo<>(BeanCopyUtil.copyBeanList(page.getRecords(), CategoryVo.class), page);
     }
 }

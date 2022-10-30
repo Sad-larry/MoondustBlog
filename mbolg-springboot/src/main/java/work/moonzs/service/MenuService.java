@@ -9,10 +9,10 @@ import work.moonzs.domain.vo.router.RouterVo;
 import java.util.List;
 
 /**
- * (Menu)表服务接口
+ * 权限资源表 (Menu)表服务接口
  *
  * @author Moondust月尘
- * @since 2022-09-27 14:48:04
+ * @since 2022-10-30 10:36:41
  */
 public interface MenuService extends IService<Menu> {
 
