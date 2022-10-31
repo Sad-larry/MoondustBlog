@@ -33,7 +33,7 @@ public class ITokenService {
     /**
      * 令牌有效期60分钟
      */
-    private static final Long TOTAL_EFFECTIVE_TIME = 60 * 60 * 1000L;
+    private static final Long TOTAL_EFFECTIVE_TIME = 24 * 60 * 60 * 1000L;
     /**
      * 令牌有效期剩余20分钟
      */

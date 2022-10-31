@@ -1,42 +1,90 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="菜单名" prop="name">
+      <el-form-item label="上级资源ID" prop="parentId">
         <el-input
-          v-model="queryParams.name"
-          placeholder="请输入菜单名"
+          v-model="queryParams.parentId"
+          placeholder="请输入上级资源ID"
           clearable
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="父级菜单id" prop="pid">
+      <el-form-item label="资源名称" prop="title">
         <el-input
-          v-model="queryParams.pid"
-          placeholder="请输入父级菜单id"
+          v-model="queryParams.title"
+          placeholder="请输入资源名称"
           clearable
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="路由地址" prop="path">
+      <el-form-item label="路由地址" prop="url">
         <el-input
-          v-model="queryParams.path"
+          v-model="queryParams.url"
           placeholder="请输入路由地址"
           clearable
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="组件" prop="component">
+      <el-form-item label="资源组件" prop="component">
         <el-input
           v-model="queryParams.component"
-          placeholder="请输入组件"
+          placeholder="请输入资源组件"
           clearable
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="菜单图标" prop="icon">
+      <el-form-item label="资源级别" prop="level">
+        <el-input
+          v-model="queryParams.level"
+          placeholder="请输入资源级别"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="显示顺序" prop="sortNo">
+        <el-input
+          v-model="queryParams.sortNo"
+          placeholder="请输入显示顺序"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="资源图标" prop="icon">
         <el-input
           v-model="queryParams.icon"
-          placeholder="请输入菜单图标"
+          placeholder="请输入资源图标"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="重定向地址" prop="redirect">
+        <el-input
+          v-model="queryParams.redirect"
+          placeholder="请输入重定向地址"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="跳转地址" prop="name">
+        <el-input
+          v-model="queryParams.name"
+          placeholder="请输入跳转地址"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="是否隐藏(0否,1是)" prop="hidden">
+        <el-input
+          v-model="queryParams.hidden"
+          placeholder="请输入是否隐藏(0否,1是)"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="是否缓存" prop="isCache">
+        <el-input
+          v-model="queryParams.isCache"
+          placeholder="请输入是否缓存"
           clearable
           @keyup.enter.native="handleQuery"
         />
@@ -95,13 +143,20 @@
 
     <el-table v-loading="loading" :data="menuList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="主键" align="center" prop="id" />
-      <el-table-column label="菜单名" align="center" prop="name" />
-      <el-table-column label="父级菜单id" align="center" prop="pid" />
-      <el-table-column label="路由地址" align="center" prop="path" />
-      <el-table-column label="组件" align="center" prop="component" />
-      <el-table-column label="菜单图标" align="center" prop="icon" />
-      <el-table-column label="菜单状态(0停用,1正常)" align="center" prop="status" />
+      <el-table-column label="主键ID" align="center" prop="id" />
+      <el-table-column label="上级资源ID" align="center" prop="parentId" />
+      <el-table-column label="资源名称" align="center" prop="title" />
+      <el-table-column label="路由地址" align="center" prop="url" />
+      <el-table-column label="资源组件" align="center" prop="component" />
+      <el-table-column label="资源级别" align="center" prop="level" />
+      <el-table-column label="显示顺序" align="center" prop="sortNo" />
+      <el-table-column label="资源图标" align="center" prop="icon" />
+      <el-table-column label="菜单类型(M菜单,F按钮)" align="center" prop="type" />
+      <el-table-column label="重定向地址" align="center" prop="redirect" />
+      <el-table-column label="跳转地址" align="center" prop="name" />
+      <el-table-column label="是否隐藏(0否,1是)" align="center" prop="hidden" />
+      <el-table-column label="是否缓存" align="center" prop="isCache" />
+      <el-table-column label="备注" align="center" prop="remark" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -130,23 +185,44 @@
       @pagination="getList"
     />
 
-    <!-- 添加或修改【请填写功能名称】对话框 -->
+    <!-- 添加或修改权限资源 对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="菜单名" prop="name">
-          <el-input v-model="form.name" placeholder="请输入菜单名" />
+        <el-form-item label="上级资源ID" prop="parentId">
+          <el-input v-model="form.parentId" placeholder="请输入上级资源ID" />
         </el-form-item>
-        <el-form-item label="父级菜单id" prop="pid">
-          <el-input v-model="form.pid" placeholder="请输入父级菜单id" />
+        <el-form-item label="资源名称" prop="title">
+          <el-input v-model="form.title" placeholder="请输入资源名称" />
         </el-form-item>
-        <el-form-item label="路由地址" prop="path">
-          <el-input v-model="form.path" placeholder="请输入路由地址" />
+        <el-form-item label="路由地址" prop="url">
+          <el-input v-model="form.url" placeholder="请输入路由地址" />
         </el-form-item>
-        <el-form-item label="组件" prop="component">
-          <el-input v-model="form.component" placeholder="请输入组件" />
+        <el-form-item label="资源组件" prop="component">
+          <el-input v-model="form.component" placeholder="请输入资源组件" />
         </el-form-item>
-        <el-form-item label="菜单图标" prop="icon">
-          <el-input v-model="form.icon" placeholder="请输入菜单图标" />
+        <el-form-item label="资源级别" prop="level">
+          <el-input v-model="form.level" placeholder="请输入资源级别" />
+        </el-form-item>
+        <el-form-item label="显示顺序" prop="sortNo">
+          <el-input v-model="form.sortNo" placeholder="请输入显示顺序" />
+        </el-form-item>
+        <el-form-item label="资源图标" prop="icon">
+          <el-input v-model="form.icon" placeholder="请输入资源图标" />
+        </el-form-item>
+        <el-form-item label="重定向地址" prop="redirect">
+          <el-input v-model="form.redirect" placeholder="请输入重定向地址" />
+        </el-form-item>
+        <el-form-item label="跳转地址" prop="name">
+          <el-input v-model="form.name" placeholder="请输入跳转地址" />
+        </el-form-item>
+        <el-form-item label="是否隐藏(0否,1是)" prop="hidden">
+          <el-input v-model="form.hidden" placeholder="请输入是否隐藏(0否,1是)" />
+        </el-form-item>
+        <el-form-item label="是否缓存" prop="isCache">
+          <el-input v-model="form.isCache" placeholder="请输入是否缓存" />
+        </el-form-item>
+        <el-form-item label="备注" prop="remark">
+          <el-input v-model="form.remark" placeholder="请输入备注" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -176,7 +252,7 @@ export default {
       showSearch: true,
       // 总条数
       total: 0,
-      // 【请填写功能名称】表格数据
+      // 权限资源 表格数据
       menuList: [],
       // 弹出层标题
       title: "",
@@ -186,23 +262,23 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        name: null,
-        pid: null,
-        path: null,
+        parentId: null,
+        title: null,
+        url: null,
         component: null,
+        level: null,
+        sortNo: null,
         icon: null,
-        status: null,
+        type: null,
+        redirect: null,
+        name: null,
+        hidden: null,
+        isCache: null,
       },
       // 表单参数
       form: {},
       // 表单校验
       rules: {
-        name: [
-          { required: true, message: "菜单名不能为空", trigger: "blur" }
-        ],
-        status: [
-          { required: true, message: "菜单状态(0停用,1正常)不能为空", trigger: "blur" }
-        ],
         createTime: [
           { required: true, message: "创建时间不能为空", trigger: "blur" }
         ],
@@ -213,7 +289,7 @@ export default {
     this.getList();
   },
   methods: {
-    /** 查询【请填写功能名称】列表 */
+    /** 查询权限资源 列表 */
     getList() {
       this.loading = true;
       listMenu(this.queryParams).then(response => {
@@ -231,12 +307,19 @@ export default {
     reset() {
       this.form = {
         id: null,
-        name: null,
-        pid: null,
-        path: null,
+        parentId: null,
+        title: null,
+        url: null,
         component: null,
+        level: null,
+        sortNo: null,
         icon: null,
-        status: 0,
+        type: null,
+        redirect: null,
+        name: null,
+        hidden: null,
+        isCache: null,
+        remark: null,
         createTime: null,
         updateTime: null
       };
@@ -262,7 +345,7 @@ export default {
     handleAdd() {
       this.reset();
       this.open = true;
-      this.title = "添加【请填写功能名称】";
+      this.title = "添加权限资源 ";
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
@@ -271,7 +354,7 @@ export default {
       getMenu(id).then(response => {
         this.form = response.data;
         this.open = true;
-        this.title = "修改【请填写功能名称】";
+        this.title = "修改权限资源 ";
       });
     },
     /** 提交按钮 */
@@ -297,7 +380,7 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const ids = row.id || this.ids;
-      this.$modal.confirm('是否确认删除【请填写功能名称】编号为"' + ids + '"的数据项？').then(function() {
+      this.$modal.confirm('是否确认删除权限资源 编号为"' + ids + '"的数据项？').then(function() {
         return delMenu(ids);
       }).then(() => {
         this.getList();

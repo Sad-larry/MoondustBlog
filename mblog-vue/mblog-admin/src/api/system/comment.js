@@ -1,6 +1,6 @@
 import request from '@/utils/request'
 
-// 查询【请填写功能名称】列表
+// 查询评论列表
 export function listComment(query) {
   return request({
     url: '/system/comment/list',
@@ -9,7 +9,7 @@ export function listComment(query) {
   })
 }
 
-// 查询【请填写功能名称】详细
+// 查询评论详细
 export function getComment(id) {
   return request({
     url: '/system/comment/' + id,
@@ -17,7 +17,7 @@ export function getComment(id) {
   })
 }
 
-// 新增【请填写功能名称】
+// 新增评论
 export function addComment(data) {
   return request({
     url: '/system/comment',
@@ -26,7 +26,7 @@ export function addComment(data) {
   })
 }
 
-// 修改【请填写功能名称】
+// 修改评论
 export function updateComment(data) {
   return request({
     url: '/system/comment',
@@ -35,7 +35,7 @@ export function updateComment(data) {
   })
 }
 
-// 删除【请填写功能名称】
+// 删除评论
 export function delComment(id) {
   return request({
     url: '/system/comment/' + id,

@@ -1,6 +1,6 @@
 import request from '@/utils/request'
 
-// 查询【请填写功能名称】列表
+// 查询权限资源 列表
 export function listMenu(query) {
   return request({
     url: '/system/menu/list',
@@ -9,7 +9,7 @@ export function listMenu(query) {
   })
 }
 
-// 查询【请填写功能名称】详细
+// 查询权限资源 详细
 export function getMenu(id) {
   return request({
     url: '/system/menu/' + id,
@@ -17,7 +17,7 @@ export function getMenu(id) {
   })
 }
 
-// 新增【请填写功能名称】
+// 新增权限资源 
 export function addMenu(data) {
   return request({
     url: '/system/menu',
@@ -26,7 +26,7 @@ export function addMenu(data) {
   })
 }
 
-// 修改【请填写功能名称】
+// 修改权限资源 
 export function updateMenu(data) {
   return request({
     url: '/system/menu',
@@ -35,7 +35,7 @@ export function updateMenu(data) {
   })
 }
 
-// 删除【请填写功能名称】
+// 删除权限资源 
 export function delMenu(id) {
   return request({
     url: '/system/menu/' + id,

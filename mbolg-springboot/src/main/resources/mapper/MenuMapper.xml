@@ -12,28 +12,26 @@
     </select>
     <select id="selectMenuTreeByUserId" resultType="work.moonzs.domain.entity.Menu">
         select distinct m.`id`,
-                        m.`menu_name`,
-                        m.`pid`,
-                        m.`order_num`,
-                        m.`path`,
+                        m.`title`,
+                        m.`parent_id`,
+                        m.`sort_no`,
+                        m.`url`,
                         m.`component`,
-                        m.`query`,
-                        m.`is_cache`,
-                        m.`menu_type`,
-                        m.`status`,
-                        m.`perms`,
+                        m.`redirect`,
+                        m.`hidden`,
+                        m.`name`,
+                        m.`type`,
                         m.`icon`,
+                        m.`is_cache`,
                         m.`create_time`
         from t_menu m
                  left join t_role_menu rm on m.`id` = rm.`menu_id`
                  left join t_user_role ur on rm.`role_id` = ur.`role_id`
-                 left join t_role r on ur.`role_id` = r.`id`
                  left join t_user u on ur.`user_id` = u.`id`
         where u.`id` = #{userId}
-          and m.`menu_type` in ('M', 'C')
-          and m.`status` = 1
-          AND r.`status` = 1
-        order by m.`pid`, m.`order_num`
+          and u.`status` = 1
+          and m.`type` in ('M')
+        order by m.`parent_id`, m.`sort_no`
     </select>
     <select id="selectUserPerms" resultType="java.lang.String">
         SELECT DISTINCT m.`perms`

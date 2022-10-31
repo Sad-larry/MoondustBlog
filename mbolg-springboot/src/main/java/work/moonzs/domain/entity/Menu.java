@@ -25,6 +25,10 @@ public class Menu {
     //主键ID    
     @TableId
     private Long id;
+    //资源名称
+    private String title;
+    //路由地址
+    private String url;
     //资源组件
     private String component;
     //资源图标
@@ -33,10 +37,6 @@ public class Menu {
     private Date updateTime;
     //上级资源ID
     private Long parentId;
-    //资源名称
-    private String title;
-    //路由地址
-    private String url;
     //资源级别
     private Integer level;
     //显示顺序
@@ -52,7 +52,7 @@ public class Menu {
     //备注
     private String remark;
     //创建时间
-    private Date createdTime;
+    private Date createTime;
     //是否缓存（0不缓存,1缓存）
     private Integer isCache;
     //子菜单列表

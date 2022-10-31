@@ -1,6 +1,6 @@
 import request from '@/utils/request'
 
-// 查询【请填写功能名称】列表
+// 查询博客分类列表
 export function listCategory(query) {
   return request({
     url: '/system/category/list',
@@ -9,7 +9,7 @@ export function listCategory(query) {
   })
 }
 
-// 查询【请填写功能名称】详细
+// 查询博客分类详细
 export function getCategory(id) {
   return request({
     url: '/system/category/' + id,
@@ -17,7 +17,7 @@ export function getCategory(id) {
   })
 }
 
-// 新增【请填写功能名称】
+// 新增博客分类
 export function addCategory(data) {
   return request({
     url: '/system/category',
@@ -26,7 +26,7 @@ export function addCategory(data) {
   })
 }
 
-// 修改【请填写功能名称】
+// 修改博客分类
 export function updateCategory(data) {
   return request({
     url: '/system/category',
@@ -35,7 +35,7 @@ export function updateCategory(data) {
   })
 }
 
-// 删除【请填写功能名称】
+// 删除博客分类
 export function delCategory(id) {
   return request({
     url: '/system/category/' + id,

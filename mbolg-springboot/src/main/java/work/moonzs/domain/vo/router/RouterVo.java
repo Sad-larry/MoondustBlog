@@ -33,13 +33,18 @@ public class RouterVo {
      */
     private String component;
     /**
-     * 路由参数：如 {"id": 1, "name": "ry"}
-     */
-    private String query;
-    /**
      * 当你一个路由下面的 children 声明的路由大于1个时，自动会变成嵌套的模式--如组件页面
+     * 如果不设置这个，当子路由为1个时，子路由就会变成菜单项
      */
     private Boolean alwaysShow;
+    /**
+     * 是否隐藏
+     */
+    private Boolean hidden;
+    /**
+     * 显示顺序
+     */
+    private Integer sortNo;
     /**
      * 其他元素
      */

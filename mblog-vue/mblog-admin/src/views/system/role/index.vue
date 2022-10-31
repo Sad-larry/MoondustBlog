@@ -1,18 +1,18 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="角色名" prop="roleName">
+      <el-form-item label="角色编码" prop="code">
         <el-input
-          v-model="queryParams.roleName"
-          placeholder="请输入角色名"
+          v-model="queryParams.code"
+          placeholder="请输入角色编码"
           clearable
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="角色描述" prop="description">
+      <el-form-item label="角色名称" prop="name">
         <el-input
-          v-model="queryParams.description"
-          placeholder="请输入角色描述"
+          v-model="queryParams.name"
+          placeholder="请输入角色名称"
           clearable
           @keyup.enter.native="handleQuery"
         />
@@ -71,10 +71,10 @@
 
     <el-table v-loading="loading" :data="roleList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="主键" align="center" prop="id" />
-      <el-table-column label="角色名" align="center" prop="roleName" />
-      <el-table-column label="角色描述" align="center" prop="description" />
-      <el-table-column label="角色状态(0停用,1正常)" align="center" prop="status" />
+      <el-table-column label="主键ID" align="center" prop="id" />
+      <el-table-column label="角色编码" align="center" prop="code" />
+      <el-table-column label="角色名称" align="center" prop="name" />
+      <el-table-column label="角色描述" align="center" prop="remark" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -103,14 +103,17 @@
       @pagination="getList"
     />
 
-    <!-- 添加或修改【请填写功能名称】对话框 -->
+    <!-- 添加或修改角色对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="角色名" prop="roleName">
-          <el-input v-model="form.roleName" placeholder="请输入角色名" />
+        <el-form-item label="角色编码" prop="code">
+          <el-input v-model="form.code" placeholder="请输入角色编码" />
         </el-form-item>
-        <el-form-item label="角色描述" prop="description">
-          <el-input v-model="form.description" placeholder="请输入角色描述" />
+        <el-form-item label="角色名称" prop="name">
+          <el-input v-model="form.name" placeholder="请输入角色名称" />
+        </el-form-item>
+        <el-form-item label="角色描述" prop="remark">
+          <el-input v-model="form.remark" placeholder="请输入角色描述" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -140,7 +143,7 @@ export default {
       showSearch: true,
       // 总条数
       total: 0,
-      // 【请填写功能名称】表格数据
+      // 角色表格数据
       roleList: [],
       // 弹出层标题
       title: "",
@@ -150,20 +153,13 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        roleName: null,
-        description: null,
-        status: null,
+        code: null,
+        name: null,
       },
       // 表单参数
       form: {},
       // 表单校验
       rules: {
-        roleName: [
-          { required: true, message: "角色名不能为空", trigger: "blur" }
-        ],
-        status: [
-          { required: true, message: "角色状态(0停用,1正常)不能为空", trigger: "blur" }
-        ],
         createTime: [
           { required: true, message: "创建时间不能为空", trigger: "blur" }
         ],
@@ -174,7 +170,7 @@ export default {
     this.getList();
   },
   methods: {
-    /** 查询【请填写功能名称】列表 */
+    /** 查询角色列表 */
     getList() {
       this.loading = true;
       listRole(this.queryParams).then(response => {
@@ -192,9 +188,9 @@ export default {
     reset() {
       this.form = {
         id: null,
-        roleName: null,
-        description: null,
-        status: 0,
+        code: null,
+        name: null,
+        remark: null,
         createTime: null,
         updateTime: null
       };
@@ -220,7 +216,7 @@ export default {
     handleAdd() {
       this.reset();
       this.open = true;
-      this.title = "添加【请填写功能名称】";
+      this.title = "添加角色";
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
@@ -229,7 +225,7 @@ export default {
       getRole(id).then(response => {
         this.form = response.data;
         this.open = true;
-        this.title = "修改【请填写功能名称】";
+        this.title = "修改角色";
       });
     },
     /** 提交按钮 */
@@ -255,7 +251,7 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const ids = row.id || this.ids;
-      this.$modal.confirm('是否确认删除【请填写功能名称】编号为"' + ids + '"的数据项？').then(function() {
+      this.$modal.confirm('是否确认删除角色编号为"' + ids + '"的数据项？').then(function() {
         return delRole(ids);
       }).then(() => {
         this.getList();

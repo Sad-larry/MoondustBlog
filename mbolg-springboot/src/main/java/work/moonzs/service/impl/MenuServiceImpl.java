@@ -1,6 +1,7 @@
 package work.moonzs.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -114,23 +115,36 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
 
     @Override
     public List<RouterVo> buildMenus(List<Menu> menus) {
-        // 为什么用链表集合，为了能按顺序输出
+        // 为什么用链表集合，为了能按顺序输出，其实也没啥影响
         List<RouterVo> routerVoList = new LinkedList<>();
         menus.forEach(menu -> {
             RouterVo router = new RouterVo();
             router.setName(getRouterName(menu));
             router.setPath(getRouterPath(menu));
             router.setComponent(menu.getComponent());
-            router.setMeta(new MetaVo(menu.getName(), menu.getIcon(), StatusConstants.DISABLE.equals(menu.getIsCache())));
+            router.setHidden(getRouterHidden(menu));
+            router.setSortNo(menu.getSortNo());
+            router.setRedirect(menu.getRedirect());
+            router.setMeta(new MetaVo(menu.getTitle(), menu.getIcon(), StatusConstants.NORMAL.equals(menu.getIsCache())));
             List<Menu> children = menu.getChildren();
             if (CollUtil.isNotEmpty(children) && StatusConstants.TYPE_DIR.equals(menu.getType())) {
                 router.setAlwaysShow(true);
-                router.setRedirect("noRedirect");
+                // router.setRedirect("noRedirect");
                 router.setChildren(buildMenus(children));
             }
             routerVoList.add(router);
         });
         return routerVoList;
+    }
+
+    /**
+     * 设置路由器是否隐藏,hidden=1则为true
+     *
+     * @param menu 菜单
+     * @return {@link Boolean}
+     */
+    private Boolean getRouterHidden(Menu menu) {
+        return StatusConstants.NORMAL.equals(menu.getHidden());
     }
 
     /**
@@ -143,7 +157,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
         String routerPath = menu.getUrl();
         // 如果是一级目录，则需要加"/"
         if (0 == menu.getParentId().intValue() && StatusConstants.TYPE_DIR.equals(menu.getType())) {
-            routerPath = "/" + menu.getUrl();
+            routerPath = StrUtil.prependIfMissing(menu.getUrl(), "/");
         }
         return routerPath;
     }
@@ -166,7 +180,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
     private List<Menu> selectMenuTreeAll() {
         LambdaQueryWrapper<Menu> queryWrapper = new LambdaQueryWrapper<>();
         // 只选择目录和菜单部分
-        queryWrapper.in(Menu::getType, "M", "C");
+        queryWrapper.in(Menu::getType, "M");
         queryWrapper.orderByAsc(Menu::getParentId);
         queryWrapper.orderByAsc(Menu::getSortNo);
         return list(queryWrapper);

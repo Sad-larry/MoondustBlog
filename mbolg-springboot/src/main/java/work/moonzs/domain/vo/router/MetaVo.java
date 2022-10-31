@@ -24,5 +24,5 @@ public class MetaVo {
     /**
      * 设置为true，则不会被<keep-alive>缓存
      */
-    private boolean noCache;
+    private Boolean keepAlive;
 }

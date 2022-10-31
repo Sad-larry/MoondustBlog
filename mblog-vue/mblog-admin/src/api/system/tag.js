@@ -1,6 +1,6 @@
 import request from '@/utils/request'
 
-// 查询【请填写功能名称】列表
+// 查询博客标签列表
 export function listTag(query) {
   return request({
     url: '/system/tag/list',
@@ -9,7 +9,7 @@ export function listTag(query) {
   })
 }
 
-// 查询【请填写功能名称】详细
+// 查询博客标签详细
 export function getTag(id) {
   return request({
     url: '/system/tag/' + id,
@@ -17,7 +17,7 @@ export function getTag(id) {
   })
 }
 
-// 新增【请填写功能名称】
+// 新增博客标签
 export function addTag(data) {
   return request({
     url: '/system/tag',
@@ -26,7 +26,7 @@ export function addTag(data) {
   })
 }
 
-// 修改【请填写功能名称】
+// 修改博客标签
 export function updateTag(data) {
   return request({
     url: '/system/tag',
@@ -35,7 +35,7 @@ export function updateTag(data) {
   })
 }
 
-// 删除【请填写功能名称】
+// 删除博客标签
 export function delTag(id) {
   return request({
     url: '/system/tag/' + id,

@@ -1,6 +1,6 @@
 import request from '@/utils/request'
 
-// 查询【请填写功能名称】列表
+// 查询角色列表
 export function listRole(query) {
   return request({
     url: '/system/role/list',
@@ -9,7 +9,7 @@ export function listRole(query) {
   })
 }
 
-// 查询【请填写功能名称】详细
+// 查询角色详细
 export function getRole(id) {
   return request({
     url: '/system/role/' + id,
@@ -17,7 +17,7 @@ export function getRole(id) {
   })
 }
 
-// 新增【请填写功能名称】
+// 新增角色
 export function addRole(data) {
   return request({
     url: '/system/role',
@@ -26,7 +26,7 @@ export function addRole(data) {
   })
 }
 
-// 修改【请填写功能名称】
+// 修改角色
 export function updateRole(data) {
   return request({
     url: '/system/role',
@@ -35,7 +35,7 @@ export function updateRole(data) {
   })
 }
 
-// 删除【请填写功能名称】
+// 删除角色
 export function delRole(id) {
   return request({
     url: '/system/role/' + id,

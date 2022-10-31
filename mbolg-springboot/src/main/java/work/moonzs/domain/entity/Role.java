@@ -31,6 +31,6 @@ public class Role {
     //角色描述
     private String remark;
     //创建时间
-    private Date createdTime;
+    private Date createTime;
 }
 

@@ -1,4 +1,3 @@
-// 好像用不到这个？
 const { run } = require('runjs')
 const chalk = require('chalk')
 const config = require('../vue.config.js')
