@@ -1,5 +1,7 @@
 package work.moonzs.domain.entity;
 
+import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
@@ -22,15 +24,16 @@ public class Category {
     //主键ID    
     @TableId
     private Long id;
-    //创建时间
-    private Date createTime;
-    //更新时间
-    private Date updateTime;
     //分类名称
     private String name;
     //分类点击量
     private Integer clickVolume;
     //排序
     private Integer sort;
+    //创建时间
+    private Date createTime;
+    //更新时间
+    @TableField(fill = FieldFill.UPDATE)
+    private Date updateTime;
 }
 

@@ -1,11 +1,10 @@
 package work.moonzs.base.handler;
 
-import cn.hutool.log.Log;
-import cn.hutool.log.LogFactory;
-import cn.hutool.log.dialect.console.ConsoleLogFactory;
 import io.jsonwebtoken.ExpiredJwtException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -23,14 +22,9 @@ import java.util.List;
  *
  * @author Moondust月尘
  */
+@Slf4j
 @RestControllerAdvice
 public class RestControllerExceptionHandler {
-    static {
-        // TODO 应该符合springboot控制台输出的日志
-        LogFactory.setCurrentLogFactory(new ConsoleLogFactory());
-    }
-
-    private static final Log LOG = LogFactory.get();
 
     /**
      * 如果有参数校验失败，会将错误信息封装成对象组装在BindingResult里
@@ -48,7 +42,7 @@ public class RestControllerExceptionHandler {
             String field = error.getField();
             Object value = error.getRejectedValue();
             String msg = error.getDefaultMessage();
-            LOG.error("错误字段 -> {} 错误值 -> {} 原因 -> {}", field, value, msg);
+            log.error("错误字段 -> {} 错误值 -> {} 原因 -> {}", field, value, msg);
             list.add(msg);
         });
         return ResponseResult.fail(45000, list.toString());
@@ -62,18 +56,8 @@ public class RestControllerExceptionHandler {
      */
     @ExceptionHandler(ValidateException.class)
     public ResponseResult handleValidate(ValidateException e) {
-        LOG.error("失败原因: {}", e.getMessage());
+        log.error("失败原因: {}", e.getMessage());
         return ResponseResult.ofException(e);
-    }
-
-    /**
-     * 处理"Required request body is missing
-     *
-     * @return {@link ResponseResult}<{@link ?}>
-     */
-    @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseResult handleHttpMessageNotReadable() {
-        return ResponseResult.fail(AppHttpCodeEnum.REQUIRED_REQUEST_BODY);
     }
 
     /**
@@ -84,7 +68,7 @@ public class RestControllerExceptionHandler {
      */
     @ExceptionHandler(ServiceException.class)
     public ResponseResult handleService(ServiceException e) {
-        LOG.error("失败原因: {}", e.getMessage());
+        log.error("失败原因: {}", e.getMessage());
         return ResponseResult.ofException(e);
     }
 
@@ -107,7 +91,22 @@ public class RestControllerExceptionHandler {
      */
     @ExceptionHandler(SecurityException.class)
     public ResponseResult handleSecurity(SecurityException e) {
-        LOG.error("失败原因: {}", e.getMessage());
+        log.error("失败原因: {}", e.getMessage());
         return ResponseResult.ofException(e);
+    }
+
+    /**
+     * 处理"Required request body is missing
+     *
+     * @return {@link ResponseResult}<{@link ?}>
+     */
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseResult handleHttpMessageNotReadable() {
+        return ResponseResult.fail(AppHttpCodeEnum.REQUIRED_REQUEST_BODY);
+    }
+
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public ResponseResult handleHttpRequestMethodNotSupported(HttpRequestMethodNotSupportedException e) {
+        return ResponseResult.fail(AppHttpCodeEnum.HTTP_REQUESTMETHOD_NOT_SUPPORTED);
     }
 }

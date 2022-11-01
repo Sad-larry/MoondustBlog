@@ -36,9 +36,10 @@ export function updateCategory(data) {
 }
 
 // 删除博客分类
-export function delCategory(id) {
+export function delCategory(ids) {
   return request({
-    url: '/system/category/' + id,
+    url: '/system/category/' + ids,
     method: 'delete'
   })
 }
+

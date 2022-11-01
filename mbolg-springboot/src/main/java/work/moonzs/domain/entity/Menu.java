@@ -1,5 +1,6 @@
 package work.moonzs.domain.entity;
 
+import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -33,8 +34,6 @@ public class Menu {
     private String component;
     //资源图标
     private String icon;
-    //更新时间
-    private Date updateTime;
     //上级资源ID
     private Long parentId;
     //资源级别
@@ -49,12 +48,15 @@ public class Menu {
     private String name;
     //是否隐藏(0否,1是)
     private Integer hidden;
+    //是否缓存（0不缓存,1缓存）
+    private Integer isCache;
     //备注
     private String remark;
     //创建时间
     private Date createTime;
-    //是否缓存（0不缓存,1缓存）
-    private Integer isCache;
+    //更新时间
+    @TableField(fill = FieldFill.UPDATE)
+    private Date updateTime;
     //子菜单列表
     @TableField(exist = false)
     List<Menu> children = new ArrayList<>();

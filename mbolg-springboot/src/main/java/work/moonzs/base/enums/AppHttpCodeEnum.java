@@ -12,6 +12,10 @@ public enum AppHttpCodeEnum {
      * 失败
      */
     SERVER_INNER_ERR(500, "系统繁忙"),
+    /**
+     * HTTP请求方法不支持
+     */
+    HTTP_REQUESTMETHOD_NOT_SUPPORTED(405, "HTTP请求方法不支持"),
 
     /**
      * 字段不能为空

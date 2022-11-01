@@ -12,10 +12,10 @@ import org.springframework.stereotype.Service;
 import work.moonzs.base.enums.AppHttpCodeEnum;
 import work.moonzs.base.enums.CacheConstants;
 import work.moonzs.base.enums.StatusConstants;
-import work.moonzs.base.exception.ServiceException;
 import work.moonzs.base.utils.BeanCopyUtil;
 import work.moonzs.base.utils.RedisCache;
 import work.moonzs.base.utils.SecurityUtil;
+import work.moonzs.base.web.common.BusinessAssert;
 import work.moonzs.base.web.service.ITokenService;
 import work.moonzs.domain.entity.LoginUser;
 import work.moonzs.domain.entity.User;
@@ -64,12 +64,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         String verifyKey = CacheConstants.CAPTCHA_CODE_KEY + uuid;
         String captcha = (String) redisCache.get(verifyKey);
         redisCache.del(verifyKey);
-        if (captcha == null) {
-            throw new ServiceException(AppHttpCodeEnum.CAPTCHA_FAIL);
-        }
-        if (!code.equalsIgnoreCase(captcha)) {
-            throw new ServiceException(AppHttpCodeEnum.CAPTCHA_FAIL);
-        }
+        BusinessAssert.notNull(captcha, AppHttpCodeEnum.CAPTCHA_FAIL);
+        BusinessAssert.equals(code, captcha, true, AppHttpCodeEnum.CAPTCHA_FAIL);
     }
 
     @Override

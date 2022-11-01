@@ -3,9 +3,7 @@ package work.moonzs.base.aspect;
 import cn.hutool.core.collection.ListUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.ArrayUtil;
-import cn.hutool.log.Log;
-import cn.hutool.log.LogFactory;
-import cn.hutool.log.dialect.console.ConsoleLogFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
@@ -27,17 +25,12 @@ import java.util.Map;
  */
 @Aspect
 @Component
+@Slf4j
 public class ParamInspect {
-    static {
-        // TODO 应该符合springboot控制台输出的日志
-        LogFactory.setCurrentLogFactory(new ConsoleLogFactory());
-    }
-
-    private static final Log LOG = LogFactory.get();
 
     @Before(value = "@annotation(work.moonzs.base.annotation.ParamCheck)")
     public void before(JoinPoint point) {
-        LOG.info(">>>>>Inspect.before");
+        log.info(">>>>>Inspect.before");
         // 保存错误信息的
         StringBuilder errorMsg = new StringBuilder();
         // 访问目标方法的参数名称parameterNames和方法method
@@ -53,7 +46,7 @@ public class ParamInspect {
             Class<?>[] group = method.getAnnotation(ParamCheck.class).group();
             if (ArrayUtil.isEmpty(clazzs) || ArrayUtil.isEmpty(params)) {
                 // 如果注解里面的参数为空，那么就把方法里面的参数进行校验，这里一般用的都是DTO，只会传一个参数，所以直接取[0]
-                LOG.info("校验参数: {}", point.getArgs()[0]);
+                log.info("校验参数: {}", point.getArgs()[0]);
                 VerifyUtil.validateField(errorMsg, point.getArgs()[0], group);
             } else {
                 // 注解参数名
@@ -67,8 +60,8 @@ public class ParamInspect {
                 if (clazzs.length > 0 && clazzs.length == parameters.size()) {
                     for (String parameter : parameterNames) {
                         if (parameters.contains(parameter)) {
-                            LOG.info("校验对象: {}", clazzMap.get(parameter));
-                            LOG.info("校验参数: {}", parameterMap.get(parameter));
+                            log.info("校验对象: {}", clazzMap.get(parameter));
+                            log.info("校验参数: {}", parameterMap.get(parameter));
                             VerifyUtil.validateField(errorMsg, parameterMap.get(parameter), group);
                         }
                     }
@@ -76,11 +69,11 @@ public class ParamInspect {
             }
         }
         if (errorMsg.isEmpty()) {
-            LOG.info("参数校验成功");
-            LOG.info("<<<<<Inspect.before");
+            log.info("参数校验成功");
+            log.info("<<<<<Inspect.before");
         } else {
-            LOG.info("参数校验失败");
-            LOG.info("<<<<<Inspect.before");
+            log.error("参数校验失败");
+            log.info("<<<<<Inspect.before");
             throw new ValidateException(45000, errorMsg.toString());
         }
     }

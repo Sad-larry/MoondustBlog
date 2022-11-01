@@ -4,7 +4,9 @@ import cn.hutool.captcha.CaptchaUtil;
 import cn.hutool.captcha.ShearCaptcha;
 import cn.hutool.core.util.IdUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import work.moonzs.base.annotation.SystemLog;
 import work.moonzs.base.enums.CacheConstants;
 import work.moonzs.base.enums.SystemConstants;
 import work.moonzs.base.utils.RedisCache;
@@ -17,7 +19,6 @@ import work.moonzs.domain.vo.CaptchaVo;
 import work.moonzs.service.MenuService;
 import work.moonzs.service.UserService;
 
-import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -65,8 +66,9 @@ public class LoginController {
      * @param loginUserDTO 登录用户dto
      * @return {@link ResponseResult}<{@link ?}>
      */
+    @SystemLog(businessName = "管理员登录")
     @PostMapping("/login")
-    public ResponseResult adminLogin(@Valid @RequestBody LoginUserDTO loginUserDTO) {
+    public ResponseResult adminLogin(@Validated @RequestBody LoginUserDTO loginUserDTO) {
         // SpringSecurity登录认证
         String token = userService.adminLogin(loginUserDTO.getUsername(), loginUserDTO.getPassword(), loginUserDTO.getUuid(), loginUserDTO.getCode());
         // 登录只为了拿去令牌
@@ -86,10 +88,9 @@ public class LoginController {
     }
 
     /**
-     * 获取路由器信息
-     *
      * @return {@link ResponseResult}<{@link ?}>
      */
+    @SystemLog(businessName = "获取路由器信息")
     @GetMapping("/getRouters")
     public ResponseResult getRouters() {
         Long userId = SecurityUtil.getUserId();
@@ -102,6 +103,7 @@ public class LoginController {
      *
      * @return {@link ResponseResult}<{@link ?}>
      */
+    @SystemLog(businessName = "管理员注销")
     @PostMapping("/logout")
     public ResponseResult adminLogout() {
         userService.adminLogout();

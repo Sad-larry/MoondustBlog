@@ -1,15 +1,14 @@
 package work.moonzs.controller.system;
 
-import cn.hutool.core.util.StrUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import work.moonzs.base.enums.AppHttpCodeEnum;
+import work.moonzs.base.annotation.SystemLog;
 import work.moonzs.base.utils.BeanCopyUtil;
+import work.moonzs.base.validate.VG;
 import work.moonzs.domain.ResponseResult;
 import work.moonzs.domain.dto.CategoryDTO;
 import work.moonzs.domain.entity.Category;
-import work.moonzs.domain.vo.CategoryVo;
-import work.moonzs.domain.vo.PageVo;
 import work.moonzs.service.CategoryService;
 
 /**
@@ -22,84 +21,68 @@ public class CategoryController {
     private CategoryService categoryService;
 
     /**
-     * 添加类别
-     *
-     * @param categoryDTO 类别dto
-     * @return {@link ResponseResult}<{@link ?}>
-     */
-    @PostMapping
-    public ResponseResult addCategory(@RequestBody CategoryDTO categoryDTO) {
-        // TODO 这里应该用字段校验，我先暂时手动检验
-        if (StrUtil.isBlank(categoryDTO.getCategoryName()) || StrUtil.isBlank(categoryDTO.getDescription())) {
-            return ResponseResult.fail(AppHttpCodeEnum.FIELD_EMPTY);
-        }
-        // 判断分类名是否有相同的，有就不添加
-        boolean isExistCategory = categoryService.isExistCategoryByCategoryName(categoryDTO.getCategoryName());
-        if (isExistCategory) {
-            // TODO 新增的话，如果新增的标签跟删除的标签是一样的话就将删除的标签状态设置为1
-            return ResponseResult.fail(AppHttpCodeEnum.CATEGORY_EXIST);
-        }
-        categoryDTO.setId(null);
-        Category category = BeanCopyUtil.copyBean(categoryDTO, Category.class);
-        categoryService.save(category);
-        return ResponseResult.success();
-    }
-
-
-    /**
      * 列表分类
      *
      * @param pageNum    页面num
      * @param pageSize   页面大小
      * @param fuzzyField 模糊领域
-     * @return {@link ResponseResult}<{@link ?}>
+     * @return {@link ResponseResult}
      */
+    @SystemLog(businessName = "获取分类列表")
     @GetMapping("/list")
     public ResponseResult listCategory(@RequestParam(defaultValue = "1", required = false) Integer pageNum, @RequestParam(defaultValue = "10", required = false) Integer pageSize, @RequestParam(defaultValue = "", required = false) String fuzzyField) {
-        PageVo<CategoryVo> categoryList = categoryService.listCategory(pageNum, pageSize, fuzzyField);
-        return ResponseResult.success(categoryList);
+        return ResponseResult.success(categoryService.listCategory(pageNum, pageSize, fuzzyField));
     }
 
     /**
-     * 更新类别
+     * 通过id查询分类详细信息
+     *
+     * @param categoryId 分类id
+     * @return {@link ResponseResult}
+     */
+    @SystemLog(businessName = "通过id查询分类详细信息")
+    @GetMapping("/{id}")
+    public ResponseResult getCategoryById(@PathVariable(value = "id") Long categoryId) {
+        return ResponseResult.success(categoryService.getCategoryById(categoryId));
+    }
+
+    /**
+     * 添加分类
      *
      * @param categoryDTO 类别dto
-     * @return {@link ResponseResult}<{@link ?}>
+     * @return {@link ResponseResult}
      */
+    @SystemLog(businessName = "添加分类")
+    @PostMapping
+    public ResponseResult addCategory(@Validated(VG.Insert.class) @RequestBody CategoryDTO categoryDTO) {
+        categoryService.insertCategory(BeanCopyUtil.copyBean(categoryDTO, Category.class));
+        return ResponseResult.success();
+    }
+
+
+    /**
+     * 更新分类
+     *
+     * @param categoryDTO 类别dto
+     * @return {@link ResponseResult}
+     */
+    @SystemLog(businessName = "更新分类")
     @PutMapping
-    public ResponseResult updateCategory(@RequestBody CategoryDTO categoryDTO) {
-        // TODO 这里应该用字段校验，我先暂时手动检验
-        // tagName，description，status不为空
-        if (StrUtil.isBlank(categoryDTO.getCategoryName()) || StrUtil.isBlank(categoryDTO.getDescription()) || StrUtil.isBlank(categoryDTO.getStatus())) {
-            return ResponseResult.fail(AppHttpCodeEnum.FIELD_EMPTY);
-        }
-        // 判断该id分类是否存在
-        boolean isExistCategoryId = categoryService.isExistCategoryById(categoryDTO.getId());
-        if (!isExistCategoryId) {
-            return ResponseResult.fail(AppHttpCodeEnum.CATEGORY_NOT_EXIST);
-        }
-        // 判断是否存在相同分类名
-        Category byId = categoryService.getById(categoryDTO.getId());
-        Category category = BeanCopyUtil.copyBean(categoryDTO, Category.class);
-        // 判断byId和category中的categoryName，description，status是否相等
-        if (category.equals(byId)) {
-            return ResponseResult.fail(AppHttpCodeEnum.CATEGORY_EXIST);
-        }
-        categoryService.updateById(category);
+    public ResponseResult updateCategory(@Validated(VG.Update.class) @RequestBody CategoryDTO categoryDTO) {
+        categoryService.updateCategory(BeanCopyUtil.copyBean(categoryDTO, Category.class));
         return ResponseResult.success();
     }
 
     /**
-     * 删除类别
+     * 删除分类
      *
-     * @param categoryId 类别id
-     * @return {@link ResponseResult}<{@link ?}>
+     * @param categoryIds 分类id
+     * @return {@link ResponseResult}
      */
-    @DeleteMapping("/{id}")
-    public ResponseResult deleteCategory(@PathVariable(value = "id") Long categoryId) {
-        Category category = new Category();
-        category.setId(categoryId);
-        categoryService.updateById(category);
+    @SystemLog(businessName = "根据分类id进行批量删除操作")
+    @DeleteMapping("/{ids}")
+    public ResponseResult deleteCategory(@PathVariable(value = "ids") Long[] categoryIds) {
+        categoryService.deleteCategory(categoryIds);
         return ResponseResult.success();
     }
 }

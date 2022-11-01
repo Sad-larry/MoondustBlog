@@ -1,5 +1,7 @@
 package work.moonzs.domain.entity;
 
+import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
@@ -32,10 +34,6 @@ public class Article {
     private String summary;
     //分类ID
     private Long categoryId;
-    //创建时间
-    private Date createTime;
-    //更新时间
-    private Date updateTime;
     //文章封面地址
     private String avatar;
     //文章内容md版
@@ -56,5 +54,10 @@ public class Article {
     private String remark;
     //SEO关键词
     private String keywords;
+    //创建时间
+    private Date createTime;
+    //更新时间
+    @TableField(fill = FieldFill.UPDATE)
+    private Date updateTime;
 }
 

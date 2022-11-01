@@ -20,15 +20,15 @@ public class CategoryVo {
     /**
      * 分类名
      */
-    private String categoryName;
+    private String name;
     /**
-     * 分类描述
+     * 分类点击量
      */
-    private String description;
+    private Integer clickVolume;
     /**
-     * 分类状态(0停用,1正常)
+     * 排序
      */
-    private String status;
+    private Integer sort;
     /**
      * 创建时间
      */

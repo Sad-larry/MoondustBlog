@@ -5,12 +5,16 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
+import work.moonzs.base.enums.AppHttpCodeEnum;
 import work.moonzs.base.utils.BeanCopyUtil;
+import work.moonzs.base.web.common.BusinessAssert;
 import work.moonzs.domain.entity.Category;
 import work.moonzs.domain.vo.CategoryVo;
 import work.moonzs.domain.vo.PageVo;
 import work.moonzs.mapper.CategoryMapper;
 import work.moonzs.service.CategoryService;
+
+import java.util.List;
 
 /**
  * 博客分类表(Category)表服务实现类
@@ -25,38 +29,61 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
     public boolean isExistCategoryById(Long categoryId) {
         LambdaQueryWrapper<Category> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Category::getId, categoryId);
-        long count = count(queryWrapper);
-        return count > 0;
+        return count(queryWrapper) > 0;
     }
 
-    /**
-     * 通过名称查询同名是否存在
-     * 不用判断状态，因为有人添加的可能和删除的分类同名了
-     *
-     * @param categoryName 类别名称
-     * @return boolean
-     */
     @Override
     public boolean isExistCategoryByCategoryName(String categoryName) {
         LambdaQueryWrapper<Category> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Category::getName, categoryName);
         // 不同判断状态
-        long count = count(queryWrapper);
-        return count > 0;
+        return count(queryWrapper) > 0;
+    }
+
+    public boolean isExistSameCategoryByCategoryName(String categoryName) {
+        LambdaQueryWrapper<Category> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Category::getName, categoryName);
+        // 不同判断状态
+        return count(queryWrapper) > 1;
     }
 
     @Override
     public PageVo<CategoryVo> listCategory(Integer pageNum, Integer pageSize, String fuzzyField) {
         Page<Category> page = new Page<>(pageNum, pageSize);
-        // 模糊字段为空则不匹配
-        if (!StrUtil.isBlank(fuzzyField)) {
-            LambdaQueryWrapper<Category> queryWrapper = new LambdaQueryWrapper<>();
-            queryWrapper.like(Category::getName, fuzzyField);
-            page(page, queryWrapper);
-        } else {
-            page(page);
-        }
+        // 对名字进行模糊查询，当模糊字段为空时则不匹配
+        LambdaQueryWrapper<Category> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.like(!StrUtil.isBlank(fuzzyField), Category::getName, fuzzyField);
+        page(page, queryWrapper);
         return new PageVo<>(BeanCopyUtil.copyBeanList(page.getRecords(), CategoryVo.class), page);
     }
+
+    @Override
+    public CategoryVo getCategoryById(Long categoryId) {
+        return BeanCopyUtil.copyBean(getById(categoryId), CategoryVo.class);
+    }
+
+    @Override
+    public boolean insertCategory(Category category) {
+        // 判断分类名是否有相同的，有就不添加
+        // 如果存在相同的分类，isExistCategory为true，那么就不符合方法条件，断言失败抛出异常
+        BusinessAssert.isFalse(isExistCategoryByCategoryName(category.getName()), AppHttpCodeEnum.CATEGORY_EXIST);
+        return save(category);
+    }
+
+    @Override
+    public boolean updateCategory(Category category) {
+        // 判断该ID的分类是否存在，如果不存在则返回失败
+        BusinessAssert.isTure(isExistCategoryById(category.getId()), AppHttpCodeEnum.CATEGORY_NOT_EXIST);
+        updateById(category);
+        // 判断相同的分类名是否不存在，如果存在则返回失败
+        BusinessAssert.isFalse(isExistSameCategoryByCategoryName(category.getName()), AppHttpCodeEnum.CATEGORY_EXIST);
+        return true;
+    }
+
+    @Override
+    public boolean deleteCategory(Long[] categoryIds) {
+        return removeBatchByIds(List.of(categoryIds));
+    }
 }
+
 

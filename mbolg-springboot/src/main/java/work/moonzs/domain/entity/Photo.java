@@ -1,5 +1,7 @@
 package work.moonzs.domain.entity;
 
+import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
@@ -33,6 +35,7 @@ public class Photo {
     //创建时间
     private Date createTime;
     //更新时间
+    @TableField(fill = FieldFill.UPDATE)
     private Date updateTime;
 }
 
