@@ -20,15 +20,15 @@ public class TagVo {
     /**
      * 标签名
      */
-    private String tagName;
+    private String name;
     /**
-     * 标签描述
+     * 标签点击量
      */
-    private String description;
+    private Integer clickVolume;
     /**
-     * 标签状态(0停用,1正常)
+     * 排序
      */
-    private String status;
+    private Integer sort;
     /**
      * 创建时间
      */

@@ -8,6 +8,7 @@ import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import work.moonzs.base.enums.AppHttpCodeEnum;
 import work.moonzs.base.exception.SecurityException;
 import work.moonzs.base.exception.ServiceException;
@@ -108,5 +109,10 @@ public class RestControllerExceptionHandler {
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public ResponseResult handleHttpRequestMethodNotSupported(HttpRequestMethodNotSupportedException e) {
         return ResponseResult.fail(AppHttpCodeEnum.HTTP_REQUESTMETHOD_NOT_SUPPORTED);
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseResult handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException e) {
+        return ResponseResult.fail(AppHttpCodeEnum.BAD_REQUEST);
     }
 }

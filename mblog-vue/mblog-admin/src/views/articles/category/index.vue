@@ -3,7 +3,7 @@
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px"
       @submit.native.prevent>
       <el-form-item label="分类名称" prop="fuzzyField">
-        <el-input v-model="queryParams.fuzzyField" placeholder="请输入分类名称" clearable @keyup.enter.native="handleQuery" />
+        <el-input v-model="queryParams.fuzzyField" placeholder="请输入分类名称" clearable @clear="resetQuery" @keyup.enter.native="handleQuery" />
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>

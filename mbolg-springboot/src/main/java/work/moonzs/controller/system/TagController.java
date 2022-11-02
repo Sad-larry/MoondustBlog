@@ -1,18 +1,15 @@
 package work.moonzs.controller.system;
 
-import cn.hutool.core.util.StrUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import work.moonzs.base.enums.AppHttpCodeEnum;
+import work.moonzs.base.annotation.SystemLog;
 import work.moonzs.base.utils.BeanCopyUtil;
+import work.moonzs.base.validate.VG;
 import work.moonzs.domain.ResponseResult;
 import work.moonzs.domain.dto.TagDTO;
 import work.moonzs.domain.entity.Tag;
-import work.moonzs.domain.vo.PageVo;
-import work.moonzs.domain.vo.TagVo;
 import work.moonzs.service.TagService;
-
-import java.util.List;
 
 /**
  * @author Moondust月尘
@@ -31,11 +28,24 @@ public class TagController {
      * @param fuzzyField 模糊领域
      * @return {@link ResponseResult}<{@link ?}>
      */
+    @SystemLog(businessName = "获取标签列表")
     @GetMapping("/list")
-    public ResponseResult listTags(@RequestParam(defaultValue = "1", required = false) Integer pageNum, @RequestParam(defaultValue = "10", required = false) Integer pageSize, @RequestParam(defaultValue = "", required = false) String fuzzyField) {
-        PageVo<TagVo> tagList = tagService.listTags(pageNum, pageSize, fuzzyField);
-        return ResponseResult.success(tagList);
+    public ResponseResult listTag(@RequestParam(defaultValue = "1", required = false) Integer pageNum, @RequestParam(defaultValue = "10", required = false) Integer pageSize, @RequestParam(defaultValue = "", required = false) String fuzzyField) {
+        return ResponseResult.success(tagService.listTag(pageNum, pageSize, fuzzyField));
     }
+
+    /**
+     * 通过id获取标签
+     *
+     * @param tagId 标签id
+     * @return {@link ResponseResult}
+     */
+    @SystemLog(businessName = "通过id查询标签详细信息")
+    @GetMapping("/{id}")
+    public ResponseResult getTagById(@PathVariable(value = "id") Long tagId) {
+        return ResponseResult.success(tagService.getTagById(tagId));
+    }
+
 
     /**
      * 添加标签
@@ -43,21 +53,10 @@ public class TagController {
      * @param tagDTO 标签dto
      * @return {@link ResponseResult}<{@link ?}>
      */
+    @SystemLog(businessName = "添加标签")
     @PostMapping
-    public ResponseResult addTag(@RequestBody TagDTO tagDTO) {
-        // TODO 这里应该用字段校验，我先暂时手动检验
-        if (StrUtil.isBlank(tagDTO.getTagName()) || StrUtil.isBlank(tagDTO.getDescription())) {
-            return ResponseResult.fail(AppHttpCodeEnum.FIELD_EMPTY);
-        }
-        // 判断标签名是否有相同的，有就不添加
-        boolean isExistTag = tagService.isExistTagByTagName(tagDTO.getTagName());
-        if (isExistTag) {
-            // TODO 新增的话，如果新增的标签跟删除的标签是一样的话就将删除的标签状态设置为1
-            return ResponseResult.fail(AppHttpCodeEnum.TAG_EXIST);
-        }
-        tagDTO.setId(null);
-        Tag tag = BeanCopyUtil.copyBean(tagDTO, Tag.class);
-        tagService.save(tag);
+    public ResponseResult addTag(@Validated(VG.Insert.class) @RequestBody TagDTO tagDTO) {
+        tagService.insertTag(BeanCopyUtil.copyBean(tagDTO, Tag.class));
         return ResponseResult.success();
     }
 
@@ -67,40 +66,23 @@ public class TagController {
      * @param tagDTO 标签dto
      * @return {@link ResponseResult}<{@link ?}>
      */
+    @SystemLog(businessName = "更新标签")
     @PutMapping
-    public ResponseResult updateTag(@RequestBody TagDTO tagDTO) {
-        // TODO 这里应该用字段校验，我先暂时手动检验
-        // tagName，description，status不为空
-        if (StrUtil.isBlank(tagDTO.getTagName()) || StrUtil.isBlank(tagDTO.getDescription()) || StrUtil.isBlank(tagDTO.getStatus())) {
-            return ResponseResult.fail(AppHttpCodeEnum.FIELD_EMPTY);
-        }
-        // 判断该id标签是否存在
-        boolean isExistTagId = tagService.isExistTagByIds(List.of(tagDTO.getId()));
-        if (!isExistTagId) {
-            return ResponseResult.fail(AppHttpCodeEnum.TAG_NOT_EXIST);
-        }
-        // 判断是否存在相同标签名，标签描述可以该阿，标签状态可以改阿，你这么写，就只判断标签名，其他的不能改了是吧（旧版）
-        Tag byId = tagService.getById(tagDTO.getId());
-        Tag tag = BeanCopyUtil.copyBean(tagDTO, Tag.class);
-        // 判断byId和tag中的tagName，description，status是否相等
-        if (tag.equals(byId)) {
-            return ResponseResult.fail(AppHttpCodeEnum.TAG_EXIST);
-        }
-        tagService.updateById(tag);
+    public ResponseResult updateTag(@Validated(VG.Update.class) @RequestBody TagDTO tagDTO) {
+        tagService.updateTag(BeanCopyUtil.copyBean(tagDTO, Tag.class));
         return ResponseResult.success();
     }
 
     /**
-     * 如果硬要删除标签的话，不应该吧，修改状态不香吗
+     * 删除标签
      *
-     * @param tagId 标签id
-     * @return {@link ResponseResult}<{@link ?}>
+     * @param tagIds 标签id
+     * @return {@link ResponseResult}
      */
-    @DeleteMapping("/{id}")
-    public ResponseResult deleteTag(@PathVariable(value = "id") Long tagId) {
-        Tag tag = new Tag();
-        tag.setId(tagId);
-        tagService.updateById(tag);
+    @SystemLog(businessName = "根据标签id进行批量删除操作")
+    @DeleteMapping("/{ids}")
+    public ResponseResult deleteTag(@PathVariable(value = "ids") Long[] tagIds) {
+        tagService.deleteTag(tagIds);
         return ResponseResult.success();
     }
 }

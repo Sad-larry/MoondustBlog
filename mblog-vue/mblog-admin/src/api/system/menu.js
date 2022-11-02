@@ -9,14 +9,6 @@ export function listMenu(query) {
   })
 }
 
-// 查询权限资源 详细
-export function getMenu(id) {
-  return request({
-    url: '/system/menu/' + id,
-    method: 'get'
-  })
-}
-
 // 新增权限资源 
 export function addMenu(data) {
   return request({

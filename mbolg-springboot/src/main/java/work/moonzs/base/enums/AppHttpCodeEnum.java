@@ -16,6 +16,10 @@ public enum AppHttpCodeEnum {
      * HTTP请求方法不支持
      */
     HTTP_REQUESTMETHOD_NOT_SUPPORTED(405, "HTTP请求方法不支持"),
+    /**
+     * 非法请求
+     */
+    BAD_REQUEST(400, "非法请求"),
 
     /**
      * 字段不能为空
@@ -141,6 +145,10 @@ public enum AppHttpCodeEnum {
      * 用户被冻结，请联系管理员
      */
     USER_INVALID(45031, "用户被冻结，请联系管理员"),
+    /**
+     * 菜单包含子菜单
+     */
+    MENU_CHILDREN_EXIST(45032, "菜单包含子菜单"),
 
     /**
      * 警告：文章未添加标签

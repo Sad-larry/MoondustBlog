@@ -1,5 +1,6 @@
 package work.moonzs.service.impl;
 
+import cn.hutool.core.util.ObjUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -40,6 +41,12 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
         return count(queryWrapper) > 0;
     }
 
+    /**
+     * 通过分类名字判断是存在相同分类，这个方法是在更新操作完之后调用的，判断数据库中是否有相同的分类名的分类
+     *
+     * @param categoryName 分类名字
+     * @return boolean
+     */
     public boolean isExistSameCategoryByCategoryName(String categoryName) {
         LambdaQueryWrapper<Category> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Category::getName, categoryName);
@@ -59,7 +66,8 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
 
     @Override
     public CategoryVo getCategoryById(Long categoryId) {
-        return BeanCopyUtil.copyBean(getById(categoryId), CategoryVo.class);
+        Category byId = getById(categoryId);
+        return ObjUtil.isNotNull(byId) ? BeanCopyUtil.copyBean(byId, CategoryVo.class) : null;
     }
 
     @Override

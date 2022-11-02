@@ -1,14 +1,14 @@
 package work.moonzs.controller.system;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import work.moonzs.base.enums.AppHttpCodeEnum;
+import work.moonzs.base.annotation.SystemLog;
 import work.moonzs.base.utils.BeanCopyUtil;
+import work.moonzs.base.validate.VG;
 import work.moonzs.domain.ResponseResult;
 import work.moonzs.domain.dto.MenuDTO;
 import work.moonzs.domain.entity.Menu;
-import work.moonzs.domain.vo.MenuListVo;
-import work.moonzs.domain.vo.PageVo;
 import work.moonzs.service.MenuService;
 
 /**
@@ -20,7 +20,6 @@ public class MenuController {
     @Autowired
     private MenuService menuService;
 
-
     /**
      * 菜单列表
      *
@@ -28,12 +27,11 @@ public class MenuController {
      * @param pageSize 页面大小
      * @return {@link ResponseResult}
      */
+    @SystemLog(businessName = "获取菜单列表")
     @GetMapping("/list")
-    public ResponseResult listMenus(@RequestParam(defaultValue = "1", required = false) Integer pageNum, @RequestParam(defaultValue = "10", required = false) Integer pageSize) {
-        PageVo<MenuListVo> menuList = menuService.listMenus(pageNum, pageSize);
-        return ResponseResult.success(menuList);
+    public ResponseResult listMenu(@RequestParam(defaultValue = "1", required = false) Integer pageNum, @RequestParam(defaultValue = "10", required = false) Integer pageSize) {
+        return ResponseResult.success(menuService.listMenu());
     }
-
 
     /**
      * 添加菜单
@@ -41,19 +39,10 @@ public class MenuController {
      * @param menuDTO 菜单dto
      * @return {@link ResponseResult}
      */
+    @SystemLog(businessName = "添加菜单")
     @PostMapping
-    public ResponseResult addMenu(@RequestBody MenuDTO menuDTO) {
-        // TODO 这里应该用字段校验，我先暂时手动检验
-
-        // 判断分类名是否有相同的，有就不添加
-        boolean isExistMenu = menuService.isExistMenuByCxNamePath(menuDTO.getName(), menuDTO.getPath());
-        if (isExistMenu) {
-            // TODO 新增的话，如果新增的标签跟删除的标签是一样的话就将删除的标签状态设置为1
-            return ResponseResult.fail(AppHttpCodeEnum.MENU_EXIST);
-        }
-        menuDTO.setId(null);
-        Menu menu = BeanCopyUtil.copyBean(menuDTO, Menu.class);
-        menuService.save(menu);
+    public ResponseResult addMenu(@Validated(VG.Insert.class) @RequestBody MenuDTO menuDTO) {
+        menuService.insertMenu(BeanCopyUtil.copyBean(menuDTO, Menu.class));
         return ResponseResult.success();
     }
 
@@ -64,23 +53,10 @@ public class MenuController {
      * @param menuDTO 菜单dto
      * @return {@link ResponseResult}
      */
+    @SystemLog(businessName = "更新菜单")
     @PutMapping
-    public ResponseResult updateMenu(@RequestBody MenuDTO menuDTO) {
-        // TODO 这里应该用字段校验，我先暂时手动检验
-
-        // 判断该id分类是否存在
-        boolean isExistMenuById = menuService.isExistMenuById(menuDTO.getId());
-        if (!isExistMenuById) {
-            return ResponseResult.fail(AppHttpCodeEnum.MENU_NOT_EXIST);
-        }
-        // 判断是否存在相同分类名
-        Menu byId = menuService.getById(menuDTO.getId());
-        Menu menu = BeanCopyUtil.copyBean(menuDTO, Menu.class);
-        // 判断byId和menu中的menuName, path是否相等
-        if (menu.equals(byId)) {
-            return ResponseResult.fail(AppHttpCodeEnum.MENU_EXIST);
-        }
-        menuService.updateById(menu);
+    public ResponseResult updateMenu(@Validated(VG.Update.class) @RequestBody MenuDTO menuDTO) {
+        menuService.updateMenu(BeanCopyUtil.copyBean(menuDTO, Menu.class));
         return ResponseResult.success();
     }
 
@@ -90,11 +66,10 @@ public class MenuController {
      * @param menuId 菜单id
      * @return {@link ResponseResult}
      */
+    @SystemLog(businessName = "删除指定ID菜单")
     @DeleteMapping("/{id}")
     public ResponseResult deleteMenu(@PathVariable(value = "id") Long menuId) {
-        Menu menu = new Menu();
-        menu.setId(menuId);
-        menuService.updateById(menu);
+        menuService.deleteMenu(menuId);
         return ResponseResult.success();
     }
 }

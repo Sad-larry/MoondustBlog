@@ -1,11 +1,14 @@
 package work.moonzs.service.impl;
 
+import cn.hutool.core.util.ObjUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
+import work.moonzs.base.enums.AppHttpCodeEnum;
 import work.moonzs.base.utils.BeanCopyUtil;
+import work.moonzs.base.web.common.BusinessAssert;
 import work.moonzs.domain.entity.Tag;
 import work.moonzs.domain.vo.PageVo;
 import work.moonzs.domain.vo.TagVo;
@@ -27,11 +30,8 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, Tag> implements TagSe
     public boolean isExistTagByIds(List<Long> tagIds) {
         LambdaQueryWrapper<Tag> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.in(Tag::getId, tagIds);
-        // 根据字段判断数据库数否存在数据不应该有其他字段吧，特别是status
-        // 但是你判断存在数据存在肯定是要根据状态正常的数据判断的吧
-        // queryWrapper.eq(Tag::getStatus, StatusConstants.NORMAL);
-        long count = count(queryWrapper);
-        return count == tagIds.size();
+        // 根据字段判断数据库数否存在数据不应该有其他字段吧
+        return count(queryWrapper) == tagIds.size();
     }
 
     @Override
@@ -39,22 +39,58 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, Tag> implements TagSe
         LambdaQueryWrapper<Tag> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Tag::getName, tagName);
         // 不同判断状态
-        long count = count(queryWrapper);
-        return count > 0;
+        return count(queryWrapper) > 0;
+    }
+
+    /**
+     * 判断是否存在相同标签
+     *
+     * @param tagName 标签名
+     * @return boolean
+     */
+    private boolean isExistSameTagByTagName(String tagName) {
+        LambdaQueryWrapper<Tag> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Tag::getName, tagName);
+        // 不同判断状态
+        return count(queryWrapper) > 1;
     }
 
     @Override
-    public PageVo<TagVo> listTags(Integer pageNum, Integer pageSize, String fuzzyField) {
+    public PageVo<TagVo> listTag(Integer pageNum, Integer pageSize, String fuzzyField) {
+        Page<Tag> page = new Page<>(pageNum, pageSize);
         LambdaQueryWrapper<Tag> queryWrapper = new LambdaQueryWrapper<>();
         // 模糊字段为空则不匹配
-        if (!StrUtil.isBlank(fuzzyField)) {
-            queryWrapper.like(Tag::getName, fuzzyField);
-        }
-        Page<Tag> page = new Page<>(pageNum, pageSize);
+        queryWrapper.like(!StrUtil.isBlank(fuzzyField), Tag::getName, fuzzyField);
         page(page, queryWrapper);
-        List<Tag> list = page.getRecords();
-        List<TagVo> tagListVos = BeanCopyUtil.copyBeanList(list, TagVo.class);
-        return new PageVo<>(tagListVos, page.getTotal(), page.getCurrent(), page.getSize());
+        return new PageVo<>(BeanCopyUtil.copyBeanList(page.getRecords(), TagVo.class), page);
+    }
+
+    @Override
+    public TagVo getTagById(Long tagId) {
+        Tag byId = getById(tagId);
+        return ObjUtil.isNotNull(byId) ? BeanCopyUtil.copyBean(byId, TagVo.class) : null;
+    }
+
+    @Override
+    public boolean insertTag(Tag tag) {
+        // 判断标签名是否有相同的，有就不添加
+        BusinessAssert.isFalse(isExistTagByTagName(tag.getName()), AppHttpCodeEnum.TAG_EXIST);
+        return save(tag);
+    }
+
+    @Override
+    public boolean updateTag(Tag tag) {
+        // 判断该id标签是否存在
+        BusinessAssert.isTure(isExistTagByIds(List.of(tag.getId())), AppHttpCodeEnum.TAG_NOT_EXIST);
+        updateById(tag);
+        // 更新之后判断是否存在重复标签
+        BusinessAssert.isFalse(isExistSameTagByTagName(tag.getName()), AppHttpCodeEnum.TAG_EXIST);
+        return true;
+    }
+
+    @Override
+    public boolean deleteTag(Long[] tagIds) {
+        return removeBatchByIds(List.of(tagIds));
     }
 }
 

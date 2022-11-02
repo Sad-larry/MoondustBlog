@@ -1,301 +1,283 @@
 <template>
-  <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="上级资源ID" prop="parentId">
-        <el-input
-          v-model="queryParams.parentId"
-          placeholder="请输入上级资源ID"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="资源名称" prop="title">
-        <el-input
-          v-model="queryParams.title"
-          placeholder="请输入资源名称"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="路由地址" prop="url">
-        <el-input
-          v-model="queryParams.url"
-          placeholder="请输入路由地址"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="资源组件" prop="component">
-        <el-input
-          v-model="queryParams.component"
-          placeholder="请输入资源组件"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="资源级别" prop="level">
-        <el-input
-          v-model="queryParams.level"
-          placeholder="请输入资源级别"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="显示顺序" prop="sortNo">
-        <el-input
-          v-model="queryParams.sortNo"
-          placeholder="请输入显示顺序"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="资源图标" prop="icon">
-        <el-input
-          v-model="queryParams.icon"
-          placeholder="请输入资源图标"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="重定向地址" prop="redirect">
-        <el-input
-          v-model="queryParams.redirect"
-          placeholder="请输入重定向地址"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="跳转地址" prop="name">
-        <el-input
-          v-model="queryParams.name"
-          placeholder="请输入跳转地址"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="是否隐藏(0否,1是)" prop="hidden">
-        <el-input
-          v-model="queryParams.hidden"
-          placeholder="请输入是否隐藏(0否,1是)"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="是否缓存" prop="isCache">
-        <el-input
-          v-model="queryParams.isCache"
-          placeholder="请输入是否缓存"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
-        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
-      </el-form-item>
-    </el-form>
+  <div>
+    <div class="app-container">
+      <!-- 查询和其他操作 -->
+      <el-row>
+        <el-col :span="1.5">
+          <el-button size="small" type="primary" icon="el-icon-plus" @click="handleCreate(0)">添加 </el-button>
+        </el-col>
+        <el-col :span="1.5" :offset="21">
+          <el-tooltip class="item" effect="dark" content="刷新" placement="top">
+            <el-button size="mini" circle icon="el-icon-refresh" @click="refresh()" />
+          </el-tooltip>
+        </el-col>
+      </el-row>
+      <el-table :data="menuList" style="width: 100%">
+        <el-table-column type="expand">
+          <template slot-scope="scope">
+            <el-form label-position="left" inline class="demo-table-expand">
+              <el-table :data="scope.row.children" :show-header="showHeader" style="width: 100%">
 
-    <el-row :gutter="10" class="mb8">
-      <el-col :span="1.5">
-        <el-button
-          type="primary"
-          plain
-          icon="el-icon-plus"
-          size="mini"
-          @click="handleAdd"
-          v-hasPermi="['system:menu:add']"
-        >新增</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="success"
-          plain
-          icon="el-icon-edit"
-          size="mini"
-          :disabled="single"
-          @click="handleUpdate"
-          v-hasPermi="['system:menu:edit']"
-        >修改</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="danger"
-          plain
-          icon="el-icon-delete"
-          size="mini"
-          :disabled="multiple"
-          @click="handleDelete"
-          v-hasPermi="['system:menu:remove']"
-        >删除</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="warning"
-          plain
-          icon="el-icon-download"
-          size="mini"
-          @click="handleExport"
-          v-hasPermi="['system:menu:export']"
-        >导出</el-button>
-      </el-col>
-      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
-    </el-row>
+                <el-table-column label width="60" align="center">
+                  <template slot-scope="scope_child">
+                    <span>{{ scope_child.row.id }}</span>
+                  </template>
+                </el-table-column>
 
-    <el-table v-loading="loading" :data="menuList" @selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="主键ID" align="center" prop="id" />
-      <el-table-column label="上级资源ID" align="center" prop="parentId" />
-      <el-table-column label="资源名称" align="center" prop="title" />
-      <el-table-column label="路由地址" align="center" prop="url" />
-      <el-table-column label="资源组件" align="center" prop="component" />
-      <el-table-column label="资源级别" align="center" prop="level" />
-      <el-table-column label="显示顺序" align="center" prop="sortNo" />
-      <el-table-column label="资源图标" align="center" prop="icon" />
-      <el-table-column label="菜单类型(M菜单,F按钮)" align="center" prop="type" />
-      <el-table-column label="重定向地址" align="center" prop="redirect" />
-      <el-table-column label="跳转地址" align="center" prop="name" />
-      <el-table-column label="是否隐藏(0否,1是)" align="center" prop="hidden" />
-      <el-table-column label="是否缓存" align="center" prop="isCache" />
-      <el-table-column label="备注" align="center" prop="remark" />
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
-        <template slot-scope="scope">
-          <el-button
-            size="mini"
-            type="text"
-            icon="el-icon-edit"
-            @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:menu:edit']"
-          >修改</el-button>
-          <el-button
-            size="mini"
-            type="text"
-            icon="el-icon-delete"
-            @click="handleDelete(scope.row)"
-            v-hasPermi="['system:menu:remove']"
-          >删除</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-    
-    <pagination
-      v-show="total>0"
-      :total="total"
-      :page.sync="queryParams.pageNum"
-      :limit.sync="queryParams.pageSize"
-      @pagination="getList"
-    />
+                <el-table-column label width="150" align="center">
+                  <template slot-scope="scope_child">
+                    <span>{{ scope_child.row.title }}</span>
+                  </template>
+                </el-table-column>
 
-    <!-- 添加或修改权限资源 对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="上级资源ID" prop="parentId">
-          <el-input v-model="form.parentId" placeholder="请输入上级资源ID" />
+                <el-table-column label width="100" align="center">
+                  <template slot-scope="scope_child">
+                    <el-tag :type="menuLevelType[scope_child.row.level]">
+                      {{ menuLevelOptions[scope_child.row.level] }}
+                    </el-tag>
+                  </template>
+                </el-table-column>
+
+                <el-table-column label width="100" align="center">
+                  <template slot-scope="scope_child">
+                    <span v-if="scope_child.row.icon != null">
+                      <i v-if="scope_child.row.icon.indexOf('el-') > -1" :class="scope_child.row.icon"></i>
+                      <svg-icon :icon-class="scope_child.row.icon" />
+                    </span>
+                  </template>
+                </el-table-column>
+
+                <el-table-column label width="200" align="center">
+                  <template slot-scope="scope_child">
+                    <span>{{ scope_child.row.url }}</span>
+                  </template>
+                </el-table-column>
+
+                <el-table-column width="100" align="center">
+                  <template slot-scope="scope_child">
+                    <el-tag :type="hiddenTypes[scope_child.row.hidden]">
+                      {{ hiddenOptions[scope_child.row.hidden] }}
+                    </el-tag>
+                  </template>
+                </el-table-column>
+
+                <el-table-column width="100" align="center">
+                  <template slot-scope="scope_child">
+                    <el-tag type="warning">{{ scope_child.row.sortNo }}</el-tag>
+                  </template>
+                </el-table-column>
+
+                <el-table-column align="center" min-width="230">
+                  <template slot-scope="scope_child">
+                    <el-button type="primary" size="mini" @click="handleUpdate(scope_child.row)">编辑</el-button>
+                    <el-button size="mini" type="danger" @click="handleDelete(scope_child)">删除</el-button>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </el-form>
+          </template>
+        </el-table-column>
+
+        <el-table-column label="菜单ID" width="60" align="center">
+          <template slot-scope="scope">
+            <span>{{ scope.row.id }}</span>
+          </template>
+        </el-table-column>
+
+        <el-table-column label="菜单名称" width="150" align="center">
+          <template slot-scope="scope">
+            <span>{{ scope.row.title }}</span>
+          </template>
+        </el-table-column>
+
+        <el-table-column label="菜单级别" width="100" align="center">
+          <template slot-scope="scope">
+            <el-tag :type="menuLevelType[scope.row.level]">
+              {{ menuLevelOptions[scope.row.level] }}
+            </el-tag>
+          </template>
+        </el-table-column>
+
+        <el-table-column label="图标" width="100" align="center">
+          <template slot-scope="scope">
+            <span v-if="scope.row.icon != null">
+              <i v-if="scope.row.icon.indexOf('el-') > -1" :class="scope.row.icon"></i>
+              <svg-icon :icon-class="scope.row.icon" />
+            </span>
+          </template>
+        </el-table-column>
+
+        <el-table-column label="路由" width="200" align="center">
+          <template slot-scope="scope">
+            <span>{{ scope.row.url }}</span>
+          </template>
+        </el-table-column>
+
+        <el-table-column label="是否隐藏" width="100" align="center">
+          <template slot-scope="scope">
+            <el-tag :type="hiddenTypes[scope.row.hidden]">
+              {{ hiddenOptions[scope.row.hidden] }}
+            </el-tag>
+          </template>
+        </el-table-column>
+
+        <el-table-column label="排序" width="100" align="center">
+          <template slot-scope="scope">
+            <el-tag type="warning">{{ scope.row.sortNo }}</el-tag>
+          </template>
+        </el-table-column>
+
+        <el-table-column label="操作" align="center" min-width="270" fixed="right">
+          <template slot-scope="scope">
+            <el-button type="primary" size="mini" @click="handleUpdate(scope.row)">编辑</el-button>
+            <el-button type="warning" size="mini" v-if="scope.row.level === 0" @click="handleCreate(scope.row.id)">添加下级
+            </el-button>
+            <el-button size="mini" type="danger" @click="handleDelete(scope)">删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+    </div>
+
+
+    <!-- 添加或修改系统菜单对话框 -->
+    <el-dialog center :title="title" :visible.sync="open">
+      <el-form :rules="rules" ref="dataForm" :model="form">
+        <el-form-item prop="id" label="菜单ID" label-width="120px">
+          <el-input v-if="isEditForm" disabled v-model="form.id" autocomplete="off"></el-input>
+          <el-input v-else v-model="form.id" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="资源名称" prop="title">
-          <el-input v-model="form.title" placeholder="请输入资源名称" />
+        <el-form-item prop="title" label="菜单名称" label-width="120px">
+          <el-input v-model="form.title" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="路由地址" prop="url">
-          <el-input v-model="form.url" placeholder="请输入路由地址" />
+        <el-form-item prop="title" label="路由名称" label-width="120px">
+          <el-input v-model="form.name" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="资源组件" prop="component">
-          <el-input v-model="form.component" placeholder="请输入资源组件" />
+        <el-form-item prop="url" label="路由地址" label-width="120px">
+          <el-input v-model="form.url" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="资源级别" prop="level">
-          <el-input v-model="form.level" placeholder="请输入资源级别" />
+        <el-form-item prop="component" label="菜单组件" label-width="120px">
+          <el-input v-if="form.parentId" v-model="form.component" autocomplete="off"></el-input>
+          <el-input v-else disabled v-model="form.component" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="显示顺序" prop="sortNo">
-          <el-input v-model="form.sortNo" placeholder="请输入显示顺序" />
+        <el-form-item label="菜单图标" label-width="120px" prop="icon">
+          <el-input v-model="form.icon" placeholder="请输入前图标名称">
+            <el-button slot="append" icon="el-icon-setting" @click="openIconsDialog('prefix-icon')">
+              选择
+            </el-button>
+          </el-input>
         </el-form-item>
-        <el-form-item label="资源图标" prop="icon">
-          <el-input v-model="form.icon" placeholder="请输入资源图标" />
+        <el-form-item label="菜单级别" label-width="120px" prop="level">
+          <el-select v-model="form.level" placeholder="请选择">
+            <el-option v-for="(item, index) in menuLevelOptions" :key="index" :label="item" :value="index">
+            </el-option>
+          </el-select>
         </el-form-item>
-        <el-form-item label="重定向地址" prop="redirect">
-          <el-input v-model="form.redirect" placeholder="请输入重定向地址" />
+        <el-form-item label="排序" prop="sortNo" label-width="120px">
+          <el-input v-model="form.sortNo" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="跳转地址" prop="name">
-          <el-input v-model="form.name" placeholder="请输入跳转地址" />
+        <el-form-item prop="hidden" label="是否隐藏" label-width="120px">
+          <el-radio-group v-model="form.hidden" size="small">
+            <el-radio v-for="(item, index) in hiddenOptions" :key="index" :label="index" border>{{ item }}</el-radio>
+          </el-radio-group>
         </el-form-item>
-        <el-form-item label="是否隐藏(0否,1是)" prop="hidden">
-          <el-input v-model="form.hidden" placeholder="请输入是否隐藏(0否,1是)" />
-        </el-form-item>
-        <el-form-item label="是否缓存" prop="isCache">
-          <el-input v-model="form.isCache" placeholder="请输入是否缓存" />
-        </el-form-item>
-        <el-form-item label="备注" prop="remark">
-          <el-input v-model="form.remark" placeholder="请输入备注" />
+        <el-form-item label="备注" label-width="120px">
+          <el-input v-model="form.remarks" autocomplete="off"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitForm">确 定</el-button>
         <el-button @click="cancel">取 消</el-button>
+        <el-button type="primary" @click="submitForm">确 定</el-button>
       </div>
     </el-dialog>
+    <icons-dialog :visible.sync="iconsVisible" :current="form.icon" @select="setIcon" />
   </div>
 </template>
 
 <script>
-import { listMenu, getMenu, delMenu, addMenu, updateMenu } from "@/api/system/menu";
+import { listMenu, delMenu, addMenu, updateMenu } from "@/api/system/menu";
+import IconsDialog from "../../../components/IconsDialog";
 
 export default {
   name: "Menu",
+  components: {
+    IconsDialog
+  },
   data() {
     return {
+      // 表单选项
+      hiddenTypes: ['warning', 'success'],
+      hiddenOptions: ['否', '是'],
+      menuLevelType: ['success', 'danger', 'warning'],
+      menuLevelOptions: ['一级菜单', '二级菜单'],
+      isEditForm: 0,
       // 遮罩层
-      loading: true,
-      // 选中数组
-      ids: [],
+      loading: [],
+      // 是否显示表头
+      showHeader: false,
       // 非单个禁用
       single: true,
       // 非多个禁用
       multiple: true,
       // 显示搜索条件
       showSearch: true,
-      // 总条数
-      total: 0,
       // 权限资源 表格数据
       menuList: [],
       // 弹出层标题
       title: "",
       // 是否显示弹出层
       open: false,
+      // 图标显示层
+      iconsVisible: false,
       // 查询参数
       queryParams: {
         pageNum: 1,
-        pageSize: 10,
-        parentId: null,
-        title: null,
-        url: null,
-        component: null,
-        level: null,
-        sortNo: null,
-        icon: null,
-        type: null,
-        redirect: null,
-        name: null,
-        hidden: null,
-        isCache: null,
+        pageSize: 10
       },
       // 表单参数
       form: {},
       // 表单校验
       rules: {
-        createTime: [
-          { required: true, message: "创建时间不能为空", trigger: "blur" }
+        "id": [
+          { required: true, message: '请输入菜单ID', trigger: 'change' },
+          { pattern: /^[0-9]\d*$/, message: 'ID字段只能为自然数' },
         ],
+        "title": [
+          { required: true, message: '请输入菜单名称', trigger: 'change' },
+          { min: 1, max: 6, message: '长度在1到6个字符' },
+        ],
+        "url": [
+          { required: true, message: '请输入url', trigger: 'change' }
+        ],
+        "component": [
+          { required: true, message: '请输入路由地址', trigger: 'change' }
+        ],
+        "icon": [
+          { required: true, message: '请选择图标', trigger: 'blur' }
+        ],
+        "level": [
+          { required: true, message: '请选择菜单级别', trigger: 'change' }
+        ],
+        "sortNo": [
+          { required: true, message: '请输入排序', trigger: 'change' },
+          { pattern: /^[0-9]\d*$/, message: '排序字段只能为自然数' },
+        ]
       }
     };
   },
   created() {
+    this.openLoading()
     this.getList();
   },
   methods: {
+    refresh() {
+      this.openLoading()
+      this.getList();
+    },
     /** 查询权限资源 列表 */
     getList() {
-      this.loading = true;
       listMenu(this.queryParams).then(response => {
-        this.menuList = response.rows;
-        this.total = response.total;
-        this.loading = false;
+        this.menuList = response.data;
+        this.loading.close();
       });
     },
     // 取消按钮
@@ -335,33 +317,60 @@ export default {
       this.resetForm("queryForm");
       this.handleQuery();
     },
-    // 多选框选中数据
-    handleSelectionChange(selection) {
-      this.ids = selection.map(item => item.id)
-      this.single = selection.length!==1
-      this.multiple = !selection.length
-    },
     /** 新增按钮操作 */
     handleAdd() {
       this.reset();
       this.open = true;
       this.title = "添加权限资源 ";
     },
+    /** 添加菜单 */
+    handleCreate(id) {
+      this.form = this.getFormObject(id)
+      let title = '添加下级'
+      if (!id) {
+        this.form.component = 'Layout'
+        title = '添加菜单'
+      }
+      this.beforeShow(0, title)
+      this.$nextTick(() => {
+        this.$refs['dataForm'].clearValidate()
+      })
+    },
+    /** 获取表单对象 */
+    getFormObject(id) {
+      return {
+        id: '',
+        parentId: id,
+        url: '',
+        component: null,
+        type: 'M',
+        title: '',
+        level: id ? 1 : 0,
+        sortNo: 0,
+        hidden: 0,
+        remarks: ''
+      }
+    },
+    /** 判断是否可以修改并设置标题 */
+    beforeShow(isEditForm, title) {
+      this.isEditForm = isEditForm
+      this.title = title
+      this.open = true
+    },
     /** 修改按钮操作 */
     handleUpdate(row) {
-      this.reset();
-      const id = row.id || this.ids
-      getMenu(id).then(response => {
-        this.form = response.data;
-        this.open = true;
-        this.title = "修改权限资源 ";
-      });
+      this.form = row
+      this.beforeShow(1, '修改菜单')
+    },
+    /** 选择图标 */
+    setIcon(val) {
+      this.form.icon = val
     },
     /** 提交按钮 */
     submitForm() {
-      this.$refs["form"].validate(valid => {
+      this.$refs["dataForm"].validate(valid => {
         if (valid) {
-          if (this.form.id != null) {
+          if (this.isEditForm) {
             updateMenu(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
@@ -379,20 +388,30 @@ export default {
     },
     /** 删除按钮操作 */
     handleDelete(row) {
-      const ids = row.id || this.ids;
-      this.$modal.confirm('是否确认删除权限资源 编号为"' + ids + '"的数据项？').then(function() {
-        return delMenu(ids);
+      console.log(row)
+      const id = row.row.id;
+      this.$modal.confirm('是否确认删除权限资源 编号为"' + id + '"的数据项？').then(function () {
+        return delMenu(id);
       }).then(() => {
-        this.getList();
+        // TODO 删除菜单刷新页面重新获取路由，使得菜单栏也重新刷新
+        this.getList()
         this.$modal.msgSuccess("删除成功");
-      }).catch(() => {});
+      }).catch(() => { });
     },
-    /** 导出按钮操作 */
-    handleExport() {
-      this.download('system/menu/export', {
-        ...this.queryParams
-      }, `menu_${new Date().getTime()}.xlsx`)
-    }
+    /** 打开ICON图标选择器 */
+    openIconsDialog(model) {
+      this.iconsVisible = true
+      this.currentIconModel = model
+    },
+    /** 打开加载层 */
+    openLoading() {
+      this.loading = this.$loading({
+        lock: true,
+        text: "正在加载中~",
+        spinner: "el-icon-loading",
+        background: "rgba(0, 0, 0, 0.7)"
+      });
+    },
   }
 };
 </script>

@@ -26,20 +26,20 @@ public class Menu {
     //主键ID    
     @TableId
     private Long id;
+    //上级资源ID
+    private Long parentId;
     //资源名称
     private String title;
     //路由地址
     private String url;
     //资源组件
     private String component;
-    //资源图标
-    private String icon;
-    //上级资源ID
-    private Long parentId;
     //资源级别
     private Integer level;
     //显示顺序
     private Integer sortNo;
+    //资源图标
+    private String icon;
     //菜单类型(M菜单,F按钮)
     private String type;
     //重定向地址

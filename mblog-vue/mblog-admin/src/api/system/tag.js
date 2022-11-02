@@ -36,9 +36,9 @@ export function updateTag(data) {
 }
 
 // 删除博客标签
-export function delTag(id) {
+export function delTag(ids) {
   return request({
-    url: '/system/tag/' + id,
+    url: '/system/tag/' + ids,
     method: 'delete'
   })
 }
