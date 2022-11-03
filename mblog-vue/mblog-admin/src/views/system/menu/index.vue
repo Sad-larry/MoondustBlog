@@ -16,7 +16,7 @@
         <el-table-column type="expand">
           <template slot-scope="scope">
             <el-form label-position="left" inline class="demo-table-expand">
-              <el-table :data="scope.row.children" :show-header="showHeader" style="width: 100%">
+              <el-table :data="scope.row.children" :show-header="showHeader" style="width: 100%" :indent="0">
 
                 <el-table-column label width="60" align="center">
                   <template slot-scope="scope_child">

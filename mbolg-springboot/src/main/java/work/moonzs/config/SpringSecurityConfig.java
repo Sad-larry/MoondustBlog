@@ -48,7 +48,7 @@ public class SpringSecurityConfig {
         // 使用了jwt就不通过session获取SecurityContext
         httpSecurity.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         // 登录接口可以匿名访问 其他接口需要认证
-        httpSecurity.authorizeRequests().antMatchers("/system/login", "/system/captchaImage").anonymous()
+        httpSecurity.authorizeRequests().antMatchers("/system/login", "/system/captchaImage", "/druid/**").anonymous()
                 .anyRequest().authenticated();
         // 添加过滤器
         httpSecurity.addFilterBefore(authenticationTokenFilter, UsernamePasswordAuthenticationFilter.class);
@@ -61,6 +61,8 @@ public class SpringSecurityConfig {
         httpSecurity.logout().disable();
         // 允许跨域
         httpSecurity.cors().configurationSource(corsConfigurationSource());
+        // x-frame-options禁止，允许内嵌IFrame
+        httpSecurity.headers().frameOptions().disable();
         return httpSecurity.build();
     }
 
