@@ -7,7 +7,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import work.moonzs.base.validate.VG;
 
-import javax.validation.constraints.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Null;
+import javax.validation.constraints.Pattern;
 import java.util.List;
 
 /**
@@ -28,7 +31,6 @@ public class ArticleDTO {
     @ApiModelProperty(notes = "id")
     @Null(message = "添加文章时id必须为NULL", groups = VG.Insert.class)
     @NotNull(message = "删除、修改、查询时id不能为NULL", groups = {VG.Select.class, VG.Delete.class, VG.Update.class})
-    @Min(message = "id值最小为1", value = 1L, groups = {VG.Select.class, VG.Delete.class, VG.Update.class})
     private Long id;
     /**
      * 用户id
@@ -50,12 +52,12 @@ public class ArticleDTO {
      * 文章简介
      */
     @ApiModelProperty(notes = "文章简介")
+    @NotBlank(message = "文章'简介'不能为空", groups = {VG.Insert.class, VG.Update.class})
     private String summary;
     /**
      * 内容
      */
     @ApiModelProperty(notes = "文章内容")
-    @NotBlank(message = "文章'内容'不能为空", groups = {VG.Insert.class, VG.Update.class})
     private String content;
     /**
      * 内容md版
@@ -88,12 +90,6 @@ public class ArticleDTO {
      */
     @ApiModelProperty(notes = "原创url")
     private String originalUrl;
-    /**
-     * 文章阅读量
-     */
-    @ApiModelProperty(notes = "文章阅读量")
-    @Null(message = "添加文章时id必须为NULL", groups = VG.Insert.class)
-    private Integer quantity;
     /**
      * 备注
      */

@@ -92,5 +92,10 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, Tag> implements TagSe
     public boolean deleteTag(Long[] tagIds) {
         return removeBatchByIds(List.of(tagIds));
     }
+
+    @Override
+    public String getTagStrByArticleId(Long articleId) {
+        return getBaseMapper().getTagsByArticleId(articleId);
+    }
 }
 

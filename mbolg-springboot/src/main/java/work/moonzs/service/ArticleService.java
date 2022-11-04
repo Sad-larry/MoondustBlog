@@ -1,12 +1,9 @@
 package work.moonzs.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import org.springframework.transaction.annotation.Transactional;
 import work.moonzs.domain.entity.Article;
 import work.moonzs.domain.vo.ArticleVo;
 import work.moonzs.domain.vo.PageVo;
-
-import java.util.List;
 
 /**
  * 博客文章表(Article)表服务接口
@@ -30,9 +27,16 @@ public interface ArticleService extends IService<Article> {
      * @param pageNum    页面num
      * @param pageSize   页面大小
      * @param fuzzyField 模糊领域
-     * @return {@link List}<{@link ArticleVo}>
+     * @return {@link PageVo}<{@link ArticleVo}>
      */
-    @Transactional
     PageVo<ArticleVo> listArticle(Integer pageNum, Integer pageSize, String fuzzyField);
+
+    /**
+     * 通过id获取文章
+     *
+     * @param articleId 文章id
+     * @return {@link ArticleVo}
+     */
+    ArticleVo getArticleById(Long articleId);
 }
 

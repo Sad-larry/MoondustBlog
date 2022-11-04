@@ -26,7 +26,7 @@ public class TagController {
      * @param pageNum    页面num
      * @param pageSize   页面大小
      * @param fuzzyField 模糊领域
-     * @return {@link ResponseResult}<{@link ?}>
+     * @return {@link ResponseResult}
      */
     @SystemLog(businessName = "获取标签列表")
     @GetMapping("/list")
@@ -46,12 +46,11 @@ public class TagController {
         return ResponseResult.success(tagService.getTagById(tagId));
     }
 
-
     /**
      * 添加标签
      *
      * @param tagDTO 标签dto
-     * @return {@link ResponseResult}<{@link ?}>
+     * @return {@link ResponseResult}
      */
     @SystemLog(businessName = "添加标签")
     @PostMapping
@@ -64,7 +63,7 @@ public class TagController {
      * 更新标签
      *
      * @param tagDTO 标签dto
-     * @return {@link ResponseResult}<{@link ?}>
+     * @return {@link ResponseResult}
      */
     @SystemLog(businessName = "更新标签")
     @PutMapping

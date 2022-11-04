@@ -75,5 +75,13 @@ public interface TagService extends IService<Tag> {
      */
     @Transactional
     boolean deleteTag(Long[] tagIds);
+
+    /**
+     * 通过文章id查询标签字符串
+     *
+     * @param articleId 文章id
+     * @return {@link String}
+     */
+    String getTagStrByArticleId(Long articleId);
 }
 

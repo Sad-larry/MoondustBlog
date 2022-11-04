@@ -149,6 +149,11 @@ public enum AppHttpCodeEnum {
      * 菜单包含子菜单
      */
     MENU_CHILDREN_EXIST(45032, "菜单包含子菜单"),
+    /**
+     * 没有数据
+     */
+    NO_RECORDS(45033, "暂时没有数据"),
+
 
     /**
      * 警告：文章未添加标签

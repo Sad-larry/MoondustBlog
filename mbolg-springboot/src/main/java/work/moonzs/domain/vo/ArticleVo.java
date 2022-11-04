@@ -5,7 +5,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
-import java.util.List;
 
 /**
  * @author Moondust月尘
@@ -19,14 +18,6 @@ public class ArticleVo {
      */
     private Long id;
     /**
-     * 用户id
-     */
-    private Long userId;
-    /**
-     * 用户名
-     */
-    private String username;
-    /**
      * 标题
      */
     private String title;
@@ -35,51 +26,59 @@ public class ArticleVo {
      */
     private String content;
     /**
-     * 总结
+     * 文章内容md版
+     */
+    private String contentMd;
+    /**
+     * 文章封面地址
+     */
+    private String avatar;
+    /**
+     * 文章简介
      */
     private String summary;
     /**
-     * 分类
+     * 文章阅读量
      */
-    private CategoryVo categoryVo;
+    private Integer quantity;
     /**
-     * 标记列表
+     * 是否是私密文章(0否,1是)
      */
-    private List<TagVo> tagListVo;
+    private Integer isSecret;
     /**
-     * 缩略图
+     * 是否置顶(0否,1是)
      */
-    private String thumbnail;
+    private Integer isStick;
     /**
-     * 是否置顶
+     * 是否发布(0草稿,1发布)
      */
-    private String isTop;
+    private Integer isPublish;
     /**
-     * 状态
+     * 是否原创(0转载,1原创)
      */
-    private String status;
+    private Integer isOriginal;
     /**
-     * 浏览量
+     * 转载地址
      */
-    private Long viewCount;
+    private String originalUrl;
     /**
-     * 是否允许评论
+     * 说明
      */
-    private String isComment;
+    private String remark;
     /**
-     * 评论数
+     * SEO关键词
      */
-    private Long commentCount;
-    /**
-     * 星数
-     */
-    private Long starCount;
+    private String keywords;
     /**
      * 创建时间
      */
     private Date createTime;
     /**
-     * 更新时间
+     * 分类名
      */
-    private Data updateTime;
+    private String categoryName;
+    /**
+     * 标签名集合
+     */
+    private String tagNames;
 }

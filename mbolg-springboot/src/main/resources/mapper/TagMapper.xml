@@ -9,4 +9,20 @@
                  LEFT JOIN t_tag t ON t.`id` = at.`tag_id`
         WHERE at.`article_id` = #{articleId};
     </select>
+    <select id="listByArticleId" resultType="work.moonzs.domain.entity.Tag">
+        SELECT t.id,t.name,t.click_volume,t.sort,t.create_time,t.update_time
+        FROM t_tag t
+        LEFT JOIN t_article_tag at ON at.`tag_id` = t.`id`
+        WHERE at.`article_id` IN
+        <foreach item="articleId" separator="," open="(" close=")" collection="articleIds">
+            #{articleId}
+        </foreach>
+    </select>
+    <select id="getTagsByArticleId" resultType="java.lang.String">
+        SELECT group_concat(t.NAME SEPARATOR ',')
+        FROM t_article_tag at
+                 LEFT JOIN t_tag t ON t.`id` = at.`tag_id`
+        WHERE at.`article_id` = #{articleId};
+    </select>
+
 </mapper>

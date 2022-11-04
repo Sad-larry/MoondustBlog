@@ -1,8 +1,10 @@
 package work.moonzs.controller.system;
 
 import cn.hutool.core.collection.CollUtil;
+import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import work.moonzs.base.annotation.SystemLog;
 import work.moonzs.base.enums.AppHttpCodeEnum;
 import work.moonzs.base.enums.StatusConstants;
 import work.moonzs.base.utils.BeanCopyUtil;
@@ -10,8 +12,6 @@ import work.moonzs.base.validate.VG;
 import work.moonzs.domain.ResponseResult;
 import work.moonzs.domain.dto.ArticleDTO;
 import work.moonzs.domain.entity.Article;
-import work.moonzs.domain.vo.ArticleVo;
-import work.moonzs.domain.vo.PageVo;
 import work.moonzs.service.ArticleService;
 import work.moonzs.service.ArticleTagService;
 import work.moonzs.service.CategoryService;
@@ -24,19 +24,13 @@ import java.util.List;
  */
 @RestController("SystemArtileC")
 @RequestMapping("/system/article")
+@RequiredArgsConstructor
 public class ArticleController {
-    // 建议用构造器注入而不是使用`@Autowired`注解
+    // 建议用构造器注入而不是使用`@Autowired`注解，@RequiredArgsConstructor自动帮忙写构造器...
     private final ArticleService articleService;
     private final CategoryService categoryService;
     private final TagService tagService;
     private final ArticleTagService articleTagService;
-
-    public ArticleController(ArticleService articleService, CategoryService categoryService, TagService tagService, ArticleTagService articleTagService) {
-        this.articleService = articleService;
-        this.categoryService = categoryService;
-        this.tagService = tagService;
-        this.articleTagService = articleTagService;
-    }
 
     /**
      * 发表文章
@@ -73,15 +67,20 @@ public class ArticleController {
      * @param pageNum    页面num
      * @param pageSize   页面大小
      * @param fuzzyField 模糊领域
-     * @return {@link ResponseResult}<{@link ArticleVo}>
+     * @return {@link ResponseResult}
      */
+    @SystemLog(businessName = "获取文章列表")
     @GetMapping("/list")
     public ResponseResult listArticle(
             @RequestParam(defaultValue = "1", required = false) Integer pageNum,
             @RequestParam(defaultValue = "10", required = false) Integer pageSize,
             @RequestParam(defaultValue = "", required = false) String fuzzyField) {
-        PageVo<ArticleVo> articleList = articleService.listArticle(pageNum, pageSize, fuzzyField);
-        return ResponseResult.success(articleList);
+        return ResponseResult.success(articleService.listArticle(pageNum, pageSize, fuzzyField));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseResult getArticleById(@PathVariable("id") Long articleId) {
+        return ResponseResult.success(articleService.getArticleById(articleId));
     }
 
     /**

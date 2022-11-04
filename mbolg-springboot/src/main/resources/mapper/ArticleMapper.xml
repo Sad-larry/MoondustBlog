@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="work.moonzs.mapper.ArticleMapper">
+    <select id="listArticle" resultType="work.moonzs.domain.vo.ArticleVo">
+        SELECT a.*, c.NAME AS categoryName, group_concat( t.NAME SEPARATOR ',' ) AS tagNames
+        FROM t_article a
+        JOIN t_category c ON a.category_id = c.id
+        JOIN t_article_tag at ON a.id = at.article_id
+        JOIN t_tag t ON at.tag_id = t.id
+        <where>
+            <if test="fuzzyField != null and fuzzyField != ''">
+                a.title like concat('%',#{fuzzyField},'%') or a.summary like concat('%',#{fuzzyField},'%')
+            </if>
+        </where>
+        GROUP BY a.id order by a.is_stick desc ,a.create_time desc
+    </select>
+    <select id="getArticleById" resultType="work.moonzs.domain.vo.ArticleVo">
+        select a.id,
+               a.title,
+               a.avatar,
+               a.summary,
+               a.quantity,
+               a.content,
+               a.content_md,
+               a.is_secret,
+               a.is_stick,
+               a.is_publish,
+               a.is_original,
+               a.original_url,
+               a.remark,
+               a.keywords,
+               a.create_time,
+               c.name as categoryName
+        from t_article a
+                 LEFT JOIN (SELECT id, name from t_category) c on a.category_id = c.id
+        where a.id = #{id}
+    </select>
+</mapper>
