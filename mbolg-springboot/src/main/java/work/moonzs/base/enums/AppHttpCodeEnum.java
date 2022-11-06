@@ -104,7 +104,7 @@ public enum AppHttpCodeEnum {
     /**
      * token已过期
      */
-    TOKEN_OVERDUE(45021, "TOKEN已过期"),
+    TOKEN_OVERDUE(45021, "TOKEN 已过期"),
     /**
      * 文件内容为空
      */
@@ -153,12 +153,20 @@ public enum AppHttpCodeEnum {
      * 没有数据
      */
     NO_RECORDS(45033, "暂时没有数据"),
+    /**
+     * 博客不存在
+     */
+    BLOG_NOT_EXIST(45034, "博客不存在"),
 
 
     /**
      * 警告：文章未添加标签
      */
     WARNING_TAG_EMPTY(54001, "警告：文章未添加标签"),
+    /**
+     * 警告：这不是你的文章，不能修改
+     */
+    WARNING_ARTICLE_BAD_REQUEST(54002, "警告：这不是你的文章，不能修改"),
 
     /**
      * 异常：获取用户异常

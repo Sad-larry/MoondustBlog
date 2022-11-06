@@ -56,7 +56,7 @@ public interface CategoryService extends IService<Category> {
      * @return boolean
      */
     @Transactional
-    boolean insertCategory(Category category);
+    Long insertCategory(Category category);
 
     /**
      * 更新分类
@@ -75,5 +75,13 @@ public interface CategoryService extends IService<Category> {
      */
     @Transactional
     boolean deleteCategory(Long[] categoryIds);
+
+    /**
+     * 查询分类名是否存在，存在则返回ID，否则新增分类再返回ID
+     *
+     * @param categoryName 分类名字
+     * @return {@link Long}
+     */
+    Long insertCategoryWithName(String categoryName);
 }
 

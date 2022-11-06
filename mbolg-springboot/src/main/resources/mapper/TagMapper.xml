@@ -3,6 +3,19 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="work.moonzs.mapper.TagMapper">
+    <insert id="saveTagsWithArticleId">
+        INSERT INTO t_article_tag(article_id, tag_id)
+        VALUES
+        <foreach collection="tagIds" item="tagId" index="index" separator=",">
+            (#{articleId}, #{tagId})
+        </foreach>
+    </insert>
+    <delete id="removeTagsByArticleIds">
+        DELETE FROM t_article_tag
+        WHERE article_id in
+        <foreach collection="articleIds" item="articleId" index="index" separator="," open="(" close=")">
+            #{articleId}</foreach>;
+    </delete>
     <select id="selectByArticleId" resultType="work.moonzs.domain.entity.Tag">
         SELECT t.`id`, t.`tag_name`, t.`description`, t.`status`, t.`create_time`
         FROM t_article_tag at

@@ -37,5 +37,22 @@ public interface TagMapper extends BaseMapper<Tag> {
      * @return {@link String}
      */
     String getTagsByArticleId(Long articleId);
+
+    /**
+     * 保存标签条id
+     *
+     * @param tagIds    标签ids
+     * @param articleId 文章id
+     * @return boolean
+     */
+    boolean saveTagsWithArticleId(@Param("articleId") Long articleId, @Param("tagIds") List<Long> tagIds);
+
+    /**
+     * 通过文章id删除标签
+     *
+     * @param articleIds 文章id
+     * @return boolean
+     */
+    boolean removeTagsByArticleIds(@Param("articleIds") Long[] articleIds);
 }
 

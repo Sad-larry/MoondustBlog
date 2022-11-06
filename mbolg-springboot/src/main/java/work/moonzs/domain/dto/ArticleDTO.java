@@ -7,10 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import work.moonzs.base.validate.VG;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Null;
-import javax.validation.constraints.Pattern;
+import javax.validation.constraints.*;
 import java.util.List;
 
 /**
@@ -30,7 +27,7 @@ public class ArticleDTO {
      */
     @ApiModelProperty(notes = "id")
     @Null(message = "添加文章时id必须为NULL", groups = VG.Insert.class)
-    @NotNull(message = "删除、修改、查询时id不能为NULL", groups = {VG.Select.class, VG.Delete.class, VG.Update.class})
+    @NotNull(message = "修改时id不能为NULL", groups = VG.Update.class)
     private Long id;
     /**
      * 用户id
@@ -68,22 +65,29 @@ public class ArticleDTO {
      * 是否是私密文章
      */
     @ApiModelProperty(notes = "是否是私密文章")
+    @Min(value = 0, message = "状态设置只有0、1", groups = {VG.Insert.class, VG.Update.class})
+    @Max(value = 1, message = "状态设置只有0、1", groups = {VG.Insert.class, VG.Update.class})
     private Integer isSecret;
     /**
      * 是否置顶
      */
     @ApiModelProperty(notes = "是否置顶")
-    @Pattern(regexp = "^[01]$", message = "设置置顶状态只有0、1", groups = {VG.Insert.class, VG.Update.class})
+    @Min(value = 0, message = "状态设置只有0、1", groups = {VG.Insert.class, VG.Update.class})
+    @Max(value = 1, message = "状态设置只有0、1", groups = {VG.Insert.class, VG.Update.class})
     private Integer isStick;
     /**
      * 是否发布
      */
     @ApiModelProperty(notes = "是否发布")
+    @Min(value = 0, message = "状态设置只有0、1", groups = {VG.Insert.class, VG.Update.class})
+    @Max(value = 1, message = "状态设置只有0、1", groups = {VG.Insert.class, VG.Update.class})
     private Integer isPublish;
     /**
      * 是否原创
      */
     @ApiModelProperty(notes = "是否原创")
+    @Min(value = 0, message = "状态设置只有0、1", groups = {VG.Insert.class, VG.Update.class})
+    @Max(value = 1, message = "状态设置只有0、1", groups = {VG.Insert.class, VG.Update.class})
     private Integer isOriginal;
     /**
      * 原创url
@@ -106,10 +110,12 @@ public class ArticleDTO {
      * 分类名称
      */
     @ApiModelProperty(notes = "分类名称")
+    @NotBlank(message = "分类名称不能为空", groups = {VG.Insert.class, VG.Update.class})
     private String categoryName;
     /**
      * 标签列表
      */
     @ApiModelProperty(notes = "标签列表")
+    @NotEmpty(message = "标签列表不能为空", groups = {VG.Insert.class, VG.Update.class})
     private List<String> tags;
 }

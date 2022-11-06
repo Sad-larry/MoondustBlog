@@ -1,9 +1,13 @@
 package work.moonzs.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.springframework.transaction.annotation.Transactional;
+import work.moonzs.domain.dto.ArticleDTO;
 import work.moonzs.domain.entity.Article;
 import work.moonzs.domain.vo.ArticleVo;
 import work.moonzs.domain.vo.PageVo;
+
+import java.util.List;
 
 /**
  * 博客文章表(Article)表服务接口
@@ -15,11 +19,13 @@ public interface ArticleService extends IService<Article> {
 
     /**
      * 发表文章
+     * 继承BaseMapper的mapper类使用insert方式时，在IdType=AUTO情况下，插入的article对象自动赋予对象id
      *
-     * @param article 文章
-     * @return {@link Long}
+     * @param articleDTO 文章dto
+     * @return boolean
      */
-    Long publishArticle(Article article);
+    @Transactional
+    boolean publishArticle(ArticleDTO articleDTO);
 
     /**
      * 文章列表
@@ -38,5 +44,37 @@ public interface ArticleService extends IService<Article> {
      * @return {@link ArticleVo}
      */
     ArticleVo getArticleById(Long articleId);
+
+    @Transactional
+    boolean updateArticle(ArticleDTO articleDTO);
+
+    /**
+     * 更新文章分类
+     *
+     * @param categoryName 分类名字
+     * @param articleId    文章id
+     * @return boolean
+     */
+    @Transactional
+    boolean updateArticleCategory(Long articleId, String categoryName);
+
+    /**
+     * 更新标签列表
+     *
+     * @param articleId 文章id
+     * @param tags      标签
+     * @return boolean
+     */
+    @Transactional
+    boolean updateArticleTags(Long articleId, List<String> tags);
+
+    /**
+     * 删除文章
+     *
+     * @param articleIds 文章ids
+     * @return boolean
+     */
+    @Transactional
+    boolean deleteArticle(Long[] articleIds);
 }
 

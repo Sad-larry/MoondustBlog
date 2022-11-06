@@ -46,7 +46,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Override
     public String adminLogin(String username, String password, String uuid, String code) {
         // TODO 验证验证码是否正确
-        validateCaptcha(uuid, code);
+        // validateCaptcha(uuid, code);
         // SpringSecurity登录认证
         // 认证不通过时，SpringSecurity会主动抛出异常
         Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));

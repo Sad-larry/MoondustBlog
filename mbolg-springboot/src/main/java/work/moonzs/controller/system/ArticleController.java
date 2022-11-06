@@ -1,23 +1,23 @@
 package work.moonzs.controller.system;
 
-import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.ObjUtil;
+import cn.hutool.json.JSONUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import work.moonzs.base.annotation.SystemLog;
 import work.moonzs.base.enums.AppHttpCodeEnum;
-import work.moonzs.base.enums.StatusConstants;
-import work.moonzs.base.utils.BeanCopyUtil;
 import work.moonzs.base.validate.VG;
 import work.moonzs.domain.ResponseResult;
 import work.moonzs.domain.dto.ArticleDTO;
-import work.moonzs.domain.entity.Article;
 import work.moonzs.service.ArticleService;
 import work.moonzs.service.ArticleTagService;
 import work.moonzs.service.CategoryService;
 import work.moonzs.service.TagService;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Moondust月尘
@@ -36,28 +36,11 @@ public class ArticleController {
      * 发表文章
      *
      * @param articleDTO 文章dto
-     * @return {@link ResponseResult}<{@link ?}>
+     * @return {@link ResponseResult}
      */
     @PostMapping
     public ResponseResult publishArticle(@Validated(value = VG.Insert.class) @RequestBody ArticleDTO articleDTO) {
-        // 如果id不为空，应该为更新操作，这里的话就直接设置为空
-        // 应该还要判断当前的分类和标签是否存在于数据库中，这两项默认是不会有问题的，就是怕有人不通过前端请求，
-        //   或者请求的时候刚好被删除了
-        // 判断当前分类是否存在
-        boolean existCategory = categoryService.isExistCategoryById(1L);
-        if (!existCategory) {
-            return ResponseResult.fail(AppHttpCodeEnum.CATEGORY_NOT_EXIST);
-        }
-        // 发布文章，当文章发布成功时才添加标签
-        Article article = BeanCopyUtil.copyBean(articleDTO, Article.class);
-        // TODO userid没有值，测试时，默认为1
-        article.setUserId(1L);
-
-        Long articleId = articleService.publishArticle(article);
-        System.out.println("文章id，看看是不是可以不用返回值：" + article.getId());
-        // 添加标签，存个空标签进去还不如不存
-        articleDTO.setId(articleId);
-        updateArticleTag(articleDTO);
+        articleService.publishArticle(articleDTO);
         return ResponseResult.success();
     }
 
@@ -78,6 +61,13 @@ public class ArticleController {
         return ResponseResult.success(articleService.listArticle(pageNum, pageSize, fuzzyField));
     }
 
+    /**
+     * 通过id获取文章详情
+     *
+     * @param articleId 文章id
+     * @return {@link ResponseResult}
+     */
+    @SystemLog(businessName = "获取文章详情")
     @GetMapping("/{id}")
     public ResponseResult getArticleById(@PathVariable("id") Long articleId) {
         return ResponseResult.success(articleService.getArticleById(articleId));
@@ -85,86 +75,69 @@ public class ArticleController {
 
     /**
      * 更新文章
-     * 这一块我觉得不能一下子全部更新，反正分类和标签这块不行
-     * 也不是不行，总体还是需要的
      *
      * @param articleDTO 文章dto
-     * @return {@link ResponseResult}<{@link ?}>
+     * @return {@link ResponseResult}
      */
+    @SystemLog(businessName = "更新文章")
     @PutMapping
     public ResponseResult updateArticle(@Validated(value = {VG.Update.class}) @RequestBody ArticleDTO articleDTO) {
-        boolean existCategory = categoryService.isExistCategoryById(1L);
-        if (!existCategory) {
-            return ResponseResult.fail(AppHttpCodeEnum.CATEGORY_NOT_EXIST);
-        }
-        Article article = BeanCopyUtil.copyBean(articleDTO, Article.class);
-        articleService.updateById(article);
-        // 修改文章标签
-        updateArticleTag(articleDTO);
+        articleService.updateArticle(articleDTO);
         return ResponseResult.success();
     }
 
     /**
      * 更新文章分类
      *
-     * @param articleDTO 文章dto
-     * @return {@link ResponseResult}<{@link ?}>
+     * @param map 键值对
+     * @return {@link ResponseResult}
      */
-    @PutMapping("/updateCategory")
-    public ResponseResult updateArticleCategory(@RequestBody ArticleDTO articleDTO) {
-        boolean existCategory = categoryService.isExistCategoryById(1L);
-        if (!existCategory) {
-            return ResponseResult.fail(AppHttpCodeEnum.CATEGORY_NOT_EXIST);
+    @SystemLog(businessName = "更新文章分类")
+    @PostMapping("/updateCategory")
+    public ResponseResult updateArticleCategory(@RequestBody Map<String, Object> map) {
+        Object mapId = map.get("id");
+        Object mapCategoryName = map.get("categoryName");
+        if (ObjUtil.hasEmpty(mapId, mapCategoryName)) {
+            return ResponseResult.fail(AppHttpCodeEnum.BAD_REQUEST);
         }
-        Article article = new Article();
-        article.setId(articleDTO.getId());
-        article.setCategoryId(1L);
-        articleService.updateById(article);
+        Long articleId = Long.valueOf(String.valueOf(mapId));
+        String categoryName = String.valueOf(mapCategoryName);
+        articleService.updateArticleCategory(articleId, categoryName);
         return ResponseResult.success();
     }
 
     /**
-     * 更新或添加标签条
+     * 更新标签列表
      * TODO 文章标签应该设置上限，如果超过上限就只能删除不能添加
      *
-     * @param articleDTO 文章dto
-     * @return {@link ResponseResult}<{@link ?}>
+     * @param map 键值对
+     * @return {@link ResponseResult}
      */
-    @PutMapping("/updateTags")
-    public ResponseResult updateArticleTag(@RequestBody ArticleDTO articleDTO) {
-        if (CollUtil.isNotEmpty(articleDTO.getTags())) {
-            boolean existTags = tagService.isExistTagByIds(List.of(1L));
-            if (!existTags) {
-                return ResponseResult.fail(AppHttpCodeEnum.TAG_NOT_EXIST);
-            }
-            // 通过文章id和标签集合更新标签
-            Long id = articleDTO.getId();
-            List<Long> tagList = null;
-            articleTagService.updateArticleTag(id, tagList);
-            return ResponseResult.success();
-        } else {
-            return ResponseResult.success(AppHttpCodeEnum.WARNING_TAG_EMPTY);
+    @SystemLog(businessName = "更新标签列表")
+    @PostMapping("/updateTags")
+    public ResponseResult updateArticleTags(@RequestBody Map<String, Object> map) {
+        Object mapId = map.get("id");
+        Object mapTags = map.get("tags");
+        if (ObjUtil.hasEmpty(mapId, mapTags) || !(mapTags instanceof Collection<?>)) {
+            return ResponseResult.fail(AppHttpCodeEnum.BAD_REQUEST);
         }
+        Long articleId = Long.valueOf(String.valueOf(mapId));
+        List<String> tags = JSONUtil.toList(JSONUtil.toJsonStr(mapTags), String.class);
+        articleService.updateArticleTags(articleId, tags);
+        return ResponseResult.success();
     }
 
     /**
      * 删除文章
      *
      * @param articleId 文章id
-     * @return {@link ResponseResult}<{@link ?}>
+     * @return {@link ResponseResult}
      */
+    @SystemLog(businessName = "删除文章")
     @DeleteMapping("/{id}")
-    public ResponseResult deleteArticle(@PathVariable(value = "id") Long articleId) {
+    public ResponseResult deleteArticle(@PathVariable(value = "id") Long[] articleId) {
         // article_tag表数据也要删除
-        // articleService.removeById(articleId);
-        // articleTagService.deleteArticleTagById(articleId);
-        // 9-29，删除应该是设置状态为2
-        // TODO 定时任务删除状态为2的文章，到时候在删除关联的tag表
-        Article article = new Article();
-        article.setId(articleId);
-        // 设置私密文章了
-        article.setIsSecret(StatusConstants.NORMAL);
-        articleService.updateById(article);
+        articleService.deleteArticle(articleId);
         return ResponseResult.success();
     }
 }

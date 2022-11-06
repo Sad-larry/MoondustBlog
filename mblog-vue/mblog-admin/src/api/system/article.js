@@ -42,3 +42,21 @@ export function delArticle(id) {
     method: 'delete'
   })
 }
+
+// 更新文章分类
+export function updateArticleCategory(params) {
+  return request({
+    url: '/system/article/updateCategory',
+    method: 'post',
+    data: params
+  })
+}
+
+// 更新标签列表
+export function updateArticleTags(params) {
+  return request({
+    url: '/system/article/updateTags',
+    method: 'post',
+    data: params
+  })
+}

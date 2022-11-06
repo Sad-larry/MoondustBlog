@@ -33,12 +33,25 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
         return count(queryWrapper) > 0;
     }
 
-    @Override
-    public boolean isExistCategoryByCategoryName(String categoryName) {
+    /**
+     * 通过分类名字查询分类
+     *
+     * @param categoryName 分类名字
+     * @return {@link Long}
+     */
+    public Long selectCategoryByCategoryName(String categoryName) {
         LambdaQueryWrapper<Category> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Category::getName, categoryName);
-        // 不同判断状态
-        return count(queryWrapper) > 0;
+        Category category = getOne(queryWrapper);
+        if (category != null) {
+            return category.getId();
+        }
+        return null;
+    }
+
+    @Override
+    public boolean isExistCategoryByCategoryName(String categoryName) {
+        return ObjUtil.isNotNull(selectCategoryByCategoryName(categoryName));
     }
 
     /**
@@ -71,11 +84,12 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
     }
 
     @Override
-    public boolean insertCategory(Category category) {
+    public Long insertCategory(Category category) {
         // 判断分类名是否有相同的，有就不添加
         // 如果存在相同的分类，isExistCategory为true，那么就不符合方法条件，断言失败抛出异常
         BusinessAssert.isFalse(isExistCategoryByCategoryName(category.getName()), AppHttpCodeEnum.CATEGORY_EXIST);
-        return save(category);
+        getBaseMapper().insert(category);
+        return category.getId();
     }
 
     @Override
@@ -91,6 +105,19 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
     @Override
     public boolean deleteCategory(Long[] categoryIds) {
         return removeBatchByIds(List.of(categoryIds));
+    }
+
+    @Override
+    public Long insertCategoryWithName(String categoryName) {
+        Long categoryId = selectCategoryByCategoryName(categoryName);
+        // 不存在分类则插入
+        if (ObjUtil.isNull(categoryId)) {
+            Category category = new Category();
+            category.setName(categoryName);
+            getBaseMapper().insert(category);
+            return category.getId();
+        }
+        return categoryId;
     }
 }
 
