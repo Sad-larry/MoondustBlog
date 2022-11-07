@@ -77,12 +77,12 @@
       </el-table-column>
       <el-table-column label="操作" align="center" width="300">
         <template slot-scope="scope">
-          <el-button v-if="scope.row.isPublish === 1" type="text" icon="el-icon-box" size="mini"
-            @click="offShelf(scope.row)">
+          <el-button v-if="scope.row.isPublish === 1" type="text" icon="el-icon-box" size="mini">
+            <!-- @click="offShelf(scope.row)"> -->
             下架
           </el-button>
-          <el-button v-if="scope.row.isPublish === 0" type="text" icon="el-icon-s-promotion" size="mini"
-            @click="release(scope.row)">
+          <el-button v-if="scope.row.isPublish === 0" type="text" icon="el-icon-s-promotion" size="mini">
+            <!-- @click="release(scope.row)"> -->
             发布
           </el-button>
           <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)">编辑</el-button>

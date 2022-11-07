@@ -37,4 +37,18 @@
                  LEFT JOIN (SELECT id, name from t_category) c on a.category_id = c.id
         where a.id = #{id}
     </select>
+    <select id="listPreviewPage" resultType="work.moonzs.domain.vo.ArticlePreviewVo">
+        SELECT a.id          AS id,
+               a.title       AS title,
+               a.avatar      AS avatar,
+               a.content_md  AS contentMd,
+               a.is_stick    AS isStick,
+               a.create_time AS createTime,
+               c.id          AS categoryId,
+               c.name        AS categoryName
+        FROM t_article a
+                 JOIN t_category c ON a.category_id = c.id
+        WHERE a.is_publish = 1
+        ORDER BY a.is_stick DESC, a.create_time desc
+    </select>
 </mapper>

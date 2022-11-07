@@ -16,11 +16,10 @@
         <foreach collection="articleIds" item="articleId" index="index" separator="," open="(" close=")">
             #{articleId}</foreach>;
     </delete>
-    <select id="selectByArticleId" resultType="work.moonzs.domain.entity.Tag">
-        SELECT t.`id`, t.`tag_name`, t.`description`, t.`status`, t.`create_time`
-        FROM t_article_tag at
-                 LEFT JOIN t_tag t ON t.`id` = at.`tag_id`
-        WHERE at.`article_id` = #{articleId};
+    <select id="selectByArticleId" resultType="work.moonzs.domain.vo.TagVo">
+        SELECT id, name
+        FROM t_tag
+        WHERE id IN (SELECT tag_id FROM t_article_tag WHERE article_id = #{articleId});
     </select>
     <select id="listByArticleId" resultType="work.moonzs.domain.entity.Tag">
         SELECT t.id,t.name,t.click_volume,t.sort,t.create_time,t.update_time

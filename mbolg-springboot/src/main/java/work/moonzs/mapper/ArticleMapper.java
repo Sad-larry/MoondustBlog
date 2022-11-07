@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
 import work.moonzs.domain.entity.Article;
+import work.moonzs.domain.vo.ArticlePreviewVo;
 import work.moonzs.domain.vo.ArticleVo;
 
 import java.util.List;
@@ -32,5 +33,13 @@ public interface ArticleMapper extends BaseMapper<Article> {
      * @return {@link ArticleVo}
      */
     ArticleVo getArticleById(Long articleId);
+
+    /**
+     * 文章预览列表页面
+     *
+     * @param page 页面
+     * @return {@link List}<{@link ArticlePreviewVo}>
+     */
+    List<ArticlePreviewVo> listPreviewPage(@Param("page") Page<Article> page);
 }
 

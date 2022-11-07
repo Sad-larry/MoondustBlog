@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import org.springframework.transaction.annotation.Transactional;
 import work.moonzs.domain.dto.ArticleDTO;
 import work.moonzs.domain.entity.Article;
+import work.moonzs.domain.vo.ArticlePreviewVo;
 import work.moonzs.domain.vo.ArticleVo;
 import work.moonzs.domain.vo.PageVo;
 
@@ -35,6 +36,7 @@ public interface ArticleService extends IService<Article> {
      * @param fuzzyField 模糊领域
      * @return {@link PageVo}<{@link ArticleVo}>
      */
+    @Transactional(readOnly = true)
     PageVo<ArticleVo> listArticle(Integer pageNum, Integer pageSize, String fuzzyField);
 
     /**
@@ -76,5 +78,15 @@ public interface ArticleService extends IService<Article> {
      */
     @Transactional
     boolean deleteArticle(Long[] articleIds);
+
+    /**
+     * 文章列表
+     *
+     * @param pageNum  1
+     * @param pageSize 10
+     * @return {@link PageVo}<{@link ArticleVo}>
+     */
+    @Transactional(readOnly = true)
+    PageVo<ArticlePreviewVo> listWebArticle(Integer pageNum, Integer pageSize);
 }
 

@@ -26,7 +26,7 @@ import java.util.Map;
 @RequestMapping("/system/article")
 @RequiredArgsConstructor
 public class ArticleController {
-    // 建议用构造器注入而不是使用`@Autowired`注解，@RequiredArgsConstructor自动帮忙写构造器...
+    // 建议用构造器注入(需要写final?)而不是使用`@Autowired`注解，@RequiredArgsConstructor自动帮忙写构造器...
     private final ArticleService articleService;
     private final CategoryService categoryService;
     private final TagService tagService;
@@ -38,6 +38,7 @@ public class ArticleController {
      * @param articleDTO 文章dto
      * @return {@link ResponseResult}
      */
+    @SystemLog(businessName = "发表文章")
     @PostMapping
     public ResponseResult publishArticle(@Validated(value = VG.Insert.class) @RequestBody ArticleDTO articleDTO) {
         articleService.publishArticle(articleDTO);

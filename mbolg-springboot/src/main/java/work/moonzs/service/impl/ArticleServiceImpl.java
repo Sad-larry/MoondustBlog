@@ -12,6 +12,7 @@ import work.moonzs.base.web.common.BusinessAssert;
 import work.moonzs.domain.dto.ArticleDTO;
 import work.moonzs.domain.entity.Article;
 import work.moonzs.domain.entity.Tag;
+import work.moonzs.domain.vo.ArticlePreviewVo;
 import work.moonzs.domain.vo.ArticleVo;
 import work.moonzs.domain.vo.PageVo;
 import work.moonzs.mapper.ArticleMapper;
@@ -134,6 +135,18 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         if (!SecurityUtil.getUserId().equals(byId.getUserId())) {
             BusinessAssert.fail(AppHttpCodeEnum.WARNING_ARTICLE_BAD_REQUEST);
         }
+    }
+
+    // ----- 前端接口部分 -----
+
+    @Override
+    public PageVo<ArticlePreviewVo> listWebArticle(Integer pageNum, Integer pageSize) {
+        Page<Article> page = new Page<>(pageNum, pageSize);
+        List<ArticlePreviewVo> articlePreviews = baseMapper.listPreviewPage(page);
+        articlePreviews.forEach(item -> {
+            item.setTagVoList(tagMapper.selectByArticleId(item.getId()));
+        });
+        return new PageVo<>(articlePreviews, page);
     }
 }
 
