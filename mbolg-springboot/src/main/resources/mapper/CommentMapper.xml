@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="work.moonzs.mapper.CommentMapper">
+    <select id="listCommentPage" resultType="work.moonzs.domain.vo.sys.SysCommentVo">
+        SELECT c.id,
+               c.content,
+               ua.avatar,
+               ua.nickname,
+               IF(rua.nickname IS NULL, '无', rua.nickname) AS replyNickname,
+               a.title                                     AS articleTitle,
+               c.create_time
+        FROM t_comment c
+                 LEFT JOIN (SELECT id, title FROM t_article) a ON a.id = c.article_id
+                 LEFT JOIN (SELECT id, avatar, nickname FROM t_user_auth) ua ON ua.id = c.user_id
+                 LEFT JOIN (SELECT id, nickname FROM t_user_auth) rua ON rua.id = c.reply_user_id
+        ORDER BY c.create_time DESC
+    </select>
+</mapper>

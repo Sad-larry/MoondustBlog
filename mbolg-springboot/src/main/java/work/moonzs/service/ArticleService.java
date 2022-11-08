@@ -88,5 +88,15 @@ public interface ArticleService extends IService<Article> {
      */
     @Transactional(readOnly = true)
     PageVo<ArticlePreviewVo> listWebArticle(Integer pageNum, Integer pageSize);
+
+    /**
+     * 置顶文章
+     *
+     * @param articleId 文章id
+     * @param isStick   是坚持
+     * @return boolean
+     */
+    @Transactional
+    boolean topArticle(Long articleId, Integer isStick);
 }
 

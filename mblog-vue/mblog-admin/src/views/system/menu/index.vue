@@ -13,18 +13,20 @@
         </el-col>
       </el-row>
       <el-table :data="menuList" style="width: 100%">
-        <el-table-column type="expand">
+        <el-table-column type="expand" width="50">
           <template slot-scope="scope">
             <el-form label-position="left" inline class="demo-table-expand">
               <el-table :data="scope.row.children" :show-header="showHeader" style="width: 100%" :indent="0">
+                <!-- 占位，箭头，不然，很丑 -->
+                <el-table-column label width="50" align="center"/>
 
-                <el-table-column label width="60" align="center">
+                <el-table-column label width="50" align="center">
                   <template slot-scope="scope_child">
                     <span>{{ scope_child.row.id }}</span>
                   </template>
                 </el-table-column>
 
-                <el-table-column label width="150" align="center">
+                <el-table-column label width="120" align="center">
                   <template slot-scope="scope_child">
                     <span>{{ scope_child.row.title }}</span>
                   </template>
@@ -38,7 +40,7 @@
                   </template>
                 </el-table-column>
 
-                <el-table-column label width="100" align="center">
+                <el-table-column label width="80" align="center">
                   <template slot-scope="scope_child">
                     <span v-if="scope_child.row.icon != null">
                       <i v-if="scope_child.row.icon.indexOf('el-') > -1" :class="scope_child.row.icon"></i>
@@ -47,13 +49,13 @@
                   </template>
                 </el-table-column>
 
-                <el-table-column label width="200" align="center">
+                <el-table-column label width="150" align="center">
                   <template slot-scope="scope_child">
                     <span>{{ scope_child.row.url }}</span>
                   </template>
                 </el-table-column>
 
-                <el-table-column width="100" align="center">
+                <el-table-column width="80" align="center">
                   <template slot-scope="scope_child">
                     <el-tag :type="hiddenTypes[scope_child.row.hidden]">
                       {{ hiddenOptions[scope_child.row.hidden] }}
@@ -61,7 +63,7 @@
                   </template>
                 </el-table-column>
 
-                <el-table-column width="100" align="center">
+                <el-table-column width="80" align="center">
                   <template slot-scope="scope_child">
                     <el-tag type="warning">{{ scope_child.row.sortNo }}</el-tag>
                   </template>
@@ -78,13 +80,13 @@
           </template>
         </el-table-column>
 
-        <el-table-column label="菜单ID" width="60" align="center">
+        <el-table-column label="菜单ID" width="50" align="center">
           <template slot-scope="scope">
             <span>{{ scope.row.id }}</span>
           </template>
         </el-table-column>
 
-        <el-table-column label="菜单名称" width="150" align="center">
+        <el-table-column label="菜单名称" width="120" align="center">
           <template slot-scope="scope">
             <span>{{ scope.row.title }}</span>
           </template>
@@ -98,7 +100,7 @@
           </template>
         </el-table-column>
 
-        <el-table-column label="图标" width="100" align="center">
+        <el-table-column label="图标" width="80" align="center">
           <template slot-scope="scope">
             <span v-if="scope.row.icon != null">
               <i v-if="scope.row.icon.indexOf('el-') > -1" :class="scope.row.icon"></i>
@@ -107,13 +109,13 @@
           </template>
         </el-table-column>
 
-        <el-table-column label="路由" width="200" align="center">
+        <el-table-column label="路由" width="150" align="center">
           <template slot-scope="scope">
             <span>{{ scope.row.url }}</span>
           </template>
         </el-table-column>
 
-        <el-table-column label="是否隐藏" width="100" align="center">
+        <el-table-column label="是否隐藏" width="80" align="center">
           <template slot-scope="scope">
             <el-tag :type="hiddenTypes[scope.row.hidden]">
               {{ hiddenOptions[scope.row.hidden] }}
@@ -121,7 +123,7 @@
           </template>
         </el-table-column>
 
-        <el-table-column label="排序" width="100" align="center">
+        <el-table-column label="排序" width="80" align="center">
           <template slot-scope="scope">
             <el-tag type="warning">{{ scope.row.sortNo }}</el-tag>
           </template>

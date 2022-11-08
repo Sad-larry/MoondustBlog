@@ -97,7 +97,7 @@
 </template>
 
 <script>
-import { listArticle, delArticle, addArticle, updateArticle } from "@/api/system/article";
+import { listArticle, delArticle, addArticle, updateArticle, topArticle } from "@/api/system/article";
 
 export default {
   name: "Article",
@@ -226,6 +226,19 @@ export default {
       const id = row.id
       // 跳转到发布文章页面
       this.$router.push({ path: '/publish', query: { id } })
+    },
+    /** 置顶文章 */
+    handleTop(row) {
+      let article = {
+        id: row.id,
+        isStick: row.isStick
+      }
+      topArticle(article).then(response => {
+        this.$message.success("置顶文章成功")
+        this.getList()
+      }).catch(err => {
+        console.log(err)
+      })
     },
     /** 提交按钮 */
     submitForm() {

@@ -2,12 +2,8 @@ package work.moonzs.controller.system;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import work.moonzs.base.utils.BeanCopyUtil;
+import work.moonzs.base.annotation.SystemLog;
 import work.moonzs.domain.ResponseResult;
-import work.moonzs.domain.dto.CommentDTO;
-import work.moonzs.domain.entity.Comment;
-import work.moonzs.domain.vo.CommentVo;
-import work.moonzs.domain.vo.PageVo;
 import work.moonzs.service.CommentService;
 
 /**
@@ -24,39 +20,24 @@ public class CommentController {
      *
      * @param pageNum  页面num
      * @param pageSize 页面大小
-     * @return {@link ResponseResult}<{@link ?}>
+     * @return {@link ResponseResult}
      */
+    @SystemLog(businessName = "评论列表")
     @GetMapping("/list")
-    public ResponseResult listComments(@RequestParam(defaultValue = "1", required = false) Integer pageNum, @RequestParam(defaultValue = "10", required = false) Integer pageSize) {
-        PageVo<CommentVo> commentList = commentService.listComments(pageNum, pageSize);
-        return ResponseResult.success(commentList);
-    }
-
-    /**
-     * 更新评论
-     * 突然想到，一般更新操作，是不会去改变他的状态的的吧，只有单独删除操作，才会改变他的状态
-     *
-     * @param commentDTO 评论dto
-     * @return {@link ResponseResult}<{@link ?}>
-     */
-    @PutMapping
-    public ResponseResult updateComment(@RequestBody CommentDTO commentDTO) {
-        Comment comment = BeanCopyUtil.copyBean(commentDTO, Comment.class);
-        commentService.updateById(comment);
-        return ResponseResult.success();
+    public ResponseResult listComment(@RequestParam(defaultValue = "1", required = false) Integer pageNum, @RequestParam(defaultValue = "10", required = false) Integer pageSize) {
+        return ResponseResult.success(commentService.listComment(pageNum, pageSize));
     }
 
     /**
      * 删除评论
      *
-     * @param commentId 评论id
-     * @return {@link ResponseResult}<{@link ?}>
+     * @param commentIds 评论id
+     * @return {@link ResponseResult}
      */
-    @DeleteMapping("/{id}")
-    public ResponseResult deleteComment(@PathVariable(value = "id") Long commentId) {
-        Comment comment = new Comment();
-        comment.setId(commentId);
-        commentService.updateById(comment);
+    @SystemLog(businessName = "根据评论id进行批量删除操作")
+    @DeleteMapping("/{ids}")
+    public ResponseResult deleteComment(@PathVariable(value = "ids") Long[] commentIds) {
+        commentService.deleteComment(commentIds);
         return ResponseResult.success();
     }
 }

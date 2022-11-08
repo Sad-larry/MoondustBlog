@@ -36,9 +36,9 @@ export function updateArticle(data) {
 }
 
 // 删除博客文章
-export function delArticle(id) {
+export function delArticle(ids) {
   return request({
-    url: '/system/article/' + id,
+    url: '/system/article/' + ids,
     method: 'delete'
   })
 }
@@ -58,5 +58,14 @@ export function updateArticleTags(params) {
     url: '/system/article/updateTags',
     method: 'post',
     data: params
+  })
+}
+
+// 置顶文章
+export function topArticle(data) {
+  return request({
+    url: '/system/article/top',
+    method: 'post',
+    data: data
   })
 }

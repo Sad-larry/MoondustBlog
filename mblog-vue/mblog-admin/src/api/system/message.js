@@ -9,36 +9,18 @@ export function listMessage(query) {
   })
 }
 
-// 查询留言板详细
-export function getMessage(id) {
+// 审核通过留言板
+export function passMessage(ids) {
   return request({
-    url: '/system/message/' + id,
+    url: '/system/message/pass/' + ids,
     method: 'get'
   })
 }
 
-// 新增留言板
-export function addMessage(data) {
-  return request({
-    url: '/system/message',
-    method: 'post',
-    data: data
-  })
-}
-
-// 修改留言板
-export function updateMessage(data) {
-  return request({
-    url: '/system/message',
-    method: 'put',
-    data: data
-  })
-}
-
 // 删除留言板
-export function delMessage(id) {
+export function delMessage(ids) {
   return request({
-    url: '/system/message/' + id,
+    url: '/system/message/' + ids,
     method: 'delete'
   })
 }

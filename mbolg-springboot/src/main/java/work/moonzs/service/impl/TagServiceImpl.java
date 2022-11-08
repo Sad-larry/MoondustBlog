@@ -60,7 +60,7 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, Tag> implements TagSe
         Page<Tag> page = new Page<>(pageNum, pageSize);
         LambdaQueryWrapper<Tag> queryWrapper = new LambdaQueryWrapper<>();
         // 模糊字段为空则不匹配
-        queryWrapper.like(!StrUtil.isBlank(fuzzyField), Tag::getName, fuzzyField);
+        queryWrapper.like(StrUtil.isNotBlank(fuzzyField), Tag::getName, fuzzyField);
         page(page, queryWrapper);
         return new PageVo<>(BeanCopyUtil.copyBeanList(page.getRecords(), TagVo.class), page);
     }

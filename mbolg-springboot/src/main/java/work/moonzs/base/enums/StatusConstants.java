@@ -31,4 +31,12 @@ public class StatusConstants {
      */
     public static final String TYPE_BUTTON = "F";
 
+    /**
+     * 反馈-需求
+     */
+    public static final Integer FEEDBACK_DEMAND = 1;
+    /**
+     * 反馈-缺陷
+     */
+    public static final Integer FEEDBACK_DEFECTS = 2;
 }

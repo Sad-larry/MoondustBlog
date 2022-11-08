@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author Moondust月尘
@@ -18,21 +19,9 @@ public class CommentVo {
      */
     private Long id;
     /**
-     * 文章id
-     */
-    private Long articleId;
-    /**
      * 评论人id
      */
     private Long userId;
-    /**
-     * 父级评论id
-     */
-    private Long pid;
-    /**
-     * 评内容
-     */
-    private String content;
     /**
      * 评论人头像
      */
@@ -44,21 +33,25 @@ public class CommentVo {
     /**
      * 评论人网站地址
      */
-    private String url;
+    private String webSite;
     /**
-     * 支持(赞)
+     * 评论内容
      */
-    private Integer support;
+    private String commentContent;
     /**
-     * 反对(踩)
+     * 点赞数
      */
-    private Integer oppose;
+    private Integer likeCount;
     /**
-     * 创建时间
+     * 评论时间
      */
     private Date createTime;
     /**
-     * 评论状态(1正常,0删除)
+     * 回复量
      */
-    private String status;
+    private Integer replyCount;
+    /**
+     * 回复列表
+     */
+    private List<ReplyVo> replyVoList;
 }

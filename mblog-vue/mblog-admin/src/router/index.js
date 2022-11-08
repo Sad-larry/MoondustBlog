@@ -73,7 +73,7 @@ export const constantRoutes = [
     }]
   },
   {
-    path: '/user',
+    path: '/userInfo',
     component: Layout,
     hidden: true,
     redirect: 'noredirect',

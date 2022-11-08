@@ -1,10 +1,11 @@
 package work.moonzs.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import work.moonzs.domain.ResponseResult;
+import org.springframework.transaction.annotation.Transactional;
 import work.moonzs.domain.entity.Comment;
 import work.moonzs.domain.vo.CommentVo;
 import work.moonzs.domain.vo.PageVo;
+import work.moonzs.domain.vo.sys.SysCommentVo;
 
 /**
  * 评论表(Comment)表服务接口
@@ -19,8 +20,18 @@ public interface CommentService extends IService<Comment> {
      *
      * @param pageNum  页面num
      * @param pageSize 页面大小
-     * @return {@link ResponseResult}<{@link ?}>
+     * @return {@link PageVo}<{@link CommentVo}>
      */
-    PageVo<CommentVo> listComments(Integer pageNum, Integer pageSize);
+    PageVo<SysCommentVo> listComment(Integer pageNum, Integer pageSize);
+
+
+    /**
+     * 批量删除评论
+     *
+     * @param commentIds 评论id
+     * @return boolean
+     */
+    @Transactional
+    boolean deleteComment(Long[] commentIds);
 }
 

@@ -1,6 +1,7 @@
 package work.moonzs.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -147,6 +148,14 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
             item.setTagVoList(tagMapper.selectByArticleId(item.getId()));
         });
         return new PageVo<>(articlePreviews, page);
+    }
+
+    @Override
+    public boolean topArticle(Long articleId, Integer isStick) {
+        LambdaUpdateWrapper<Article> queryWrapper = new LambdaUpdateWrapper<>();
+        queryWrapper.set(Article::getIsStick, isStick);
+        queryWrapper.eq(Article::getId, articleId);
+        return update(queryWrapper);
     }
 }
 

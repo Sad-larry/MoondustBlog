@@ -135,10 +135,24 @@ public class ArticleController {
      * @return {@link ResponseResult}
      */
     @SystemLog(businessName = "删除文章")
-    @DeleteMapping("/{id}")
-    public ResponseResult deleteArticle(@PathVariable(value = "id") Long[] articleId) {
+    @DeleteMapping("/{ids}")
+    public ResponseResult deleteArticle(@PathVariable(value = "ids") Long[] articleId) {
         // article_tag表数据也要删除
         articleService.deleteArticle(articleId);
+        return ResponseResult.success();
+    }
+
+    /**
+     * 文章置顶
+     *
+     * @return {@link ResponseResult}
+     */
+    @SystemLog(businessName = "文章置顶")
+    @PostMapping("/top")
+    public ResponseResult topArticle(@Validated @RequestBody ArticleDTO articleDTO) {
+        Long articleId = articleDTO.getId();
+        Integer isStick = articleDTO.getIsStick();
+        articleService.topArticle(articleId, isStick);
         return ResponseResult.success();
     }
 }

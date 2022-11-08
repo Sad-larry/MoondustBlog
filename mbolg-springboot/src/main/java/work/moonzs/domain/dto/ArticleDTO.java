@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import work.moonzs.base.validate.VG;
 
 import javax.validation.constraints.*;
+import javax.validation.groups.Default;
 import java.util.List;
 
 /**
@@ -28,6 +29,7 @@ public class ArticleDTO {
     @ApiModelProperty(notes = "id")
     @Null(message = "添加文章时id必须为NULL", groups = VG.Insert.class)
     @NotNull(message = "修改时id不能为NULL", groups = VG.Update.class)
+    @NotNull(message = "默认id不能为NULL", groups = Default.class)
     private Long id;
     /**
      * 用户id
@@ -72,8 +74,8 @@ public class ArticleDTO {
      * 是否置顶
      */
     @ApiModelProperty(notes = "是否置顶")
-    @Min(value = 0, message = "状态设置只有0、1", groups = {VG.Insert.class, VG.Update.class})
-    @Max(value = 1, message = "状态设置只有0、1", groups = {VG.Insert.class, VG.Update.class})
+    @Min(value = 0, message = "状态设置只有0、1", groups = {VG.Insert.class, VG.Update.class, Default.class})
+    @Max(value = 1, message = "状态设置只有0、1", groups = {VG.Insert.class, VG.Update.class, Default.class})
     private Integer isStick;
     /**
      * 是否发布

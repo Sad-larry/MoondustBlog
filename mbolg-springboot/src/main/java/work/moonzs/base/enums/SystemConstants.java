@@ -22,4 +22,12 @@ public class SystemConstants {
      * 登录用户令牌
      */
     public static final String TOKEN = "token";
+    /**
+     * 页面num
+     */
+    public static final Integer PAGE_NUM = 1;
+    /**
+     * 页面大小
+     */
+    public static final Integer PAGE_SIZE = 10;
 }

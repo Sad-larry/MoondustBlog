@@ -72,7 +72,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
         Page<Category> page = new Page<>(pageNum, pageSize);
         // 对名字进行模糊查询，当模糊字段为空时则不匹配
         LambdaQueryWrapper<Category> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.like(!StrUtil.isBlank(fuzzyField), Category::getName, fuzzyField);
+        queryWrapper.like(StrUtil.isNotBlank(fuzzyField), Category::getName, fuzzyField);
         page(page, queryWrapper);
         return new PageVo<>(BeanCopyUtil.copyBeanList(page.getRecords(), CategoryVo.class), page);
     }

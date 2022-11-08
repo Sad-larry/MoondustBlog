@@ -9,36 +9,10 @@ export function listComment(query) {
   })
 }
 
-// 查询评论详细
-export function getComment(id) {
-  return request({
-    url: '/system/comment/' + id,
-    method: 'get'
-  })
-}
-
-// 新增评论
-export function addComment(data) {
-  return request({
-    url: '/system/comment',
-    method: 'post',
-    data: data
-  })
-}
-
-// 修改评论
-export function updateComment(data) {
-  return request({
-    url: '/system/comment',
-    method: 'put',
-    data: data
-  })
-}
-
 // 删除评论
-export function delComment(id) {
+export function delComment(ids) {
   return request({
-    url: '/system/comment/' + id,
+    url: '/system/comment/' + ids,
     method: 'delete'
   })
 }
