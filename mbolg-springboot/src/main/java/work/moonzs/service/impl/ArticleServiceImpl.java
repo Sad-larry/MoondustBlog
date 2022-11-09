@@ -15,7 +15,7 @@ import work.moonzs.domain.entity.Article;
 import work.moonzs.domain.entity.Tag;
 import work.moonzs.domain.vo.ArticlePreviewVo;
 import work.moonzs.domain.vo.ArticleVo;
-import work.moonzs.domain.vo.PageVo;
+import work.moonzs.domain.vo.PageVO;
 import work.moonzs.mapper.ArticleMapper;
 import work.moonzs.mapper.TagMapper;
 import work.moonzs.service.ArticleService;
@@ -72,10 +72,10 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     }
 
     @Override
-    public PageVo<ArticleVo> listArticle(Integer pageNum, Integer pageSize, String fuzzyField) {
+    public PageVO<ArticleVo> listArticle(Integer pageNum, Integer pageSize, String fuzzyField) {
         Page<Object> page = new Page<>(pageNum, pageSize);
         List<ArticleVo> articleVos = getBaseMapper().listArticle(page, fuzzyField);
-        return new PageVo<>(articleVos, page);
+        return new PageVO<>(articleVos, page);
     }
 
     @Override
@@ -141,13 +141,13 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     // ----- 前端接口部分 -----
 
     @Override
-    public PageVo<ArticlePreviewVo> listWebArticle(Integer pageNum, Integer pageSize) {
+    public PageVO<ArticlePreviewVo> listWebArticle(Integer pageNum, Integer pageSize) {
         Page<Article> page = new Page<>(pageNum, pageSize);
         List<ArticlePreviewVo> articlePreviews = baseMapper.listPreviewPage(page);
         articlePreviews.forEach(item -> {
             item.setTagVoList(tagMapper.selectByArticleId(item.getId()));
         });
-        return new PageVo<>(articlePreviews, page);
+        return new PageVO<>(articlePreviews, page);
     }
 
     @Override

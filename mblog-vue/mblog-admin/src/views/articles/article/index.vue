@@ -124,26 +124,11 @@ export default {
       articleList: [],
       // 弹出层标题
       title: "",
-      // 是否显示弹出层
-      open: false,
       // 查询参数
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        userId: null,
-        categoryId: null,
-        title: null,
-        avatar: null,
-        summary: null,
-        content: null,
-        contentMd: null,
-        isSecret: null,
-        isStick: null,
-        isPublish: null,
-        isOriginal: null,
-        originalUrl: null,
-        quantity: null,
-        keywords: null,
+        fuzzyField: ''
       },
       // 表单参数
       form: {},
@@ -170,35 +155,6 @@ export default {
         this.total = response.data.total;
         this.loading = false;
       });
-    },
-    // 取消按钮
-    cancel() {
-      this.open = false;
-      this.reset();
-    },
-    // 表单重置
-    reset() {
-      this.form = {
-        id: null,
-        userId: null,
-        categoryId: null,
-        title: null,
-        avatar: null,
-        summary: null,
-        content: null,
-        contentMd: null,
-        isSecret: null,
-        isStick: null,
-        isPublish: null,
-        isOriginal: null,
-        originalUrl: null,
-        quantity: null,
-        remark: null,
-        keywords: null,
-        createTime: null,
-        updateTime: null
-      };
-      this.resetForm("form");
     },
     /** 搜索按钮操作 */
     handleQuery() {
@@ -240,26 +196,6 @@ export default {
         console.log(err)
       })
     },
-    /** 提交按钮 */
-    submitForm() {
-      this.$refs["form"].validate(valid => {
-        if (valid) {
-          if (this.form.id != null) {
-            updateArticle(this.form).then(response => {
-              this.$modal.msgSuccess("修改成功");
-              this.open = false;
-              this.getList();
-            });
-          } else {
-            addArticle(this.form).then(response => {
-              this.$modal.msgSuccess("新增成功");
-              this.open = false;
-              this.getList();
-            });
-          }
-        }
-      });
-    },
     /** 删除按钮操作 */
     handleDelete(row) {
       const ids = row.id || this.ids;
@@ -269,12 +205,6 @@ export default {
         this.getList();
         this.$modal.msgSuccess("删除成功");
       }).catch(() => { });
-    },
-    /** 导出按钮操作 */
-    handleExport() {
-      this.download('system/article/export', {
-        ...this.queryParams
-      }, `article_${new Date().getTime()}.xlsx`)
     },
     /** 打开博客窗口 */
     onClick(row) {

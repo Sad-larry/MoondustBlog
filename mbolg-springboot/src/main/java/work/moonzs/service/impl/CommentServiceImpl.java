@@ -4,8 +4,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 import work.moonzs.domain.entity.Comment;
-import work.moonzs.domain.vo.PageVo;
-import work.moonzs.domain.vo.sys.SysCommentVo;
+import work.moonzs.domain.vo.PageVO;
+import work.moonzs.domain.vo.sys.SysCommentVO;
 import work.moonzs.mapper.CommentMapper;
 import work.moonzs.service.CommentService;
 
@@ -21,10 +21,10 @@ import java.util.List;
 public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> implements CommentService {
 
     @Override
-    public PageVo<SysCommentVo> listComment(Integer pageNum, Integer pageSize) {
+    public PageVO<SysCommentVO> listComment(Integer pageNum, Integer pageSize) {
         Page<Comment> page = new Page<>(pageNum, pageSize);
-        List<SysCommentVo> commentListVos = baseMapper.listCommentPage(page);
-        return new PageVo<>(commentListVos, page);
+        List<SysCommentVO> commentListVos = baseMapper.listCommentPage(page);
+        return new PageVO<>(commentListVos, page);
     }
 
     @Override

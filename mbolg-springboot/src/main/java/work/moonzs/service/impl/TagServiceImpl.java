@@ -10,7 +10,7 @@ import work.moonzs.base.enums.AppHttpCodeEnum;
 import work.moonzs.base.utils.BeanCopyUtil;
 import work.moonzs.base.web.common.BusinessAssert;
 import work.moonzs.domain.entity.Tag;
-import work.moonzs.domain.vo.PageVo;
+import work.moonzs.domain.vo.PageVO;
 import work.moonzs.domain.vo.TagVo;
 import work.moonzs.mapper.TagMapper;
 import work.moonzs.service.TagService;
@@ -56,13 +56,13 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, Tag> implements TagSe
     }
 
     @Override
-    public PageVo<TagVo> listTag(Integer pageNum, Integer pageSize, String fuzzyField) {
+    public PageVO<TagVo> listTag(Integer pageNum, Integer pageSize, String fuzzyField) {
         Page<Tag> page = new Page<>(pageNum, pageSize);
         LambdaQueryWrapper<Tag> queryWrapper = new LambdaQueryWrapper<>();
         // 模糊字段为空则不匹配
         queryWrapper.like(StrUtil.isNotBlank(fuzzyField), Tag::getName, fuzzyField);
         page(page, queryWrapper);
-        return new PageVo<>(BeanCopyUtil.copyBeanList(page.getRecords(), TagVo.class), page);
+        return new PageVO<>(BeanCopyUtil.copyBeanList(page.getRecords(), TagVo.class), page);
     }
 
     @Override

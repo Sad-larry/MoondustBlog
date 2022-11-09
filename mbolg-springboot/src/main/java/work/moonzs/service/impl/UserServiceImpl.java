@@ -1,7 +1,5 @@
 package work.moonzs.service.impl;
 
-import cn.hutool.core.util.StrUtil;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,16 +9,16 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import work.moonzs.base.enums.AppHttpCodeEnum;
 import work.moonzs.base.enums.CacheConstants;
-import work.moonzs.base.enums.StatusConstants;
-import work.moonzs.base.utils.BeanCopyUtil;
 import work.moonzs.base.utils.RedisCache;
 import work.moonzs.base.utils.SecurityUtil;
 import work.moonzs.base.web.common.BusinessAssert;
 import work.moonzs.base.web.service.ITokenService;
 import work.moonzs.domain.entity.LoginUser;
 import work.moonzs.domain.entity.User;
-import work.moonzs.domain.vo.PageVo;
-import work.moonzs.domain.vo.UserListVo;
+import work.moonzs.domain.vo.PageVO;
+import work.moonzs.domain.vo.sys.SysUserBaseVO;
+import work.moonzs.domain.vo.sys.SysUserVO;
+import work.moonzs.mapper.UserAuthMapper;
 import work.moonzs.mapper.UserMapper;
 import work.moonzs.service.UserService;
 
@@ -37,11 +35,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Autowired
     private AuthenticationManager authenticationManager;
     @Autowired
-    private UserMapper userMapper;
-    @Autowired
     private RedisCache redisCache;
     @Autowired
     private ITokenService iTokenService;
+    @Autowired
+    private UserAuthMapper userAuthMapper;
 
     @Override
     public String adminLogin(String username, String password, String uuid, String code) {
@@ -76,28 +74,29 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
-    public PageVo<UserListVo> listUsers(Integer pageNum, Integer pageSize, String fuzzyField) {
-        LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
-        // 模糊字段为空则不匹配
-        if (!StrUtil.isBlank(fuzzyField)) {
-            queryWrapper.like(User::getUsername, fuzzyField);
-        }
-        queryWrapper.eq(User::getStatus, StatusConstants.NORMAL);
+    public PageVO<SysUserVO> listUser(Integer pageNum, Integer pageSize, String username, Integer loginType) {
         Page<User> page = new Page<>(pageNum, pageSize);
-        page(page, queryWrapper);
-        List<User> list = page.getRecords();
-        List<UserListVo> userListVos = BeanCopyUtil.copyBeanList(list, UserListVo.class);
-        // TODO 设置每个用户的角色信息
-
-        return new PageVo<>(userListVos, page.getTotal(), page.getCurrent(), page.getSize());
+        List<SysUserVO> userVOList = baseMapper.listUserPage(page, username, loginType);
+        return new PageVO<>(userVOList, page);
     }
 
     @Override
     public Long saveUser(User user) {
         user.setPassword(user.getPassword());
         // 保存用户返回用户id，并添加角色
-        userMapper.insert(user);
+        baseMapper.insert(user);
         return user.getId();
+    }
+
+    @Override
+    public SysUserBaseVO getUserById(Long userId) {
+        return baseMapper.getUserById(userId);
+    }
+
+    @Override
+    public boolean deleteUser(Long[] userIds) {
+        userAuthMapper.deleteByUserIds(userIds);
+        return removeBatchByIds(List.of(userIds));
     }
 }
 

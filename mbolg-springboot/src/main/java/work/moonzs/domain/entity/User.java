@@ -21,7 +21,7 @@ import java.util.Date;
 @NoArgsConstructor
 @TableName("t_user")
 public class User {
-    //主键ID    
+    //主键ID
     @TableId
     private Long id;
     //账号

@@ -3,8 +3,8 @@ package work.moonzs.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.springframework.transaction.annotation.Transactional;
 import work.moonzs.domain.entity.FeedBack;
-import work.moonzs.domain.vo.PageVo;
-import work.moonzs.domain.vo.sys.SysFeedBackVo;
+import work.moonzs.domain.vo.PageVO;
+import work.moonzs.domain.vo.sys.SysFeedBackVO;
 
 /**
  * 用户反馈表(FeedBack)表服务接口
@@ -18,9 +18,9 @@ public interface FeedBackService extends IService<FeedBack> {
      * 反馈列表
      *
      * @param type 类型
-     * @return {@link PageVo}<{@link SysFeedBackVo}>
+     * @return {@link PageVO}<{@link SysFeedBackVO}>
      */
-    PageVo<SysFeedBackVo> listFeedBack(Integer type);
+    PageVO<SysFeedBackVO> listFeedBack(Integer type);
 
     /**
      * 删除反馈

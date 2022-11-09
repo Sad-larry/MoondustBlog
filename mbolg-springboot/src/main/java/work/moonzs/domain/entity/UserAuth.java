@@ -21,7 +21,7 @@ import java.util.Date;
 @NoArgsConstructor
 @TableName("t_user_auth")
 public class UserAuth {
-    //用户ID    
+    //用户ID
     @TableId
     private Long id;
     //邮箱号

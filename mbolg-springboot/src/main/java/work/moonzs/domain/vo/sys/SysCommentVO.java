@@ -12,41 +12,33 @@ import java.util.Date;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class SysMessageVo {
+public class SysCommentVO {
     /**
      * 主键ID
      */
-    private Long id;
-    /**
-     * 内容
-     */
-    private String content;
-    /**
-     * 用户昵称
-     */
-    private String nickname;
+    private Integer id;
     /**
      * 用户头像
      */
     private String avatar;
     /**
-     * ip地址
+     * 用户昵称
      */
-    private String ipAddress;
+    private String nickname;
     /**
-     * ip来源
+     * 回复人昵称
      */
-    private String ipSource;
+    private String replyNickname;
     /**
-     * 留言时间
+     * 文章标题
      */
-    private Long time;
+    private String articleTitle;
     /**
-     * 状态(0审核,1正常)
+     * 评论内容
      */
-    private Integer status;
+    private String content;
     /**
-     * 创建时间
+     * 评论时间
      */
     private Date createTime;
 }

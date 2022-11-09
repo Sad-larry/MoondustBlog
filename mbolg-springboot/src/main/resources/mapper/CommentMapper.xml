@@ -3,7 +3,7 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="work.moonzs.mapper.CommentMapper">
-    <select id="listCommentPage" resultType="work.moonzs.domain.vo.sys.SysCommentVo">
+    <select id="listCommentPage" resultType="work.moonzs.domain.vo.sys.SysCommentVO">
         SELECT c.id,
                c.content,
                ua.avatar,
@@ -13,8 +13,10 @@
                c.create_time
         FROM t_comment c
                  LEFT JOIN (SELECT id, title FROM t_article) a ON a.id = c.article_id
-                 LEFT JOIN (SELECT id, avatar, nickname FROM t_user_auth) ua ON ua.id = c.user_id
-                 LEFT JOIN (SELECT id, nickname FROM t_user_auth) rua ON rua.id = c.reply_user_id
+                 LEFT JOIN (SELECT id, user_auth_id from t_user) u ON u.id = c.user_id
+                 LEFT JOIN (SELECT id, avatar, nickname FROM t_user_auth) ua ON ua.id = u.user_auth_id
+                 LEFT JOIN (SELECT id, user_auth_id FROM t_user) ru ON ru.id = c.reply_user_id
+                 LEFT JOIN (SELECT id, nickname FROM t_user_auth) rua ON rua.id = ru.user_auth_id
         ORDER BY c.create_time DESC
     </select>
 </mapper>

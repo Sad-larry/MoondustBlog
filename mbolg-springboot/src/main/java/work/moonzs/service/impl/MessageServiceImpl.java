@@ -9,8 +9,8 @@ import org.springframework.stereotype.Service;
 import work.moonzs.base.enums.StatusConstants;
 import work.moonzs.base.utils.BeanCopyUtil;
 import work.moonzs.domain.entity.Message;
-import work.moonzs.domain.vo.PageVo;
-import work.moonzs.domain.vo.sys.SysMessageVo;
+import work.moonzs.domain.vo.PageVO;
+import work.moonzs.domain.vo.sys.SysMessageVO;
 import work.moonzs.mapper.MessageMapper;
 import work.moonzs.service.MessageService;
 
@@ -26,15 +26,15 @@ import java.util.List;
 public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> implements MessageService {
 
     @Override
-    public PageVo<SysMessageVo> listMessage(Integer pageNum, Integer pageSize, String fuzzyField) {
+    public PageVO<SysMessageVO> listMessage(Integer pageNum, Integer pageSize, String fuzzyField) {
         LambdaQueryWrapper<Message> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.like(StrUtil.isNotBlank(fuzzyField), Message::getNickname, fuzzyField);
         queryWrapper.orderByAsc(Message::getStatus);
         queryWrapper.orderByAsc(Message::getTime);
         Page<Message> page = new Page<>(pageNum, pageSize);
         page(page, queryWrapper);
-        List<SysMessageVo> sysMessageVos = BeanCopyUtil.copyBeanList(page.getRecords(), SysMessageVo.class);
-        return new PageVo<>(sysMessageVos, page);
+        List<SysMessageVO> sysMessageVos = BeanCopyUtil.copyBeanList(page.getRecords(), SysMessageVO.class);
+        return new PageVO<>(sysMessageVos, page);
     }
 
     @Override

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="work.moonzs.mapper.UserAuthMapper">
+    <delete id="deleteByUserIds">
+        DELETE
+        FROM t_user_auth
+        WHERE id IN (SELECT user_auth_id FROM t_user WHERE id IN
+        <foreach collection="userIds" item="userId" open="(" separator="," close=")">#{userId}</foreach>
+        )
+    </delete>
+</mapper>

@@ -2,15 +2,13 @@ package work.moonzs.controller.system;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import work.moonzs.base.enums.StatusConstants;
+import work.moonzs.base.annotation.SystemLog;
 import work.moonzs.base.utils.BeanCopyUtil;
 import work.moonzs.domain.ResponseResult;
 import work.moonzs.domain.dto.AddUserDTO;
 import work.moonzs.domain.dto.UserDTO;
 import work.moonzs.domain.entity.User;
 import work.moonzs.domain.entity.UserRole;
-import work.moonzs.domain.vo.PageVo;
-import work.moonzs.domain.vo.UserListVo;
 import work.moonzs.service.UserRoleService;
 import work.moonzs.service.UserService;
 
@@ -26,7 +24,51 @@ public class UserController {
     private UserRoleService userRoleService;
 
     /**
-     * 添加用户
+     * 用户列表
+     *
+     * @param pageNum   页面num
+     * @param pageSize  页面大小
+     * @param username  用户名
+     * @param loginType 登录类型
+     * @return {@link ResponseResult}
+     */
+    @SystemLog(businessName = "用户列表")
+    @GetMapping("/list")
+    public ResponseResult listUser(
+            @RequestParam(defaultValue = "1", required = false) Integer pageNum,
+            @RequestParam(defaultValue = "10", required = false) Integer pageSize,
+            @RequestParam(defaultValue = "", required = false) String username,
+            @RequestParam(defaultValue = "", required = false) Integer loginType) {
+        return ResponseResult.success(userService.listUser(pageNum, pageSize, username, loginType));
+    }
+
+    /**
+     * 获取用户基本信息
+     *
+     * @param userId 用户id
+     * @return {@link ResponseResult}
+     */
+    @SystemLog(businessName = "获取用户基本信息")
+    @GetMapping("/{id}")
+    public ResponseResult getUserById(@PathVariable("id") Long userId) {
+        return ResponseResult.success(userService.getUserById(userId));
+    }
+
+    /**
+     * 删除用户
+     *
+     * @param userIds 用户id
+     * @return {@link ResponseResult}
+     */
+    @SystemLog(businessName = "删除用户")
+    @DeleteMapping("/{ids}")
+    public ResponseResult deleteUser(@PathVariable(value = "ids") Long[] userIds) {
+        userService.deleteUser(userIds);
+        return ResponseResult.success();
+    }
+
+    /**
+     * TODO 添加用户
      *
      * @return {@link ResponseResult}<{@link ?}>
      */
@@ -46,22 +88,9 @@ public class UserController {
         return ResponseResult.success();
     }
 
-    /**
-     * 用户列表
-     *
-     * @param pageNum    页面num
-     * @param pageSize   页面大小
-     * @param fuzzyField 模糊领域
-     * @return {@link ResponseResult}<{@link ?}>
-     */
-    @GetMapping("/list")
-    public ResponseResult listUsers(@RequestParam(defaultValue = "1", required = false) Integer pageNum, @RequestParam(defaultValue = "10", required = false) Integer pageSize, @RequestParam(defaultValue = "", required = false) String fuzzyField) {
-        PageVo<UserListVo> userList = userService.listUsers(pageNum, pageSize, fuzzyField);
-        return ResponseResult.success(userList);
-    }
 
     /**
-     * 更新用户，但是不能更新密码，到时候再说
+     * TODO 更新用户，但是不能更新密码，到时候再说
      *
      * @param userDTO 用户dto
      * @return {@link ResponseResult}<{@link ?}>
@@ -82,25 +111,6 @@ public class UserController {
             userDTO.setId(null);
         }
         User user = BeanCopyUtil.copyBean(userDTO, User.class);
-        userService.updateById(user);
-        return ResponseResult.success();
-    }
-
-    /**
-     * 删除用户
-     *
-     * @param userId 用户id
-     * @return {@link ResponseResult}<{@link ?}>
-     */
-    @DeleteMapping("/{id}")
-    public ResponseResult deleteUser(@PathVariable(value = "id") Long userId) {
-        // 管理员不能被删
-        if (userId == 1L) {
-            return ResponseResult.fail();
-        }
-        User user = new User();
-        user.setId(userId);
-        user.setStatus(StatusConstants.DISABLE);
         userService.updateById(user);
         return ResponseResult.success();
     }

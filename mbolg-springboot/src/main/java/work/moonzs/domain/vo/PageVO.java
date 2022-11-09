@@ -13,7 +13,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class PageVo<T> {
+public class PageVO<T> {
     /**
      * 分页查询查询出来的数据
      */
@@ -31,7 +31,7 @@ public class PageVo<T> {
      */
     private Long size;
 
-    public PageVo(List<T> records, Page<?> page) {
+    public PageVO(List<T> records, Page<?> page) {
         this.records = records;
         this.total = page.getTotal();
         this.current = page.getCurrent();

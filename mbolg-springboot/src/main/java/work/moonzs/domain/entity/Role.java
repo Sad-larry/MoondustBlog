@@ -21,7 +21,7 @@ import java.util.Date;
 @NoArgsConstructor
 @TableName("t_role")
 public class Role {
-    //主键ID    
+    //主键ID
     @TableId
     private Long id;
     //角色编码

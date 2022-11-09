@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import org.springframework.transaction.annotation.Transactional;
 import work.moonzs.domain.entity.Category;
 import work.moonzs.domain.vo.CategoryVo;
-import work.moonzs.domain.vo.PageVo;
+import work.moonzs.domain.vo.PageVO;
 
 /**
  * 博客分类表(Category)表服务接口
@@ -36,9 +36,9 @@ public interface CategoryService extends IService<Category> {
      * @param pageNum    页面num
      * @param pageSize   页面大小
      * @param fuzzyField 模糊领域
-     * @return {@link PageVo}<{@link CategoryVo}>
+     * @return {@link PageVO}<{@link CategoryVo}>
      */
-    PageVo<CategoryVo> listCategory(Integer pageNum, Integer pageSize, String fuzzyField);
+    PageVO<CategoryVo> listCategory(Integer pageNum, Integer pageSize, String fuzzyField);
 
 
     /**

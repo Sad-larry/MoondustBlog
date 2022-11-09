@@ -3,8 +3,10 @@ package work.moonzs.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.springframework.transaction.annotation.Transactional;
 import work.moonzs.domain.entity.User;
-import work.moonzs.domain.vo.PageVo;
+import work.moonzs.domain.vo.PageVO;
 import work.moonzs.domain.vo.UserListVo;
+import work.moonzs.domain.vo.sys.SysUserBaseVO;
+import work.moonzs.domain.vo.sys.SysUserVO;
 
 /**
  * 用户基础信息表(User)表服务接口
@@ -34,12 +36,13 @@ public interface UserService extends IService<User> {
     /**
      * 用户列表
      *
-     * @param pageNum    页面num
-     * @param pageSize   页面大小
-     * @param fuzzyField 模糊领域
-     * @return {@link PageVo}<{@link UserListVo}>
+     * @param pageNum   页面num
+     * @param pageSize  页面大小
+     * @param username  用户名
+     * @param loginType 登录类型
+     * @return {@link PageVO}<{@link UserListVo}>
      */
-    PageVo<UserListVo> listUsers(Integer pageNum, Integer pageSize, String fuzzyField);
+    PageVO<SysUserVO> listUser(Integer pageNum, Integer pageSize, String username, Integer loginType);
 
     /**
      * 保存用户
@@ -48,5 +51,22 @@ public interface UserService extends IService<User> {
      * @return {@link Long}
      */
     Long saveUser(User user);
+
+    /**
+     * 通过用户id查询用户的基本信息
+     *
+     * @param userId 用户id
+     * @return {@link Object}
+     */
+    SysUserBaseVO getUserById(Long userId);
+
+    /**
+     * 删除用户
+     *
+     * @param userIds 用户id
+     * @return boolean
+     */
+    @Transactional
+    boolean deleteUser(Long[] userIds);
 }
 

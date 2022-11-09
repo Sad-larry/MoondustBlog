@@ -12,11 +12,11 @@ import java.util.Date;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class SysCommentVo {
+public class SysUserVO {
     /**
-     * 主键ID
+     * 用户ID
      */
-    private Integer id;
+    private Long id;
     /**
      * 用户头像
      */
@@ -26,19 +26,31 @@ public class SysCommentVo {
      */
     private String nickname;
     /**
-     * 回复人昵称
+     * 登录方式
      */
-    private String replyNickname;
+    private Integer loginType;
     /**
-     * 文章标题
+     * 角色ID
      */
-    private String articleTitle;
+    private Long roleId;
     /**
-     * 评论内容
+     * ip地址
      */
-    private String content;
+    private String ipAddress;
     /**
-     * 评论时间
+     * ip来源
+     */
+    private String ipSource;
+    /**
+     * 用户状态(0禁用,1正常)
+     */
+    private Integer status;
+    /**
+     * 最后登录时间
+     */
+    private Date lastLoginTime;
+    /**
+     * 创建时间
      */
     private Date createTime;
 }

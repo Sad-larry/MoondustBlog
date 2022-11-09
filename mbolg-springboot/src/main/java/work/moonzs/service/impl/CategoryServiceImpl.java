@@ -11,7 +11,7 @@ import work.moonzs.base.utils.BeanCopyUtil;
 import work.moonzs.base.web.common.BusinessAssert;
 import work.moonzs.domain.entity.Category;
 import work.moonzs.domain.vo.CategoryVo;
-import work.moonzs.domain.vo.PageVo;
+import work.moonzs.domain.vo.PageVO;
 import work.moonzs.mapper.CategoryMapper;
 import work.moonzs.service.CategoryService;
 
@@ -68,13 +68,13 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
     }
 
     @Override
-    public PageVo<CategoryVo> listCategory(Integer pageNum, Integer pageSize, String fuzzyField) {
+    public PageVO<CategoryVo> listCategory(Integer pageNum, Integer pageSize, String fuzzyField) {
         Page<Category> page = new Page<>(pageNum, pageSize);
         // 对名字进行模糊查询，当模糊字段为空时则不匹配
         LambdaQueryWrapper<Category> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.like(StrUtil.isNotBlank(fuzzyField), Category::getName, fuzzyField);
         page(page, queryWrapper);
-        return new PageVo<>(BeanCopyUtil.copyBeanList(page.getRecords(), CategoryVo.class), page);
+        return new PageVO<>(BeanCopyUtil.copyBeanList(page.getRecords(), CategoryVo.class), page);
     }
 
     @Override
@@ -97,7 +97,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
         // 判断该ID的分类是否存在，如果不存在则返回失败
         BusinessAssert.isTure(isExistCategoryById(category.getId()), AppHttpCodeEnum.CATEGORY_NOT_EXIST);
         updateById(category);
-        // 判断相同的分类名是否不存在，如果存在则返回失败
+        // 判断相同的分类名是否不存在，如果存在则返回失败，事务回滚，取消更新
         BusinessAssert.isFalse(isExistSameCategoryByCategoryName(category.getName()), AppHttpCodeEnum.CATEGORY_EXIST);
         return true;
     }

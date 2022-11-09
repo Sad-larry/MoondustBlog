@@ -1,197 +1,102 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="用户名" prop="userName">
-        <el-input
-          v-model="queryParams.userName"
-          placeholder="请输入用户名"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
+    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px"
+      @submit.native.prevent>
+      <el-form-item label="用户名称" prop="username">
+        <el-input style="width: 200px" size="small" v-model="queryParams.username" placeholder="请输入用户名称" />
       </el-form-item>
-      <el-form-item label="昵称" prop="nickName">
-        <el-input
-          v-model="queryParams.nickName"
-          placeholder="请输入昵称"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="密码" prop="password">
-        <el-input
-          v-model="queryParams.password"
-          placeholder="请输入密码"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="手机号" prop="mobile">
-        <el-input
-          v-model="queryParams.mobile"
-          placeholder="请输入手机号"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="电子邮箱" prop="email">
-        <el-input
-          v-model="queryParams.email"
-          placeholder="请输入电子邮箱"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="用户头像" prop="avatar">
-        <el-input
-          v-model="queryParams.avatar"
-          placeholder="请输入用户头像"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="个人简介" prop="intro">
-        <el-input
-          v-model="queryParams.intro"
-          placeholder="请输入个人简介"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="生日" prop="birthday">
-        <el-date-picker clearable
-          v-model="queryParams.birthday"
-          type="date"
-          value-format="yyyy-MM-dd"
-          placeholder="请选择生日">
-        </el-date-picker>
+      <el-form-item label="登录方式" prop="loginType">
+        <el-select style="width: 150px" size="small" v-model="queryParams.loginType" filterable clearable
+          reserve-keyword @change='handleQuery' placeholder="请选择登录方式">
+          <el-option v-for="item in dictLoginTypeList" :key="item.value" :label="item.label" :value="item.value" />
+        </el-select>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
-        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
+        <el-button type="primary" icon="el-icon-search" size="small" @click="handleQuery">查找</el-button>
+        <el-button icon="el-icon-refresh" size="small" @click="resetQuery">重置</el-button>
       </el-form-item>
     </el-form>
 
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
-        <el-button
-          type="primary"
-          plain
-          icon="el-icon-plus"
-          size="mini"
-          @click="handleAdd"
-          v-hasPermi="['system:user:add']"
-        >新增</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="success"
-          plain
-          icon="el-icon-edit"
-          size="mini"
-          :disabled="single"
-          @click="handleUpdate"
-          v-hasPermi="['system:user:edit']"
-        >修改</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="danger"
-          plain
-          icon="el-icon-delete"
-          size="mini"
-          :disabled="multiple"
-          @click="handleDelete"
-          v-hasPermi="['system:user:remove']"
-        >删除</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="warning"
-          plain
-          icon="el-icon-download"
-          size="mini"
-          @click="handleExport"
-          v-hasPermi="['system:user:export']"
-        >导出</el-button>
+        <el-button type="danger" plain icon="el-icon-delete" size="mini" :disabled="multiple" @click="handleDelete">删除
+        </el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="userList" @selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="主键" align="center" prop="id" />
-      <el-table-column label="用户名" align="center" prop="userName" />
-      <el-table-column label="昵称" align="center" prop="nickName" />
-      <el-table-column label="密码" align="center" prop="password" />
-      <el-table-column label="手机号" align="center" prop="mobile" />
-      <el-table-column label="电子邮箱" align="center" prop="email" />
-      <el-table-column label="用户头像" align="center" prop="avatar" />
-      <el-table-column label="个人简介" align="center" prop="intro" />
-      <el-table-column label="生日" align="center" prop="birthday" width="180">
+    <el-table v-loading="loading" fit :data="userList" @selection-change="handleSelectionChange">
+      <el-table-column type="selection" align="center" />
+      <el-table-column prop="avatar" align="center" width="100" label="头像">
         <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.birthday, '{y}-{m}-{d}') }}</span>
+          <img :src="scope.row.avatar" width="60" height="60" />
         </template>
       </el-table-column>
-      <el-table-column label="账号状态(0停用,1正常)" align="center" prop="status" />
+      <el-table-column prop="nickname" width="150px" align="center" label="昵称" />
+      <el-table-column prop="loginType" align="center" label="登录方式">
+        <template slot-scope="scope">
+          <span v-for="(item, index) in dictLoginTypeList" :key="index">
+            <el-tag v-if="scope.row.loginType === parseInt(item.value)" :type="item.style">
+              {{ item.label }}
+            </el-tag>
+          </span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="用户角色">
+        <template slot-scope="scope">
+          <span v-for="(item, index) in roleList" :key="index">
+            <el-tag v-if="scope.row.roleId === item.id">
+              {{ item.name }}
+            </el-tag>
+          </span>
+        </template>
+      </el-table-column>
+      <el-table-column prop="ipAddress" width="130px" align="center" label="登录IP" />
+      <el-table-column prop="ipSource" width="150px" align="center" label="登录地址" />
+      <el-table-column prop="createTime" align="center" width="180" label="创建时间">
+        <template slot-scope="scope">
+          <span>{{ parseTime(scope.row.createTime) }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" width="180" label="最后登录时间">
+        <template slot-scope="scope">
+          <span>{{ parseTime(scope.row.lastLoginTime) }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" label="状态">
+        <template slot-scope="scope">
+          <span>{{ statusOptions[scope.row.status] }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
-          <el-button
-            size="mini"
-            type="text"
-            icon="el-icon-edit"
-            @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:user:edit']"
-          >修改</el-button>
-          <el-button
-            size="mini"
-            type="text"
-            icon="el-icon-delete"
-            @click="handleDelete(scope.row)"
-            v-hasPermi="['system:user:remove']"
-          >删除</el-button>
+          <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)">修改</el-button>
+          <el-button size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
-    
-    <pagination
-      v-show="total>0"
-      :total="total"
-      :page.sync="queryParams.pageNum"
-      :limit.sync="queryParams.pageSize"
-      @pagination="getList"
-    />
 
-    <!-- 添加或修改【请填写功能名称】对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="用户名" prop="userName">
-          <el-input v-model="form.userName" placeholder="请输入用户名" />
+    <pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize"
+      @pagination="getList" />
+
+    <el-dialog center :title="title" :visible.sync="open">
+      <el-form :rules="rules" ref="dataForm" :model="form">
+        <el-form-item prop="nickName" label="昵称">
+          <el-input disabled="true" v-model="form.nickname" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="昵称" prop="nickName">
-          <el-input v-model="form.nickName" placeholder="请输入昵称" />
+        <el-form-item prop="status" label="状态">
+          <div>
+            <el-radio v-for="(item, index) in statusOptions" v-model="form.status" :label="index" border :key="index">
+              {{ item }}</el-radio>
+          </div>
         </el-form-item>
-        <el-form-item label="密码" prop="password">
-          <el-input v-model="form.password" placeholder="请输入密码" />
-        </el-form-item>
-        <el-form-item label="手机号" prop="mobile">
-          <el-input v-model="form.mobile" placeholder="请输入手机号" />
-        </el-form-item>
-        <el-form-item label="电子邮箱" prop="email">
-          <el-input v-model="form.email" placeholder="请输入电子邮箱" />
-        </el-form-item>
-        <el-form-item label="用户头像" prop="avatar">
-          <el-input v-model="form.avatar" placeholder="请输入用户头像" />
-        </el-form-item>
-        <el-form-item label="个人简介" prop="intro">
-          <el-input v-model="form.intro" placeholder="请输入个人简介" />
-        </el-form-item>
-        <el-form-item label="生日" prop="birthday">
-          <el-date-picker clearable
-            v-model="form.birthday"
-            type="date"
-            value-format="yyyy-MM-dd"
-            placeholder="请选择生日">
-          </el-date-picker>
+        <el-form-item prop="roleId" label="角色">
+          <div>
+            <el-radio v-for="(item, index) in roleList" v-model="form.roleId" :label="item.id" border :key="index">{{
+                item.name
+            }}
+            </el-radio>
+          </div>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -217,6 +122,8 @@ export default {
       single: true,
       // 非多个禁用
       multiple: true,
+      statusOptions: ['禁用', '正常'],
+      dictLoginTypeList: [],
       // 显示搜索条件
       showSearch: true,
       // 总条数
@@ -231,32 +138,31 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        userName: null,
-        nickName: null,
-        password: null,
-        mobile: null,
-        email: null,
-        avatar: null,
-        intro: null,
-        birthday: null,
-        status: null,
+        username: null,
+        loginType: null
       },
+      roleList: [],
       // 表单参数
       form: {},
       // 表单校验
       rules: {
-        userName: [
-          { required: true, message: "用户名不能为空", trigger: "blur" }
+        username: [
+          { required: true, message: '请输入账号', trigger: 'blur' },
+          { min: 1, max: 20, message: '长度在1到20个字符' },
+        ],
+        nickName: [
+          { required: true, message: '请输入昵称', trigger: 'blur' },
+          { min: 1, max: 20, message: '长度在1到20个字符' },
         ],
         password: [
-          { required: true, message: "密码不能为空", trigger: "blur" }
+          { required: true, message: '请输入密码', trigger: 'blur' },
         ],
         status: [
-          { required: true, message: "账号状态(0停用,1正常)不能为空", trigger: "blur" }
+          { required: true, message: '请选择状态', trigger: 'change' },
         ],
-        createTime: [
-          { required: true, message: "注册时间不能为空", trigger: "blur" }
-        ],
+        roleId: [
+          { required: true, message: '请选择角色', trigger: 'change' },
+        ]
       }
     };
   },
@@ -268,8 +174,8 @@ export default {
     getList() {
       this.loading = true;
       listUser(this.queryParams).then(response => {
-        this.userList = response.rows;
-        this.total = response.total;
+        this.userList = response.data.records;
+        this.total = response.data.total;
         this.loading = false;
       });
     },
@@ -309,7 +215,7 @@ export default {
     // 多选框选中数据
     handleSelectionChange(selection) {
       this.ids = selection.map(item => item.id)
-      this.single = selection.length!==1
+      this.single = selection.length !== 1
       this.multiple = !selection.length
     },
     /** 新增按钮操作 */
@@ -351,19 +257,13 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const ids = row.id || this.ids;
-      this.$modal.confirm('是否确认删除【请填写功能名称】编号为"' + ids + '"的数据项？').then(function() {
+      this.$modal.confirm('是否确认删除【请填写功能名称】编号为"' + ids + '"的数据项？').then(function () {
         return delUser(ids);
       }).then(() => {
         this.getList();
         this.$modal.msgSuccess("删除成功");
-      }).catch(() => {});
+      }).catch(() => { });
     },
-    /** 导出按钮操作 */
-    handleExport() {
-      this.download('system/user/export', {
-        ...this.queryParams
-      }, `user_${new Date().getTime()}.xlsx`)
-    }
   }
 };
 </script>

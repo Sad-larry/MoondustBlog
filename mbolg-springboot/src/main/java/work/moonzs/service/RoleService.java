@@ -1,9 +1,10 @@
 package work.moonzs.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.springframework.transaction.annotation.Transactional;
 import work.moonzs.domain.entity.Role;
-import work.moonzs.domain.vo.PageVo;
-import work.moonzs.domain.vo.RoleVo;
+import work.moonzs.domain.vo.PageVO;
+import work.moonzs.domain.vo.sys.SysRoleVO;
 
 /**
  * 角色表(Role)表服务接口
@@ -18,9 +19,10 @@ public interface RoleService extends IService<Role> {
      *
      * @param pageNum  页面num
      * @param pageSize 页面大小
-     * @return {@link PageVo}<{@link RoleVo}>
+     * @param name     角色名
+     * @return {@link PageVO}<{@link SysRoleVO}>
      */
-    PageVo<RoleVo> listRoles(Integer pageNum, Integer pageSize);
+    PageVO<SysRoleVO> listRole(Integer pageNum, Integer pageSize, String name);
 
     /**
      * 通过角色id判断是否存在
@@ -29,5 +31,50 @@ public interface RoleService extends IService<Role> {
      * @return boolean
      */
     boolean isExistRoleById(Long roleId);
+
+    /**
+     * 通过角色名判断是存在角色
+     *
+     * @param name 名字
+     * @return boolean
+     */
+    boolean isExistRoleByName(String name);
+
+    /**
+     * 通过角色名判断是存在相同角色
+     *
+     * @param name 名字
+     * @return boolean
+     */
+    boolean isExistSameRoleByName(String name);
+
+    /**
+     * 通过id查询角色详细信息
+     *
+     * @param roleId 角色id
+     * @return {@link SysRoleVO}
+     */
+    SysRoleVO getRoleById(Long roleId);
+
+    /**
+     * 插入角色
+     *
+     * @param role 角色
+     * @return {@link Long}
+     */
+    @Transactional
+    Long insertRole(Role role);
+
+    /**
+     * 更新角色
+     *
+     * @param role 角色
+     * @return boolean
+     */
+    @Transactional
+    boolean updateRole(Role role);
+
+    @Transactional
+    boolean deleteRole(Long[] roleIds);
 }
 

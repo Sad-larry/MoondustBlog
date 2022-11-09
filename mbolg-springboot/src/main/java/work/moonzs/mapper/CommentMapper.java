@@ -3,7 +3,7 @@ package work.moonzs.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import work.moonzs.domain.entity.Comment;
-import work.moonzs.domain.vo.sys.SysCommentVo;
+import work.moonzs.domain.vo.sys.SysCommentVO;
 
 import java.util.List;
 
@@ -19,8 +19,8 @@ public interface CommentMapper extends BaseMapper<Comment> {
      * 页面评论列表
      *
      * @param page 页面
-     * @return {@link List}<{@link SysCommentVo}>
+     * @return {@link List}<{@link SysCommentVO}>
      */
-    List<SysCommentVo> listCommentPage(Page<Comment> page);
+    List<SysCommentVO> listCommentPage(Page<Comment> page);
 }
 

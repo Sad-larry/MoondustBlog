@@ -1,17 +1,15 @@
 package work.moonzs.controller.system;
 
 
-import cn.hutool.core.collection.CollUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import work.moonzs.base.enums.AppHttpCodeEnum;
+import work.moonzs.base.annotation.SystemLog;
 import work.moonzs.base.utils.BeanCopyUtil;
+import work.moonzs.base.validate.VG;
 import work.moonzs.domain.ResponseResult;
 import work.moonzs.domain.dto.RoleDTO;
 import work.moonzs.domain.entity.Role;
-import work.moonzs.domain.vo.PageVo;
-import work.moonzs.domain.vo.RoleVo;
-import work.moonzs.mapper.RoleMapper;
 import work.moonzs.service.RoleService;
 
 /**
@@ -22,84 +20,70 @@ import work.moonzs.service.RoleService;
 public class RoleController {
     @Autowired
     private RoleService roleService;
-    @Autowired
-    private RoleMapper roleMapper;
-
 
     /**
      * 角色列表
      *
      * @param pageNum  页面num
      * @param pageSize 页面大小
-     * @return {@link ResponseResult}<{@link ?}>
+     * @param name     名字
+     * @return {@link ResponseResult}
      */
+    @SystemLog(businessName = "角色列表")
     @GetMapping("/list")
-    public ResponseResult listRoles(@RequestParam(defaultValue = "1", required = false) Integer pageNum, @RequestParam(defaultValue = "10", required = false) Integer pageSize) {
-        PageVo<RoleVo> roleList = roleService.listRoles(pageNum, pageSize);
-        return ResponseResult.success(roleList);
+    public ResponseResult listRole(@RequestParam(defaultValue = "1", required = false) Integer pageNum, @RequestParam(defaultValue = "10", required = false) Integer pageSize, @RequestParam(defaultValue = "", required = false) String name) {
+        return ResponseResult.success(roleService.listRole(pageNum, pageSize, name));
     }
+
+    /**
+     * TODO 通过id查询角色详细信息
+     *
+     * @param roleId 角色id
+     * @return {@link ResponseResult}
+     */
+    @SystemLog(businessName = "通过id查询角色详细信息")
+    @GetMapping("/{id}")
+    public ResponseResult getRoleById(@PathVariable(value = "id") Long roleId) {
+        return ResponseResult.success(roleService.getRoleById(roleId));
+    }
+
 
     /**
      * 添加角色
      *
      * @param roleDTO 角色dto
-     * @return {@link ResponseResult}<{@link ?}>
+     * @return {@link ResponseResult}
      */
+    @SystemLog(businessName = "添加角色")
     @PostMapping
-    public ResponseResult addRole(@RequestBody RoleDTO roleDTO) {
-        // TODO 这里应该用字段校验，我先暂时手动检验
-        // TODO 其他校验，是否存在同名等等
-
-        roleDTO.setId(null);
-        Role role = BeanCopyUtil.copyBean(roleDTO, Role.class);
-        roleMapper.insert(role);
-        Long roleId = role.getId();
-        // TODO 如果菜单id不为空，则把关联表的也加上去
-        if (CollUtil.isNotEmpty(roleDTO.getMenuIds())) {
-            // RoleMenuService.insert(new RoleMenu(null, roleId, menuIds.stream().forEach))
-        }
+    public ResponseResult addRole(@Validated(VG.Insert.class) @RequestBody RoleDTO roleDTO) {
+        roleService.insertRole(BeanCopyUtil.copyBean(roleDTO, Role.class));
         return ResponseResult.success();
     }
-
 
     /**
-     * 更新作用
+     * 更新角色
      *
      * @param roleDTO 角色dto
-     * @return {@link ResponseResult}<{@link ?}>
+     * @return {@link ResponseResult}
      */
+    @SystemLog(businessName = "更新角色")
     @PutMapping
-    public ResponseResult updateRole(@RequestBody RoleDTO roleDTO) {
-        // TODO 这里应该用字段校验，我先暂时手动检验
-
-        // 判断该id角色是否存在
-        boolean isExistRoleById = roleService.isExistRoleById(roleDTO.getId());
-        if (!isExistRoleById) {
-            return ResponseResult.fail(AppHttpCodeEnum.ROLE_NOT_EXIST);
-        }
-        // 判断是否存在相同角色名
-        Role byId = roleService.getById(roleDTO.getId());
-        Role role = BeanCopyUtil.copyBean(roleDTO, Role.class);
-        // 判断byId和role中的roleName, path是否相等
-        if (role.equals(byId)) {
-            return ResponseResult.fail(AppHttpCodeEnum.ROLE_EXIST);
-        }
-        roleService.updateById(role);
+    public ResponseResult updateRole(@Validated(VG.Update.class) @RequestBody RoleDTO roleDTO) {
+        roleService.updateRole(BeanCopyUtil.copyBean(roleDTO, Role.class));
         return ResponseResult.success();
     }
-
 
     /**
      * 删除角色
      *
-     * @param roleId 角色id
-     * @return {@link ResponseResult}<{@link ?}>
+     * @param roleIds 角色id
+     * @return {@link ResponseResult}
      */
-    @DeleteMapping("/{id}")
-    public ResponseResult deleteRole(@PathVariable(value = "id") Long roleId) {
-        Role role = new Role();
-        role.setId(roleId);
-        roleService.updateById(role);
+    @SystemLog(businessName = "根据角色id进行批量删除操作")
+    @DeleteMapping("/{ids}")
+    public ResponseResult deleteRole(@PathVariable(value = "ids") Long[] roleIds) {
+        roleService.deleteRole(roleIds);
         return ResponseResult.success();
     }
 }

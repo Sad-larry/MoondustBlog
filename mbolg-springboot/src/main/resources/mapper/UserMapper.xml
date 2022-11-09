@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="work.moonzs.mapper.UserMapper">
+    <select id="listUserPage" resultType="work.moonzs.domain.vo.sys.SysUserVO">
+        SELECT
+        u.id,
+        ua.avatar,
+        ua.nickname,
+        u.login_type,
+        u.role_id,
+        u.ip_address,
+        u.ip_source,
+        u.status,
+        u.last_login_time,
+        u.create_time
+        FROM t_user u
+        LEFT JOIN (SELECT id, avatar, nickname FROM t_user_auth) ua ON u.user_auth_id = ua.id
+        <where>
+            <if test="username != null and username != ''">
+                ua.nickname LIKE concat('%',#{username},'%')
+            </if>
+            <if test="loginType != null and loginType != ''">
+                AND u.login_type=#{loginType}
+            </if>
+        </where>
+        ORDER BY u.create_time ASC
+    </select>
+    <select id="getUserById" resultType="work.moonzs.domain.vo.sys.SysUserBaseVO">
+        SELECT u.id,
+               u.username,
+               ua.avatar,
+               ua.nickname,
+               u.role_id,
+               u.status
+        FROM t_user u
+                 LEFT JOIN (SELECT id, avatar, nickname FROM t_user_auth) ua ON u.user_auth_id = ua.id
+        WHERE u.id = #{userId}
+    </select>
+</mapper>

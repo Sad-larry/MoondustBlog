@@ -12,33 +12,25 @@ import java.util.Date;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class SysFeedBackVo {
+public class SysRoleVO {
     /**
      * 主键ID
      */
     private Long id;
     /**
-     * 邮箱
+     * 角色编码
      */
-    private String email;
+    private String code;
     /**
-     * 标题
+     * 角色名称
      */
-    private String title;
+    private String name;
     /**
-     * 详细内容
+     * 角色描述
      */
-    private String content;
+    private String remark;
     /**
-     * 图片地址
-     */
-    private String imgUrl;
-    /**
-     * 反馈类型(1需求,2缺陷)
-     */
-    private Integer type;
-    /**
-     * 添加时间
+     * 创建时间
      */
     private Date createTime;
 }

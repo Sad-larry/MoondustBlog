@@ -1,6 +1,6 @@
 import request from '@/utils/request'
 
-// 查询【请填写功能名称】列表
+// 查询用户列表
 export function listUser(query) {
   return request({
     url: '/system/user/list',
@@ -9,7 +9,7 @@ export function listUser(query) {
   })
 }
 
-// 查询【请填写功能名称】详细
+// 查询用户基本信息
 export function getUser(id) {
   return request({
     url: '/system/user/' + id,
@@ -17,7 +17,7 @@ export function getUser(id) {
   })
 }
 
-// 新增【请填写功能名称】
+// 新增用户
 export function addUser(data) {
   return request({
     url: '/system/user',
@@ -26,7 +26,7 @@ export function addUser(data) {
   })
 }
 
-// 修改【请填写功能名称】
+// 修改用户
 export function updateUser(data) {
   return request({
     url: '/system/user',
@@ -35,10 +35,10 @@ export function updateUser(data) {
   })
 }
 
-// 删除【请填写功能名称】
-export function delUser(id) {
+// 删除用户
+export function delUser(ids) {
   return request({
-    url: '/system/user/' + id,
+    url: '/system/user/' + ids,
     method: 'delete'
   })
 }

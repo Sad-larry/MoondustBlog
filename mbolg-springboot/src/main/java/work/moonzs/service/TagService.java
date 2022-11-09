@@ -3,7 +3,7 @@ package work.moonzs.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.springframework.transaction.annotation.Transactional;
 import work.moonzs.domain.entity.Tag;
-import work.moonzs.domain.vo.PageVo;
+import work.moonzs.domain.vo.PageVO;
 import work.moonzs.domain.vo.TagVo;
 
 import java.util.List;
@@ -37,9 +37,9 @@ public interface TagService extends IService<Tag> {
      * @param pageNum    页面num
      * @param pageSize   页面大小
      * @param fuzzyField 模糊领域
-     * @return {@link PageVo}<{@link TagVo}>
+     * @return {@link PageVO}<{@link TagVo}>
      */
-    PageVo<TagVo> listTag(Integer pageNum, Integer pageSize, String fuzzyField);
+    PageVO<TagVo> listTag(Integer pageNum, Integer pageSize, String fuzzyField);
 
     /**
      * 通过id获取标签

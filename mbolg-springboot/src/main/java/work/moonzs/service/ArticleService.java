@@ -6,7 +6,7 @@ import work.moonzs.domain.dto.ArticleDTO;
 import work.moonzs.domain.entity.Article;
 import work.moonzs.domain.vo.ArticlePreviewVo;
 import work.moonzs.domain.vo.ArticleVo;
-import work.moonzs.domain.vo.PageVo;
+import work.moonzs.domain.vo.PageVO;
 
 import java.util.List;
 
@@ -34,10 +34,10 @@ public interface ArticleService extends IService<Article> {
      * @param pageNum    页面num
      * @param pageSize   页面大小
      * @param fuzzyField 模糊领域
-     * @return {@link PageVo}<{@link ArticleVo}>
+     * @return {@link PageVO}<{@link ArticleVo}>
      */
     @Transactional(readOnly = true)
-    PageVo<ArticleVo> listArticle(Integer pageNum, Integer pageSize, String fuzzyField);
+    PageVO<ArticleVo> listArticle(Integer pageNum, Integer pageSize, String fuzzyField);
 
     /**
      * 通过id获取文章
@@ -84,10 +84,10 @@ public interface ArticleService extends IService<Article> {
      *
      * @param pageNum  1
      * @param pageSize 10
-     * @return {@link PageVo}<{@link ArticleVo}>
+     * @return {@link PageVO}<{@link ArticleVo}>
      */
     @Transactional(readOnly = true)
-    PageVo<ArticlePreviewVo> listWebArticle(Integer pageNum, Integer pageSize);
+    PageVO<ArticlePreviewVo> listWebArticle(Integer pageNum, Integer pageSize);
 
     /**
      * 置顶文章

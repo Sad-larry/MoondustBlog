@@ -5,8 +5,11 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import work.moonzs.base.validate.VG;
 
-import java.util.List;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Null;
 
 /**
  * @author Moondust月尘
@@ -20,30 +23,24 @@ public class RoleDTO {
      * id
      */
     @ApiModelProperty(notes = "id")
+    @Null(message = "添加角色时ID必须为空", groups = VG.Insert.class)
+    @NotNull(message = "角色ID不能为空", groups = VG.Update.class)
     private Long id;
+    /**
+     * 角色编码
+     */
+    @ApiModelProperty(notes = "角色编码")
+    @NotBlank(message = "角色编码不能为空", groups = {VG.Insert.class, VG.Update.class})
+    private String code;
     /**
      * 角色名
      */
     @ApiModelProperty(notes = "角色名")
-    private String roleName;
+    @NotBlank(message = "角色名不能为空", groups = {VG.Insert.class, VG.Update.class})
+    private String name;
     /**
-     * 描述
+     * 角色描述
      */
-    @ApiModelProperty(notes = "描述")
-    private String description;
-    /**
-     * 状态
-     */
-    @ApiModelProperty(notes = "角色状态")
-    private String status;
-    /**
-     * 菜单id
-     */
-    @ApiModelProperty(notes = "菜单列表")
-    private List<Long> menuIds;
-    /**
-     * 资源id
-     */
-    @ApiModelProperty(notes = "资源列表")
-    private List<Long> resourceIds;
+    @ApiModelProperty(notes = "角色描述")
+    private String remark;
 }

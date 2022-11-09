@@ -1,6 +1,7 @@
 package work.moonzs.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Param;
 import work.moonzs.domain.entity.UserAuth;
 
 /**
@@ -11,5 +12,12 @@ import work.moonzs.domain.entity.UserAuth;
  */
 public interface UserAuthMapper extends BaseMapper<UserAuth> {
 
+    /**
+     * 按用户id批量删除
+     *
+     * @param userIds 用户id
+     * @return boolean
+     */
+    boolean deleteByUserIds(@Param("userIds") Long[] userIds);
 }
 
