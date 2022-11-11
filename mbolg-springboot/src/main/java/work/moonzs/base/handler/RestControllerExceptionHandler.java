@@ -4,8 +4,10 @@ import io.jsonwebtoken.ExpiredJwtException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
@@ -115,4 +117,16 @@ public class RestControllerExceptionHandler {
     public ResponseResult handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException e) {
         return ResponseResult.fail(AppHttpCodeEnum.BAD_REQUEST);
     }
+
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ResponseResult handleMissingServletRequestParameter(MissingServletRequestParameterException e) {
+        return ResponseResult.fail(AppHttpCodeEnum.REQUIRED_REQUEST_PARAMETER);
+    }
+
+    @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
+    public ResponseResult handleHttpMediaTypeNotSupported(HttpMediaTypeNotSupportedException e) {
+        return ResponseResult.fail(AppHttpCodeEnum.MEDIATYPE_NOT_SUPPORTED);
+    }
+
+
 }

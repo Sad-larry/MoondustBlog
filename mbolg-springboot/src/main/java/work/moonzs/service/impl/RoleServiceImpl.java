@@ -35,7 +35,6 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
             page(page);
         }
         return new PageVO<>(BeanCopyUtil.copyBeanList(page.getRecords(), SysRoleVO.class), page);
-
     }
 
     @Override

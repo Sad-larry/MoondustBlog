@@ -9,14 +9,6 @@ export function listDict(query) {
   })
 }
 
-// 查询字典详细
-export function getDict(id) {
-  return request({
-    url: '/system/dict/' + id,
-    method: 'get'
-  })
-}
-
 // 新增字典
 export function addDict(data) {
   return request({
@@ -36,9 +28,9 @@ export function updateDict(data) {
 }
 
 // 删除字典
-export function delDict(id) {
+export function delDict(ids) {
   return request({
-    url: '/system/dict/' + id,
+    url: '/system/dict/' + ids,
     method: 'delete'
   })
 }

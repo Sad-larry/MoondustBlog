@@ -3,11 +3,12 @@
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px"
       @submit.native.prevent>
       <el-form-item label="用户名称" prop="username">
-        <el-input style="width: 200px" size="small" v-model="queryParams.username" placeholder="请输入用户名称" />
+        <el-input v-model="queryParams.username" placeholder="请输入用户名称" clearable @clear="resetQuery"
+          @keyup.enter.native="handleQuery" />
       </el-form-item>
       <el-form-item label="登录方式" prop="loginType">
-        <el-select style="width: 150px" size="small" v-model="queryParams.loginType" filterable clearable
-          reserve-keyword @change='handleQuery' placeholder="请选择登录方式">
+        <el-select v-model="queryParams.loginType" filterable clearable reserve-keyword @change='handleQuery'
+          placeholder="请选择登录方式">
           <el-option v-for="item in dictLoginTypeList" :key="item.value" :label="item.label" :value="item.value" />
         </el-select>
       </el-form-item>
@@ -26,13 +27,13 @@
     </el-row>
 
     <el-table v-loading="loading" fit :data="userList" @selection-change="handleSelectionChange">
-      <el-table-column type="selection" align="center" />
-      <el-table-column prop="avatar" align="center" width="100" label="头像">
+      <el-table-column type="selection" width="55" align="center" />
+      <el-table-column prop="avatar" align="center" width="80" label="头像">
         <template slot-scope="scope">
           <img :src="scope.row.avatar" width="60" height="60" />
         </template>
       </el-table-column>
-      <el-table-column prop="nickname" width="150px" align="center" label="昵称" />
+      <el-table-column prop="nickname" width="120" align="center" label="昵称" />
       <el-table-column prop="loginType" align="center" label="登录方式">
         <template slot-scope="scope">
           <span v-for="(item, index) in dictLoginTypeList" :key="index">
@@ -51,24 +52,24 @@
           </span>
         </template>
       </el-table-column>
-      <el-table-column prop="ipAddress" width="130px" align="center" label="登录IP" />
-      <el-table-column prop="ipSource" width="150px" align="center" label="登录地址" />
-      <el-table-column prop="createTime" align="center" width="180" label="创建时间">
+      <el-table-column prop="ipAddress" width="125" align="center" label="登录IP" />
+      <el-table-column prop="ipSource" width="150" align="center" label="登录地址" />
+      <el-table-column prop="createTime" align="center" width="150" label="创建时间">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.createTime) }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" width="180" label="最后登录时间">
+      <el-table-column align="center" width="150" label="最后登录时间">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.lastLoginTime) }}</span>
         </template>
       </el-table-column>
       <el-table-column align="center" label="状态">
         <template slot-scope="scope">
-          <span>{{ statusOptions[scope.row.status] }}</span>
+          <el-tag>{{ statusOptions[scope.row.status] }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="120">
         <template slot-scope="scope">
           <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)">修改</el-button>
           <el-button size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)">删除</el-button>
@@ -82,7 +83,7 @@
     <el-dialog center :title="title" :visible.sync="open">
       <el-form :rules="rules" ref="dataForm" :model="form">
         <el-form-item prop="nickName" label="昵称">
-          <el-input disabled="true" v-model="form.nickname" autocomplete="off"></el-input>
+          <el-input disabled v-model="form.nickname" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item prop="status" label="状态">
           <div>
@@ -109,6 +110,8 @@
 
 <script>
 import { listUser, getUser, delUser, addUser, updateUser } from "@/api/system/user";
+import { listRole } from "@/api/system/role";
+import { getDataByDictType } from "@/api/system/dictData";
 
 export default {
   name: "User",
@@ -130,6 +133,7 @@ export default {
       total: 0,
       // 【请填写功能名称】表格数据
       userList: [],
+      roleList: [],
       // 弹出层标题
       title: "",
       // 是否显示弹出层
@@ -141,7 +145,6 @@ export default {
         username: null,
         loginType: null
       },
-      roleList: [],
       // 表单参数
       form: {},
       // 表单校验
@@ -150,7 +153,7 @@ export default {
           { required: true, message: '请输入账号', trigger: 'blur' },
           { min: 1, max: 20, message: '长度在1到20个字符' },
         ],
-        nickName: [
+        nickname: [
           { required: true, message: '请输入昵称', trigger: 'blur' },
           { min: 1, max: 20, message: '长度在1到20个字符' },
         ],
@@ -167,9 +170,28 @@ export default {
     };
   },
   created() {
+    this.getDictList();
+    this.getRoleList();
     this.getList();
   },
   methods: {
+    /** TODO 查询登录方式字典数据 */
+    getDictList() {
+      let dictType = 'sys_login_method';
+      getDataByDictType({ "type": dictType }).then(response => {
+        let dictMap = response.data;
+        this.dictLoginTypeList = dictMap.sys_login_method.list
+        this.loginTypeDefaultValue = dictMap.sys_login_method.defaultValue
+      }).catch(err => {
+        console.error(err)
+      })
+    },
+    /** TODO 查询角色列表 */
+    getRoleList() {
+      listRole().then(response => {
+        this.roleList = response.data.records;
+      })
+    },
     /** 查询【请填写功能名称】列表 */
     getList() {
       this.loading = true;
@@ -236,7 +258,7 @@ export default {
     },
     /** 提交按钮 */
     submitForm() {
-      this.$refs["form"].validate(valid => {
+      this.$refs["dataForm"].validate(valid => {
         if (valid) {
           if (this.form.id != null) {
             updateUser(this.form).then(response => {

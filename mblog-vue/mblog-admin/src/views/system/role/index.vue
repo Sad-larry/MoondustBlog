@@ -3,8 +3,8 @@
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px"
       @submit.native.prevent>
       <el-form-item label="角色名称">
-        <el-input style="width: 200px" size="small" v-model="queryParams.name" placeholder="请输入角色名称" clearable @clear="resetQuery"
-          @keyup.enter.native="handleQuery" />
+        <el-input style="width: 200px" size="small" v-model="queryParams.name" placeholder="请输入角色名称" clearable
+          @clear="resetQuery" @keyup.enter.native="handleQuery" />
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">查找</el-button>
@@ -31,12 +31,8 @@
       <el-table-column align="center" type="selection" />
       <el-table-column align="center" prop="code" label="编码" width="180" />
       <el-table-column align="center" prop="name" label="名称" />
-      <el-table-column align="center" prop="remarks" label="创建时间">
-        <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.createdTime) }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" prop="remarks" label="备注" />
+      <el-table-column align="center" prop="createTime" label="创建时间" />
+      <el-table-column align="center" prop="remark" label="备注" />
       <el-table-column align="center" label="操作" width="230" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)">编辑</el-button>

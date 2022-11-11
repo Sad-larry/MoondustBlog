@@ -74,6 +74,12 @@ public interface RoleService extends IService<Role> {
     @Transactional
     boolean updateRole(Role role);
 
+    /**
+     * 删除角色
+     *
+     * @param roleIds 角色id
+     * @return boolean
+     */
     @Transactional
     boolean deleteRole(Long[] roleIds);
 }

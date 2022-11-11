@@ -20,6 +20,14 @@ public enum AppHttpCodeEnum {
      * 非法请求
      */
     BAD_REQUEST(400, "非法请求"),
+    /**
+     * 请求参数缺失
+     */
+    REQUIRED_REQUEST_PARAMETER(400, "请求参数缺失"),
+    /**
+     * 不支持的媒体参数类型
+     */
+    MEDIATYPE_NOT_SUPPORTED(415, "不支持的媒体参数类型"),
 
     /**
      * 字段不能为空
@@ -157,6 +165,22 @@ public enum AppHttpCodeEnum {
      * 博客不存在
      */
     BLOG_NOT_EXIST(45034, "博客不存在"),
+    /**
+     * 字典已存在
+     */
+    DICT_EXIST(45035, "字典已存在"),
+    /**
+     * 字典不存在
+     */
+    DICT_NOT_EXIST(45036, "字典不存在"),
+    /**
+     * 字典数据已存在
+     */
+    DICT_DATA_EXIST(45037, "字典数据已存在"),
+    /**
+     * 字典数据不存在
+     */
+    DICT_DATA_NOT_EXIST(45038, "字典数据不存在"),
 
 
     /**
