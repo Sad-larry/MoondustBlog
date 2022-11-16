@@ -1,20 +1,17 @@
 package work.moonzs.base.annotation;
 
-import work.moonzs.base.validate.UsernameValidator;
+import work.moonzs.base.validate.CronExpressionValidator;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;
 import java.lang.annotation.*;
 
-/**
- * @author Moondust月尘
- */
 @Target({ElementType.FIELD, ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = UsernameValidator.class)
+@Constraint(validatedBy = CronExpressionValidator.class)
 @Documented
-public @interface UsernameValid {
-    String message() default "username 必须为 md";
+public @interface CronExpressionValid {
+    String message() default "非法的Cron表达式";
 
     Class<?>[] groups() default {};
 

@@ -75,7 +75,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     public PageVO<ArticleVo> listArticle(Integer pageNum, Integer pageSize, String fuzzyField) {
         Page<Object> page = new Page<>(pageNum, pageSize);
         List<ArticleVo> articleVos = getBaseMapper().listArticle(page, fuzzyField);
-        return new PageVO<>(articleVos, page);
+        return new PageVO<>(articleVos, page.getTotal());
     }
 
     @Override
@@ -147,7 +147,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         articlePreviews.forEach(item -> {
             item.setTagVoList(tagMapper.selectByArticleId(item.getId()));
         });
-        return new PageVO<>(articlePreviews, page);
+        return new PageVO<>(articlePreviews, page.getTotal());
     }
 
     @Override

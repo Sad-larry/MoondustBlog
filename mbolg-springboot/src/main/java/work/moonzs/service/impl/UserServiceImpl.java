@@ -77,7 +77,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public PageVO<SysUserVO> listUser(Integer pageNum, Integer pageSize, String username, Integer loginType) {
         Page<User> page = new Page<>(pageNum, pageSize);
         List<SysUserVO> userVOList = baseMapper.listUserPage(page, username, loginType);
-        return new PageVO<>(userVOList, page);
+        return new PageVO<>(userVOList, page.getTotal());
     }
 
     @Override

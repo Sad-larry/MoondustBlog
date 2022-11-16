@@ -40,7 +40,7 @@ public class DictServiceImpl extends ServiceImpl<DictMapper, Dict> implements Di
         } else {
             page(page);
         }
-        return new PageVO<>(BeanCopyUtil.copyBeanList(page.getRecords(), SysDictVO.class), page);
+        return new PageVO<>(BeanCopyUtil.copyBeanList(page.getRecords(), SysDictVO.class), page.getTotal());
     }
 
     @Override

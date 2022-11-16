@@ -24,7 +24,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
     public PageVO<SysCommentVO> listComment(Integer pageNum, Integer pageSize) {
         Page<Comment> page = new Page<>(pageNum, pageSize);
         List<SysCommentVO> commentListVos = baseMapper.listCommentPage(page);
-        return new PageVO<>(commentListVos, page);
+        return new PageVO<>(commentListVos, page.getTotal());
     }
 
     @Override

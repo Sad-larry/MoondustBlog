@@ -32,7 +32,7 @@ public class FeedBackServiceImpl extends ServiceImpl<FeedBackMapper, FeedBack> i
         Page<FeedBack> page = new Page<>(SystemConstants.PAGE_NUM, SystemConstants.PAGE_SIZE);
         page(page, queryWrapper);
         List<SysFeedBackVO> sysFeedBackVos = BeanCopyUtil.copyBeanList(page.getRecords(), SysFeedBackVO.class);
-        return new PageVO<>(sysFeedBackVos, page);
+        return new PageVO<>(sysFeedBackVos, page.getTotal());
     }
 
     @Override

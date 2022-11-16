@@ -34,7 +34,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
         Page<Message> page = new Page<>(pageNum, pageSize);
         page(page, queryWrapper);
         List<SysMessageVO> sysMessageVos = BeanCopyUtil.copyBeanList(page.getRecords(), SysMessageVO.class);
-        return new PageVO<>(sysMessageVos, page);
+        return new PageVO<>(sysMessageVos, page.getTotal());
     }
 
     @Override

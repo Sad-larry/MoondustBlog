@@ -4,6 +4,7 @@ import cn.hutool.core.util.ObjectUtil;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import work.moonzs.base.enums.AppHttpCodeEnum;
 import work.moonzs.base.exception.BaseException;
+import work.moonzs.domain.vo.PageVO;
 
 import java.util.HashMap;
 
@@ -98,6 +99,31 @@ public class ResponseResult extends HashMap<String, Object> {
 
     public static ResponseResult success(AppHttpCodeEnum responseEnum, Object data) {
         return new ResponseResult(responseEnum, data);
+    }
+
+    /**
+     * 返回分页形式的成功消息
+     *
+     * @param pageVO 页签证官
+     * @return {@link ResponseResult}
+     */
+    public static ResponseResult successPageVO(PageVO<?> pageVO) {
+        // try {
+        //     ResponseResult success = success();
+        //     Field[] declaredFields = PageVO.class.getDeclaredFields();
+        //     for (Field field : declaredFields) {
+        //         field.setAccessible(true);
+        //         success.put(field.getName(), field.get(pageVO));
+        //     }
+        //     return success;
+        // } catch (IllegalAccessException e) {
+        //     e.printStackTrace();
+        //     return fail();
+        // }
+        // 反射太慢了，性能不好，虽然不容易错，这里直接写死
+        return success()
+                .put("records", pageVO.getRecords())
+                .put("total", pageVO.getTotal());
     }
 
     /**

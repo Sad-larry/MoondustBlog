@@ -62,7 +62,7 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, Tag> implements TagSe
         // 模糊字段为空则不匹配
         queryWrapper.like(StrUtil.isNotBlank(fuzzyField), Tag::getName, fuzzyField);
         page(page, queryWrapper);
-        return new PageVO<>(BeanCopyUtil.copyBeanList(page.getRecords(), TagVo.class), page);
+        return new PageVO<>(BeanCopyUtil.copyBeanList(page.getRecords(), TagVo.class), page.getTotal());
     }
 
     @Override

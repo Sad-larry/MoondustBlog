@@ -43,7 +43,7 @@ public class DictDataServiceImpl extends ServiceImpl<DictDataMapper, DictData> i
         Dict dict = dictService.getById(dictId);
         List<SysDictDataVO> sysDictDataVOS = BeanCopyUtil.copyBeanList(page.getRecords(), SysDictDataVO.class)
                 .stream().peek(sysDictDataVO -> sysDictDataVO.setDict(dict)).toList();
-        return new PageVO<>(sysDictDataVOS, page);
+        return new PageVO<>(sysDictDataVOS, page.getTotal());
     }
 
     @Override

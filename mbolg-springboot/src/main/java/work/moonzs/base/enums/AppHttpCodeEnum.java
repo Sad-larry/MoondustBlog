@@ -181,6 +181,10 @@ public enum AppHttpCodeEnum {
      * 字典数据不存在
      */
     DICT_DATA_NOT_EXIST(45038, "字典数据不存在"),
+    /**
+     * 数据不存在
+     */
+    DATA_NOT_EXIST(45039, "数据不存在"),
 
 
     /**

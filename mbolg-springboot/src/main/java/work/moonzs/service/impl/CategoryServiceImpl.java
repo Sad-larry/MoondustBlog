@@ -74,7 +74,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
         LambdaQueryWrapper<Category> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.like(StrUtil.isNotBlank(fuzzyField), Category::getName, fuzzyField);
         page(page, queryWrapper);
-        return new PageVO<>(BeanCopyUtil.copyBeanList(page.getRecords(), CategoryVo.class), page);
+        return new PageVO<>(BeanCopyUtil.copyBeanList(page.getRecords(), CategoryVo.class), page.getTotal());
     }
 
     @Override
