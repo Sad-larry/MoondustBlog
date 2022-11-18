@@ -1,7 +1,7 @@
 package work.moonzs.base.validate;
 
-import org.quartz.CronExpression;
 import work.moonzs.base.annotation.CronExpressionValid;
+import work.moonzs.base.quartz.CronUtil;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
@@ -19,6 +19,6 @@ public class CronExpressionValidator implements ConstraintValidator<CronExpressi
             return true;
         }
         // 当cronExpression有值时，即使为空串，都验证不通过
-        return CronExpression.isValidExpression(cronExpression);
+        return CronUtil.idValid(cronExpression);
     }
 }

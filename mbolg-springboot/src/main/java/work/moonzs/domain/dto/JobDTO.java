@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import work.moonzs.base.annotation.CronExpressionValid;
 import work.moonzs.base.validate.VG;
+import work.moonzs.base.validate.VG2;
 
 import javax.validation.constraints.*;
 
@@ -23,7 +24,7 @@ public class JobDTO {
      */
     @ApiModelProperty(notes = "任务ID")
     @Null(message = "任务ID必须为空", groups = VG.Insert.class)
-    @NotNull(message = "任务ID不能为空", groups = VG.Update.class)
+    @NotNull(message = "任务ID不能为空", groups = {VG.Update.class, VG.Select.class, VG2.Update2.class})
     private Long jobId;
     /**
      * 任务名称
@@ -35,7 +36,7 @@ public class JobDTO {
      * 任务组名
      */
     @ApiModelProperty(notes = "任务组名")
-    @NotBlank(message = "任务组名不能为空", groups = {VG.Insert.class, VG.Update.class})
+    @NotBlank(message = "任务组名不能为空", groups = {VG.Insert.class, VG.Update.class, VG.Select.class, VG2.Update2.class})
     private String jobGroup;
     /**
      * 调用目标字符串
@@ -68,6 +69,7 @@ public class JobDTO {
      * 任务状态(0暂停,1正常)
      */
     @ApiModelProperty(notes = "任务状态(0暂停,1正常)")
+    @NotNull(message = "任务状态设置不能为空", groups = VG2.Update2.class)
     @Min(value = 0, message = "任务状态设置只有0、1", groups = {VG.Insert.class, VG.Update.class})
     @Max(value = 1, message = "任务状态设置只有0、1", groups = {VG.Insert.class, VG.Update.class})
     private Integer status;

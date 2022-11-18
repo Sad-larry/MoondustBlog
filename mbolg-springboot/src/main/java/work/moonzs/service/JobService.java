@@ -1,6 +1,7 @@
 package work.moonzs.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.quartz.SchedulerException;
 import org.springframework.transaction.annotation.Transactional;
 import work.moonzs.domain.entity.Job;
 import work.moonzs.domain.vo.PageVO;
@@ -47,7 +48,7 @@ public interface JobService extends IService<Job> {
      * @return boolean
      */
     @Transactional
-    Long insertJob(Job job);
+    Long insertJob(Job job) throws SchedulerException;
 
     /**
      * 更新任务
@@ -56,7 +57,7 @@ public interface JobService extends IService<Job> {
      * @return boolean
      */
     @Transactional
-    boolean updateJob(Job job);
+    boolean updateJob(Job job) throws SchedulerException;
 
     /**
      * 删除任务
@@ -65,6 +66,31 @@ public interface JobService extends IService<Job> {
      * @return boolean
      */
     @Transactional
-    boolean deleteJob(Long[] jobIds);
+    boolean deleteJob(Long[] jobIds) throws SchedulerException;
+
+    /**
+     * 立即执行任务
+     *
+     * @param job 任务
+     */
+    @Transactional
+    void runJob(Job job) throws SchedulerException;
+
+    /**
+     * 立即暂停任务
+     *
+     * @param job 任务
+     */
+    @Transactional
+    void pauseJob(Job job) throws SchedulerException;
+
+    /**
+     * 修改任务状态
+     *
+     * @param job 任务
+     * @return boolean
+     */
+    @Transactional
+    boolean changeJobStatus(Job job) throws SchedulerException;
 }
 

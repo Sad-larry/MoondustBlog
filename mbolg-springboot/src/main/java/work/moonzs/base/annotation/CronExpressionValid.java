@@ -11,7 +11,7 @@ import java.lang.annotation.*;
 @Constraint(validatedBy = CronExpressionValidator.class)
 @Documented
 public @interface CronExpressionValid {
-    String message() default "非法的Cron表达式";
+    String message() default "Cron表达式无效!";
 
     Class<?>[] groups() default {};
 
