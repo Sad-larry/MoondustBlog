@@ -32,7 +32,7 @@ public class Job {
     private String invokeTarget;
     //cron执行表达式
     private String cronExpression;
-    //计划执行错误策略(1立即执行,2执行一次,3放弃执行)
+    //计划执行错误策略(0默认策略,1立即执行,2执行一次,3放弃执行)
     private Integer misfirePolicy;
     //是否并发执行(0禁止,1允许)
     private Integer concurrent;

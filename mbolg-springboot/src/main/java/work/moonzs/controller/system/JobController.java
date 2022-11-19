@@ -29,7 +29,7 @@ public class JobController {
      */
     @SystemLog(businessName = "获取定时任务列表")
     @GetMapping("/list")
-    public ResponseResult listJob(String jobName, String jobGroup, @RequestParam(name = "status", defaultValue = "1") Integer status) {
+    public ResponseResult listJob(String jobName, String jobGroup, Integer status) {
         return ResponseResult.successPageVO(jobService.listJob(jobName, jobGroup, status));
     }
 

@@ -52,11 +52,11 @@ public class JobDTO {
     @CronExpressionValid(groups = {VG.Insert.class, VG.Update.class})
     private String cronExpression;
     /**
-     * 计划执行错误策略(1立即执行,2执行一次,3放弃执行)
+     * 计划执行错误策略(0默认策略,1立即执行,2执行一次,3放弃执行)
      */
-    @ApiModelProperty(notes = "计划执行错误策略(1立即执行,2执行一次,3放弃执行)")
-    @Min(value = 1, message = "计划执行错误策略设置只有1、2、3", groups = {VG.Insert.class, VG.Update.class})
-    @Max(value = 3, message = "计划执行错误策略设置只有1、2、3", groups = {VG.Insert.class, VG.Update.class})
+    @ApiModelProperty(notes = "计划执行错误策略(0默认策略,1立即执行,2执行一次,3放弃执行)")
+    @Min(value = 0, message = "计划执行错误策略设置只有0、1、2、3", groups = {VG.Insert.class, VG.Update.class})
+    @Max(value = 3, message = "计划执行错误策略设置只有0、1、2、3", groups = {VG.Insert.class, VG.Update.class})
     private Integer misfirePolicy;
     /**
      * 是否并发执行(0禁止,1允许)

@@ -42,3 +42,21 @@ export function delJob(jobId) {
     method: 'delete'
   })
 }
+
+// 立即执行一次任务
+export function run(data) {
+  return request({
+    url: '/system/job/run',
+    method: 'post',
+    data: data
+  })
+}
+
+// 修改定时任务状态
+export function change(data) {
+  return request({
+    url: '/system/job/change',
+    method: 'put',
+    data: data
+  })
+}

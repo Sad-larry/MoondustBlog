@@ -65,7 +65,7 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
     @Override
     public PageVO<SysJobVO> listJob(String jobName, String jobGroup, Integer status) {
         LambdaQueryWrapper<Job> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.like(StrUtil.isNotBlank(jobName), Job::getJobName, jobName).eq(StrUtil.isNotBlank(jobGroup), Job::getJobGroup, jobGroup).eq(Job::getStatus, status);
+        queryWrapper.like(StrUtil.isNotBlank(jobName), Job::getJobName, jobName).eq(StrUtil.isNotBlank(jobGroup), Job::getJobGroup, jobGroup).eq(ObjUtil.isNotNull(status), Job::getStatus, status);
         Page<Job> page = new Page<>(1, 10);
         page(page, queryWrapper);
         return new PageVO<>(BeanCopyUtil.copyBeanList(page.getRecords(), SysJobVO.class), page.getTotal());

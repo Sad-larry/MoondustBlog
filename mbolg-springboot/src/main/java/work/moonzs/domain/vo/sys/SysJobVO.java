@@ -34,7 +34,7 @@ public class SysJobVO {
      */
     private String cronExpression;
     /**
-     * 计划执行错误策略(1立即执行,2执行一次,3放弃执行)
+     * 计划执行错误策略(0默认策略,1立即执行,2执行一次,3放弃执行)
      */
     private Integer misfirePolicy;
     /**
