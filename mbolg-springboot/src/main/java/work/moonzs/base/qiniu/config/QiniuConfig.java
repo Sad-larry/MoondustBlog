@@ -1,5 +1,6 @@
-package work.moonzs.config;
+package work.moonzs.base.qiniu.config;
 
+import com.qiniu.cdn.CdnManager;
 import com.qiniu.storage.BucketManager;
 import com.qiniu.storage.Region;
 import com.qiniu.storage.UploadManager;
@@ -28,7 +29,7 @@ import javax.servlet.Servlet;
 // 控制配置类是否生效
 @ConditionalOnProperty(prefix = "spring.servlet.multipart", name = "enabled", matchIfMissing = true)
 @EnableConfigurationProperties(MultipartProperties.class)
-public class UploadConfig {
+public class QiniuConfig {
     @Value("${oss.qiniu.access-key}")
     private String ACCESS_KEY;
     @Value("${oss.qiniu.secret-key}")
@@ -37,7 +38,7 @@ public class UploadConfig {
     private final MultipartProperties multipartProperties;
 
     @Autowired
-    public UploadConfig(MultipartProperties multipartProperties) {
+    public QiniuConfig(MultipartProperties multipartProperties) {
         this.multipartProperties = multipartProperties;
     }
 
@@ -98,7 +99,19 @@ public class UploadConfig {
      *
      * @return {@link BucketManager}
      */
+    @Bean
     public BucketManager bucketManager() {
         return new BucketManager(auth(), qiniuConfig());
+    }
+
+
+    /**
+     * 构建七牛cdn管理实例
+     *
+     * @return {@link CdnManager}
+     */
+    @Bean
+    public CdnManager cdnManager() {
+        return new CdnManager(auth());
     }
 }

@@ -1,4 +1,4 @@
-package work.moonzs.service.impl;
+package work.moonzs.base.qiniu.service.impl;
 
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.StrUtil;
@@ -19,8 +19,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import work.moonzs.base.enums.SystemConstants;
+import work.moonzs.base.qiniu.service.IQiNiuService;
 import work.moonzs.base.utils.PathUtil;
-import work.moonzs.service.IQiNiuService;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,8 +28,8 @@ import java.io.InputStream;
 /**
  * @author Moondust月尘
  */
-@Service("qiniuService")
-public class QiNiuServiceImpl implements IQiNiuService, InitializingBean {
+@Service("iQiniuService")
+public class IQiNiuServiceImpl implements IQiNiuService, InitializingBean {
     private final UploadManager uploadManager;
     private final Auth auth;
     @Value("${oss.qiniu.bucket}")
@@ -37,7 +37,7 @@ public class QiNiuServiceImpl implements IQiNiuService, InitializingBean {
     private StringMap putPolicy;
 
     @Autowired
-    public QiNiuServiceImpl(UploadManager uploadManager, Auth auth) {
+    public IQiNiuServiceImpl(UploadManager uploadManager, Auth auth) {
         this.uploadManager = uploadManager;
         this.auth = auth;
     }

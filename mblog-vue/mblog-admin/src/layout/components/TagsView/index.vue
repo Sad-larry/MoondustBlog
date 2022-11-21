@@ -16,6 +16,7 @@
         {{ tag.title }}
         <span v-if="!isAffix(tag)" class="el-icon-close" @click.prevent.stop="closeSelectedTag(tag)" />
       </router-link>
+      <span class="tabs-close-item" style="float: right" @click="closeAllTags(selectedTag)">全部关闭</span>
     </scroll-pane>
     <ul v-show="visible" :style="{left:left+'px',top:top+'px'}" class="contextmenu">
       <li @click="refreshSelectedTag(selectedTag)"><i class="el-icon-refresh-right"></i> 刷新页面</li>
@@ -328,5 +329,20 @@ export default {
       }
     }
   }
+}
+.tabs-close-item {
+  position: absolute;
+  right: 10px;
+  display: inline-block;
+  cursor: pointer;
+  height: 26px;
+  line-height: 26px;
+  border: 1px solid #d8dce5;
+  color: #495060;
+  background: #fff;
+  padding: 0 8px;
+  font-size: 12px;
+  margin-top: 4px;
+  margin-left: 5px;
 }
 </style>

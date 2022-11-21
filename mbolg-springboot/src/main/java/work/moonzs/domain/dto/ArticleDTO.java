@@ -28,8 +28,7 @@ public class ArticleDTO {
      */
     @ApiModelProperty(notes = "id")
     @Null(message = "添加文章时id必须为NULL", groups = VG.Insert.class)
-    @NotNull(message = "修改时id不能为NULL", groups = VG.Update.class)
-    @NotNull(message = "默认id不能为NULL", groups = Default.class)
+    @NotNull(message = "文章id不能为NULL", groups = {VG.Update.class, Default.class})
     private Long id;
     /**
      * 用户id

@@ -1,4 +1,4 @@
-package work.moonzs.service;
+package work.moonzs.base.qiniu.service;
 
 import com.qiniu.cdn.CdnResult;
 

@@ -1,4 +1,4 @@
-package work.moonzs.service.impl;
+package work.moonzs.base.qiniu.service.impl;
 
 import cn.hutool.core.util.StrUtil;
 import com.google.gson.Gson;
@@ -14,8 +14,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import work.moonzs.base.enums.AppHttpCodeEnum;
 import work.moonzs.base.exception.ServiceException;
+import work.moonzs.base.qiniu.service.UploadService;
 import work.moonzs.base.utils.PathUtil;
-import work.moonzs.service.UploadService;
 
 import java.io.IOException;
 import java.io.InputStream;

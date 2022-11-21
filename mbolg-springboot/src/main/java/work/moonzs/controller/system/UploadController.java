@@ -13,10 +13,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import work.moonzs.base.enums.AppHttpCodeEnum;
+import work.moonzs.base.qiniu.service.IQiNiuService;
 import work.moonzs.base.utils.IFileUtil;
 import work.moonzs.base.utils.PathUtil;
 import work.moonzs.domain.ResponseResult;
-import work.moonzs.service.IQiNiuService;
 
 import java.io.IOException;
 import java.io.InputStream;
