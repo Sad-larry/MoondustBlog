@@ -30,4 +30,8 @@ public class SystemConstants {
      * 页面大小
      */
     public static final Integer PAGE_SIZE = 10;
+    /**
+     * 文件大小限制
+     */
+    public static final long FILE_SIZE = 2 * 1024 * 1024L;
 }

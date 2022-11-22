@@ -2,7 +2,9 @@ package work.moonzs.base.handler;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.tomcat.util.http.fileupload.impl.SizeLimitExceededException;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -126,6 +128,16 @@ public class RestControllerExceptionHandler {
     @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
     public ResponseResult handleHttpMediaTypeNotSupported(HttpMediaTypeNotSupportedException e) {
         return ResponseResult.fail(AppHttpCodeEnum.MEDIATYPE_NOT_SUPPORTED);
+    }
+
+    @ExceptionHandler(InsufficientAuthenticationException.class)
+    public ResponseResult handleInsufficientAuthenticationException(InsufficientAuthenticationException e) {
+        return ResponseResult.fail(AppHttpCodeEnum.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(SizeLimitExceededException.class)
+    public ResponseResult handleSizeLimitExceededException(SizeLimitExceededException e) {
+        return ResponseResult.fail(AppHttpCodeEnum.FILE_SIZE_OVERFLOW);
     }
 
 

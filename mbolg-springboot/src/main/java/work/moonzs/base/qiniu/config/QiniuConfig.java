@@ -66,12 +66,13 @@ public class QiniuConfig {
 
     /**
      * qiniu配置，我的空间是 华东-浙江2 机房
+     * 原先我用 huadongZheJiang2() 竟然不行，还是归属于华东
      *
      * @return {@link Configuration}
      */
     @Bean
-    public com.qiniu.storage.Configuration qiniuConfig() {
-        return new com.qiniu.storage.Configuration(Region.huadongZheJiang2());
+    public com.qiniu.storage.Configuration qiniuConfiguration() {
+        return new com.qiniu.storage.Configuration(Region.autoRegion());
     }
 
     /**
@@ -81,7 +82,7 @@ public class QiniuConfig {
      */
     @Bean
     public UploadManager uploadManager() {
-        return new UploadManager(qiniuConfig());
+        return new UploadManager(qiniuConfiguration());
     }
 
     /**
@@ -101,7 +102,7 @@ public class QiniuConfig {
      */
     @Bean
     public BucketManager bucketManager() {
-        return new BucketManager(auth(), qiniuConfig());
+        return new BucketManager(auth(), qiniuConfiguration());
     }
 
 

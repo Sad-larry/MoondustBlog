@@ -201,6 +201,26 @@ public enum AppHttpCodeEnum {
      * 数据正在审核
      */
     DATA_UNDER_REVIEW(45043, "数据正在审核"),
+    /**
+     * 文件删除失败
+     */
+    FILE_DELETE_FAIL(45044, "文件删除失败"),
+    /**
+     * 文件操作失败
+     */
+    FILE_OPERATE_FAIL(45045, "文件操作失败"),
+    /**
+     * 获取文件日志失败
+     */
+    GET_FILELOG_FAIL(45046, "获取文件日志失败"),
+    /**
+     * 获取cdn数据失败
+     */
+    GTE_CDNRESULT_FAIL(45047, "获取cdn数据失败"),
+    /**
+     * 文件大小超出限制
+     */
+    FILE_SIZE_OVERFLOW(45048, "文件大小超出限制"),
 
 
     /**
