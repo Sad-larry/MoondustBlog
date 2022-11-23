@@ -18,8 +18,10 @@ import work.moonzs.base.qiniu.config.QiniuConfig;
 import work.moonzs.base.qiniu.config.QiniuManager;
 import work.moonzs.base.qiniu.service.QiniuService;
 import work.moonzs.base.web.common.BusinessAssert;
+import work.moonzs.domain.vo.sys.SysQiniuFileVO;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -34,6 +36,11 @@ import java.util.Map;
 public class QiniuServiceImpl implements QiniuService {
     private final QiniuConfig qiniuConfig;
     private final QiniuManager qiniuManager;
+
+    /**
+     * qiniu目录标识
+     */
+    public static final String QINIU_DIR_SIGN = "application/qiniu-object-manager";
 
     /**
      * 移动文件
@@ -80,7 +87,7 @@ public class QiniuServiceImpl implements QiniuService {
     }
 
     @Override
-    public List<FileInfo> listFile(String bucket) {
+    public List<SysQiniuFileVO> listFile(String bucket) {
         List<FileInfo> result = new ArrayList<>();
         BucketManager.FileListIterator fileListIterator = qiniuManager.getFileListIterator(bucket);
         while (fileListIterator.hasNext()) {
@@ -90,7 +97,98 @@ public class QiniuServiceImpl implements QiniuService {
                 result.addAll(List.of(next));
             }
         }
+        // 将结果格式化成树形结构
+        List<SysQiniuFileVO> list = basicDealList(result);
+        return buildFileTree(list);
+    }
+
+    /**
+     * 基本处理列表
+     *
+     * @param fileInfoList 文件信息列表
+     * @return {@link List}<{@link SysQiniuFileVO}>
+     */
+    private List<SysQiniuFileVO> basicDealList(List<FileInfo> fileInfoList) {
+        List<SysQiniuFileVO> result = new ArrayList<>();
+        fileInfoList.forEach(fileInfo -> {
+            SysQiniuFileVO sysQiniuFileVO = copyFileInfoBean(fileInfo);
+            sysQiniuFileVO.setFileName(fileInfo.key);
+            if (QINIU_DIR_SIGN.equals(fileInfo.mimeType)) {
+                // 如果官方认定为目录的话，就设置为目录文件夹添加到结果中
+                sysQiniuFileVO.setDir(true);
+                sysQiniuFileVO.setChildren(new ArrayList<>());
+            }
+            // 不是目录则可以直接添加到结果中
+            result.add(sysQiniuFileVO);
+        });
         return result;
+    }
+
+    /**
+     * 构建文件树
+     *
+     * @param list 列表
+     *             // * @param baseDir 上一级目录
+     * @return {@link List}<{@link SysQiniuFileVO}>
+     */
+    private List<SysQiniuFileVO> buildFileTree(List<SysQiniuFileVO> list) {
+        // 当前层级的所有文件，包括目录，以及非目录的文件
+        List<SysQiniuFileVO> result = new ArrayList<>();
+        // 当前层级的目录结构
+        Map<String, List<SysQiniuFileVO>> dirs = new HashMap<>();
+        for (SysQiniuFileVO sysQiniuFileVO : list) {
+            String fileName = sysQiniuFileVO.getFileName();
+            // 没有"/"说明是当前目录下的文件，直接加到结果结果集中
+            int index = fileName.indexOf("/");
+            if (index < 0) {
+                result.add(sysQiniuFileVO);
+            } else {
+                // 否则判断该文件属于哪个祖先目录下的，并加入到该目录中准备递归处理
+                String fileKey = fileName.substring(0, index + 1);
+                if (dirs.containsKey(fileKey)) {
+                    // 给实体重新设置一个名字，该名字去除了最外层目录
+                    String lastName = fileName.substring(index + 1);
+                    if (StrUtil.isNotBlank(lastName)) {
+                        sysQiniuFileVO.setFileName(lastName);
+                    }
+                    dirs.get(fileKey).add(sysQiniuFileVO);
+                } else {
+                    dirs.put(fileKey, new ArrayList<>(List.of(sysQiniuFileVO)));
+                }
+            }
+        }
+        dirs.forEach((key, value) -> {
+            List<SysQiniuFileVO> childrens = new ArrayList<>();
+            SysQiniuFileVO dirSysQiniuFileVO = null;
+            for (SysQiniuFileVO sysQiniuFileVO : value) {
+                if (key.equals(sysQiniuFileVO.getFileName())) {
+                    // 说明本身就是个目录
+                    dirSysQiniuFileVO = sysQiniuFileVO;
+                    result.add(sysQiniuFileVO);
+                } else {
+                    // 加入到子文件目录中
+                    childrens.add(sysQiniuFileVO);
+                }
+            }
+            if (dirSysQiniuFileVO == null) {
+                dirSysQiniuFileVO = buildDirSysQiniuFileVO();
+            }
+            // String fileKey = StrUtil.isNotBlank(baseDir) ? baseDir + key : key;
+            // dirSysQiniuFileVO.setKey(fileKey);
+            dirSysQiniuFileVO.setFileName(key);
+            dirSysQiniuFileVO.setChildren(buildFileTree(childrens));
+
+        });
+        return result;
+    }
+
+
+    private SysQiniuFileVO buildDirSysQiniuFileVO() {
+        return SysQiniuFileVO.builder().fsize(0L).mimeType(QINIU_DIR_SIGN).type(0).status(0).isDir(true).children(new ArrayList<>()).build();
+    }
+
+    private SysQiniuFileVO copyFileInfoBean(FileInfo fileInfo) {
+        return SysQiniuFileVO.builder().key(fileInfo.key).hash(fileInfo.hash).fsize(fileInfo.fsize).putTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(fileInfo.putTime)).mimeType(fileInfo.mimeType).type(fileInfo.type).status(fileInfo.status).build();
     }
 
     @Override

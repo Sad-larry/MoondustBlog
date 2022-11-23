@@ -1,8 +1,8 @@
 package work.moonzs.base.qiniu.service;
 
-import com.qiniu.storage.model.FileInfo;
 import org.springframework.web.multipart.MultipartFile;
 import work.moonzs.base.qiniu.config.QiniuManager;
+import work.moonzs.domain.vo.sys.SysQiniuFileVO;
 
 import java.util.List;
 import java.util.Map;
@@ -41,9 +41,9 @@ public interface QiniuService {
      * 获取空间文件列表
      *
      * @param bucket 存储空间
-     * @return {@link FileInfo}
+     * @return {@link SysQiniuFileVO}
      */
-    List<FileInfo> listFile(String bucket);
+    List<SysQiniuFileVO> listFile(String bucket);
 
     /**
      * 删除文件
