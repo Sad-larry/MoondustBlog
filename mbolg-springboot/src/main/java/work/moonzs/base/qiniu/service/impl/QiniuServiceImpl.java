@@ -17,6 +17,7 @@ import work.moonzs.base.enums.AppHttpCodeEnum;
 import work.moonzs.base.qiniu.config.QiniuConfig;
 import work.moonzs.base.qiniu.config.QiniuManager;
 import work.moonzs.base.qiniu.service.QiniuService;
+import work.moonzs.base.utils.IFileUtil;
 import work.moonzs.base.web.common.BusinessAssert;
 import work.moonzs.domain.vo.sys.SysQiniuFileVO;
 
@@ -111,13 +112,16 @@ public class QiniuServiceImpl implements QiniuService {
     private List<SysQiniuFileVO> basicDealList(List<FileInfo> fileInfoList) {
         List<SysQiniuFileVO> result = new ArrayList<>();
         fileInfoList.forEach(fileInfo -> {
+            // 如果是官方认定的目录的话，就直接跳过，目录由自己生成
+            if (QINIU_DIR_SIGN.equals(fileInfo.mimeType)) {
+                return;
+            }
+            // 不是官方认定的目录但是就是目录，也跳过
+            if (fileInfo.key.lastIndexOf("/") == (fileInfo.key.length() - 1)) {
+                return;
+            }
             SysQiniuFileVO sysQiniuFileVO = copyFileInfoBean(fileInfo);
             sysQiniuFileVO.setFileName(fileInfo.key);
-            if (QINIU_DIR_SIGN.equals(fileInfo.mimeType)) {
-                // 如果官方认定为目录的话，就设置为目录文件夹添加到结果中
-                sysQiniuFileVO.setDir(true);
-                sysQiniuFileVO.setChildren(new ArrayList<>());
-            }
             // 不是目录则可以直接添加到结果中
             result.add(sysQiniuFileVO);
         });
@@ -127,11 +131,14 @@ public class QiniuServiceImpl implements QiniuService {
     /**
      * 构建文件树
      *
-     * @param list 列表
-     *             // * @param baseDir 上一级目录
+     * @param list    列表
+     * @param baseDir 上一级目录
      * @return {@link List}<{@link SysQiniuFileVO}>
      */
-    private List<SysQiniuFileVO> buildFileTree(List<SysQiniuFileVO> list) {
+    private List<SysQiniuFileVO> buildFileTree(List<SysQiniuFileVO> list, String baseDir) {
+        if (CollUtil.isEmpty(list)) {
+            return null;
+        }
         // 当前层级的所有文件，包括目录，以及非目录的文件
         List<SysQiniuFileVO> result = new ArrayList<>();
         // 当前层级的目录结构
@@ -144,13 +151,13 @@ public class QiniuServiceImpl implements QiniuService {
                 result.add(sysQiniuFileVO);
             } else {
                 // 否则判断该文件属于哪个祖先目录下的，并加入到该目录中准备递归处理
-                String fileKey = fileName.substring(0, index + 1);
+                String fileKey = fileName.substring(0, index + 1).trim();
+                // 给实体重新设置一个名字，该名字去除了最外层目录
+                String lastName = fileName.substring(index + 1).trim();
+                if (StrUtil.isNotBlank(lastName)) {
+                    sysQiniuFileVO.setFileName(lastName);
+                }
                 if (dirs.containsKey(fileKey)) {
-                    // 给实体重新设置一个名字，该名字去除了最外层目录
-                    String lastName = fileName.substring(index + 1);
-                    if (StrUtil.isNotBlank(lastName)) {
-                        sysQiniuFileVO.setFileName(lastName);
-                    }
                     dirs.get(fileKey).add(sysQiniuFileVO);
                 } else {
                     dirs.put(fileKey, new ArrayList<>(List.of(sysQiniuFileVO)));
@@ -158,41 +165,45 @@ public class QiniuServiceImpl implements QiniuService {
             }
         }
         dirs.forEach((key, value) -> {
-            List<SysQiniuFileVO> childrens = new ArrayList<>();
-            SysQiniuFileVO dirSysQiniuFileVO = null;
-            for (SysQiniuFileVO sysQiniuFileVO : value) {
-                if (key.equals(sysQiniuFileVO.getFileName())) {
-                    // 说明本身就是个目录
-                    dirSysQiniuFileVO = sysQiniuFileVO;
-                    result.add(sysQiniuFileVO);
-                } else {
-                    // 加入到子文件目录中
-                    childrens.add(sysQiniuFileVO);
-                }
-            }
-            if (dirSysQiniuFileVO == null) {
-                dirSysQiniuFileVO = buildDirSysQiniuFileVO();
-            }
-            // String fileKey = StrUtil.isNotBlank(baseDir) ? baseDir + key : key;
-            // dirSysQiniuFileVO.setKey(fileKey);
+            // 以当前的key值(10/)作为目录的文件名
+            SysQiniuFileVO dirSysQiniuFileVO = buildDirSysQiniuFileVO();
+            // 实体的key为基本目录加集合key值(2022/+10/)
+            String fileKey = StrUtil.isNotBlank(baseDir) ? baseDir + key : key;
+            dirSysQiniuFileVO.setKey(fileKey);
             dirSysQiniuFileVO.setFileName(key);
-            dirSysQiniuFileVO.setChildren(buildFileTree(childrens));
-
+            dirSysQiniuFileVO.setChildren(buildFileTree(value, fileKey));
+            result.add(dirSysQiniuFileVO);
         });
         return result;
     }
 
+    private List<SysQiniuFileVO> buildFileTree(List<SysQiniuFileVO> list) {
+        return buildFileTree(list, null);
+    }
 
+    /**
+     * 构建目录文件结构
+     *
+     * @return {@link SysQiniuFileVO}
+     */
     private SysQiniuFileVO buildDirSysQiniuFileVO() {
         return SysQiniuFileVO.builder().fsize(0L).mimeType(QINIU_DIR_SIGN).type(0).status(0).isDir(true).children(new ArrayList<>()).build();
     }
 
+    /**
+     * 构建FileInfo为SysQiniuFileVO
+     *
+     * @param fileInfo 文件信息
+     * @return {@link SysQiniuFileVO}
+     */
     private SysQiniuFileVO copyFileInfoBean(FileInfo fileInfo) {
         return SysQiniuFileVO.builder().key(fileInfo.key).hash(fileInfo.hash).fsize(fileInfo.fsize).putTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(fileInfo.putTime)).mimeType(fileInfo.mimeType).type(fileInfo.type).status(fileInfo.status).build();
     }
 
     @Override
     public void deleteFile(String bucket, String[] keys) {
+        // 去除目录的key
+        keys = removeDirkey(keys);
         if (ArrayUtil.isEmpty(keys)) {
             return;
         }
@@ -209,11 +220,30 @@ public class QiniuServiceImpl implements QiniuService {
         }
     }
 
+    /**
+     * 删除目录key
+     *
+     * @param keys 键
+     * @return {@link String[]}
+     */
+    private String[] removeDirkey(String[] keys) {
+        List<String> result = new ArrayList<>();
+        for (String key : keys) {
+            if (StrUtil.isBlank(key)) {
+                continue;
+            }
+            if (!key.contains("/") || key.lastIndexOf("/") == (key.length() - 1)) {
+                result.add(key);
+            }
+        }
+        return result.toArray(new String[0]);
+    }
+
     @Override
     public boolean changeType(String bucket, String fileName, String newType) {
         boolean result = false;
         try {
-            qiniuManager.changeMime(bucket, fileName, newType);
+            qiniuManager.changeMime(fileName, newType, bucket);
             result = true;
         } catch (QiniuException e) {
             BusinessAssert.fail(AppHttpCodeEnum.FILE_OPERATE_FAIL);
@@ -228,7 +258,15 @@ public class QiniuServiceImpl implements QiniuService {
 
     @Override
     public boolean moveOrCopyFile(String srcBucket, String srcKey, String destBucket, String destKey, QiniuManager.FileAction fileAction) {
+        // 对srcKey和destKey进行检查，若不符合条件则不进行操作
         boolean result = false;
+        if (!checkFileKeys(srcKey, destKey)) {
+            BusinessAssert.fail(AppHttpCodeEnum.FILE_OPERATE_FAIL);
+        }
+        // 文件后缀不能变
+        if (!checkFileType(srcKey, destKey)) {
+            BusinessAssert.fail(AppHttpCodeEnum.FILE_OPERATE_FAIL);
+        }
         try {
             qiniuManager.moveOrCopyFile(srcBucket, srcKey, destBucket, destKey, fileAction);
             result = true;
@@ -236,6 +274,59 @@ public class QiniuServiceImpl implements QiniuService {
             BusinessAssert.fail(AppHttpCodeEnum.FILE_OPERATE_FAIL);
         }
         return result;
+    }
+
+    /**
+     * 检查文件类型不能改变
+     *
+     * @param srcKey  源文件
+     * @param destKey 目标文件
+     * @return boolean
+     */
+    private boolean checkFileType(String srcKey, String destKey) {
+        int dotIndex1 = srcKey.lastIndexOf(".");
+        int dotIndex2 = destKey.lastIndexOf(".");
+        return srcKey.substring(dotIndex1).equals(destKey.substring(dotIndex2));
+    }
+
+    /**
+     * 检查所有文件key是否符合要求
+     *
+     * @param keys 键
+     * @return boolean
+     */
+    private boolean checkFileKeys(String... keys) {
+        boolean result = false;
+        if (keys.length <= 0) {
+            return result;
+        }
+        for (String key : keys) {
+            result = checkFileKey(key);
+            if (!result) {
+                break;
+            }
+        }
+        return result;
+    }
+
+    /**
+     * 检查文件key是否符合要求
+     *
+     * @param key 关键
+     * @return boolean
+     */
+    private boolean checkFileKey(String key) {
+        // 为空直接返回false
+        if (StrUtil.isBlank(key)) {
+            return false;
+        }
+        // 为目录直接返回false
+        if (key.lastIndexOf("/") == (key.length() - 1)) {
+            return false;
+        }
+        // 判断是否是合法的文件名
+        int dotIndex = key.lastIndexOf(".");
+        return IFileUtil.isLegalFileType(key.substring(dotIndex + 1));
     }
 
     @Override

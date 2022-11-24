@@ -8,7 +8,6 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import work.moonzs.base.annotation.SystemLog;
-import work.moonzs.base.enums.AppHttpCodeEnum;
 import work.moonzs.base.qiniu.config.QiniuManager;
 import work.moonzs.base.qiniu.service.QiniuService;
 import work.moonzs.base.utils.IFileUtil;
@@ -40,18 +39,16 @@ public class QiniuController {
      * @param file 图片文件
      * @return {@link ResponseResult}
      */
-    @PostMapping(name = "/upload/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(path = "/upload/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseResult uploadFile(@RequestParam("file") MultipartFile file) {
         IFileUtil.isLegalFile(file);
         String filePath = PathUtil.generateFilePath(file.getOriginalFilename());
         boolean b = qiniuService.uploadFile(BUCKET, filePath, file);
-        String yunFilePath = StrUtil.appendIfMissing("https://" + DOMAIN, "/") + filePath;
-        return ResponseResult.success(AppHttpCodeEnum.FILE_UPLOAD_SUCCESS, yunFilePath);
+        return ResponseResult.success(qiniuService.publicDownload(DOMAIN, filePath));
     }
 
     /**
      * 列出存储空间的文件
-     * 查询默认存储空间
      *
      * @return {@link ResponseResult}
      */
@@ -124,9 +121,9 @@ public class QiniuController {
         String destKey = JSONUtil.toJsonStr(map.get("destKey"));
         String fileAction = JSONUtil.toJsonStr(map.get("fileAction"));
         if (StrUtil.isAllNotBlank(srcKey, destKey, fileAction)) {
-            if (QiniuManager.FileAction.MOVE.name().equals(fileAction)) {
+            if (QiniuManager.FileAction.MOVE.name().equalsIgnoreCase(fileAction)) {
                 qiniuService.moveOrCopyFile(BUCKET, srcKey, BUCKET, destKey, QiniuManager.FileAction.MOVE);
-            } else if (QiniuManager.FileAction.COPY.name().equals(fileAction)) {
+            } else if (QiniuManager.FileAction.COPY.name().equalsIgnoreCase(fileAction)) {
                 qiniuService.moveOrCopyFile(BUCKET, srcKey, BUCKET, destKey, QiniuManager.FileAction.COPY);
             } else {
                 return ResponseResult.fail();
@@ -163,6 +160,9 @@ public class QiniuController {
     @SystemLog(businessName = "更新镜像源")
     @GetMapping("/file/update")
     public ResponseResult updateFile(@RequestParam("key") String key) {
+        if (true) {
+            return ResponseResult.fail(404, "TODO 开发中");
+        }
         qiniuService.updateFile(BUCKET, key);
         return ResponseResult.success();
     }
@@ -227,6 +227,9 @@ public class QiniuController {
     @SystemLog(businessName = "获取空间带宽统计")
     @PostMapping("/file/bucketBandwidth")
     public ResponseResult getBucketBandwidth(@RequestBody Map<String, Object> map) {
+        if (true) {
+            return ResponseResult.fail(404, "TODO 开发中");
+        }
         String startDate = JSONUtil.toJsonStr(map.get("startDate"));
         String endDate = JSONUtil.toJsonStr(map.get("endDate"));
         String unit = JSONUtil.toJsonStr(map.get("unit"));
@@ -246,6 +249,9 @@ public class QiniuController {
     @SystemLog(businessName = "获取空间的流量统计")
     @PostMapping("/file/bucketFlux")
     public ResponseResult getBucketFlux(@RequestBody Map<String, Object> map) {
+        if (true) {
+            return ResponseResult.fail(404, "TODO 开发中");
+        }
         String startDate = JSONUtil.toJsonStr(map.get("startDate"));
         String endDate = JSONUtil.toJsonStr(map.get("endDate"));
         String unit = JSONUtil.toJsonStr(map.get("unit"));

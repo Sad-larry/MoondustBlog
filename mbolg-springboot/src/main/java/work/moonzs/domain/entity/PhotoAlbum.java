@@ -30,7 +30,7 @@ public class PhotoAlbum {
     private String info;
     //相册封面
     private String cover;
-    //状态值(0公开,1私密)
+    //相册状态(0私密,1公开)
     private Integer status;
     //创建时间
     private Date createTime;

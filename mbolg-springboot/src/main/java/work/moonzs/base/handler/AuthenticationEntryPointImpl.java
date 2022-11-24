@@ -1,6 +1,7 @@
 package work.moonzs.base.handler;
 
 import cn.hutool.json.JSONUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
@@ -23,10 +24,12 @@ import java.io.IOException;
  * @author Moondust月尘
  */
 @Component
+@Slf4j
 public class AuthenticationEntryPointImpl implements AuthenticationEntryPoint {
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
-        authException.printStackTrace();
+        // authException.printStackTrace();
+        log.error(authException.getMessage());
         ResponseResult result = null;
         if (authException instanceof InsufficientAuthenticationException) {
             // 用户未登录

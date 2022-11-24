@@ -42,3 +42,14 @@ export function delPhoto(id) {
     method: 'delete'
   })
 }
+
+// 移动照片
+export function movePhoto(params) {
+  return request({
+    url: '/system/photo/movePhoto',
+    method: 'get',
+    params: params
+  })
+}
+
+

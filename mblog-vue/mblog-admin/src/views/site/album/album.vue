@@ -3,16 +3,15 @@
         <el-card class="main-card">
             <!-- 标题 -->
             <div style="margin-bottom: 10px" class="operation-container">
-                <el-input v-model="params.name" prefix-icon="el-icon-search" size="small" placeholder="请输入相册名"
-                    style="width:200px" @keyup.enter.native="handleFind" />
+                <el-input v-model="queryParams.name" prefix-icon="el-icon-search" size="small" placeholder="请输入相册名"
+                    style="width:200px" @keyup.enter.native="handleQuery" />
                 <el-button type="primary" size="small" icon="el-icon-search" style="margin-left:1rem"
-                    @click="handleFind">
+                    @click="handleQuery">
                     搜索
                 </el-button>
                 <el-button type="primary" size="small" icon="el-icon-plus" @click="handleAdd()">
                     新建相册
                 </el-button>
-
             </div>
             <!-- 相册列表 -->
             <el-row class="album-container" :gutter="12" v-loading="loading">
@@ -44,11 +43,10 @@
                 </el-col>
             </el-row>
             <!-- 分页 -->
-            <el-pagination :hide-on-single-page="true" class="pagination-container" @size-change="sizeChange"
-                @current-change="currentChange" :current-page="params.pageNo" :page-size="params.pageSize"
-                :total="total" layout="total, sizes,prev, pager, next,jumper" />
+            <pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum"
+                :limit.sync="queryParams.pageSize" @pagination="getList" />
             <!-- 新增模态框 -->
-            <el-dialog center :title="title" :visible.sync="dialogVisible" width="35%" top="10vh">
+            <el-dialog center :title="title" :visible.sync="open" append-to-body>
                 <el-form ref="dataForm" :rules="rules" label-width="80px" size="medium" :model="albumForum">
                     <el-form-item label="相册名称" prop="name">
                         <el-input style="width:220px" v-model="albumForum.name" />
@@ -63,49 +61,49 @@
                             <div class="el-upload__text" v-if="albumForum.cover === ''">
                                 将文件拖到此处，或<em>点击上传</em>
                             </div>
-                            <img v-else :src="albumForum.cover" width="360px" height="180px" />
+                            <img v-else :src="albumForum.cover" height="180px" />
                         </el-upload>
                     </el-form-item>
                     <el-form-item label="发布形式" prop="status">
                         <el-radio-group v-model="albumForum.status">
-                            <el-radio :label="0">公开</el-radio>
-                            <el-radio :label="1">私密</el-radio>
+                            <el-radio :label="1">公开</el-radio>
+                            <el-radio :label="0">私密</el-radio>
                         </el-radio-group>
                     </el-form-item>
                 </el-form>
-                <div slot="footer">
-                    <el-button @click="dialogVisible = false">取消</el-button>
-                    <el-button type="primary" @click="submit"> 确定</el-button>
+                <div slot="footer" class="dialog-footer">
+                    <el-button type="primary" @click="submitForm">确 定</el-button>
+                    <el-button @click="cancel">取 消</el-button>
                 </div>
             </el-dialog>
         </el-card>
-
     </div>
 </template>
 <script>
-// import { fetchAlbum, remove, addAlbum, updateAlbum, info } from '@/api/album'
-// import { upload } from "@/api/imgUpload";
+import { listAlbum, getAlbum, delAlbum, addAlbum, updateAlbum } from "@/api/system/album";
+import { uploadImage } from "@/api/system/qiniu";
+
 export default {
     created() {
-        this.listAlbums();
+        this.getList();
     },
-    data: function () {
+    data() {
         return {
             loading: true,
             imgLoading: false,
             img: process.env.VUE_APP_IMG_API,
-            uploadPictureHost: process.env.VUE_APP_BASE_API + "/file/upload",
+            uploadPictureHost: process.env.VUE_APP_BASE_API + "/system/qiniu/upload/image",
             isEditForm: false,
-            dialogVisible: false,
+            open: false,
             albumForum: {
                 id: null,
                 name: "",
                 info: "",
                 cover: "",
-                status: 0
+                status: 1
             },
-            params: {
-                pageNo: 1,
+            queryParams: {
+                pageNum: 1,
                 pageSize: 10,
                 name: null
             },
@@ -114,7 +112,7 @@ export default {
             title: null,
             rules: {
                 'name': [{ required: true, message: '必填字段', trigger: 'blur' }],
-                'cover': [{ required: true, message: '必填字段', trigger: 'change' }],
+                'cover': [{ required: true, message: '图片未上传或正在上传中', trigger: 'change' }],
                 'info': [{ required: true, message: '必填字段', trigger: 'blur' }],
                 'status': [{ required: true, message: '必填字段', trigger: 'change' }]
             }
@@ -129,50 +127,59 @@ export default {
                 this.loading = false;
             });
         },
-        submit() {
+        submitForm() {
             this.$refs['dataForm'].validate((valid) => {
                 if (valid) {
                     if (this.isEditForm) {
                         updateAlbum(this.albumForum).then(res => {
                             this.$message.success("修改相册成功")
-                            this.listAlbums();
-                            this.dialogVisible = false
+                            this.getList();
+                            this.open = false
                         }).catch(err => {
                             console.log(err)
                         })
                     } else {
                         addAlbum(this.albumForum).then(res => {
                             this.$message.success("添加相册成功")
-                            this.listAlbums()
-                            this.dialogVisible = false;
+                            this.getList()
+                            this.open = false;
                         }).catch(err => {
                             console.log(err)
                         })
                     }
-                    this.dialogVisible = false;
+                    this.open = false;
                 } else {
                     this.$message.error("存在必填字段未填")
                 }
             })
         },
-        handleAdd() {
+        cancel() {
+            this.open = false;
+            this.reset();
+        },
+        // 表单重置
+        reset() {
             this.albumForum = {
                 id: null,
                 name: "",
                 info: "",
                 cover: "",
-                status: 0
+                status: 1
             };
+            this.resetForm("albumForum");
+        },
+        handleAdd() {
+            this.reset();
+            this.open = true;
             this.title = "新建相册";
-            this.dialogVisible = true;
         },
         handleEdit() {
-            info(this.albumForum.id).then(res => {
+            getAlbum(this.albumForum.id).then(res => {
                 this.albumForum = res.data
             })
             this.title = "修改相册";
             this.isEditForm = true
-            this.dialogVisible = true;
+            this.open = true;
         },
         checkPhoto(item) {
             this.$router.push({ path: '/photos', query: { albumId: item.id } });
@@ -180,14 +187,33 @@ export default {
         beforeUpload() {
             this.imgLoading = true
         },
+        checkUploadFile(file) {
+            const isJPG = file.type == 'image/png' || file.type == 'image/jpg' || file.type == 'image/jpeg';
+            const isLt2M = file.size / 1024 / 1024 < 2;
+            if (!isJPG) {
+                this.$message.error('上传头像图片只能是 JPG/JPEG/PNG 格式!');
+            }
+            if (!isLt2M) {
+                this.$message.error('上传头像图片大小不能超过 2MB!');
+            }
+            return isJPG && isLt2M;
+        },
         uploadSectionFile(param) {
-            this.files = param.file
+            let file = param.file
+            if (!this.checkUploadFile(file)) {
+                return;
+            }
             // FormData 对象
             var formData = new FormData()
             // 文件对象
-            formData.append('multipartFile', this.files)
-            upload(formData).then(res => {
+            formData.append('file', file)
+            console.log(formData);
+            console.log(param);
+
+            uploadImage(formData).then(res => {
                 this.albumForum.cover = res.data
+                this.imgLoading = false
+            }).catch((error) => {
                 this.imgLoading = false
             })
         },
@@ -195,20 +221,20 @@ export default {
             const type = command.substring(0, 6);
             this.albumForum.id = command.substring(6);
             if (type === "delete") {
-                this.deleteAlbum()
+                this.handleDelete()
             } else {
                 this.handleEdit();
             }
         },
-        deleteAlbum() {
+        handleDelete() {
             this.$confirm('此操作将把页面删除, 是否继续?', '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
                 type: 'warning'
             }).then(() => {
-                remove(this.albumForum.id).then(res => {
+                delAlbum(this.albumForum.id).then(res => {
                     this.$message.success("删除相册成功")
-                    this.listAlbums();
+                    this.getList();
                 }).catch(err => {
                     console.log(err)
                 });
@@ -216,18 +242,10 @@ export default {
                 this.$message.info("取消删除")
             })
         },
-        handleFind() {
-            this.params.pageNo = 1;
-            this.listAlbums();
+        handleQuery() {
+            this.queryParams.pageNum = 1;
+            this.getList();
         },
-        sizeChange(size) {
-            this.params.pageSize = size;
-            this.listAlbums();
-        },
-        currentChange(current) {
-            this.params.pageNo = current;
-            this.listAlbums();
-        }
     }
 };
 </script>
