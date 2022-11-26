@@ -1,10 +1,16 @@
 import Vue from "vue";
 import Vuex from "vuex";
+import getters from './getters';
+import blogInfo from "./modules/blogInfo";
 import createPersistedState from "vuex-persistedstate";
 
 Vue.use(Vuex);
 
 export default new Vuex.Store({
+  getters,
+  modules: {
+    blogInfo
+  },
   state: {
     searchFlag: false,
     loginFlag: false,
@@ -24,41 +30,41 @@ export default new Vuex.Store({
     dialogFormVisible: false,
     articleLikeSet: [],
     commentLikeSet: [],
-    blogInfo: {
-      webSite: {
-        authorAvatar: null,
-        authorInfo: null,
-        touristAvatar: null,
-        loginTypeList: "",
-        bulletin: null,
-        aboutMe: null,
-        logo: null,
-        github: null,
-        gitee: null,
-        qqNumber: null,
-        recordNum: null,
-        author: null,
-        aliPay: null,
-        weixinPay: null,
-        keyword: null,
-        name: null,
-        summary: null,
-        webUrl: null,
-        showList: ""
-      },
-      count: {
-        articleCount: null,
-        categoryCount: null,
-        tagCount: null,
-        viewsCount: null
-      },
-      pageList: [
-        {
-          pageCover: null,
-          pageLabel: null
-        }
-      ]
-    }
+    // blogInfo: {
+    //   webSite: {
+    //     authorAvatar: 'https://niu.moonzs.work/2022/11/26/033b678cc9084976bb14f79dc880bde7.jpg',
+    //     authorInfo: null,
+    //     touristAvatar: null,
+    //     loginTypeList: "",
+    //     bulletin: null,
+    //     aboutMe: null,
+    //     logo: null,
+    //     github: null,
+    //     gitee: null,
+    //     qqNumber: null,
+    //     recordNum: null,
+    //     author: null,
+    //     aliPay: null,
+    //     weixinPay: null,
+    //     keyword: null,
+    //     name: null,
+    //     summary: null,
+    //     webUrl: null,
+    //     showList: ""
+    //   },
+    //   count: {
+    //     articleCount: null,
+    //     categoryCount: null,
+    //     tagCount: null,
+    //     viewsCount: null
+    //   },
+    //   pageList: [
+    //     {
+    //       pageCover: 'https://niu.moonzs.work/2022/11/26/eccf3e0f88394c30ab0ac926fc0bd2d0.jpg',
+    //       pageLabel: 'home'
+    //     }
+    //   ]
+    // }
   },
   mutations: {
     login(state, user) {
@@ -132,7 +138,6 @@ export default new Vuex.Store({
     }
   },
   actions: {},
-  modules: {},
   plugins: [
     createPersistedState({
       storage: window.sessionStorage

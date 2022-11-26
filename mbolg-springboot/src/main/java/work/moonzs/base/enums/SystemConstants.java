@@ -33,5 +33,5 @@ public class SystemConstants {
     /**
      * 文件大小限制
      */
-    public static final long FILE_SIZE = 2 * 1024 * 1024L;
+    public static final long FILE_SIZE = 5 * 1024 * 1024L;
 }

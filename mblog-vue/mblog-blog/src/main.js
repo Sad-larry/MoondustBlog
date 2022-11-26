@@ -2,7 +2,8 @@ import Vue from "vue";
 import App from "./App.vue";
 import router from "./router";
 import store from "./store";
-import vuetify from "./plugins/vuetify";
+// 导入vuetify
+import vuetify from "@/plugins/vuetify";
 import animated from "animate.css";
 import "./assets/css/index.css";
 import "./assets/css/iconfont.css";

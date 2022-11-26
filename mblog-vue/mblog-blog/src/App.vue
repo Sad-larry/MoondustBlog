@@ -26,7 +26,7 @@
     <!-- <Player v-if="blogInfo.webSite.isMusicPlayer === 1 && !isMobile" /> -->
     <!-- 聊天室 -->
     <!-- <ChatRoom v-if="0 == 1"></ChatRoom> -->
-    <FeedBack/>
+    <FeedBack />
   </v-app>
 </template>
 
@@ -43,13 +43,8 @@ import EmailModel from "./components/model/EmailModel";
 import Player from "./components/zw-player/player.vue";
 //import ChatRoom from "./components/ChatRoom";
 import FeedBack from "./components/FeedBack";
-import { getWebSiteInfo,report} from './api'
+import { getWebSiteInfo, report } from './api'
 export default {
-  mounted() {
-      // this.getBlogInfo()
-      // 上传访客信息
-      // report();
-  },
   components: {
     TopNavBar,
     Player,
@@ -63,12 +58,10 @@ export default {
     EmailModel,
     FeedBack
   },
-  methods: {
-    getBlogInfo() {
-      getWebSiteInfo().then(res => {
-        this.$store.commit("checkBlogInfo", res.data);
-      });
-    },
+  mounted() {
+    this.getBlogInfo()
+    // 上传访客信息
+    // report();
   },
   computed: {
     blogInfo() {
@@ -80,6 +73,12 @@ export default {
       );
       return flag;
     }
+  },
+  methods: {
+    /** 初始化网页信息 */
+    getBlogInfo() {
+      this.$store.dispatch('blogInfo/initBlogInfo');
+    },
   }
 };
 </script>

@@ -1,6 +1,6 @@
 <template>
   <v-navigation-drawer app v-model="drawer" width="250" disable-resize-watcher right overlay-opacity="0.8">
-    <!-- 博主介绍 -->
+    <!-- 博主头像 -->
     <div class="blogger-info">
       <v-avatar size="110" style="margin-bottom:0.5rem">
         <img :src="this.$store.state.blogInfo.webSite.authorAvatar" />

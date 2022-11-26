@@ -9,11 +9,11 @@ const routes = [
     component: resolve => require(["../views/home/Home.vue"], resolve)
   },
   {
-    path: "/articles/:articleId",
+    path: "/article/:articleId",
     component: resolve => require(["../views/article/Article.vue"], resolve)
   },
   {
-    path: "/archives",
+    path: "/archive",
     component: resolve => require(["../views/archive/Archive.vue"], resolve),
     meta: {
       title: "归档"
@@ -92,6 +92,11 @@ const routes = [
   //   path: "/callback/weibo",
   //   component: resolve => require(["../components/OauthLogin.vue"], resolve)
   // }
+  {
+    path: '*',
+    redirect: '/',
+    hidden: true
+  }
 ];
 
 const router = new VueRouter({

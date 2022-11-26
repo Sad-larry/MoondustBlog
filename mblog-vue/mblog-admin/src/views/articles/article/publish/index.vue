@@ -126,7 +126,7 @@ export default {
     name: "PublishArticle",
     data() {
         return {
-            uploadUrl: process.env.VUE_APP_BASE_API + "/system/uploadImg",
+            uploadUrl: process.env.VUE_APP_BASE_API + "/system/qiniu/file/upload",
             addOrEdit: false,
             autoSave: true,
             categoryName: '',

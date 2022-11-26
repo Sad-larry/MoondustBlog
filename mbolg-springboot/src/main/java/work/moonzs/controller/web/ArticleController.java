@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import work.moonzs.base.annotation.SystemLog;
 import work.moonzs.domain.ResponseResult;
 import work.moonzs.service.ArticleService;
 
@@ -22,6 +23,7 @@ public class ArticleController {
      *
      * @return {@link ResponseResult}
      */
+    @SystemLog(businessName = "获取文章列表")
     @GetMapping("/list")
     public ResponseResult listWebArticle(@RequestParam(defaultValue = "1", required = false) Integer pageNum, @RequestParam(defaultValue = "10", required = false) Integer pageSize) {
         return ResponseResult.success(articleService.listWebArticle(pageNum, pageSize));

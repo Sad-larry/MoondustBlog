@@ -68,8 +68,8 @@ spring:
     password: 1234
     timeout: 10000ms
 mybatis-plus:
-  configuration:
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  #  configuration:
+  #    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
   global-config:
     db-config:
       id-type: AUTO

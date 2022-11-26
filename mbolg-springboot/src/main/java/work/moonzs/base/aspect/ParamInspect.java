@@ -8,7 +8,6 @@ import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.reflect.MethodSignature;
-import org.springframework.stereotype.Component;
 import work.moonzs.base.annotation.ParamCheck;
 import work.moonzs.base.exception.ValidateException;
 import work.moonzs.base.utils.VerifyUtil;
@@ -24,7 +23,6 @@ import java.util.Map;
  * @author Moondust月尘
  */
 @Aspect
-@Component
 @Slf4j
 public class ParamInspect {
 

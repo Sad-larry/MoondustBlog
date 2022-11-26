@@ -1,5 +1,13 @@
 import request from '@/utils/request'
 
+// 获取网站所有信息
+export function getWebSiteInfo() {
+    return request({
+        url: '/web/home/webSiteInfo',
+        method: 'get'
+    })
+}
+
 export function fetchList(params) {
     return request({
         url: '/web/article/list',
@@ -59,13 +67,6 @@ export function fetchFriend() {
     return request({
         url: '/web/friend/list',
         method: 'post',
-        params: {}
-    })
-}
-export function getWebSiteInfo() {
-    return request({
-        url: '/web/home/webSiteInfo',
-        method: 'get',
         params: {}
     })
 }

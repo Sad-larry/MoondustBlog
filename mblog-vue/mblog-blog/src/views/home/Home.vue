@@ -37,14 +37,14 @@
           <!-- 公告 -->
           <div style="display: flex;margin-top: 20px;padding: 1rem 1rem">
             <v-icon style="color: red">mdi-bell-outline</v-icon>
-            <span style="margin-left: 10px">{{ blogInfo.webSite.bulletin }}</span>
+            <span style="margin-left: 10px">{{ blogInfo.webSite.bulletin ? blogInfo.webSite.bulletin : "暂无公告哦" }}</span>
           </div>
         </v-card>
         <v-card class="animated zoomIn article-card" style="border-radius: 12px 8px 8px 12px"
           v-for="(item, index) of articleList" :key="item.id">
           <!-- 文章封面图 -->
           <div :class="isRight(index)">
-            <router-link :to="'/articles/' + item.id">
+            <router-link :to="'/article/' + item.id">
               <v-img class="on-hover" width="100%" height="100%" :src="item.avatar" />
             </router-link>
           </div>
@@ -106,7 +106,7 @@
           <v-card class="animated zoomIn blog-card mt-5">
             <div class="author-wrapper">
               <!-- 博主头像 -->
-              <v-avatar size="110">
+              <v-avatar size="110" rounded>
                 <img class="author-avatar" :src="blogInfo.webSite.authorAvatar" />
               </v-avatar>
               <div style="font-size: 1.375rem">
@@ -189,10 +189,12 @@
                     target="_blank">{{ blogInfo.webSite.qqNumber }}</a></li>
                 <li v-if="isShowSocial(1)" class="email"><a href="javascript:void(0);">{{ blogInfo.webSite.email }}</a>
                 </li>
-                <li v-if="isShowSocial(3)" class="github"><a :href="blogInfo.webSite.github"
-                    target="_blank">{{ blogInfo.webSite.github }}</a></li>
-                <li v-if="isShowSocial(4)" class="gitee"><a :href="blogInfo.webSite.gitee"
-                    target="_blank">{{ blogInfo.webSite.gitee }}</a></li>
+                <li v-if="isShowSocial(3)" class="github"><a :href="blogInfo.webSite.github" target="_blank">{{
+                    blogInfo.webSite.github
+                }}</a></li>
+                <li v-if="isShowSocial(4)" class="gitee"><a :href="blogInfo.webSite.gitee" target="_blank">{{
+                    blogInfo.webSite.gitee
+                }}</a></li>
                 <!-- <li class="wx"><img src="../../../static/images/wx.jpg"></li> -->
               </ul>
             </div>
@@ -273,6 +275,7 @@ export default {
   },
   data: function () {
     return {
+      avatar: require("@/assets/images/profile.jpg"),
       path: process.env.VUE_APP_WEBSOCKET_API,
       socket: "",
       onlineCount: 0,
@@ -436,6 +439,10 @@ export default {
     }
   },
   computed: {
+    // 博客网站信息
+    blogInfo() {
+      return this.$store.state.blogInfo;
+    },
     isRight() {
       return function (index) {
         if (index % 2 === 0) {
@@ -443,9 +450,6 @@ export default {
         }
         return "article-cover right-radius";
       };
-    },
-    blogInfo() {
-      return this.$store.state.blogInfo;
     },
     isShowSocial() {
       return function (social) {
@@ -721,7 +725,7 @@ export default {
 }
 
 .author-avatar:hover {
-  transform: rotate(360deg);
+  transform: scale(1.1);
 }
 
 .web-info {
