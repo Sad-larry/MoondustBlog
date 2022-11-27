@@ -7,6 +7,7 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.springframework.util.StopWatch;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import work.moonzs.base.annotation.SystemLog;
@@ -34,7 +35,11 @@ public class LogAspect {
         Object ret;
         try {
             handleBefore(joinPoint);
+            StopWatch stopWatch = new StopWatch();
+            stopWatch.start();
             ret = joinPoint.proceed();
+            stopWatch.stop();
+            log.info("Time Consuming : {} ms", stopWatch.getLastTaskTimeMillis());
             handleAfter(ret);
         } finally {
             // 结束后换行

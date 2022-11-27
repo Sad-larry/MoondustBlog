@@ -208,8 +208,6 @@ export default {
             var formData = new FormData()
             // 文件对象
             formData.append('file', file)
-            console.log(formData);
-            console.log(param);
 
             uploadImage(formData).then(res => {
                 this.albumForum.cover = res.data

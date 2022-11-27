@@ -297,25 +297,13 @@ export default {
     methods: {
         /** 获取定时任务相关的字典数据 */
         getDictList() {
-            let dictType = 'sys_job_group';
-            getDataByDictType({ "type": dictType }).then(response => {
-                let dictMap = response.data;
+            let params = ['sys_job_group', 'sys_job_status', 'sys_job_misfire']
+            getDataByDictType(params).then(response => {
+                let dictMap = response.data
                 this.jobDictList = dictMap.sys_job_group.list
                 this.jobDictDefaultValue = dictMap.sys_job_group.defaultValue
-            }).catch(err => {
-                console.error(err)
-            })
-            let dictType2 = 'sys_job_status';
-            getDataByDictType({ "type": dictType2 }).then(response => {
-                let dictMap = response.data;
                 this.jobStatusList = dictMap.sys_job_status.list
                 this.jobStatusDefaultValue = dictMap.sys_job_status.defaultValue
-            }).catch(err => {
-                console.error(err)
-            })
-            let dictType3 = 'sys_job_misfire';
-            getDataByDictType({ "type": dictType3 }).then(response => {
-                let dictMap = response.data;
                 this.jobMisfireList = dictMap.sys_job_misfire.list
                 this.jobMisfireDefaultValue = dictMap.sys_job_misfire.defaultValue
             }).catch(err => {

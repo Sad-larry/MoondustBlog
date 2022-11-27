@@ -108,9 +108,6 @@ export default new Vuex.Store({
     updateAvatar(state, avatar) {
       state.avatar = avatar;
     },
-    checkBlogInfo(state, blogInfo) {
-      state.blogInfo = blogInfo;
-    },
     closeModel(state) {
       state.registerFlag = false;
       state.loginFlag = false;
@@ -137,7 +134,6 @@ export default new Vuex.Store({
       state.dialogFormVisible = !state.dialogFormVisible;
     }
   },
-  actions: {},
   plugins: [
     createPersistedState({
       storage: window.sessionStorage

@@ -30,7 +30,7 @@
                             <template>
                                 <img :src="showItem.image" class="image multi-content" />
                                 <div style="padding: 14px;">
-                                    <span>文件名称: {{ showItem.name }}</span>
+                                    <span>文件名称: {{ showItem.image }}</span>
                                     <div class="bottom card-header">
                                         <span class="time">更新时间: {{ showItem.putTime }}</span>
                                     </div>

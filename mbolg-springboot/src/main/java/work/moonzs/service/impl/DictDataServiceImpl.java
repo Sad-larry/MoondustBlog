@@ -79,21 +79,23 @@ public class DictDataServiceImpl extends ServiceImpl<DictDataMapper, DictData> i
     }
 
     @Override
-    public Map<String, Map<String, Object>> getDataByDictType(String type) {
+    public Map<String, Map<String, Object>> getDataByDictType(String[] types) {
         Map<String, Map<String, Object>> result = new HashMap<>();
-        Long dictId = dictService.getIdByDictType(type);
-        List<DictData> list = list(new LambdaQueryWrapper<DictData>().eq(DictData::getDictId, dictId));
-        String defaultDictDataValue = null;
-        for (DictData dictData : list) {
-            if (StatusConstants.NORMAL.equals(dictData.getIsDefault())) {
-                defaultDictDataValue = dictData.getValue();
-                break;
+        for (String type : types) {
+            Long dictId = dictService.getIdByDictType(type);
+            List<DictData> list = list(new LambdaQueryWrapper<DictData>().eq(DictData::getDictId, dictId));
+            String defaultDictDataValue = null;
+            for (DictData dictData : list) {
+                if (StatusConstants.NORMAL.equals(dictData.getIsDefault())) {
+                    defaultDictDataValue = dictData.getValue();
+                    break;
+                }
             }
+            Map<String, Object> map = new HashMap<>();
+            map.put("list", list);
+            map.put("defaultValue", defaultDictDataValue);
+            result.put(type, map);
         }
-        Map<String, Object> map = new HashMap<>();
-        map.put("list", list);
-        map.put("defaultValue", defaultDictDataValue);
-        result.put(type, map);
         return result;
     }
 }

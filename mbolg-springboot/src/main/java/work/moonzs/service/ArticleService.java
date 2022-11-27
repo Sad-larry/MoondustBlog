@@ -98,5 +98,12 @@ public interface ArticleService extends IService<Article> {
      */
     @Transactional
     boolean topArticle(Long articleId, Integer isStick);
+
+    /**
+     * 文章篇数
+     *
+     * @return {@link Long}
+     */
+    Long articleCount();
 }
 

@@ -199,10 +199,10 @@ export default {
             };
         },
         getDictDataList() {
-            let dictType = 'sys_publish_status';
-            getDataByDictType({ "type": dictType }).then(response => {
-                let dictMap = response.data;
-                this.isPublishList = dictMap.sys_publish_status.list;
+            let params = ['sys_publish_status'];
+            getDataByDictType(params).then(response => {
+                let dictMap = response.data
+                this.isPublishList = dictMap.sys_publish_status.list
                 this.publishDefaultValue = dictMap.sys_publish_status.defaultValue
             }).catch(err => {
                 console.error(err)

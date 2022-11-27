@@ -55,10 +55,9 @@ public class ResponseResult extends HashMap<String, Object> {
     private ResponseResult(AppHttpCodeEnum responseEnum, Object data) {
         super.put(CODE_TAG, responseEnum.getCode());
         super.put(MSG_TAG, responseEnum.getMsg());
-        // 本来不知道为啥要加这个，知道想到，如果我data为空，取而代之的是其他数据字段，那么这个就可以用了，比如token
-        if (ObjectUtil.isNotEmpty(data)) {
-            super.put(DATA_TAG, data);
-        }
+        // 本来不知道为啥要加这个，直到想到，如果我data为空，取而代之的是其他数据字段，那么这个就可以用了，比如token
+        // 后面还是取消了非空判断，因为如果前端没有数据的话那么前端对于data数据是未定义的
+        super.put(DATA_TAG, data);
     }
 
     private ResponseResult(Integer code, String msg, Object data) {
@@ -121,9 +120,7 @@ public class ResponseResult extends HashMap<String, Object> {
         //     return fail();
         // }
         // 反射太慢了，性能不好，虽然不容易错，这里直接写死
-        return success()
-                .put("records", pageVO.getRecords())
-                .put("total", pageVO.getTotal());
+        return success().put("records", pageVO.getRecords()).put("total", pageVO.getTotal());
     }
 
     /**

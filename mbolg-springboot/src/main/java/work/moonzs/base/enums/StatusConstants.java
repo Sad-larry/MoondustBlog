@@ -39,4 +39,8 @@ public class StatusConstants {
      * 反馈-缺陷
      */
     public static final Integer FEEDBACK_DEFECTS = 2;
+    /**
+     * SQL语句限制
+     */
+    public static final String LIMIT_ONE = "LIMIT 1";
 }

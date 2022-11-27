@@ -71,9 +71,9 @@ public interface DictDataService extends IService<DictData> {
     /**
      * 根据字典类型获取字典数据
      *
-     * @param type 类型
+     * @param types 类型
      * @return {@link Map}<{@link String}, {@link Map}<{@link String}, {@link Object}>>
      */
-    Map<String, Map<String, Object>> getDataByDictType(String type);
+    Map<String, Map<String, Object>> getDataByDictType(String[] types);
 }
 

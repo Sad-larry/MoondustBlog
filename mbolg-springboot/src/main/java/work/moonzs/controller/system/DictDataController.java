@@ -75,12 +75,12 @@ public class DictDataController {
     /**
      * 根据字典类型获取字典数据
      *
-     * @param type 类型
+     * @param types 类型
      * @return {@link ResponseResult}
      */
     @SystemLog(businessName = "根据字典类型获取字典数据")
-    @GetMapping(value = "/getByType")
-    public ResponseResult getDataByDictType(@RequestParam("type") String type) {
-        return ResponseResult.success(dictDataService.getDataByDictType(type));
+    @PostMapping(value = "/getByType")
+    public ResponseResult getDataByDictType(@RequestBody String[] types) {
+        return ResponseResult.success(dictDataService.getDataByDictType(types));
     }
 }

@@ -177,9 +177,9 @@ export default {
   methods: {
     /** TODO 查询登录方式字典数据 */
     getDictList() {
-      let dictType = 'sys_login_method';
-      getDataByDictType({ "type": dictType }).then(response => {
-        let dictMap = response.data;
+      let params = ['sys_login_method'];
+      getDataByDictType(params).then(response => {
+        let dictMap = response.data
         this.dictLoginTypeList = dictMap.sys_login_method.list
         this.loginTypeDefaultValue = dictMap.sys_login_method.defaultValue
       }).catch(err => {

@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import work.moonzs.base.enums.AppHttpCodeEnum;
+import work.moonzs.base.enums.StatusConstants;
 import work.moonzs.base.utils.BeanCopyUtil;
 import work.moonzs.base.utils.SecurityUtil;
 import work.moonzs.base.web.common.BusinessAssert;
@@ -156,6 +157,13 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         queryWrapper.set(Article::getIsStick, isStick);
         queryWrapper.eq(Article::getId, articleId);
         return update(queryWrapper);
+    }
+
+    @Override
+    public Long articleCount() {
+        LambdaQueryWrapper<Article> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Article::getIsPublish, StatusConstants.NORMAL);
+        return count(queryWrapper);
     }
 }
 

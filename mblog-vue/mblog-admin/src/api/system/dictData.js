@@ -40,7 +40,7 @@ export function delDictData(id) {
 export function getDataByDictType(type) {
   return request({
     url: '/system/dict/data/getByType',
-    method: 'get',
-    params: type
+    method: 'post',
+    data: type
   })
 }

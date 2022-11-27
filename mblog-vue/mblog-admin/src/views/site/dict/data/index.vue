@@ -249,16 +249,11 @@ export default {
             });
         },
         getDictList() {
-            let dictTypes = ['sys_publish_status', 'sys_yes_no'];
-            getDataByDictType({ "type": dictTypes[0] }).then(response => {
-                let dictMap = response.data;
-                this.isPublishList = dictMap.sys_publish_status.list;
+            let params = ['sys_publish_status', 'sys_yes_no'];
+            getDataByDictType(params).then(response => {
+                let dictMap = response.data
+                this.isPublishList = dictMap.sys_publish_status.list
                 this.publishDefaultValue = dictMap.sys_publish_status.defaultValue
-            }).catch(err => {
-                console.error(err)
-            })
-            getDataByDictType({ "type": dictTypes[1] }).then(response => {
-                let dictMap = response.data;
                 this.yesOrNoList = dictMap.sys_yes_no.list
                 this.yesOrNoDefaultValue = dictMap.sys_yes_no.defaultValue
             }).catch(err => {

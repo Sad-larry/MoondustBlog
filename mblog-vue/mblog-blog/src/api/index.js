@@ -1,9 +1,9 @@
 import request from '@/utils/request'
 
 // 获取网站所有信息
-export function getWebSiteInfo() {
+export function getBlogInfo() {
     return request({
-        url: '/web/home/webSiteInfo',
+        url: '/web/home/blogInfo',
         method: 'get'
     })
 }

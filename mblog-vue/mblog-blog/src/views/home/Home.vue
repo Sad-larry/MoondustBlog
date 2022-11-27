@@ -7,7 +7,7 @@
         <h1 class="blog-title animated zoomIn">
           {{ blogInfo.webSite.name }}
         </h1>
-        <!-- 一言 -->
+        <!-- 介绍 -->
         <div class="blog-intro">
           {{ blogInfo.webSite.summary }} <span class="typed-cursor">|</span>
         </div>
@@ -146,61 +146,32 @@
               <v-icon color="#fff" size="18" class="mr-1">mdi-bookmark</v-icon>
               加入书签
             </a>
-            <!-- 社交信息 -->
-            <!--            <div class="card-info-social">
-              <a
-                v-if="isShowSocial('qq')"
-                class="mr-5 iconfont iconqq"
-                target="_blank"
-                :href="
-                  'http://wpa.qq.com/msgrd?v=3&uin=' +
-                    blogInfo.webSite.qqNumber+
-                    '&site=qq&menu=yes'
-                "
-              />
-              <a
-                v-if="isShowSocial('github')"
-                target="_blank"
-                :href="blogInfo.webSite.github"
-                class="mr-5 iconfont icongithub"
-              />
-              <a
-                v-if="isShowSocial('gitee')"
-                target="_blank"
-                :href="blogInfo.webSite.gitee"
-                class="iconfont icongitee-fill-round"
-              />
-            </div>-->
           </v-card>
           <!-- 网站信息 -->
-          <v-card class="blog-card animated zoomIn mt-5 big">
+          <v-card v-if="isCouldShowSocial()" class="blog-card animated zoomIn mt-5 big">
             <div class="web-info-title">
               <v-icon size="18">mdi-account</v-icon>
               关注我们
             </div>
             <div class="guanzhu" id="follow-us" ref="follow">
-              <!--              {{blogInfo.webSite.bulletin}}-->
               <ul>
-                <!--                <li class="qqGroup">
-                  <a href="javascript:void(0);">{{ blogInfo.webSite.qqNumber}}</a>
-                </li>-->
+                <li v-if="isShowSocial(1)" class="email"><a href="javascript:void(0);">{{ blogInfo.webSite.email }}</a>
+                </li>
                 <li v-if="isShowSocial(2)" class="qq"><a
                     :href="'tencent://AddContact/?fromId=50&fromSubId=1&subcmd=all&uin=' + blogInfo.webSite.qqNumber"
                     target="_blank">{{ blogInfo.webSite.qqNumber }}</a></li>
-                <li v-if="isShowSocial(1)" class="email"><a href="javascript:void(0);">{{ blogInfo.webSite.email }}</a>
-                </li>
                 <li v-if="isShowSocial(3)" class="github"><a :href="blogInfo.webSite.github" target="_blank">{{
                     blogInfo.webSite.github
                 }}</a></li>
                 <li v-if="isShowSocial(4)" class="gitee"><a :href="blogInfo.webSite.gitee" target="_blank">{{
                     blogInfo.webSite.gitee
                 }}</a></li>
-                <!-- <li class="wx"><img src="../../../static/images/wx.jpg"></li> -->
               </ul>
             </div>
           </v-card>
           <v-card class="blog-card animated zoomIn mt-5">
-            <div id="he-plugin-standard"></div>
+            <!-- 和风天气插件 -->
+            <moon-weather/>
           </v-card>
           <!-- 网站信息 -->
           <v-card class="blog-card animated zoomIn mt-5">
@@ -236,34 +207,6 @@
 import EasyTyper from "easy-typer-js";
 import { fetchList, addFeedback } from '../../api'
 export default {
-  created() {
-    this.init();
-    this.timer = setInterval(this.runTime, 1000);
-  },
-  destroyed() {
-    // 销毁监听
-    // this.socket.onclose = this.close
-  },
-  beforeDestroy() {
-    clearInterval(this.heartBeat);
-  },
-  mounted: function () {
-    window.WIDGET = {
-      "CONFIG": {
-        "layout": "2",
-        "width": 230,
-        "height": 300,
-        "background": "2",
-        "dataColor": "000000",
-        "borderRadius": "5",
-        "key": "4034255d0cc94897b5f745367ccb81f2"
-      }
-    };
-    let script = document.createElement("script");
-    script.type = "text/javascript";
-    // script.src = "https://widget.qweather.net/standard/static/js/he-standard-common.js?v=2.0";
-    document.getElementsByTagName("head")[0].appendChild(script)
-  },
   metaInfo: {
     meta: [{
       name: 'keyWords',
@@ -273,7 +216,7 @@ export default {
       content: "一个专注于技术分享的博客平台,大家以共同学习,乐于分享,拥抱开源的价值观进行学习交流"
     }]
   },
-  data: function () {
+  data() {
     return {
       avatar: require("@/assets/images/profile.jpg"),
       path: process.env.VUE_APP_WEBSOCKET_API,
@@ -321,6 +264,45 @@ export default {
         ]
       },
     };
+  },
+  created() {
+    this.init();
+    this.timer = setInterval(this.runTime, 1000);
+  },
+  computed: {
+    // 博客网站信息
+    blogInfo() {
+      return this.$store.state.blogInfo;
+    },
+    isRight() {
+      return function (index) {
+        if (index % 2 === 0) {
+          return "article-cover left-radius";
+        }
+        return "article-cover right-radius";
+      };
+    },
+    // 根据是否有数据判断是否展示联系信息
+    isCouldShowSocial() {
+      return function () {
+        let sList = this.$store.state.blogInfo.webSite.showList;
+        return sList && sList.length > 0;
+      }
+    },
+    isShowSocial() {
+      return function (social) {
+        return this.$store.state.blogInfo.webSite.showList.indexOf(social) != -1;
+      };
+    },
+    cover() {
+      var cover = "";
+      this.$store.state.blogInfo.pageList.forEach(item => {
+        if (item.pageLabel === "home") {
+          cover = item.pageCover;
+        }
+      });
+      return "background: url(" + cover + ") center center / cover no-repeat";
+    }
   },
   methods: {
     screenshot() {
@@ -438,34 +420,13 @@ export default {
       console.log("socket已经关闭")
     }
   },
-  computed: {
-    // 博客网站信息
-    blogInfo() {
-      return this.$store.state.blogInfo;
-    },
-    isRight() {
-      return function (index) {
-        if (index % 2 === 0) {
-          return "article-cover left-radius";
-        }
-        return "article-cover right-radius";
-      };
-    },
-    isShowSocial() {
-      return function (social) {
-        return this.$store.state.blogInfo.webSite.showList.indexOf(social) != -1;
-      };
-    },
-    cover() {
-      var cover = "";
-      this.$store.state.blogInfo.pageList.forEach(item => {
-        if (item.pageLabel === "home") {
-          cover = item.pageCover;
-        }
-      });
-      return "background: url(" + cover + ") center center / cover no-repeat";
-    }
-  }
+  destroyed() {
+    // 销毁监听
+    // this.socket.onclose = this.close
+  },
+  beforeDestroy() {
+    clearInterval(this.heartBeat);
+  },
 };
 </script>
 
@@ -498,7 +459,7 @@ export default {
 .banner-container {
   margin-top: 43vh;
   line-height: 1.5;
-  color: #eee;
+  color: #2f3640;
 }
 
 .blog-contact a {
