@@ -4,9 +4,11 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import org.springframework.transaction.annotation.Transactional;
 import work.moonzs.domain.dto.ArticleDTO;
 import work.moonzs.domain.entity.Article;
-import work.moonzs.domain.vo.ArticlePreviewVo;
 import work.moonzs.domain.vo.ArticleVo;
 import work.moonzs.domain.vo.PageVO;
+import work.moonzs.domain.vo.web.ArticleBaseVO;
+import work.moonzs.domain.vo.web.ArticleInfoVO;
+import work.moonzs.domain.vo.web.ArticlePreviewVO;
 
 import java.util.List;
 
@@ -80,16 +82,6 @@ public interface ArticleService extends IService<Article> {
     boolean deleteArticle(Long[] articleIds);
 
     /**
-     * 文章列表
-     *
-     * @param pageNum  1
-     * @param pageSize 10
-     * @return {@link PageVO}<{@link ArticleVo}>
-     */
-    @Transactional(readOnly = true)
-    PageVO<ArticlePreviewVo> listWebArticle(Integer pageNum, Integer pageSize);
-
-    /**
      * 置顶文章
      *
      * @param articleId 文章id
@@ -105,5 +97,50 @@ public interface ArticleService extends IService<Article> {
      * @return {@link Long}
      */
     Long articleCount();
+
+    /**
+     * 文章列表
+     *
+     * @param pageNum  1
+     * @param pageSize 10
+     * @return {@link PageVO}<{@link ArticlePreviewVO}>
+     */
+    @Transactional(readOnly = true)
+    PageVO<ArticlePreviewVO> listWebArticle(Integer pageNum, Integer pageSize, Long categoryId, Long tagId);
+
+    /**
+     * 获取文章详细信息
+     *
+     * @param articleId 文章id
+     * @return {@link ArticleInfoVO}
+     */
+    ArticleInfoVO getArticleInfo(Long articleId);
+
+    /**
+     * 查询除该文章之外的最新文章
+     *
+     * @param articleId 文章id
+     * @return {@link List}<{@link ArticleBaseVO}>
+     */
+    List<ArticleBaseVO> getNewestArticles(Long articleId);
+
+    /**
+     * 查询该文章下一篇或上一篇文章
+     * type = 0, 查询上一篇文章
+     * type = 1, 查询下一篇文章
+     *
+     * @param articleId 文章id
+     * @param type      类型
+     * @return {@link ArticleBaseVO}
+     */
+    ArticleBaseVO getNextOrLastArticle(Long articleId, Integer type);
+
+    /**
+     * 推荐文章列表
+     *
+     * @param articleId 文章id
+     * @return {@link List}<{@link ArticleBaseVO}>
+     */
+    List<ArticleBaseVO> listRecommendArticle(Long articleId);
 }
 

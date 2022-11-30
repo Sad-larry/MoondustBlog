@@ -6,6 +6,9 @@ import work.moonzs.domain.entity.Comment;
 import work.moonzs.domain.vo.CommentVo;
 import work.moonzs.domain.vo.PageVO;
 import work.moonzs.domain.vo.sys.SysCommentVO;
+import work.moonzs.domain.vo.web.CommentVO;
+
+import java.util.List;
 
 /**
  * 评论表(Comment)表服务接口
@@ -33,5 +36,13 @@ public interface CommentService extends IService<Comment> {
      */
     @Transactional
     boolean deleteComment(Long[] commentIds);
+
+    /**
+     * 文章评论列表
+     *
+     * @param articleId 文章id
+     * @return {@link List}<{@link CommentVO}>
+     */
+    List<CommentVO> listArticleComment(Long articleId);
 }
 

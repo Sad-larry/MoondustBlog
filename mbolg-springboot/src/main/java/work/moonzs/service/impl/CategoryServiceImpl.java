@@ -12,6 +12,7 @@ import work.moonzs.base.web.common.BusinessAssert;
 import work.moonzs.domain.entity.Category;
 import work.moonzs.domain.vo.CategoryVo;
 import work.moonzs.domain.vo.PageVO;
+import work.moonzs.domain.vo.web.CategoryVO;
 import work.moonzs.mapper.CategoryMapper;
 import work.moonzs.service.CategoryService;
 
@@ -118,6 +119,20 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
             return category.getId();
         }
         return categoryId;
+    }
+
+    @Override
+    public List<CategoryVO> listWebCategory() {
+        // 前端博客页面只需 id,name 属性就可
+        return BeanCopyUtil.copyBeanList(baseMapper.listWebCategory(), CategoryVO.class);
+    }
+
+    @Override
+    public CategoryVO getBlogCategoryById(Long articleId) {
+        Category category = getOne(new LambdaQueryWrapper<Category>()
+                .select(Category::getId, Category::getName)
+                .eq(Category::getId, articleId));
+        return BeanCopyUtil.copyBean(category, CategoryVO.class);
     }
 }
 

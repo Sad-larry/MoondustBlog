@@ -27,8 +27,8 @@ public class ArticleDTO {
      * id
      */
     @ApiModelProperty(notes = "id")
-    @Null(message = "添加文章时id必须为NULL", groups = VG.Insert.class)
-    @NotNull(message = "文章id不能为NULL", groups = {VG.Update.class, Default.class})
+    @Null(message = "{ArticleDTO.id.Null}", groups = VG.Insert.class)
+    @NotNull(message = "{ArticleDTO.id.NotNull}", groups = {VG.Update.class, Default.class})
     private Long id;
     /**
      * 用户id
@@ -39,7 +39,7 @@ public class ArticleDTO {
      * 标题
      */
     @ApiModelProperty(notes = "文章标题")
-    @NotBlank(message = "文章'标题'不能为空", groups = {VG.Insert.class, VG.Update.class})
+    @NotBlank(message = "{ArticleDTO.title.NotBlank}", groups = {VG.Insert.class, VG.Update.class})
     private String title;
     /**
      * 文章封面地址

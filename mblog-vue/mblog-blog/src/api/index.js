@@ -8,6 +8,7 @@ export function getBlogInfo() {
     })
 }
 
+// 文章列表接口
 export function fetchList(params) {
     return request({
         url: '/web/article/list',
@@ -15,13 +16,22 @@ export function fetchList(params) {
         params: params
     })
 }
-export function getArticleInfo(id) {
+
+// 通过分类或标签id获取文章列表
+export function getArticlesByQuaryId(params) {
+    return request({
+        url: '/web/article/condition',
+        method: 'get',
+        params: params
+    })
+}
+
+// 获取文章详细信息
+export function getArticleInfo(params) {
     return request({
         url: '/web/article/info',
         method: 'get',
-        params: {
-            id:id
-        }
+        params: params
     })
 }
 export function searchArticle(keywords) {
@@ -33,14 +43,7 @@ export function searchArticle(keywords) {
         }
     })
 }
-//分类标签id获取文章
-export function queryIdToArticles(params) {
-    return request({
-        url: '/web/article/condition',
-        method: 'get',
-        params: params
-    })
-}
+
 export function like(id) {
     return request({
         url: '/web/article/articleLike',
@@ -48,13 +51,23 @@ export function like(id) {
         params: {articleId:id}
     })
 }
-export function checkSecret(params) {
+
+// 分类接口
+export function getCategory() {
     return request({
-        url: '/web/article/checkSecret',
+        url: '/web/category/list',
         method: 'get',
-        params: params
     })
 }
+
+//标签接口
+export function getTags() {
+    return request({
+        url: '/web/tag/list',
+        method: 'get',
+    })
+}
+
 //友链页面请求接口
 export function addLink(data) {
     return request({
@@ -112,22 +125,6 @@ export function repliesByComId(params) {
       })
 }
 
-//标签接口
-export function getTags() {
-    return request({
-        url: '/web/tags/list',
-        method: 'get',
-        params: {}
-    })
-}
-//分类接口
-export function getCategory() {
-    return request({
-        url: '/web/tags/categoryList',
-        method: 'get',
-        params: {}
-    })
-}
 //归档接口
 export function getArchive(params) {
     return request({

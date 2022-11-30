@@ -40,7 +40,20 @@ public class StatusConstants {
      */
     public static final Integer FEEDBACK_DEFECTS = 2;
     /**
-     * SQL语句限制
+     * SQL语句限制 限制 1 条数据
      */
     public static final String LIMIT_ONE = "LIMIT 1";
+    /**
+     * SQL语句限制 限制 5 条数据
+     */
+    public static final String LIMIT_FIVE = "LIMIT 5";
+
+    /**
+     * 上一篇文章
+     */
+    public static final Integer LAST_ARTICLE = 0;
+    /**
+     * 下一篇文章
+     */
+    public static final Integer NEXT_ARTICLE = 1;
 }

@@ -1,5 +1,6 @@
 package work.moonzs.service.impl;
 
+import cn.hutool.core.util.ObjUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -14,13 +15,17 @@ import work.moonzs.base.web.common.BusinessAssert;
 import work.moonzs.domain.dto.ArticleDTO;
 import work.moonzs.domain.entity.Article;
 import work.moonzs.domain.entity.Tag;
-import work.moonzs.domain.vo.ArticlePreviewVo;
 import work.moonzs.domain.vo.ArticleVo;
 import work.moonzs.domain.vo.PageVO;
+import work.moonzs.domain.vo.web.ArticleBaseVO;
+import work.moonzs.domain.vo.web.ArticleInfoVO;
+import work.moonzs.domain.vo.web.ArticlePreviewVO;
 import work.moonzs.mapper.ArticleMapper;
 import work.moonzs.mapper.TagMapper;
 import work.moonzs.service.ArticleService;
 import work.moonzs.service.CategoryService;
+import work.moonzs.service.CommentService;
+import work.moonzs.service.TagService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +42,10 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     private TagMapper tagMapper;
     @Autowired
     private CategoryService categoryService;
+    @Autowired
+    private TagService tagService;
+    @Autowired
+    private CommentService commentService;
 
     @Override
     public boolean publishArticle(ArticleDTO articleDTO) {
@@ -139,18 +148,6 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         }
     }
 
-    // ----- 前端接口部分 -----
-
-    @Override
-    public PageVO<ArticlePreviewVo> listWebArticle(Integer pageNum, Integer pageSize) {
-        Page<Article> page = new Page<>(pageNum, pageSize);
-        List<ArticlePreviewVo> articlePreviews = baseMapper.listPreviewPage(page);
-        articlePreviews.forEach(item -> {
-            item.setTagVoList(tagMapper.selectByArticleId(item.getId()));
-        });
-        return new PageVO<>(articlePreviews, page.getTotal());
-    }
-
     @Override
     public boolean topArticle(Long articleId, Integer isStick) {
         LambdaUpdateWrapper<Article> queryWrapper = new LambdaUpdateWrapper<>();
@@ -159,11 +156,84 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         return update(queryWrapper);
     }
 
+    // ----- 前端接口部分 -----
+
     @Override
     public Long articleCount() {
         LambdaQueryWrapper<Article> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Article::getIsPublish, StatusConstants.NORMAL);
         return count(queryWrapper);
+    }
+
+    @Override
+    public PageVO<ArticlePreviewVO> listWebArticle(Integer pageNum, Integer pageSize, Long categoryId, Long tagId) {
+        Page<Article> page = new Page<>(pageNum, pageSize);
+        List<ArticlePreviewVO> articlePreviews = baseMapper.listPreviewPage(page, categoryId, tagId);
+        articlePreviews.forEach(item -> {
+            item.setTagVOList(tagService.getBlogTagsByArticleId(item.getId()));
+        });
+        return new PageVO<>(articlePreviews, page.getTotal());
+    }
+
+    @Override
+    public ArticleInfoVO getArticleInfo(Long articleId) {
+        // 根据 ID 查询文章
+        ArticleInfoVO blogArticle = BeanCopyUtil.copyBean(getById(articleId), ArticleInfoVO.class);
+        // 设置分类
+        blogArticle.setCategory(categoryService.getBlogCategoryById(blogArticle.getCategoryId()));
+        // 设置标签
+        blogArticle.setTagList(tagService.getBlogTagsByArticleId(blogArticle.getId()));
+        // 评论
+        blogArticle.setComments(commentService.listArticleComment(blogArticle.getId()));
+        // 最新文章
+        blogArticle.setNewestArticleList(getNewestArticles(blogArticle.getId()));
+        // 查询上一篇下一篇文章
+        blogArticle.setLastArticle(getNextOrLastArticle(blogArticle.getId(), StatusConstants.LAST_ARTICLE));
+        blogArticle.setNextArticle(getNextOrLastArticle(blogArticle.getId(), StatusConstants.NEXT_ARTICLE));
+        // 相关推荐
+        blogArticle.setRecommendArticleList(listRecommendArticle(blogArticle.getId()));
+        // TODO redis 封装点赞量和浏览量
+        // TODO redis 增加文章阅读量
+        return blogArticle;
+    }
+
+    @Override
+    public List<ArticleBaseVO> getNewestArticles(Long articleId) {
+        LambdaQueryWrapper<Article> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.select(Article::getId, Article::getTitle, Article::getAvatar, Article::getCreateTime)
+                .eq(Article::getIsPublish, StatusConstants.NORMAL)
+                .ne(Article::getId, articleId)
+                .orderByDesc(Article::getId)
+                .last(StatusConstants.LIMIT_FIVE);
+        return BeanCopyUtil.copyBeanList(list(queryWrapper), ArticleBaseVO.class);
+    }
+
+    @Override
+    public ArticleBaseVO getNextOrLastArticle(Long articleId, Integer type) {
+        boolean queryLast = StatusConstants.LAST_ARTICLE.equals(type);
+        boolean queryNext = StatusConstants.NEXT_ARTICLE.equals(type);
+        // 查询上一篇文章和查询下一篇文章，同为真或同为假则返回失败
+        if (queryLast == queryNext) {
+            BusinessAssert.fail(AppHttpCodeEnum.BLOG_NOT_EXIST);
+        }
+        LambdaQueryWrapper<Article> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.select(Article::getId, Article::getTitle, Article::getAvatar)
+                .eq(Article::getIsPublish, StatusConstants.NORMAL)
+                // 当查询上一篇文章时，条件符合 id < this.id
+                .lt(queryLast, Article::getId, articleId)
+                .gt(queryNext, Article::getId, articleId)
+                // 当查询上一篇文章，条件符合 id 依次递减找最大值，否则 id 依次递增找最小值
+                .orderByDesc(queryLast, Article::getId)
+                .orderByAsc(queryNext, Article::getId)
+                .last(StatusConstants.LIMIT_ONE);
+        // 当有多个或没有时不抛出异常
+        Article one = getOne(queryWrapper, false);
+        return ObjUtil.isNotNull(one) ? BeanCopyUtil.copyBean(one, ArticleBaseVO.class) : null;
+    }
+
+    @Override
+    public List<ArticleBaseVO> listRecommendArticle(Long articleId) {
+        return baseMapper.listRecommendArticle(articleId);
     }
 }
 

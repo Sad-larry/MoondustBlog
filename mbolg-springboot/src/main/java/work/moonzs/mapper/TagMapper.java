@@ -3,7 +3,7 @@ package work.moonzs.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
 import work.moonzs.domain.entity.Tag;
-import work.moonzs.domain.vo.TagVo;
+import work.moonzs.domain.vo.web.TagVO;
 
 import java.util.List;
 import java.util.Map;
@@ -19,9 +19,9 @@ public interface TagMapper extends BaseMapper<Tag> {
      * 选择文章id查询文章的标签
      *
      * @param articleId 文章id
-     * @return {@link List}<{@link Tag}>
+     * @return {@link List}<{@link TagVO}>
      */
-    List<TagVo> selectByArticleId(Long articleId);
+    List<TagVO> selectByArticleId(Long articleId);
 
     /**
      * 通过文章id获取标签列表

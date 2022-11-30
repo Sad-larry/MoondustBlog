@@ -16,7 +16,7 @@
         <foreach collection="articleIds" item="articleId" index="index" separator="," open="(" close=")">
             #{articleId}</foreach>;
     </delete>
-    <select id="selectByArticleId" resultType="work.moonzs.domain.vo.TagVo">
+    <select id="selectByArticleId" resultType="work.moonzs.domain.vo.web.TagVO">
         SELECT id, name
         FROM t_tag
         WHERE id IN (SELECT tag_id FROM t_article_tag WHERE article_id = #{articleId});

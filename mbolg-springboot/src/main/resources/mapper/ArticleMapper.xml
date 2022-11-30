@@ -37,18 +37,38 @@
                  LEFT JOIN (SELECT id, name from t_category) c on a.category_id = c.id
         where a.id = #{id}
     </select>
-    <select id="listPreviewPage" resultType="work.moonzs.domain.vo.ArticlePreviewVo">
-        SELECT a.id          AS id,
-               a.title       AS title,
-               a.avatar      AS avatar,
-               a.content_md  AS contentMd,
-               a.is_stick    AS isStick,
-               a.create_time AS createTime,
-               c.id          AS categoryId,
-               c.name        AS categoryName
+    <select id="listPreviewPage" resultType="work.moonzs.domain.vo.web.ArticlePreviewVO">
+        SELECT a.id AS id,
+        a.title AS title,
+        a.avatar AS avatar,
+        a.content_md AS contentMd,
+        a.is_stick AS isStick,
+        a.create_time AS createTime,
+        c.id AS categoryId,
+        c.name AS categoryName
         FROM t_article a
-                 JOIN t_category c ON a.category_id = c.id
+        JOIN t_category c ON a.category_id = c.id
         WHERE a.is_publish = 1
+        <if test="categoryId != null">
+            AND a.category_id = #{categoryId}
+        </if>
+        <if test="tagId != null">
+            AND a.id IN
+            (SELECT article_id FROM t_article_tag WHERE tag_id = #{tagId})
+        </if>
         ORDER BY a.is_stick DESC, a.create_time desc
+    </select>
+    <select id="listRecommendArticle" resultType="work.moonzs.domain.vo.web.ArticleBaseVO">
+        SELECT id, title, avatar, create_time
+        FROM (
+                 SELECT DISTINCT article_id
+                 FROM (SELECT tag_id FROM t_article_tag WHERE article_id = #{articleId}) at
+                          JOIN t_article_tag at1 ON at.tag_id = at1.tag_id
+                 WHERE article_id != #{articleId}
+             ) a1
+                 JOIN t_article a ON a1.article_id = a.id
+        WHERE a.is_publish = 1
+        ORDER BY is_stick DESC, id DESC
+        LIMIT 6;
     </select>
 </mapper>

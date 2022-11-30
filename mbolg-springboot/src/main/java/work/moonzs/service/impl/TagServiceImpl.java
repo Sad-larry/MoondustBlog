@@ -12,6 +12,7 @@ import work.moonzs.base.web.common.BusinessAssert;
 import work.moonzs.domain.entity.Tag;
 import work.moonzs.domain.vo.PageVO;
 import work.moonzs.domain.vo.TagVo;
+import work.moonzs.domain.vo.web.TagVO;
 import work.moonzs.mapper.TagMapper;
 import work.moonzs.service.TagService;
 
@@ -96,6 +97,17 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, Tag> implements TagSe
     @Override
     public String getTagStrByArticleId(Long articleId) {
         return getBaseMapper().getTagsByArticleId(articleId);
+    }
+
+    @Override
+    public List<TagVO> listWebTag() {
+        List<Tag> list = list(new LambdaQueryWrapper<Tag>().select(Tag::getId, Tag::getName));
+        return BeanCopyUtil.copyBeanList(list, TagVO.class);
+    }
+
+    @Override
+    public List<TagVO> getBlogTagsByArticleId(Long id) {
+        return baseMapper.selectByArticleId(id);
     }
 }
 

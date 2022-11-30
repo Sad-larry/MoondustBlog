@@ -6,14 +6,10 @@
     </div>
     <!-- 标签列表 -->
     <v-card class="blog-container">
-      <div class="tag-cloud-title">标签 - {{tagList.length}}</div>
+      <div class="tag-cloud-title">标签 - {{ tagList.length }}</div>
       <div class="tag-cloud">
-        <router-link
-          :style="{ 'font-size': Math.floor(Math.random() * 10) + 18 + 'px' }"
-          v-for="item of tagList"
-          :key="item.id"
-          :to="'/tags/' + item.id"
-        >
+        <router-link :style="{ 'font-size': Math.floor(Math.random() * 10) + 18 + 'px' }" v-for="item of tagList"
+          :key="item.id" :to="'/tags/' + item.id">
           {{ item.name }}
         </router-link>
       </div>
@@ -22,21 +18,12 @@
 </template>
 
 <script>
-import {getTags} from '../../api'
+import { getTags } from '@/api'
 export default {
-  metaInfo:{
-    meta: [{
-      name: 'keyWords',
-      content: "拾壹博客,开源博客,www.shiyit.com"  //变量或字符串
-    }, {
-      name: 'description',
-      content: "一个专注于技术分享的博客平台,大家以共同学习,乐于分享,拥抱开源的价值观进行学习交流"
-    }]
-  },
   created() {
     this.listTags();
   },
-  data: function() {
+  data: function () {
     return {
       tagList: [],
       count: 0
@@ -69,14 +56,17 @@ export default {
   font-size: 36px;
   text-align: center;
 }
+
 @media (max-width: 759px) {
   .tag-cloud-title {
     font-size: 25px;
   }
 }
+
 .tag-cloud {
   text-align: center;
 }
+
 .tag-cloud a {
   color: #616161;
   display: inline-block;
@@ -85,6 +75,7 @@ export default {
   line-height: 2;
   transition: all 0.3s;
 }
+
 .tag-cloud a:hover {
   color: #03a9f4 !important;
   transform: scale(1.1);

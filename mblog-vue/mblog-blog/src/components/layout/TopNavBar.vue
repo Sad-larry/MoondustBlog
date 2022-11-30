@@ -116,7 +116,7 @@
 </template>
 
 <script>
-import { logout } from "../../api";
+import { logout } from "@/api";
 
 export default {
   mounted() {

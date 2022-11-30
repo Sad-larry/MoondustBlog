@@ -5,6 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 import work.moonzs.domain.entity.Tag;
 import work.moonzs.domain.vo.PageVO;
 import work.moonzs.domain.vo.TagVo;
+import work.moonzs.domain.vo.web.TagVO;
 
 import java.util.List;
 
@@ -83,5 +84,20 @@ public interface TagService extends IService<Tag> {
      * @return {@link String}
      */
     String getTagStrByArticleId(Long articleId);
+
+    /**
+     * 前端博客标签列表
+     *
+     * @return {@link List}<{@link TagVO}>
+     */
+    List<TagVO> listWebTag();
+
+    /**
+     * 通过文章id获取标签
+     *
+     * @param id id
+     * @return {@link List}<{@link TagVO}>
+     */
+    List<TagVO> getBlogTagsByArticleId(Long id);
 }
 

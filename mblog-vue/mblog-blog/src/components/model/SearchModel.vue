@@ -60,7 +60,7 @@ export default {
   methods: {
     goTo(articleId) {
       this.$store.state.searchFlag = false;
-      this.$router.push({ path: "/articles/" + articleId });
+      this.$router.push({ path: "/article/" + articleId });
     }
   },
   computed: {

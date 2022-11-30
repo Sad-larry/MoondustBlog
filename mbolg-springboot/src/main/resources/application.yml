@@ -54,9 +54,9 @@ spring:
     pathmatch:
       # 配置swagger3需要以下配置
       matching-strategy: ant_path_matcher
-  jackson:
-    time-zone: GMT+8
-    date-format: yyyy-MM-dd HH:mm:ss
+  #  jackson:
+  #    time-zone: GMT+8
+  #    date-format: yyyy-MM-dd HH:mm:ss
   servlet:
     multipart:
       max-file-size: 2MB
@@ -73,6 +73,7 @@ mybatis-plus:
   global-config:
     db-config:
       id-type: AUTO
+    banner: false
 oss:
   qiniu:
     access-key: IzTywocCdtTl4ASlp5WRNDf4jPEDIESEy0W-NM53

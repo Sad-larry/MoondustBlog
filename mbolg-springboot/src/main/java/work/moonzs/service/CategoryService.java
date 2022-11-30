@@ -5,6 +5,9 @@ import org.springframework.transaction.annotation.Transactional;
 import work.moonzs.domain.entity.Category;
 import work.moonzs.domain.vo.CategoryVo;
 import work.moonzs.domain.vo.PageVO;
+import work.moonzs.domain.vo.web.CategoryVO;
+
+import java.util.List;
 
 /**
  * 博客分类表(Category)表服务接口
@@ -83,5 +86,21 @@ public interface CategoryService extends IService<Category> {
      * @return {@link Long}
      */
     Long insertCategoryWithName(String categoryName);
+
+    /**
+     * 前端博客分类列表
+     *
+     * @return {@link List}<{@link CategoryVo}>
+     */
+    List<CategoryVO> listWebCategory();
+
+
+    /**
+     * 通过文章分类id获取分类
+     *
+     * @param articleId 文章id
+     * @return {@link CategoryVO}
+     */
+    CategoryVO getBlogCategoryById(Long articleId);
 }
 

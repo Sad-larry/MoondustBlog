@@ -1,11 +1,14 @@
 package work.moonzs.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 import work.moonzs.domain.entity.Comment;
 import work.moonzs.domain.vo.PageVO;
 import work.moonzs.domain.vo.sys.SysCommentVO;
+import work.moonzs.domain.vo.web.CommentVO;
 import work.moonzs.mapper.CommentMapper;
 import work.moonzs.service.CommentService;
 
@@ -30,6 +33,19 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
     @Override
     public boolean deleteComment(Long[] commentIds) {
         return removeBatchByIds(List.of(commentIds));
+    }
+
+    @Override
+    public List<CommentVO> listArticleComment(Long articleId) {
+        LambdaQueryWrapper<Comment> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Comment::getArticleId, articleId);
+        List<Comment> list = list(queryWrapper);
+        // 如果查询到该文章的评论为空，则直接返回空
+        if (CollUtil.isEmpty(list)) {
+            return null;
+        }
+        // TODO 明天再做
+        return null;
     }
 }
 

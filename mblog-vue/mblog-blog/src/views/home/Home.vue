@@ -52,7 +52,7 @@
           <div class="article-wrapper">
             <div style="line-height:1.4">
               <div>
-                <router-link :to="'/articles/' + item.id">
+                <router-link :to="'/article/' + item.id">
                   {{ item.title }}
                 </router-link>
                 <span v-if="item.quantity >= 1000 && item.quantity < 10000"
@@ -205,20 +205,10 @@
 
 <script>
 import EasyTyper from "easy-typer-js";
-import { fetchList, addFeedback } from '../../api'
+import { fetchList, addFeedback } from '@/api'
 export default {
-  metaInfo: {
-    meta: [{
-      name: 'keyWords',
-      content: "拾壹博客,开源博客,www.shiyit.com"  //变量或字符串
-    }, {
-      name: 'description',
-      content: "一个专注于技术分享的博客平台,大家以共同学习,乐于分享,拥抱开源的价值观进行学习交流"
-    }]
-  },
   data() {
     return {
-      avatar: require("@/assets/images/profile.jpg"),
       path: process.env.VUE_APP_WEBSOCKET_API,
       socket: "",
       onlineCount: 0,
