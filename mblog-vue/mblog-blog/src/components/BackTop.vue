@@ -15,21 +15,18 @@
 
 <script>
 export default {
-  mounted() {
-    window.addEventListener("scroll", this.scrollToTop);
-  },
-  destroyed() {
-    window.removeEventListener("scroll", this.scrollToTop);
-  },
-  data: function() {
+  data() {
     return {
       isShow: "",
       isOut: "rightside-out",
       icon: "iconyueliang"
     };
   },
+  mounted() {
+    window.addEventListener("scroll", this.scrollToTop);
+  },
   methods: {
-    openFeedback(){
+    openFeedback() {
       this.$store.commit("setDialogFormVisible");
     },
     // 回到顶部方法
@@ -62,7 +59,10 @@ export default {
       this.icon = flag ? "icontaiyang" : "iconyueliang";
       this.$vuetify.theme.dark = !this.$vuetify.theme.dark;
     }
-  }
+  },
+  destroyed() {
+    window.removeEventListener("scroll", this.scrollToTop);
+  },
 };
 </script>
 
@@ -74,16 +74,20 @@ export default {
   bottom: 85px;
   transition: all 0.5s;
 }
+
 .rightside-config-hide {
   transform: translate(35px, 0);
 }
+
 .rightside-out {
   animation: rightsideOut 0.3s;
 }
+
 .rightside-in {
   transform: translate(0, 0) !important;
   animation: rightsideIn 0.3s;
 }
+
 .rightside-icon,
 .setting-container {
   display: block;
@@ -97,34 +101,42 @@ export default {
   line-height: 30px;
   cursor: pointer;
 }
+
 .rightside-icon:hover,
 .setting-container:hover {
   background-color: #ff7242;
 }
+
 .setting-container i {
   display: block;
   animation: turn-around 2s linear infinite;
 }
+
 @keyframes turn-around {
   0% {
     transform: rotate(0);
   }
+
   100% {
     transform: rotate(360deg);
   }
 }
+
 @keyframes rightsideOut {
   0% {
     transform: translate(0, 0);
   }
+
   100% {
     transform: translate(30px, 0);
   }
 }
+
 @keyframes rightsideIn {
   0% {
     transform: translate(30px, 0);
   }
+
   100% {
     transform: translate(0, 0);
   }

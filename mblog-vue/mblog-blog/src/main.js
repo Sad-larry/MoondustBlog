@@ -20,7 +20,6 @@ import "highlight.js/styles/atom-one-dark.css";
 import VueImageSwipe from "vue-image-swipe";
 import "vue-image-swipe/dist/vue-image-swipe.css";
 import Toast from "./components/toast/index";
-import NProgress from "nprogress";
 import "nprogress/nprogress.css";
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
@@ -37,58 +36,24 @@ Vue.use(VueAxios, axios);
 Vue.use(VueImageSwipe);
 Vue.use(Toast);
 
-Vue.filter("date", function(value) {
+Vue.filter("date", function (value) {
   return dayjs(value).format("YYYY-MM-DD");
 });
 
-Vue.filter("year", function(value) {
+Vue.filter("year", function (value) {
   return dayjs(value).format("YYYY");
 });
 
-Vue.filter("hour", function(value) {
+Vue.filter("hour", function (value) {
   return dayjs(value).format("HH:mm:ss");
 });
 
-Vue.filter("num", function(value) {
+Vue.filter("num", function (value) {
   if (value >= 1000) {
     return (value / 1000).toFixed(1) + "k";
   }
   return value;
 });
-
-router.beforeEach((to, from, next) => {
-  if (to.path) {
-    if (window._hmt) {
-      window._hmt.push(['_trackPageview',to.fullPath]);
-    }
-  }
-  NProgress.start();
-  if (to.meta.title) {
-    document.title = to.meta.title;
-  }
-  next();
-});
-
-router.afterEach(() => {
-  window.scrollTo({
-    top: 0,
-    behavior: "instant"
-  });
-  NProgress.done();
-});
-
-axios.interceptors.response.use(
-  function(response) {
-    switch (response.data.code) {
-      case 50000:
-        Vue.prototype.$toast({ type: "error", message: "系统异常" });
-    }
-    return response;
-  },
-  function(error) {
-    return Promise.reject(error);
-  }
-);
 
 new Vue({
   router,

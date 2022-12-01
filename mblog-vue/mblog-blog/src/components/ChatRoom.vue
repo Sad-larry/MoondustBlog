@@ -1,19 +1,11 @@
 <template>
   <div>
     <!-- 聊天界面 -->
-    <div
-      class="chat-container animated bounceInUp"
-      v-show="isShow"
-      @click="closeAll"
-      @contextmenu.prevent.stop="closeAll"
-    >
+    <div class="chat-container animated bounceInUp" v-show="isShow" @click="closeAll"
+      @contextmenu.prevent.stop="closeAll">
       <!-- 标题 -->
       <div class="header">
-        <img
-          width="32"
-          height="32"
-          src="https://www.static.talkxj.com/config/logo.png"
-        />
+        <img width="32" height="32" src="https://www.static.talkxj.com/config/logo.png" />
         <div style="margin-left:12px">
           <div>聊天室</div>
           <div style="font-size:12px">当前{{ count }}人在线</div>
@@ -25,19 +17,11 @@
       <!-- 对话内容 -->
       <div class="message" id="message">
         <!-- 录音遮罩层 -->
-        <div
-          v-show="voiceActive"
-          class="voice"
-          @mousemove.prevent.stop="translationmove($event)"
-          @mouseup.prevent.stop="translationEnd($event)"
-        >
+        <div v-show="voiceActive" class="voice" @mousemove.prevent.stop="translationmove($event)"
+          @mouseup.prevent.stop="translationEnd($event)">
           <v-icon ref="voiceClose" class="close-voice">mdi-close</v-icon>
         </div>
-        <div
-          :class="isMyMessage(item)"
-          v-for="(item, index) of chatRecordList"
-          :key="index"
-        >
+        <div :class="isMyMessage(item)" v-for="(item, index) of chatRecordList" :key="index">
           <!-- 头像 -->
           <img :src="item.avatar" :class="isleft(item)" />
           <div>
@@ -46,36 +30,20 @@
               <span style="margin-left:12px">{{ item.createTime | hour }}</span>
             </div>
             <!-- 内容 -->
-            <div
-              ref="content"
-              @contextmenu.prevent.stop="showBack(item, index, $event)"
-              :class="isMyContent(item)"
-            >
+            <div ref="content" @contextmenu.prevent.stop="showBack(item, index, $event)" :class="isMyContent(item)">
               <!-- 文字消息 -->
               <div v-if="item.type == 3" v-html="item.content" />
               <!-- 语音消息 -->
               <div v-if="item.type == 5" @click.prevent.stop="playVoice(item)">
-                <audio
-                  @ended="endVoice(item)"
-                  @canplay="getVoiceTime(item)"
-                  ref="voices"
-                  :src="item.content"
-                  style="display:none"
-                />
+                <audio @ended="endVoice(item)" @canplay="getVoiceTime(item)" ref="voices" :src="item.content"
+                  style="display:none" />
                 <!-- 播放 -->
-                <v-icon
-                  :color="isSelf(item) ? '#fff' : '#000'"
-                  ref="plays"
-                  style="display:inline-flex;cursor: pointer;"
-                >
+                <v-icon :color="isSelf(item) ? '#fff' : '#000'" ref="plays"
+                  style="display:inline-flex;cursor: pointer;">
                   mdi-arrow-right-drop-circle
                 </v-icon>
                 <!-- 暂停 -->
-                <v-icon
-                  :color="isSelf(item) ? '#fff' : '#000'"
-                  ref="pauses"
-                  style="display:none;cursor: pointer;"
-                >
+                <v-icon :color="isSelf(item) ? '#fff' : '#000'" ref="pauses" style="display:none;cursor: pointer;">
                   mdi-pause-circle
                 </v-icon>
                 <!-- 音频时长 -->
@@ -96,46 +64,24 @@
         </div>
         <div class="emoji-border" v-show="isEmoji" />
         <!-- 切换输入方式 -->
-        <v-icon
-          v-show="!isVoice"
-          @click="isVoice = !isVoice"
-          style="margin-right: 8px"
-        >
+        <v-icon v-show="!isVoice" @click="isVoice = !isVoice" style="margin-right: 8px">
           mdi-microphone
         </v-icon>
-        <v-icon
-          v-show="isVoice"
-          @click="isVoice = !isVoice"
-          style="margin-right: 8px"
-        >
+        <v-icon v-show="isVoice" @click="isVoice = !isVoice" style="margin-right: 8px">
           mdi-keyboard
         </v-icon>
         <!-- 文字输入 -->
-        <textarea
-          v-show="!isVoice"
-          ref="chatInput"
-          v-model="content"
-          @keydown.enter="saveMessage($event)"
-          placeholder="请输入内容"
-        />
+        <textarea v-show="!isVoice" ref="chatInput" v-model="content" @keydown.enter="saveMessage($event)"
+          placeholder="请输入内容" />
         <!-- 语音输入 -->
-        <button
-          class="voice-btn"
-          v-show="isVoice"
-          @mousedown.prevent.stop="translationStart"
-          @mouseup.prevent.stop="translationEnd($event)"
-          @touchstart.prevent.stop="translationStart"
-          @touchend.prevent.stop="translationEnd($event)"
-          @touchmove.prevent.stop="translationmove($event)"
-        >
+        <button class="voice-btn" v-show="isVoice" @mousedown.prevent.stop="translationStart"
+          @mouseup.prevent.stop="translationEnd($event)" @touchstart.prevent.stop="translationStart"
+          @touchend.prevent.stop="translationEnd($event)" @touchmove.prevent.stop="translationmove($event)">
           按住说话
         </button>
         <!-- 表情 -->
-        <i
-          class="iconfont iconbiaoqing emoji"
-          :style="isEmoji ? 'color:#FFC83D' : ''"
-          @click.prevent.stop="openEmoji"
-        />
+        <i class="iconfont iconbiaoqing emoji" :style="isEmoji ? 'color:#FFC83D' : ''"
+          @click.prevent.stop="openEmoji" />
         <!-- 发送按钮 -->
         <i :class="isInput" @click="saveMessage" style="font-size: 1.5rem" />
       </div>
@@ -143,11 +89,7 @@
     <!-- 未读数量 -->
     <div class="chat-btn" @click="open">
       <span class="unread" v-if="unreadCount > 0">{{ unreadCount }}</span>
-      <img
-        width="100%"
-        height="100%"
-        src="https://www.static.talkxj.com/config/logo.png"
-      />
+      <img width="100%" height="100%" src="https://www.static.talkxj.com/config/logo.png" />
     </div>
   </div>
 </template>
@@ -155,19 +97,12 @@
 <script>
 import Recorderx, { ENCODE_TYPE } from "recorderx";
 import Emoji from "./Emoji";
-import EmojiList from "../assets/js/emoji";
+import EmojiList from "@/assets/js/emoji";
 export default {
   components: {
     Emoji
   },
-  updated() {
-    var ele = document.getElementById("message");
-    ele.scrollTop = ele.scrollHeight;
-  },
-  beforeDestroy() {
-    clearInterval(this.heartBeat);
-  },
-  data: function() {
+  data() {
     return {
       isEmoji: false,
       isShow: false,
@@ -190,6 +125,58 @@ export default {
       heartBeat: null
     };
   },
+  updated() {
+    var ele = document.getElementById("message");
+    ele.scrollTop = ele.scrollHeight;
+  },
+  computed: {
+    isSelf() {
+      return function (item) {
+        return (
+          item.ipAddress == this.ipAddress ||
+          (item.userId != null && item.userId == this.userId)
+        );
+      };
+    },
+    isleft() {
+      return function (item) {
+        return this.isSelf(item)
+          ? "user-avatar right-avatar"
+          : "user-avatar left-avatar";
+      };
+    },
+    isMyContent() {
+      return function (item) {
+        return this.isSelf(item) ? "my-content" : "user-content";
+      };
+    },
+    isMyMessage() {
+      return function (item) {
+        return this.isSelf(item) ? "my-message" : "user-message";
+      };
+    },
+    blogInfo() {
+      return this.$store.state.blogInfo;
+    },
+    nickname() {
+      return this.$store.state.nickname != null
+        ? this.$store.state.nickname
+        : this.ipAddress;
+    },
+    avatar() {
+      return this.$store.state.avatar != null
+        ? this.$store.state.avatar
+        : this.$store.state.blogInfo.website.touristAvatar;
+    },
+    userId() {
+      return this.$store.state.userId;
+    },
+    isInput() {
+      return this.content.trim() != ""
+        ? "iconfont iconzhifeiji submit-btn"
+        : "iconfont iconzhifeiji";
+    }
+  },
   methods: {
     open() {
       if (this.websocket == null) {
@@ -206,15 +193,15 @@ export default {
       var that = this;
       this.websocket = new WebSocket(this.blogInfo.websiteConfig.websocketUrl);
       // 连接发生错误的回调方法
-      this.websocket.onerror = function(event) {
+      this.websocket.onerror = function (event) {
         console.log(event);
         alert("失败");
       };
       // 连接成功建立的回调方法
-      this.websocket.onopen = function(event) {
+      this.websocket.onopen = function (event) {
         console.log(event);
         // 发送心跳消息
-        that.heartBeat = setInterval(function() {
+        that.heartBeat = setInterval(function () {
           var beatMessage = {
             type: 6,
             data: "ping"
@@ -223,7 +210,7 @@ export default {
         }, 30 * 1000);
       };
       // 接收到消息的回调方法
-      this.websocket.onmessage = function(event) {
+      this.websocket.onmessage = function (event) {
         const data = JSON.parse(event.data);
         switch (data.type) {
           case 1:
@@ -271,7 +258,7 @@ export default {
         }
       };
       //连接关闭的回调方法
-      this.websocket.onclose = function() {};
+      this.websocket.onclose = function () { };
     },
     saveMessage(e) {
       e.preventDefault();
@@ -281,7 +268,7 @@ export default {
       }
       //解析表情
       var reg = /\[.+?\]/g;
-      this.content = this.content.replace(reg, function(str) {
+      this.content = this.content.replace(reg, function (str) {
         return (
           "<img style='vertical-align: middle' src= '" +
           EmojiList[str] +
@@ -392,7 +379,7 @@ export default {
       };
       this.axios(options);
     },
-    translationmove() {},
+    translationmove() { },
     // 播放语音
     playVoice(item) {
       var player = this.$refs.voices[this.voiceList.indexOf(item.id)];
@@ -431,54 +418,9 @@ export default {
         " " + str + " " + time + " ''";
     }
   },
-  computed: {
-    isSelf() {
-      return function(item) {
-        return (
-          item.ipAddress == this.ipAddress ||
-          (item.userId != null && item.userId == this.userId)
-        );
-      };
-    },
-    isleft() {
-      return function(item) {
-        return this.isSelf(item)
-          ? "user-avatar right-avatar"
-          : "user-avatar left-avatar";
-      };
-    },
-    isMyContent() {
-      return function(item) {
-        return this.isSelf(item) ? "my-content" : "user-content";
-      };
-    },
-    isMyMessage() {
-      return function(item) {
-        return this.isSelf(item) ? "my-message" : "user-message";
-      };
-    },
-    blogInfo() {
-      return this.$store.state.blogInfo;
-    },
-    nickname() {
-      return this.$store.state.nickname != null
-        ? this.$store.state.nickname
-        : this.ipAddress;
-    },
-    avatar() {
-      return this.$store.state.avatar != null
-        ? this.$store.state.avatar
-        : this.$store.state.blogInfo.website.touristAvatar;
-    },
-    userId() {
-      return this.$store.state.userId;
-    },
-    isInput() {
-      return this.content.trim() != ""
-        ? "iconfont iconzhifeiji submit-btn"
-        : "iconfont iconzhifeiji";
-    }
-  }
+  beforeDestroy() {
+    clearInterval(this.heartBeat);
+  },
 };
 </script>
 
@@ -495,10 +437,12 @@ export default {
     width: 400px !important;
     border-radius: 16px !important;
   }
+
   .close {
     display: none;
   }
 }
+
 @media (max-width: 760px) {
   .chat-container {
     position: fixed;
@@ -507,17 +451,20 @@ export default {
     right: 0;
     left: 0;
   }
+
   .close {
     display: block;
     margin-left: auto;
   }
 }
+
 .chat-container {
   box-shadow: 0 5px 40px rgba(0, 0, 0, 0.16) !important;
   font-size: 14px;
   background: #f4f6fb;
   z-index: 1200;
 }
+
 .chat-btn {
   background: #1f93ff;
   border-radius: 100px !important;
@@ -531,6 +478,7 @@ export default {
   z-index: 1000 !important;
   user-select: none;
 }
+
 .header {
   display: flex;
   align-items: center;
@@ -540,6 +488,7 @@ export default {
   box-shadow: 0 10px 15px -16px rgba(50, 50, 93, 0.08),
     0 4px 6px -8px rgba(50, 50, 93, 0.04);
 }
+
 .footer {
   padding: 8px 16px;
   position: absolute;
@@ -550,6 +499,7 @@ export default {
   display: flex;
   align-items: center;
 }
+
 .footer textarea {
   background: #fff;
   padding-left: 10px;
@@ -561,6 +511,7 @@ export default {
   overflow: hidden;
   font-size: 13px;
 }
+
 .voice-btn {
   font-size: 13px;
   outline: none;
@@ -569,6 +520,7 @@ export default {
   background: #fff;
   border-radius: 2px;
 }
+
 .message {
   position: absolute;
   width: 100%;
@@ -578,33 +530,40 @@ export default {
   overflow-y: auto;
   overflow-x: hidden;
 }
+
 .text {
   color: #999;
   text-align: center;
   font-size: 12px;
   margin-bottom: 12px;
 }
+
 .user-message {
   display: flex;
   margin-bottom: 10px;
 }
+
 .my-message {
   display: flex;
   margin-bottom: 10px;
   justify-content: flex-end;
 }
+
 .left-avatar {
   margin-right: 10px;
 }
+
 .right-avatar {
   order: 1;
   margin-left: 10px;
 }
+
 .user-avatar {
   width: 40px;
   height: 40px;
   border-radius: 50%;
 }
+
 .nickname {
   display: flex;
   align-items: center;
@@ -612,6 +571,7 @@ export default {
   margin-top: 3px;
   margin-bottom: 5px;
 }
+
 .user-content {
   position: relative;
   background-color: #fff;
@@ -619,6 +579,7 @@ export default {
   border-radius: 5px 20px 20px 20px;
   width: fit-content;
 }
+
 .my-content {
   position: relative;
   border-radius: 20px 5px 20px 20px;
@@ -626,14 +587,17 @@ export default {
   background: #12b7f5;
   color: #fff;
 }
+
 .submit-btn {
   color: rgb(31, 147, 255);
 }
+
 .emoji {
   cursor: pointer;
   font-size: 1.3rem;
   margin: 0 8px;
 }
+
 .emoji-box {
   position: absolute;
   box-shadow: 0 8px 16px rgba(50, 50, 93, 0.08), 0 4px 12px rgba(0, 0, 0, 0.07);
@@ -646,6 +610,7 @@ export default {
   overflow-y: auto;
   padding: 6px 16px;
 }
+
 .emoji-border:before {
   display: block;
   height: 0;
@@ -658,6 +623,7 @@ export default {
   position: absolute;
   right: 43px;
 }
+
 .unread {
   text-align: center;
   border-radius: 50%;
@@ -668,6 +634,7 @@ export default {
   background: #f24f2d;
   color: #fff;
 }
+
 .back-menu {
   font-size: 13px;
   border-radius: 2px;
@@ -680,6 +647,7 @@ export default {
   line-height: 35px;
   display: none;
 }
+
 .voice {
   position: fixed;
   z-index: 1500;
@@ -689,6 +657,7 @@ export default {
   top: 80px;
   background: rgba(0, 0, 0, 0.8);
 }
+
 .close-voice {
   position: absolute;
   bottom: 60px;

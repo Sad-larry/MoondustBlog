@@ -22,31 +22,15 @@
 </template>
 
 <script>
-import { getAlbum} from '../../api'
+import { getAlbum } from '@/api'
 export default {
-  created() {
-    this.listPhotoAlbums();
-  },
-  metaInfo:{
-    meta: [{
-      name: 'keyWords',
-      content: "拾壹博客,开源博客,www.shiyit.com"  //变量或字符串
-    }, {
-      name: 'description',
-      content: "一个专注于技术分享的博客平台,大家以共同学习,乐于分享,拥抱开源的价值观进行学习交流"
-    }]
-  },
-  data: function() {
+  data() {
     return {
       photoAlbumList: []
     };
   },
-  methods: {
-    listPhotoAlbums() {
-      getAlbum().then(res => {
-        this.photoAlbumList = res.data;
-      });
-    }
+  created() {
+    this.listPhotoAlbums();
   },
   computed: {
     cover() {
@@ -58,7 +42,14 @@ export default {
       });
       return "background: url(" + cover + ") center center / cover no-repeat";
     }
-  }
+  },
+  methods: {
+    listPhotoAlbums() {
+      getAlbum().then(res => {
+        this.photoAlbumList = res.data;
+      });
+    }
+  },
 };
 </script>
 
@@ -70,6 +61,7 @@ export default {
   background: #000;
   border-radius: 0.5rem !important;
 }
+
 .album-cover {
   position: relative;
   max-width: none;
@@ -80,6 +72,7 @@ export default {
   transform: translate3d(-10px, 0, 0);
   object-fit: cover;
 }
+
 .album-wrapper {
   position: absolute;
   top: 0;
@@ -89,18 +82,22 @@ export default {
   padding: 1.8rem 2rem;
   color: #fff !important;
 }
+
 .album-item:hover .album-cover {
   transform: translate3d(0, 0, 0);
   opacity: 0.4;
 }
+
 .album-item:hover .album-name:after {
   transform: translate3d(0, 0, 0);
 }
+
 .album-item:hover .album-desc {
   opacity: 1;
   filter: none;
   transform: translate3d(0, 0, 0);
 }
+
 .album-name {
   font-weight: bold;
   font-size: 1.25rem;
@@ -108,6 +105,7 @@ export default {
   padding: 0.7rem 0;
   position: relative;
 }
+
 .album-name:after {
   position: absolute;
   bottom: 0;
@@ -119,6 +117,7 @@ export default {
   transition: transform 0.35s;
   transform: translate3d(-101%, 0, 0);
 }
+
 .album-desc {
   margin: 0;
   padding: 0.4rem 0 0;

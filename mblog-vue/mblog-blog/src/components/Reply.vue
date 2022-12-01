@@ -1,17 +1,9 @@
 <template>
   <div class="reply-input-wrapper" style="display: none" ref="reply">
-    <textarea
-      class="comment-textarea"
-      :placeholder="'回复 @' + nickname + '：'"
-      auto-grow
-      dense
-      v-model="commentContent"
-    />
+    <textarea class="comment-textarea" :placeholder="'回复 @' + nickname + '：'" auto-grow dense
+      v-model="commentContent" />
     <div class="emoji-container">
-      <span
-        :class="chooseEmoji ? 'emoji-btn-active' : 'emoji-btn'"
-        @click="chooseEmoji = !chooseEmoji"
-      >
+      <span :class="chooseEmoji ? 'emoji-btn-active' : 'emoji-btn'" @click="chooseEmoji = !chooseEmoji">
         <i class="iconfont iconbiaoqing" />
       </span>
       <div style="margin-left:auto">
@@ -30,13 +22,13 @@
 
 <script>
 import Emoji from "./Emoji";
-import EmojiList from "../assets/js/emoji";
-import {addComment} from '../api'
+import EmojiList from "@/assets/js/emoji";
+import { addComment } from '@/api'
 export default {
   components: {
     Emoji
   },
-  data: function() {
+  data() {
     return {
       index: 0,
       chooseEmoji: false,
@@ -62,7 +54,7 @@ export default {
       }
       //解析表情
       var reg = /\[.+?\]/g;
-      this.commentContent = this.commentContent.replace(reg, function(str) {
+      this.commentContent = this.commentContent.replace(reg, function (str) {
         return (
           "<img src= '" +
           EmojiList[str] +
@@ -80,9 +72,9 @@ export default {
       };
       this.commentContent = "";
       addComment(comment).then(res => {
-          this.$emit("reloadReply", this.index);
-          this.$toast({ type: "success", message: "回复成功" });
-      }).catch(err =>{
+        this.$emit("reloadReply", this.index);
+        this.$toast({ type: "success", message: "回复成功" });
+      }).catch(err => {
         this.$toast({ type: "error", message: err });
       });
     },

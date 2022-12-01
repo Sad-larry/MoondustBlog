@@ -4,23 +4,13 @@
     <a @click="prePage" v-show="current != 1" class="ml-1 mr-1">上一页</a>
     <!-- 小于6页直接显示 -->
     <template v-if="totalPage < 6">
-      <a
-        v-for="i of totalPage"
-        :key="i"
-        :class="'ml-1 mr-1 ' + isActive(i)"
-        @click="changeReplyCurrent(i)"
-      >
+      <a v-for="i of totalPage" :key="i" :class="'ml-1 mr-1 ' + isActive(i)" @click="changeReplyCurrent(i)">
         {{ i }}
       </a>
     </template>
     <!-- 大于等于6页且在前两页 -->
     <template v-else-if="current < 3">
-      <a
-        v-for="i in 4"
-        @click="changeReplyCurrent(i)"
-        :class="'ml-1 mr-1 ' + isActive(i)"
-        :key="i"
-      >
+      <a v-for="i in 4" @click="changeReplyCurrent(i)" :class="'ml-1 mr-1 ' + isActive(i)" :key="i">
         {{ i }}
       </a>
       <span class="ml-1 mr-1">···</span>
@@ -30,20 +20,11 @@
     </template>
     <!-- 大于等于6页且在3-4页 -->
     <template v-else-if="current < 5">
-      <a
-        v-for="i in current + 2"
-        @click="changeReplyCurrent(i)"
-        :class="'ml-1 mr-1 ' + isActive(i)"
-        :key="i"
-      >
+      <a v-for="i in current + 2" @click="changeReplyCurrent(i)" :class="'ml-1 mr-1 ' + isActive(i)" :key="i">
         {{ i }}
       </a>
       <span class="ml-1 mr-1" v-if="current + 2 < totalPage - 1">···</span>
-      <a
-        class="ml-1 mr-1"
-        @click="changeReplyCurrent(totalPage)"
-        v-if="current + 2 < totalPage"
-      >
+      <a class="ml-1 mr-1" @click="changeReplyCurrent(totalPage)" v-if="current + 2 < totalPage">
         {{ totalPage }}
       </a>
     </template>
@@ -51,12 +32,8 @@
     <template v-else-if="current > totalPage - 2">
       <a class="ml-1 mr-1" @click="changeReplyCurrent(1)">1</a>
       <span class="ml-1 mr-1">···</span>
-      <a
-        v-for="i in 4"
-        @click="changeReplyCurrent(i + (totalPage - 4))"
-        :class="'ml-1 mr-1 ' + isActive(i + (totalPage - 4))"
-        :key="i"
-      >
+      <a v-for="i in 4" @click="changeReplyCurrent(i + (totalPage - 4))"
+        :class="'ml-1 mr-1 ' + isActive(i + (totalPage - 4))" :key="i">
         {{ i + (totalPage - 4) }}
       </a>
     </template>
@@ -64,12 +41,8 @@
     <template v-else-if="current > totalPage - 4">
       <a class="ml-1 mr-1" @click="changeReplyCurrent(1)">1</a>
       <span class="ml-1 mr-1">···</span>
-      <a
-        v-for="i in totalPage - current + 3"
-        @click="changeReplyCurrent(i + current - 3)"
-        :class="'ml-1 mr-1 ' + isActive(i + current - 3)"
-        :key="i"
-      >
+      <a v-for="i in totalPage - current + 3" @click="changeReplyCurrent(i + current - 3)"
+        :class="'ml-1 mr-1 ' + isActive(i + current - 3)" :key="i">
         {{ i + current - 3 }}
       </a>
     </template>
@@ -92,7 +65,7 @@
       </a>
       <span class="ml-1 mr-1">···</span>
       <a class="ml-1 mr-1" @click="changeReplyCurrent(totalPage)">{{
-        totalPage
+          totalPage
       }}</a>
     </template>
     <!-- 下一页按钮 最后一页不显示 -->
@@ -115,10 +88,19 @@ export default {
       type: Number
     }
   },
-  data: function() {
+  data() {
     return {
       current: 1
     };
+  },
+  computed: {
+    isActive() {
+      return function (i) {
+        if (i == this.current) {
+          return "active";
+        }
+      };
+    }
   },
   methods: {
     changeReplyCurrent(i) {
@@ -149,15 +131,6 @@ export default {
       );
     }
   },
-  computed: {
-    isActive() {
-      return function(i) {
-        if (i == this.current) {
-          return "active";
-        }
-      };
-    }
-  }
 };
 </script>
 
@@ -166,6 +139,7 @@ export default {
   display: inline-block;
   color: #222;
 }
+
 .active {
   color: #00a1d6 !important;
   font-weight: bold;

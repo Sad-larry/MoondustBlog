@@ -52,6 +52,15 @@ export function like(id) {
     })
 }
 
+// 归档接口
+export function getArchives(params) {
+    return request({
+        url: '/web/article/archive',
+        method: 'get',
+        params: params
+    })
+}
+
 // 分类接口
 export function getCategory() {
     return request({
@@ -60,7 +69,7 @@ export function getCategory() {
     })
 }
 
-//标签接口
+// 标签接口
 export function getTags() {
     return request({
         url: '/web/tag/list',
@@ -125,14 +134,6 @@ export function repliesByComId(params) {
       })
 }
 
-//归档接口
-export function getArchive(params) {
-    return request({
-        url: '/web/article/archive',
-        method: 'get',
-        params: params
-    })
-}
 //qq登录
 export function qqLogin(data) {
     return request({

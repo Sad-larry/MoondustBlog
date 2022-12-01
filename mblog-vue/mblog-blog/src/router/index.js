@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+import NProgress from "nprogress";
 
 Vue.use(VueRouter)
 
@@ -13,7 +14,7 @@ const routes = [
     component: resolve => require(["../views/article/Article.vue"], resolve)
   },
   {
-    path: "/archive",
+    path: "/archives",
     component: resolve => require(["../views/archive/Archive.vue"], resolve),
     meta: {
       title: "归档"
@@ -104,5 +105,26 @@ const router = new VueRouter({
   base: process.env.BASE_URL,
   routes
 })
+
+router.beforeEach((to, from, next) => {
+  if (to.path) {
+    if (window._hmt) {
+      window._hmt.push(['_trackPageview', to.fullPath]);
+    }
+  }
+  NProgress.start();
+  if (to.meta.title) {
+    document.title = to.meta.title;
+  }
+  next();
+});
+
+router.afterEach(() => {
+  window.scrollTo({
+    top: 0,
+    behavior: "instant"
+  });
+  NProgress.done();
+});
 
 export default router

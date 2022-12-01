@@ -58,15 +58,7 @@
 <script>
 import { getArticlesByQuaryId } from '@/api'
 export default {
-  created() {
-    const path = this.$route.path;
-    if (path.indexOf("/categories") !== -1) {
-      this.title = "分类";
-    } else {
-      this.title = "标签";
-    }
-  },
-  data: function () {
+  data() {
     return {
       current: 1,
       img: process.env.VUE_APP_IMG_API,
@@ -75,6 +67,25 @@ export default {
       name: "",
       title: ""
     };
+  },
+  created() {
+    const path = this.$route.path;
+    if (path.indexOf("/categories") !== -1) {
+      this.title = "分类";
+    } else {
+      this.title = "标签";
+    }
+  },
+  computed: {
+    cover() {
+      var cover = "";
+      this.$store.state.blogInfo.pageList.forEach(item => {
+        if (item.pageLabel == "articleList") {
+          cover = item.pageCover;
+        }
+      });
+      return "background: url(" + cover + ") center center / cover no-repeat";
+    }
   },
   methods: {
     infiniteHandler($state) {
@@ -99,17 +110,6 @@ export default {
       });
     }
   },
-  computed: {
-    cover() {
-      var cover = "";
-      this.$store.state.blogInfo.pageList.forEach(item => {
-        if (item.pageLabel == "articleList") {
-          cover = item.pageCover;
-        }
-      });
-      return "background: url(" + cover + ") center center / cover no-repeat";
-    }
-  }
 };
 </script>
 

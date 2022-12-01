@@ -6,17 +6,8 @@
       <div class="message-container">
         <h1 class="message-title">留言板</h1>
         <div class="animated fadeInUp message-input-wrapper">
-          <input
-            v-model="content"
-            @click="show = true"
-            @keyup.enter="addToList"
-            placeholder="说点什么吧"
-          />
-          <button
-            class="ml-3 animated bounceInLeft"
-            @click="addToList"
-            v-show="show"
-          >
+          <input v-model="content" @click="show = true" @keyup.enter="addToList" placeholder="说点什么吧" />
+          <button class="ml-3 animated bounceInLeft" @click="addToList" v-show="show">
             发送
           </button>
         </div>
@@ -26,12 +17,7 @@
         <vue-baberrage :barrageList="barrageList">
           <template v-slot:default="slotProps">
             <span class="barrage-items">
-              <img
-                :src="slotProps.item.avatar"
-                width="30"
-                height="30"
-                style="border-radius:50%"
-              />
+              <img :src="slotProps.item.avatar" width="30" height="30" style="border-radius:50%" />
               <span class="ml-2">{{ slotProps.item.nickname }} :</span>
               <span class="ml-2">{{ slotProps.item.content }}</span>
             </span>
@@ -43,20 +29,8 @@
 </template>
 
 <script>
-import {listMessage,addMessage} from '../../api'
+import { listMessage, addMessage } from '@/api'
 export default {
-  metaInfo:{
-    meta: [{
-      name: 'keyWords',
-      content: "拾壹博客,开源博客,www.shiyit.com"  //变量或字符串
-    }, {
-      name: 'description',
-      content: "一个专注于技术分享的博客平台,大家以共同学习,乐于分享,拥抱开源的价值观进行学习交流"
-    }]
-  },
-  mounted() {
-    this.listMessage();
-  },
   data() {
     return {
       show: false,
@@ -67,9 +41,23 @@ export default {
       barrageList: []
     };
   },
+  mounted() {
+    this.listMessage();
+  },
+  computed: {
+    cover() {
+      var cover = "";
+      this.$store.state.blogInfo.pageList.forEach(item => {
+        if (item.pageLabel == "message") {
+          cover = item.pageCover;
+        }
+      });
+      return "background: url(" + cover + ") center center / cover no-repeat";
+    }
+  },
   methods: {
     addToList() {
-      if (this.count){
+      if (this.count) {
         this.$toast({ type: "error", message: "30秒后才能再次留言" });
         return false;
       }
@@ -107,22 +95,11 @@ export default {
       }
     },
     listMessage() {
-      listMessage().then(res=> {
+      listMessage().then(res => {
         this.barrageList = res.data;
       });
     }
   },
-  computed: {
-    cover() {
-      var cover = "";
-      this.$store.state.blogInfo.pageList.forEach(item => {
-        if (item.pageLabel == "message") {
-          cover = item.pageCover;
-        }
-      });
-      return "background: url(" + cover + ") center center / cover no-repeat";
-    }
-  }
 };
 </script>
 
@@ -136,10 +113,12 @@ export default {
   background-color: #49b1f5;
   animation: header-effect 1s;
 }
+
 .message-title {
   color: #eee;
   animation: title-scale 1s;
 }
+
 .message-container {
   position: absolute;
   width: 360px;
@@ -151,12 +130,14 @@ export default {
   margin: 0 auto;
   color: #fff;
 }
+
 .message-input-wrapper {
   display: flex;
   justify-content: center;
   height: 2.5rem;
   margin-top: 2rem;
 }
+
 .message-input-wrapper input {
   outline: none;
   width: 70%;
@@ -166,9 +147,11 @@ export default {
   color: #eee;
   border: #fff 1px solid;
 }
+
 .message-input-wrapper input::-webkit-input-placeholder {
   color: #eeee;
 }
+
 .message-input-wrapper button {
   outline: none;
   border-radius: 20px;
@@ -176,6 +159,7 @@ export default {
   padding: 0 1.25rem;
   border: #fff 1px solid;
 }
+
 .barrage-container {
   position: absolute;
   top: 50px;
@@ -185,6 +169,7 @@ export default {
   height: calc(100% -50px);
   width: 100%;
 }
+
 .barrage-items {
   background: rgb(0, 0, 0, 0.7);
   border-radius: 100px;

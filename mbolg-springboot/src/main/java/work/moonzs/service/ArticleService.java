@@ -142,5 +142,14 @@ public interface ArticleService extends IService<Article> {
      * @return {@link List}<{@link ArticleBaseVO}>
      */
     List<ArticleBaseVO> listRecommendArticle(Long articleId);
+
+    /**
+     * 查询归档
+     *
+     * @param pageNum  页面num
+     * @param pageSize 页面大小
+     * @return {@link PageVO}<{@link ArticleBaseVO}>
+     */
+    PageVO<ArticleBaseVO> getArchives(Integer pageNum, Integer pageSize);
 }
 

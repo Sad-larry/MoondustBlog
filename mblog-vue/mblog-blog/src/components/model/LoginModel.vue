@@ -6,35 +6,14 @@
       </v-icon>
       <div class="login-wrapper">
         <!-- 用户名 -->
-        <v-text-field
-          v-model="username"
-          label="邮箱号"
-          :disabled="false"
-          placeholder="请输入您的邮箱号"
-          clearable
-          @keyup.enter="login"
-        />
+        <v-text-field v-model="username" label="邮箱号" :disabled="false" placeholder="请输入您的邮箱号" clearable
+          @keyup.enter="login" />
         <!-- 密码 -->
-        <v-text-field
-          v-model="password"
-          class="mt-7"
-          label="密码"
-          :disabled="false"
-          placeholder="请输入您的密码"
-          @keyup.enter="login"
-          :append-icon="show ? 'mdi-eye' : 'mdi-eye-off'"
-          :type="show ? 'text' : 'password'"
-          @click:append="show = !show"
-        />
+        <v-text-field v-model="password" class="mt-7" label="密码" :disabled="false" placeholder="请输入您的密码"
+          @keyup.enter="login" :append-icon="show ? 'mdi-eye' : 'mdi-eye-off'" :type="show ? 'text' : 'password'"
+          @click:append="show = !show" />
         <!-- 按钮 -->
-        <v-btn
-          class="mt-7"
-          block
-          color="blue"
-          :disabled="false"
-          style="color:#fff"
-          @click="login"
-        >
+        <v-btn class="mt-7" block color="blue" :disabled="false" style="color:#fff" @click="login">
           登录
         </v-btn>
         <!-- 注册和找回密码 -->
@@ -48,26 +27,12 @@
           <div class="social-login-title">社交账号登录</div>
           <div class="social-login-wrapper">
             <!-- 微博登录 -->
-            <a
-              v-if="showLogin(3)"
-              class="mr-3 iconfont iconweibo"
-              style="color:#e05244"
-              @click="weiboLogin"
-            />
+            <a v-if="showLogin(3)" class="mr-3 iconfont iconweibo" style="color:#e05244" @click="weiboLogin" />
             <!-- 码云登录 -->
-            <a
-              class="mr-3 iconfont icongitee-fill-round"
-              style="color:#e05244"
-              v-if="showLogin(4)"
-              @click="giteeLogin"
-            />
+            <a class="mr-3 iconfont icongitee-fill-round" style="color:#e05244" v-if="showLogin(4)"
+              @click="giteeLogin" />
             <!-- qq登录 -->
-            <a
-              v-if="showLogin(2)"
-              class="iconfont iconqq"
-              style="color:#00AAEE"
-              @click="qqLogin"
-            />
+            <a v-if="showLogin(2)" class="iconfont iconqq" style="color:#00AAEE" @click="qqLogin" />
           </div>
         </div>
       </div>
@@ -76,9 +41,9 @@
 </template>
 
 <script>
-import {emailLogin } from "../../api";
+import { emailLogin } from "@/api";
 export default {
-  data: function() {
+  data() {
     return {
       username: "",
       password: "",
@@ -105,7 +70,7 @@ export default {
       return this.$store.state.blogInfo.webSite.loginTypeList;
     },
     showLogin() {
-      return function(type) {
+      return function (type) {
         return this.socialLoginList.indexOf(type) != -1;
       };
     }
@@ -130,13 +95,13 @@ export default {
         return false;
       }
       //发送登录请求
-      emailLogin({email:this.username,password:this.password}).then(res => {
+      emailLogin({ email: this.username, password: this.password }).then(res => {
         this.username = "";
         this.password = "";
         this.$store.commit("login", res.data);
         this.$store.commit("closeModel");
         this.$toast({ type: "success", message: "登录成功" });
-      }).catch(err =>{
+      }).catch(err => {
         this.$toast({ type: "error", message: err.message });
       });
     },

@@ -230,21 +230,13 @@
 <script>
 import { getArticleInfo, fetchComments, like } from "@/api";
 import Clipboard from "clipboard";
-import Comment from "../../components/Comment";
+import Comment from "@/components/Comment";
 import tocbot from "tocbot";
 
 export default {
   components: {
     Comment
   },
-  created() {
-    this.getArticle();
-    // this.listComment();
-  },
-  /* destroyed() {
-     this.clipboard.destroy();
-     tocbot.destroy();
-   },*/
   data() {
     return {
       config: {
@@ -278,6 +270,33 @@ export default {
       img: process.env.VUE_APP_IMG_API,
       clipboard: null
     };
+  },
+  created() {
+    this.getArticle();
+    // this.listComment();
+  },
+  computed: {
+    blogInfo() {
+      return this.$store.state.blogInfo;
+    },
+    articleCover() {
+      return (
+        "background: url(" +
+        this.article.avatar +
+        ") center center / cover no-repeat"
+      );
+    },
+    isLike() {
+      var articleLikeSet = this.$store.state.articleLikeSet;
+      return articleLikeSet.indexOf(this.article.id) != -1
+        ? "like-btn-active"
+        : "like-btn";
+    },
+    isFull() {
+      return function (id) {
+        return id ? "post full" : "post";
+      };
+    }
   },
   methods: {
     getArticle() {
@@ -423,29 +442,10 @@ export default {
         .replace(/&npsp;/gi, "");
     }
   },
-  computed: {
-    blogInfo() {
-      return this.$store.state.blogInfo;
-    },
-    articleCover() {
-      return (
-        "background: url(" +
-        this.article.avatar +
-        ") center center / cover no-repeat"
-      );
-    },
-    isLike() {
-      var articleLikeSet = this.$store.state.articleLikeSet;
-      return articleLikeSet.indexOf(this.article.id) != -1
-        ? "like-btn-active"
-        : "like-btn";
-    },
-    isFull() {
-      return function (id) {
-        return id ? "post full" : "post";
-      };
-    }
-  }
+  /* destroyed() {
+     this.clipboard.destroy();
+     tocbot.destroy();
+   },*/
 };
 </script>
 

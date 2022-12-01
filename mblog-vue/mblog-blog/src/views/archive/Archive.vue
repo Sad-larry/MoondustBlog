@@ -12,60 +12,35 @@
           <!-- 日期 -->
           <span class="time">{{ item.createTime | date }}</span>
           <!-- 文章标题 -->
-          <router-link
-            :to="'/article/' + item.id"
-            style="color:#666;text-decoration: none"
-          >
+          <router-link :to="'/article/' + item.id" style="color:#666;text-decoration: none">
             {{ item.title }}
           </router-link>
         </timeline-item>
       </timeline>
       <!-- 分页按钮 -->
-      <v-pagination
-        color="#00C4B6"
-        v-model="current"
-        :length="Math.ceil(count / 10)"
-        total-visible="7"
-      />
+      <v-pagination color="#00C4B6" v-model="current" :length="Math.ceil(count / 10)" total-visible="7" />
     </v-card>
   </div>
 </template>
 
 <script>
 import { Timeline, TimelineItem, TimelineTitle } from "vue-cute-timeline";
-import {getArchive} from '../../api'
+import { getArchives } from '@/api'
 export default {
-  metaInfo:{
-    meta: [{
-      name: 'keyWords',
-      content: "拾壹博客,开源博客,www.shiyit.com"  //变量或字符串
-    }, {
-      name: 'description',
-      content: "一个专注于技术分享的博客平台,大家以共同学习,乐于分享,拥抱开源的价值观进行学习交流"
-    }]
-  },
-  created() {
-    this.listArchives();
-  },
   components: {
     Timeline,
     TimelineItem,
     TimelineTitle
   },
-  data: function() {
+  data() {
     return {
       count: 0,
       current: 1,
       archiveList: [],
     };
   },
-  methods: {
-    listArchives() {
-      getArchive({pageNo:this.current,pageSize:10}).then(res => {
-          this.archiveList = res.data.records;
-          this.count =  res.data.total;
-        });
-    }
+  created() {
+    this.listArchives();
   },
   computed: {
     cover() {
@@ -80,10 +55,18 @@ export default {
   },
   watch: {
     current(value) {
-      this.current=value
+      this.current = value
       this.listArchives()
     }
-  }
+  },
+  methods: {
+    listArchives() {
+      getArchives({ pageNum: this.current, pageSize: 10 }).then(res => {
+        this.archiveList = res.records;
+        this.count = res.total;
+      });
+    }
+  },
 };
 </script>
 

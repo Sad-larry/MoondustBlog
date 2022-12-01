@@ -22,22 +22,14 @@
 <script>
 import { getCategory } from '@/api'
 export default {
-  created() {
-    this.listCategories();
-  },
-  data: function () {
+  data() {
     return {
       categoryList: [],
       count: 0
     };
   },
-  methods: {
-    listCategories() {
-      getCategory().then(res => {
-        this.categoryList = res.data;
-        this.count = res.data.length;
-      });
-    }
+  created() {
+    this.listCategories();
   },
   computed: {
     cover() {
@@ -49,7 +41,15 @@ export default {
       });
       return "background: url(" + cover + ") center center / cover no-repeat";
     }
-  }
+  },
+  methods: {
+    listCategories() {
+      getCategory().then(res => {
+        this.categoryList = res.data;
+        this.count = res.data.length;
+      });
+    }
+  },
 };
 </script>
 

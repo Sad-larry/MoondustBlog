@@ -171,7 +171,7 @@
           </v-card>
           <v-card class="blog-card animated zoomIn mt-5">
             <!-- 和风天气插件 -->
-            <moon-weather/>
+            <moon-weather />
           </v-card>
           <!-- 网站信息 -->
           <v-card class="blog-card animated zoomIn mt-5">
@@ -390,23 +390,23 @@ export default {
         }
       });
     },
-    open: function () {
+    open() {
       // 发送心跳消息
       var that = this
       that.heartBeat = setInterval(function () {
         that.send("ping");
       }, 30 * 1000);
     },
-    error: function () {
+    error() {
       console.error("连接错误")
     },
-    getMessage: function (event) {
+    getMessage(event) {
       this.onlineCount = event.data
     },
     send(message) {
       this.socket.send(message)
     },
-    close: function () {
+    close() {
       console.log("socket已经关闭")
     }
   },

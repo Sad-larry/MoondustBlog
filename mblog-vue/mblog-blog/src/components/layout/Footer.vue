@@ -2,12 +2,12 @@
   <v-footer app padless absolute v-if="!this.isMessage">
     <div class="footer-wrap">
       <div>
-        ©{{  2021 }} -
+        ©{{ 2022 }} -
         {{ new Date().getFullYear() }} By
-        {{blogInfo.webSite.author}}
+        {{ blogInfo.webSite.author }}
       </div>
       <a href="https://beian.miit.gov.cn/" target="_blank">
-        {{blogInfo.webSite.recordNum}}
+        {{ blogInfo.webSite.recordNum }}
       </a>
     </div>
   </v-footer>
@@ -39,16 +39,20 @@ export default {
   background-size: 400% 400%;
   animation: Gradient 10s ease infinite;
 }
+
 .footer-wrap a {
   color: #eee !important;
 }
+
 @keyframes Gradient {
   0% {
     background-position: 0 50%;
   }
+
   50% {
     background-position: 100% 50%;
   }
+
   100% {
     background-position: 0 50%;
   }

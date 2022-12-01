@@ -13,11 +13,7 @@
         </v-avatar>
       </div>
       <!-- 介绍 -->
-      <div
-        ref="about"
-        class="about-content markdown-body"
-        v-html="aboutContent"
-      />
+      <div ref="about" class="about-content markdown-body" v-html="aboutContent" />
     </v-card>
   </div>
 </template>
@@ -25,22 +21,7 @@
 <script>
 import Clipboard from "clipboard";
 export default {
-  created() {
-    this.getAboutContent();
-  },
-  destroyed() {
-    this.clipboard.destroy();
-  },
-  metaInfo:{
-    meta: [{
-      name: 'keyWords',
-      content: "拾壹博客,开源博客,www.shiyit.com"  //变量或字符串
-    }, {
-      name: 'description',
-      content: "一个专注于技术分享的博客平台,大家以共同学习,乐于分享,拥抱开源的价值观进行学习交流"
-    }]
-  },
-  data: function() {
+  data() {
     return {
       aboutContent: "",
       img: process.env.VUE_APP_IMG_API,
@@ -48,26 +29,43 @@ export default {
       imgList: []
     };
   },
+  created() {
+    this.getAboutContent();
+  },
+  computed: {
+    avatar() {
+      return this.$store.state.blogInfo.webSite.authorAvatar;
+    },
+    cover() {
+      var cover = "";
+      this.$store.state.blogInfo.pageList.forEach(item => {
+        if (item.pageLabel === "about") {
+          cover = item.pageCover;
+        }
+      });
+      return "background: url(" + cover + ") center center / cover no-repeat";
+    }
+  },
   methods: {
     getAboutContent() {
       const that = this;
       var aboutMe = this.$store.state.blogInfo.webSite.aboutMe;
-        this.markdownToHtml(aboutMe);
-        this.$nextTick(() => {
-          // 添加代码复制功能
-          this.clipboard = new Clipboard(".copy-btn");
-          this.clipboard.on("success", () => {
-            this.$toast({ type: "success", message: "复制成功" });
-          });
-          // 添加图片预览功能
-          const imgList = this.$refs.about.getElementsByTagName("img");
-          for (var i = 0; i < imgList.length; i++) {
-            this.imgList.push(imgList[i].src);
-            imgList[i].addEventListener("click", function(e) {
-              that.previewImg(e.target.currentSrc);
-            });
-          }
+      this.markdownToHtml(aboutMe);
+      this.$nextTick(() => {
+        // 添加代码复制功能
+        this.clipboard = new Clipboard(".copy-btn");
+        this.clipboard.on("success", () => {
+          this.$toast({ type: "success", message: "复制成功" });
         });
+        // 添加图片预览功能
+        const imgList = this.$refs.about.getElementsByTagName("img");
+        for (var i = 0; i < imgList.length; i++) {
+          this.imgList.push(imgList[i].src);
+          imgList[i].addEventListener("click", function (e) {
+            that.previewImg(e.target.currentSrc);
+          });
+        }
+      });
     },
     markdownToHtml(data) {
       const MarkdownIt = require("markdown-it");
@@ -76,7 +74,7 @@ export default {
         html: true,
         linkify: true,
         typographer: true,
-        highlight: function(str, lang) {
+        highlight(str, lang) {
           // 当前时间加随机数生成唯一的id标识
           var d = new Date().getTime();
           if (
@@ -87,7 +85,7 @@ export default {
           }
           const codeIndex = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(
             /[xy]/g,
-            function(c) {
+            function (c) {
               var r = (d + Math.random() * 16) % 16 | 0;
               d = Math.floor(d / 16);
               return (c == "x" ? r : (r & 0x3) | 0x8).toString(16);
@@ -127,20 +125,9 @@ export default {
       });
     }
   },
-  computed: {
-    avatar() {
-      return this.$store.state.blogInfo.webSite.authorAvatar;
-    },
-    cover() {
-      var cover = "";
-      this.$store.state.blogInfo.pageList.forEach(item => {
-        if (item.pageLabel === "about") {
-          cover = item.pageCover;
-        }
-      });
-      return "background: url(" + cover + ") center center / cover no-repeat";
-    }
-  }
+  destroyed() {
+    this.clipboard.destroy();
+  },
 };
 </script>
 
@@ -150,12 +137,15 @@ export default {
   line-height: 1.8;
   font-size: 14px;
 }
+
 .my-wrapper {
   text-align: center;
 }
+
 .author-avatar {
   transition: all 0.5s;
 }
+
 .author-avatar:hover {
   transform: rotate(360deg);
 }
@@ -169,36 +159,44 @@ pre.hljs {
   font-size: 14px !important;
   line-height: 22px !important;
   overflow: hidden !important;
+
   &:hover .copy-btn {
     display: flex;
     justify-content: center;
     align-items: center;
   }
+
   code {
     display: block !important;
     margin: 0 10px !important;
     overflow-x: auto !important;
+
     &::-webkit-scrollbar {
       z-index: 11;
       width: 6px;
     }
+
     &::-webkit-scrollbar:horizontal {
       height: 6px;
     }
+
     &::-webkit-scrollbar-thumb {
       border-radius: 5px;
       width: 6px;
       background: #666;
     }
+
     &::-webkit-scrollbar-corner,
     &::-webkit-scrollbar-track {
       background: #1e1e1e;
     }
+
     &::-webkit-scrollbar-track-piece {
       background: #1e1e1e;
       width: 6px;
     }
   }
+
   .line-numbers-rows {
     position: absolute;
     pointer-events: none;
@@ -212,10 +210,12 @@ pre.hljs {
     border-right: 1px solid rgba(0, 0, 0, 0.66);
     user-select: none;
     counter-reset: linenumber;
+
     span {
       pointer-events: none;
       display: block;
       counter-increment: linenumber;
+
       &:before {
         content: counter(linenumber);
         color: #999;
@@ -224,6 +224,7 @@ pre.hljs {
       }
     }
   }
+
   b.name {
     position: absolute;
     top: 7px;
@@ -232,6 +233,7 @@ pre.hljs {
     color: #999;
     pointer-events: none;
   }
+
   .copy-btn {
     position: absolute;
     top: 6px;

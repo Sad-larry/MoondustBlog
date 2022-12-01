@@ -15,7 +15,7 @@
     <!-- 搜索模态框 -->
     <!-- <searchModel></searchModel> -->
     <!-- 登录模态框 -->
-    <!-- <LoginModel></LoginModel> -->
+    <LoginModel></LoginModel>
     <!-- 注册模态框 -->
     <!-- <RegisterModel></RegisterModel> -->
     <!-- 忘记密码模态框 -->
@@ -31,19 +31,19 @@
 </template>
 
 <script>
-import TopNavBar from "./components/layout/TopNavBar";
-import SideNavBar from "./components/layout/SideNavBar";
-import Footer from "./components/layout/Footer";
-import BackTop from "./components/BackTop";
-import searchModel from "./components/model/SearchModel";
-import LoginModel from "./components/model/LoginModel";
-import RegisterModel from "./components/model/RegisterModel";
-import ForgetModel from "./components/model/ForgetModel";
-import EmailModel from "./components/model/EmailModel";
-import Player from "./components/zw-player/player.vue";
-//import ChatRoom from "./components/ChatRoom";
-import FeedBack from "./components/FeedBack";
-import { getWebSiteInfo, report } from './api'
+import TopNavBar from "@/components/layout/TopNavBar";
+import SideNavBar from "@/components/layout/SideNavBar";
+import Footer from "@/components/layout/Footer";
+import BackTop from "@/components/BackTop";
+import searchModel from "@/components/model/SearchModel";
+import LoginModel from "@/components/model/LoginModel";
+import RegisterModel from "@/components/model/RegisterModel";
+import ForgetModel from "@/components/model/ForgetModel";
+import EmailModel from "@/components/model/EmailModel";
+import Player from "@/components/zw-player/player.vue";
+//import ChatRoom from "@/components/ChatRoom";
+import FeedBack from "@/components/FeedBack";
+import { getWebSiteInfo, report } from '@/api'
 export default {
   components: {
     TopNavBar,

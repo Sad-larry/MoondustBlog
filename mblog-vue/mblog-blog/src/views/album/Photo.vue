@@ -7,13 +7,7 @@
     <!-- 相册列表 -->
     <v-card class="blog-container">
       <div class="photo-wrap">
-        <img
-          v-for="(item, index) of photoList"
-          class="photo"
-          :key="index"
-          :src="item"
-          @click="preview(index)"
-        />
+        <img v-for="(item, index) of photoList" class="photo" :key="index" :src="item" @click="preview(index)" />
       </div>
       <!-- 无限加载 -->
       <infinite-loading @infinite="infiniteHandler">
@@ -25,19 +19,10 @@
 </template>
 
 <script>
-import { getPhotos } from "../../api";
+import { getPhotos } from "@/api";
 
 export default {
-  metaInfo:{
-    meta: [{
-      name: 'keyWords',
-      content: "拾壹,www.shiyit.com,博客,个人博客,开源博客"  //变量或字符串
-    }, {
-      name: 'description',
-      content: "一个专注于技术分享的博客平台,大家以共同学习,乐于分享,拥抱开源的价值观进行学习交流"
-    }]
-  },
-  data: function() {
+  data() {
     return {
       photoAlbumName: "",
       photoAlbumCover: "",
@@ -45,6 +30,15 @@ export default {
       current: 1,
       size: 10
     };
+  },
+  computed: {
+    cover() {
+      return (
+        "background: url(" +
+        this.photoAlbumCover +
+        ") center center / cover no-repeat"
+      );
+    }
   },
   methods: {
     preview(index) {
@@ -72,15 +66,6 @@ export default {
         });
     }
   },
-  computed: {
-    cover() {
-      return (
-        "background: url(" +
-        this.photoAlbumCover +
-        ") center center / cover no-repeat"
-      );
-    }
-  }
 };
 </script>
 

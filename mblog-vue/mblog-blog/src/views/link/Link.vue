@@ -11,13 +11,7 @@
         大佬链接
       </div>
       <v-row class="link-container">
-        <v-col
-          class="link-wrapper"
-          md="4"
-          cols="12"
-          v-for="item of friendLinkList"
-          :key="item.url"
-        >
+        <v-col class="link-wrapper" md="4" cols="12" v-for="item of friendLinkList" :key="item.url">
           <a :href="item.url" target="_blank">
             <v-avatar size="65" class="link-avatar">
               <img :src="item.avatar" />
@@ -38,10 +32,10 @@
         <div>网站名称：{{ blogInfo.webSite.name }}</div>
         <div>网站简介：{{ blogInfo.webSite.summary }}</div>
         <div>网站地址：{{ blogInfo.webSite.webUrl }}</div>
-        <div>网站头像：{{blogInfo.webSite.logo }}</div>
+        <div>网站头像：{{ blogInfo.webSite.logo }}</div>
       </blockquote>
       <div class="mt-5 mb-5">
-        需要交换友链的可点击<a style="color: #409eff" @click="onclick">此处</a>💖<br/>
+        需要交换友链的可点击<a style="color: #409eff" @click="onclick">此处</a>💖<br />
         <font style="color: red">注:如果已经申请过友链 再次接入则会进行下架处理 需重新审核</font>
       </div>
 
@@ -80,22 +74,13 @@
 </template>
 
 <script>
-import { fetchFriend,addLink} from "../../api";
+import { fetchFriend, addLink } from "@/api";
 
 export default {
-  metaInfo:{
-    meta: [{
-      name: 'keyWords',
-      content: "拾壹博客,开源博客,www.shiyit.com"  //变量或字符串
-    }, {
-      name: 'description',
-      content: "一个专注于技术分享的博客平台,大家以共同学习,乐于分享,拥抱开源的价值观进行学习交流"
-    }]
-  },
   created() {
     this.listFriendLink();
   },
-  data: function() {
+  data() {
     return {
       friendLinkList: [],
       formLabelWidth: "120px",
@@ -110,45 +95,20 @@ export default {
         info: null,
         email: null
       },
-      rules:{
-        'name': [{ required: true,message: '必填字段',trigger: 'blur'}],
+      rules: {
+        'name': [{ required: true, message: '必填字段', trigger: 'blur' }],
         'email': [
-          { required: true,message: '必填字段',trigger: 'blur'},
-          {pattern: /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+((.[a-zA-Z0-9_-]{2,3}){1,2})$/, message: '填写正确的邮箱'}
+          { required: true, message: '必填字段', trigger: 'blur' },
+          { pattern: /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+((.[a-zA-Z0-9_-]{2,3}){1,2})$/, message: '填写正确的邮箱' }
         ],
-        'info': [{ required: true,message: '必填字段',trigger: 'blur'}],
+        'info': [{ required: true, message: '必填字段', trigger: 'blur' }],
         'url': [
-          { required: true,message: '必填字段',trigger: 'blur'},
-          {pattern:/^((https|http|ftp|rtsp|mms){0,1}(:\/\/){0,1})www\.(([A-Za-z0-9-~]+)\.)+([A-Za-z0-9-~\/])+$/, message: '填写正确的网址'}
+          { required: true, message: '必填字段', trigger: 'blur' },
+          { pattern: /^((https|http|ftp|rtsp|mms){0,1}(:\/\/){0,1})www\.(([A-Za-z0-9-~]+)\.)+([A-Za-z0-9-~\/])+$/, message: '填写正确的网址' }
         ],
-        'avatar': [{ required: true,message: '必填字段',trigger: 'blur'}]
+        'avatar': [{ required: true, message: '必填字段', trigger: 'blur' }]
       }
     };
-  },
-  methods: {
-    onclick:function(){
-      this.link={}
-      this.dialogFormVisible = true
-    },
-    listFriendLink() {
-      fetchFriend().then(res => {
-        this.friendLinkList = res.data;
-      });
-    },
-    submit:function(){
-      this.$refs['dataForm'].validate((valid) => {
-        if (valid) {
-          addLink(this.link).then(res => {
-            this.$toast({ type: "success", message: "申请成功,通过申请将邮件告知!!" });
-            this.dialogFormVisible = false
-          }).catch(err => {
-            this.$toast({ type: "error", message: err.message});
-          })
-        } else {
-          this.$toast({ type: "error", message: "存在必填字段!!!" });
-        }
-      })
-    },
   },
   computed: {
     blogInfo() {
@@ -163,7 +123,32 @@ export default {
       });
       return "background: url(" + cover + ") center center / cover no-repeat";
     }
-  }
+  },
+  methods: {
+    onclick() {
+      this.link = {}
+      this.dialogFormVisible = true
+    },
+    listFriendLink() {
+      fetchFriend().then(res => {
+        this.friendLinkList = res.data;
+      });
+    },
+    submit() {
+      this.$refs['dataForm'].validate((valid) => {
+        if (valid) {
+          addLink(this.link).then(res => {
+            this.$toast({ type: "success", message: "申请成功,通过申请将邮件告知!!" });
+            this.dialogFormVisible = false
+          }).catch(err => {
+            this.$toast({ type: "error", message: err.message });
+          })
+        } else {
+          this.$toast({ type: "error", message: "存在必填字段!!!" });
+        }
+      })
+    },
+  },
 };
 </script>
 

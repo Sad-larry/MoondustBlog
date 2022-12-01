@@ -14,13 +14,6 @@
         <v-icon>mdi-magnify</v-icon>
         <input v-model="keywords" placeholder="输入文章标题或内容..." />
       </div>
-<!--      <div style="margin-top: 10px">
-        <span style="font-weight: bold">每日热搜</span><br/>
-        <div style="display:inline-block;background-color: #b3b3b3;color: rgb(102,102,102);border-radius: 10px;margin-left: 10px;margin-top: 8px">
-          <span style="padding: 15px">博客112</span>
-        </div>
-      </div>-->
-
       <!-- 搜索结果 -->
       <div class="search-result-wrapper">
         <hr class="divider" />
@@ -29,17 +22,11 @@
             <!-- 文章标题 -->
             <a @click="goTo(item.id)" v-html="item.title" />
             <!-- 文章内容 -->
-            <p
-              class="search-reslut-content text-justify"
-              v-html="item.content"
-            />
+            <p class="search-reslut-content text-justify" v-html="item.content" />
           </li>
         </ul>
         <!-- 搜索结果不存在提示 -->
-        <div
-          v-show="flag && articleList.length == 0"
-          style="font-size:0.875rem"
-        >
+        <div v-show="flag && articleList.length == 0" style="font-size:0.875rem">
           找不到您查询的内容：{{ keywords }}
         </div>
       </div>
@@ -48,26 +35,20 @@
 </template>
 
 <script>
-import {searchArticle} from '../../api'
+import { searchArticle } from '@/api'
 export default {
-  data: function() {
+  data() {
     return {
       keywords: "",
       articleList: [],
       flag: false
     };
   },
-  methods: {
-    goTo(articleId) {
-      this.$store.state.searchFlag = false;
-      this.$router.push({ path: "/article/" + articleId });
-    }
-  },
   computed: {
     searchFlag: {
       set(value) {
-        this.keywords =""
-        this.articleList=[]
+        this.keywords = ""
+        this.articleList = []
         this.$store.state.searchFlag = value;
       },
       get() {
@@ -82,15 +63,19 @@ export default {
   watch: {
     keywords(value) {
       this.flag = value.trim() !== "";
-      if (this.flag){
+      if (this.flag) {
         searchArticle(value).then(res => {
           this.articleList = res.data;
         });
       }
-
-
     }
-  }
+  },
+  methods: {
+    goTo(articleId) {
+      this.$store.state.searchFlag = false;
+      this.$router.push({ path: "/article/" + articleId });
+    }
+  },
 };
 </script>
 
@@ -100,11 +85,13 @@ export default {
   height: 100%;
   background: #fff !important;
 }
+
 .search-title {
   color: #49b1f5;
   font-size: 1.25rem;
   line-height: 1;
 }
+
 .search-input-wrapper {
   display: flex;
   padding: 5px;
@@ -113,11 +100,13 @@ export default {
   border: 2px solid #8e8cd8;
   border-radius: 2rem;
 }
+
 .search-input-wrapper input {
   width: 100%;
   margin-left: 5px;
   outline: none;
 }
+
 @media (min-width: 960px) {
   .search-result-wrapper {
     padding-right: 5px;
@@ -125,18 +114,21 @@ export default {
     overflow: auto;
   }
 }
+
 @media (max-width: 959px) {
   .search-result-wrapper {
     height: calc(100vh - 110px);
     overflow: auto;
   }
 }
+
 .search-reslut a {
   color: #555;
   font-weight: bold;
   border-bottom: 1px solid #999;
   text-decoration: none;
 }
+
 .search-reslut-content {
   color: #555;
   cursor: pointer;
@@ -149,6 +141,7 @@ export default {
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
 }
+
 .divider {
   margin: 20px 0;
   border: 2px dashed #d2ebfd;

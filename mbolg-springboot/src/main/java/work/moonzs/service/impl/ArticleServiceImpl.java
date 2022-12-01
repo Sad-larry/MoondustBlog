@@ -235,5 +235,16 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     public List<ArticleBaseVO> listRecommendArticle(Long articleId) {
         return baseMapper.listRecommendArticle(articleId);
     }
+
+    @Override
+    public PageVO<ArticleBaseVO> getArchives(Integer pageNum, Integer pageSize) {
+        Page<Article> page = new Page<>(pageNum, pageSize);
+        LambdaQueryWrapper<Article> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.select(Article::getId, Article::getTitle, Article::getCreateTime)
+                .eq(Article::getIsPublish, StatusConstants.NORMAL)
+                .orderByDesc(Article::getCreateTime);
+        page(page, queryWrapper);
+        return new PageVO<>(BeanCopyUtil.copyBeanList(page.getRecords(), ArticleBaseVO.class), page.getTotal());
+    }
 }
 

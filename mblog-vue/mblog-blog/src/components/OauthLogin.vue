@@ -12,7 +12,7 @@
 
 <script>
 /* eslint-disable no-undef */
-import {qqLogin,gitEELogin,weiboLogin} from '../api'
+import { qqLogin, gitEELogin, weiboLogin } from '@/api'
 export default {
   created() {
     const that = this;
@@ -22,56 +22,56 @@ export default {
     if (that.$route.path === "/callback/qq") {
       // 拿到openId，accessToken传入后台
       if (QC.Login.check()) {
-        QC.Login.getMe(function(openId, accessToken) {
+        QC.Login.getMe(function (openId, accessToken) {
           qqLogin({
-              openId: openId,
-              accessToken: accessToken
-            }).then(res=> {
-                //保存登录状态
-                that.$store.commit("login", res.data);
-                if (res.data.email == null) {
-                  that.$toast({
-                    type: "warnning",
-                    message: "请绑定邮箱以便及时收到回复"
-                  });
-                } else {
-                  that.$toast({ type: "success", message: res.message });
-                }
-            }).catch(err =>{
-              that.$toast({ type: "error", message: err.message });
+            openId: openId,
+            accessToken: accessToken
+          }).then(res => {
+            //保存登录状态
+            that.$store.commit("login", res.data);
+            if (res.data.email == null) {
+              that.$toast({
+                type: "warnning",
+                message: "请绑定邮箱以便及时收到回复"
+              });
+            } else {
+              that.$toast({ type: "success", message: res.message });
+            }
+          }).catch(err => {
+            that.$toast({ type: "error", message: err.message });
           });
         });
       } else {
         that.$toast({ type: "error", message: data.message });
       }
-    } else if (that.$route.path === "/callback/gitee"){
+    } else if (that.$route.path === "/callback/gitee") {
       gitEELogin(this.$route.query.code).then(res => {
-            //保存登录状态
-            that.$store.commit("login", res.data);
-            if (res.data.email == null) {
-              that.$toast({
-                type: "warnning",
-                message: "请绑定邮箱以便及时收到回复"
-              });
-            } else {
-              that.$toast({ type: "success", message: res.message });
-            }
-        }).catch(err =>{
+        //保存登录状态
+        that.$store.commit("login", res.data);
+        if (res.data.email == null) {
+          that.$toast({
+            type: "warnning",
+            message: "请绑定邮箱以便及时收到回复"
+          });
+        } else {
+          that.$toast({ type: "success", message: res.message });
+        }
+      }).catch(err => {
         that.$toast({ type: "error", message: err.message });
       });
-    }else{
+    } else {
       weiboLogin(this.$route.query.code).then(res => {
-            //保存登录状态
-            that.$store.commit("login", res.data);
-            if (res.data.email == null) {
-              that.$toast({
-                type: "warnning",
-                message: "请绑定邮箱以便及时收到回复"
-              });
-            } else {
-              that.$toast({ type: "success", message: res.message });
-            }
-        }).catch(err =>{
+        //保存登录状态
+        that.$store.commit("login", res.data);
+        if (res.data.email == null) {
+          that.$toast({
+            type: "warnning",
+            message: "请绑定邮箱以便及时收到回复"
+          });
+        } else {
+          that.$toast({ type: "success", message: res.message });
+        }
+      }).catch(err => {
         that.$toast({ type: "error", message: err.message });
       });
     }
@@ -96,11 +96,13 @@ export default {
   background: #fff;
   z-index: 1000;
 }
+
 #preloader_1 {
   position: relative;
   top: 45vh;
   left: 45vw;
 }
+
 #preloader_1 span {
   display: block;
   bottom: 0px;
@@ -110,38 +112,46 @@ export default {
   position: absolute;
   animation: preloader_1 1.5s infinite ease-in-out;
 }
+
 #preloader_1 span:nth-child(2) {
   left: 11px;
   animation-delay: 0.2s;
 }
+
 #preloader_1 span:nth-child(3) {
   left: 22px;
   animation-delay: 0.4s;
 }
+
 #preloader_1 span:nth-child(4) {
   left: 33px;
   animation-delay: 0.6s;
 }
+
 #preloader_1 span:nth-child(5) {
   left: 44px;
   animation-delay: 0.8s;
 }
+
 @keyframes preloader_1 {
   0% {
     height: 5px;
     transform: translateY(0px);
     background: #9b59b6;
   }
+
   25% {
     height: 30px;
     transform: translateY(15px);
     background: #3498db;
   }
+
   50% {
     height: 5px;
     transform: translateY(0px);
     background: #9b59b6;
   }
+
   100% {
     height: 5px;
     transform: translateY(0px);

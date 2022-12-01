@@ -94,13 +94,8 @@
 </template>
 
 <script>
-import { logout } from '../../api'
+import { logout } from '@/api'
 export default {
-  data() {
-    return {
-      img: process.env.VUE_APP_IMG_API,
-    }
-  },
   computed: {
     drawer: {
       set(value) {

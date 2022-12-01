@@ -29,42 +29,7 @@ export default new Vuex.Store({
     token: null,
     dialogFormVisible: false,
     articleLikeSet: [],
-    commentLikeSet: [],
-    // blogInfo: {
-    //   webSite: {
-    //     authorAvatar: 'https://niu.moonzs.work/2022/11/26/033b678cc9084976bb14f79dc880bde7.jpg',
-    //     authorInfo: null,
-    //     touristAvatar: null,
-    //     loginTypeList: "",
-    //     bulletin: null,
-    //     aboutMe: null,
-    //     logo: null,
-    //     github: null,
-    //     gitee: null,
-    //     qqNumber: null,
-    //     recordNum: null,
-    //     author: null,
-    //     aliPay: null,
-    //     weixinPay: null,
-    //     keyword: null,
-    //     name: null,
-    //     summary: null,
-    //     webUrl: null,
-    //     showList: ""
-    //   },
-    //   count: {
-    //     articleCount: null,
-    //     categoryCount: null,
-    //     tagCount: null,
-    //     viewsCount: null
-    //   },
-    //   pageList: [
-    //     {
-    //       pageCover: 'https://niu.moonzs.work/2022/11/26/eccf3e0f88394c30ab0ac926fc0bd2d0.jpg',
-    //       pageLabel: 'home'
-    //     }
-    //   ]
-    // }
+    commentLikeSet: []
   },
   mutations: {
     login(state, user) {

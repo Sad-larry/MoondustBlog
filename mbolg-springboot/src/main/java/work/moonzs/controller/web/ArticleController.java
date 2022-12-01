@@ -67,4 +67,18 @@ public class ArticleController {
     public ResponseResult getArticleInfo(Long id) {
         return ResponseResult.success(articleService.getArticleInfo(id));
     }
+
+    /**
+     * 查询归档
+     *
+     * @param pageNum  页面num
+     * @param pageSize 页面大小
+     * @return {@link ResponseResult}
+     */
+    @SystemLog(businessName = "查询归档")
+    @GetMapping("/archive")
+    public ResponseResult getArchives(@RequestParam(defaultValue = "1", required = false) Integer pageNum,
+                                      @RequestParam(defaultValue = "10", required = false) Integer pageSize) {
+        return ResponseResult.successPageVO(articleService.getArchives(pageNum, pageSize));
+    }
 }

@@ -20,21 +20,14 @@
 <script>
 import { getTags } from '@/api'
 export default {
-  created() {
-    this.listTags();
-  },
-  data: function () {
+  data() {
     return {
       tagList: [],
       count: 0
     };
   },
-  methods: {
-    listTags() {
-      getTags().then(res => {
-        this.tagList = res.data;
-      });
-    }
+  created() {
+    this.listTags();
   },
   computed: {
     cover() {
@@ -46,7 +39,14 @@ export default {
       });
       return "background: url(" + cover + ") center center / cover no-repeat";
     }
-  }
+  },
+  methods: {
+    listTags() {
+      getTags().then(res => {
+        this.tagList = res.data;
+      });
+    }
+  },
 };
 </script>
 

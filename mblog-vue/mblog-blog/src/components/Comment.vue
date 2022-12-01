@@ -5,38 +5,19 @@
     <div class="comment-input-wrapper">
       <div style="display:flex">
         <v-avatar size="40">
-          <img
-            v-if="this.$store.state.avatar"
-            :src="this.$store.state.avatar"
-          />
-          <img
-            v-else
-            :src="this.$store.state.blogInfo.webSite.touristAvatar"
-          />
+          <img v-if="this.$store.state.avatar" :src="this.$store.state.avatar" />
+          <img v-else :src="this.$store.state.blogInfo.webSite.touristAvatar" />
         </v-avatar>
         <div style="width:100%" class="ml-3">
           <div class="comment-input">
-            <textarea
-              class="comment-textarea"
-              v-model="commentContent"
-              placeholder="留下点什么吧..."
-              auto-grow
-              dense
-            />
+            <textarea class="comment-textarea" v-model="commentContent" placeholder="留下点什么吧..." auto-grow dense />
           </div>
           <!-- 操作按钮 -->
           <div class="emoji-container">
-            <span
-              :class="chooseEmoji ? 'emoji-btn-active' : 'emoji-btn'"
-              @click="chooseEmoji = !chooseEmoji"
-            >
+            <span :class="chooseEmoji ? 'emoji-btn-active' : 'emoji-btn'" @click="chooseEmoji = !chooseEmoji">
               <i class="iconfont iconbiaoqing" />
             </span>
-            <button
-              @click="insertComment"
-              class="upload-btn v-comment-btn"
-              style="margin-left:auto"
-            >
+            <button @click="insertComment" class="upload-btn v-comment-btn" style="margin-left:auto">
               提交
             </button>
           </div>
@@ -50,12 +31,7 @@
       <!-- 评论数量 -->
       <div class="count">{{ count }} 评论</div>
       <!-- 评论列表 -->
-      <div
-        style="display:flex"
-        class="pt-5"
-        v-for="(item, index) of commentList"
-        :key="item.id"
-      >
+      <div style="display:flex" class="pt-5" v-for="(item, index) of commentList" :key="item.id">
         <!-- 头像 -->
         <v-avatar size="40" class="comment-avatar">
           <img :src="item.avatar" />
@@ -76,7 +52,7 @@
             <!-- 发表时间 -->
             <span style="margin-right:10px">{{ item.createTime | date }}</span>
             <!-- 点赞 -->
-<!--            <span
+            <!--            <span
               :class="isLike(item.id) + ' iconfont icondianzan'"
               @click="like(item)"
             />-->
@@ -89,11 +65,7 @@
           <!-- 评论内容 -->
           <p v-html="item.commentContent" class="comment-content"></p>
           <!-- 回复人 -->
-          <div
-            style="display:flex"
-            v-for="reply of item.replyDTOList"
-            :key="reply.id"
-          >
+          <div style="display:flex" v-for="reply of item.replyDTOList" :key="reply.id">
             <!-- 头像 -->
             <v-avatar size="36" class="comment-avatar">
               <img :src="reply.avatar" />
@@ -115,7 +87,7 @@
                   {{ reply.createTime | date }}
                 </span>
                 <!-- 点赞 -->
-<!--                <span
+                <!--                <span
                   :class="isLike(reply.id) + ' iconfont icondianzan'"
                   @click="like(reply)"
                 />-->
@@ -132,12 +104,7 @@
                   <span v-if="!reply.replyWebSite" class="comment-nickname ml-1">
                     @{{ reply.replyNickname }}
                   </span>
-                  <a
-                    v-else
-                    :href="reply.replyWebSite"
-                    target="_blank"
-                    class="comment-nickname ml-1"
-                  >
+                  <a v-else :href="reply.replyWebSite" target="_blank" class="comment-nickname ml-1">
                     @{{ reply.replyNickname }}
                   </a>
                 </template>
@@ -146,38 +113,21 @@
             </div>
           </div>
           <!-- 回复数量 -->
-          <div
-            class="mb-3"
-            style="font-size:0.75rem;color:#6d757a"
-            v-show="item.replyCount > 3"
-            ref="check"
-          >
+          <div class="mb-3" style="font-size:0.75rem;color:#6d757a" v-show="item.replyCount > 3" ref="check">
             共
             <b>{{ item.replyCount }}</b>
             条回复，
-            <span
-              style="color:#00a1d6;cursor:pointer"
-              @click="checkReplies(index, item)"
-            >
+            <span style="color:#00a1d6;cursor:pointer" @click="checkReplies(index, item)">
               点击查看
             </span>
           </div>
           <!-- 回复分页 -->
-          <div
-            class="mb-3"
-            style="font-size:0.75rem;color:#222;display:none"
-            ref="paging"
-          >
+          <div class="mb-3" style="font-size:0.75rem;color:#222;display:none" ref="paging">
             <span style="padding-right:10px">
               共{{ Math.ceil(item.replyCount / 5) }}页
             </span>
-            <paging
-              ref="page"
-              :totalPage="Math.ceil(item.replyCount / 5)"
-              :index="index"
-              :commentId="item.id"
-              @changeReplyCurrent="changeReplyCurrent"
-            />
+            <paging ref="page" :totalPage="Math.ceil(item.replyCount / 5)" :index="index" :commentId="item.id"
+              @changeReplyCurrent="changeReplyCurrent" />
           </div>
           <!-- 回复框 -->
           <Reply ref="reply" @reloadReply="reloadReply" />
@@ -201,8 +151,8 @@
 import Reply from "./Reply";
 import Paging from "./Paging";
 import Emoji from "./Emoji";
-import EmojiList from "../assets/js/emoji";
-import {addComment,fetchComments,repliesByComId} from '../api'
+import EmojiList from "@/assets/js/emoji";
+import { addComment, fetchComments, repliesByComId } from '@/api'
 export default {
   components: {
     Reply,
@@ -217,7 +167,7 @@ export default {
       type: Number
     }
   },
-  data: function() {
+  data() {
     return {
       reFresh: true,
       img: process.env.VUE_APP_IMG_API,
@@ -225,6 +175,22 @@ export default {
       chooseEmoji: false,
       current: 1
     };
+  },
+  /* computed: {
+     isLike() {
+       return function(commentId) {
+         var commentLikeSet = this.$store.state.commentLikeSet;
+         return commentLikeSet.indexOf(commentId) != -1 ? "like-active" : "like";
+       };
+     }
+   },*/
+  watch: {
+    commentList() {
+      this.reFresh = false;
+      this.$nextTick(() => {
+        this.reFresh = true;
+      });
+    }
   },
   methods: {
     replyComment(index, item) {
@@ -244,28 +210,28 @@ export default {
       this.commentContent += key;
     },
     checkReplies(index, item) {
-      repliesByComId( {commentId:item.id, pageNo: 1, pageSize: 5 }).then(res => {
-          this.$refs.check[index].style.display = "none";
-          item.replyDTOList = res.data;
-          //超过1页才显示分页
-          if (Math.ceil(item.replyCount / 5) > 1) {
-            this.$refs.paging[index].style.display = "flex";
-          }
-        });
+      repliesByComId({ commentId: item.id, pageNo: 1, pageSize: 5 }).then(res => {
+        this.$refs.check[index].style.display = "none";
+        item.replyDTOList = res.data;
+        //超过1页才显示分页
+        if (Math.ceil(item.replyCount / 5) > 1) {
+          this.$refs.paging[index].style.display = "flex";
+        }
+      });
     },
     changeReplyCurrent(current, index, commentId) {
       //查看下一页回复
-      repliesByComId( {commentId:commentId, pageNo: current, pageSize: 5 }).then(res => {
-          this.commentList[index].replyDTOList = res.data;
-        });
+      repliesByComId({ commentId: commentId, pageNo: current, pageSize: 5 }).then(res => {
+        this.commentList[index].replyDTOList = res.data;
+      });
     },
     listComments() {
       //查看下一页评论
       this.current++;
       const path = this.$route.path;
       const arr = path.split("/");
-      fetchComments( { pageNo: this.current,pageSize:10, articleId: arr[2] }).then(res => {
-        res.data.commentDTOList.forEach(item =>{
+      fetchComments({ pageNo: this.current, pageSize: 10, articleId: arr[2] }).then(res => {
+        res.data.commentDTOList.forEach(item => {
           this.commentList.push(item);
         })
       });
@@ -284,7 +250,7 @@ export default {
       }
       //解析表情
       var reg = /\[.+?\]/g;
-      this.commentContent = this.commentContent.replace(reg, function(str) {
+      this.commentContent = this.commentContent.replace(reg, function (str) {
         return (
           "<img src= '" +
           EmojiList[str] +
@@ -300,53 +266,37 @@ export default {
       };
       this.commentContent = "";
       addComment(comment).then(res => {
-          //查询最新评论
-          this.$emit("reloadComment");
-          this.$toast({ type: "success", message: "评论成功" });
-         /* const isReview = this.$store.state.blogInfo.websiteConfig
-            .isCommentReview;
-          if (isReview) {
-            this.$toast({ type: "warnning", message: "评论成功，正在审核中" });
-          } else {
-            this.$toast({ type: "success", message: "评论成功" });
-          }*/
-      }).catch(err =>{
+        //查询最新评论
+        this.$emit("reloadComment");
+        this.$toast({ type: "success", message: "评论成功" });
+        /* const isReview = this.$store.state.blogInfo.websiteConfig
+           .isCommentReview;
+         if (isReview) {
+           this.$toast({ type: "warnning", message: "评论成功，正在审核中" });
+         } else {
+           this.$toast({ type: "success", message: "评论成功" });
+         }*/
+      }).catch(err => {
         console.error(err)
       });
     },
     reloadReply(index) {
-      repliesByComId( {
-            commentId:this.commentList[index].id,
-            pageSize:5,
-            pageNo: this.$refs.page[index].current
-          }).then(res => {
-          this.commentList[index].replyCount++;
-          //回复大于5条展示分页
-          if (this.commentList[index].replyCount > 5) {
-            this.$refs.paging[index].style.display = "flex";
-          }
-          this.$refs.check[index].style.display = "none";
-          this.$refs.reply[index].$el.style.display = "none";
-          this.commentList[index].replyDTOList = res.data;
-        });
-    }
-  },
- /* computed: {
-    isLike() {
-      return function(commentId) {
-        var commentLikeSet = this.$store.state.commentLikeSet;
-        return commentLikeSet.indexOf(commentId) != -1 ? "like-active" : "like";
-      };
-    }
-  },*/
-  watch: {
-    commentList() {
-      this.reFresh = false;
-      this.$nextTick(() => {
-        this.reFresh = true;
+      repliesByComId({
+        commentId: this.commentList[index].id,
+        pageSize: 5,
+        pageNo: this.$refs.page[index].current
+      }).then(res => {
+        this.commentList[index].replyCount++;
+        //回复大于5条展示分页
+        if (this.commentList[index].replyCount > 5) {
+          this.$refs.paging[index].style.display = "flex";
+        }
+        this.$refs.check[index].style.display = "none";
+        this.$refs.reply[index].$el.style.display = "none";
+        this.commentList[index].replyDTOList = res.data;
       });
     }
-  }
+  },
 };
 </script>
 
@@ -354,6 +304,7 @@ export default {
 p {
   margin-bottom: 1.25rem !important;
 }
+
 .blogger-tag {
   background: #ffa51e;
   font-size: 12px;
@@ -363,6 +314,7 @@ p {
   padding: 0 5px;
   margin-left: 6px;
 }
+
 .comment-title {
   display: flex;
   align-items: center;
@@ -371,84 +323,102 @@ p {
   line-height: 40px;
   margin-bottom: 10px;
 }
+
 .comment-title i {
   font-size: 1.5rem;
   margin-right: 5px;
 }
+
 .comment-input-wrapper {
   border: 1px solid #90939950;
   border-radius: 4px;
   padding: 10px;
   margin: 0 0 10px;
 }
+
 .count {
   padding: 5px;
   line-height: 1.75;
   font-size: 1.25rem;
   font-weight: bold;
 }
+
 .comment-meta {
   margin-left: 0.8rem;
   width: 100%;
   border-bottom: 1px dashed #f5f5f5;
 }
+
 .reply-meta {
   margin-left: 0.8rem;
   width: 100%;
 }
+
 .comment-user {
   font-size: 14px;
   line-height: 1.75;
 }
+
 .comment-user a {
   color: #1abc9c !important;
   font-weight: 500;
   transition: 0.3s all;
 }
+
 .comment-nickname {
   text-decoration: none;
   color: #1abc9c !important;
   font-weight: 500;
 }
+
 .comment-info {
   line-height: 1.75;
   font-size: 0.75rem;
   color: #b3b3b3;
 }
+
 .reply-btn {
   cursor: pointer;
   float: right;
   color: #ef2f11;
 }
+
 .comment-content {
   font-size: 0.875rem;
   line-height: 1.75;
   padding-top: 0.625rem;
 }
+
 .comment-avatar {
   transition: all 0.5s;
 }
+
 .comment-avatar:hover {
   transform: rotate(360deg);
 }
+
 .like {
   cursor: pointer;
   font-size: 0.875rem;
 }
+
 .like:hover {
   color: #eb5055;
 }
+
 .like-active {
   cursor: pointer;
   font-size: 0.875rem;
   color: #eb5055;
 }
+
 .load-wrapper {
   margin-top: 10px;
   display: flex;
   justify-content: center;
   align-items: center;
 }
+
 .load-wrapper button {
   background-color: #49b1f5;
   color: #fff;
