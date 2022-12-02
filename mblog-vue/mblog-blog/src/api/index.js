@@ -39,7 +39,7 @@ export function searchArticle(keywords) {
         url: '/web/article/searchArticle',
         method: 'get',
         params: {
-            keywords:keywords
+            keywords: keywords
         }
     })
 }
@@ -48,7 +48,7 @@ export function like(id) {
     return request({
         url: '/web/article/articleLike',
         method: 'get',
-        params: {articleId:id}
+        params: { articleId: id }
     })
 }
 
@@ -77,6 +77,23 @@ export function getTags() {
     })
 }
 
+// 留言接口
+export function addMessage(data) {
+    return request({
+        url: '/web/message/add',
+        method: 'post',
+        data
+    })
+}
+
+// 留言弹幕列表
+export function listMessage() {
+    return request({
+        url: '/web/message/list',
+        method: 'get',
+    })
+}
+
 //友链页面请求接口
 export function addLink(data) {
     return request({
@@ -93,22 +110,6 @@ export function fetchFriend() {
     })
 }
 
-//留言接口
-export function addMessage(data) {
-    return request({
-        url: '/web/message/add',
-        method: 'post',
-        data
-    })
-}
-
-export function listMessage() {
-    return request({
-        url: '/web/message/webMessage',
-        method: 'get',
-        params: {}
-    })
-}
 //添加评论
 export function addComment(data) {
     return request({
@@ -120,18 +121,18 @@ export function addComment(data) {
 //评论列表
 export function fetchComments(params) {
     return request({
-          url: '/web/comment/comments',
-          method: 'get',
-          params: params
-      })
+        url: '/web/comment/comments',
+        method: 'get',
+        params: params
+    })
 }
 //查询回复评论
 export function repliesByComId(params) {
     return request({
-          url: '/web/comment/repliesByComId',
-          method: 'get',
-          params: params
-      })
+        url: '/web/comment/repliesByComId',
+        method: 'get',
+        params: params
+    })
 }
 
 //qq登录
@@ -155,7 +156,7 @@ export function gitEELogin(code) {
         url: '/user/gitEELogin',
         method: 'get',
         params: {
-            code:code
+            code: code
         }
     })
 }
@@ -165,7 +166,7 @@ export function weiboLogin(code) {
         url: '/user/weiboLogin',
         method: 'get',
         params: {
-            code:code
+            code: code
         }
     })
 }
@@ -203,8 +204,8 @@ export function sendEmailCode(email) {
     return request({
         url: '/user/sendEmailCode',
         method: 'get',
-        params:{
-            email:email
+        params: {
+            email: email
         }
     })
 }
@@ -240,7 +241,7 @@ export function upload(data) {
     return request({
         url: '/file/upload',
         method: 'POST',
-        headers:{'Content-Type': 'multipart/articles-data'},
+        headers: { 'Content-Type': 'multipart/articles-data' },
         data
     })
 }

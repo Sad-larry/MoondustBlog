@@ -18,9 +18,13 @@ up主敲了一个博客项目，但是，毕竟不是自己写的，虽然在跟
 
 **项目链接：** [月尘博客](http://refrainblog.cn)
 
+**项目链接（暂时使用IP访问）：** [月尘博客IP](http://39.108.79.48/)
+
 **后台链接：** [月尘博客后台管理系统](http://refrainblog.cn/admin)
 
-账号：test 密码：123456
+**后台链接（暂时使用IP访问）：** [月尘博客后台管理系统IP](http://39.108.79.48//admin)
+
+账号：admin	密码：1
 
 **Github地址：** [https://github.com/Sad-larry/MoondustBlog](https://github.com/Sad-larry/MoondustBlog)
 

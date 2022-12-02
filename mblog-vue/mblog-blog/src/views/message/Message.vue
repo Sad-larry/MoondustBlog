@@ -14,7 +14,8 @@
       </div>
       <!-- 弹幕列表 -->
       <div class="barrage-container">
-        <vue-baberrage :barrageList="barrageList">
+        <vue-baberrage :barrageList="barrageList" :boxHeight="boxHeight" :messageHeight="messageHeight"
+          :lanesCount="lanesCount" :throttleGap="throttleGap">
           <template v-slot:default="slotProps">
             <span class="barrage-items">
               <img :src="slotProps.item.avatar" width="30" height="30" style="border-radius:50%" />
@@ -33,8 +34,18 @@ import { listMessage, addMessage } from '@/api'
 export default {
   data() {
     return {
+      // 弹幕数据列表
+      barrageList: [],
+      // 显示弹幕区域的高度
+      boxHeight: 240,
+      // 弹幕高度
+      messageHeight: 40,
+      // 泳道数量
+      lanesCount: 4,
+      // 消息间隔
+      throttleGap: 5000,
+
       show: false,
-      img: process.env.VUE_APP_IMG_API,
       content: "",
       count: null,
       timer: null,
@@ -56,6 +67,7 @@ export default {
     }
   },
   methods: {
+    /** 发送留言弹幕 */
     addToList() {
       if (this.count) {
         this.$toast({ type: "error", message: "30秒后才能再次留言" });
@@ -76,7 +88,7 @@ export default {
         status: 1,
         nickname: userNickname,
         content: this.content,
-        time: Math.floor(Math.random() * (10 - 7)) + 7
+        time: Math.floor(Math.random() * (10 - 5)) + 10
       };
       this.barrageList.push(message);
       this.content = "";
@@ -94,9 +106,10 @@ export default {
         }, 1000);
       }
     },
+    /** 查询留言列表 */
     listMessage() {
       listMessage().then(res => {
-        this.barrageList = res.data;
+        this.barrageList = res.data
       });
     }
   },

@@ -5,6 +5,9 @@ import org.springframework.transaction.annotation.Transactional;
 import work.moonzs.domain.entity.Message;
 import work.moonzs.domain.vo.PageVO;
 import work.moonzs.domain.vo.sys.SysMessageVO;
+import work.moonzs.domain.vo.web.MessageVO;
+
+import java.util.List;
 
 /**
  * 留言板表(Message)表服务接口
@@ -15,7 +18,6 @@ import work.moonzs.domain.vo.sys.SysMessageVO;
 public interface MessageService extends IService<Message> {
 
     /**
-     * 消息列表
      * 留言列表
      *
      * @param pageNum    页面num
@@ -28,7 +30,7 @@ public interface MessageService extends IService<Message> {
     /**
      * 审核通过留言
      *
-     * @param messageIds 消息id
+     * @param messageIds 留言id
      * @return boolean
      */
     @Transactional
@@ -37,10 +39,26 @@ public interface MessageService extends IService<Message> {
     /**
      * 删除留言
      *
-     * @param messageIds 消息id
+     * @param messageIds 留言id
      * @return boolean
      */
     @Transactional
     boolean deleteMessage(Long[] messageIds);
+
+    /**
+     * web留言列表
+     *
+     * @return {@link MessageVO}
+     */
+    List<MessageVO> listWebMessage();
+
+    /**
+     * 添加留言
+     *
+     * @param message 留言
+     * @return {@link Long}
+     */
+    @Transactional
+    Long addWebMessage(Message message);
 }
 

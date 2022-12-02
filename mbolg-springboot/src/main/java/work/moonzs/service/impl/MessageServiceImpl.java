@@ -11,6 +11,7 @@ import work.moonzs.base.utils.BeanCopyUtil;
 import work.moonzs.domain.entity.Message;
 import work.moonzs.domain.vo.PageVO;
 import work.moonzs.domain.vo.sys.SysMessageVO;
+import work.moonzs.domain.vo.web.MessageVO;
 import work.moonzs.mapper.MessageMapper;
 import work.moonzs.service.MessageService;
 
@@ -48,6 +49,22 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
     @Override
     public boolean deleteMessage(Long[] messageIds) {
         return removeBatchByIds(List.of(messageIds));
+    }
+
+    @Override
+    public List<MessageVO> listWebMessage() {
+        LambdaQueryWrapper<Message> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.select(Message::getId, Message::getNickname, Message::getContent, Message::getAvatar, Message::getTime);
+        queryWrapper.eq(Message::getStatus, StatusConstants.NORMAL);
+        queryWrapper.orderByDesc(Message::getTime);
+        List<Message> list = list(queryWrapper);
+        return BeanCopyUtil.copyBeanList(list, MessageVO.class);
+    }
+
+    @Override
+    public Long addWebMessage(Message message) {
+        int insert = baseMapper.insert(message);
+        return insert > 0 ? message.getId() : null;
     }
 }
 
