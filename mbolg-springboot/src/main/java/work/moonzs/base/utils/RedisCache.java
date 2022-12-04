@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -74,6 +75,27 @@ public final class RedisCache {
                 redisTemplate.delete(CollUtil.newArrayList(key));
             }
         }
+    }
+
+    /**
+     * 删除缓存
+     *
+     * @param keys String 类型的 key 集合
+     */
+    public void del(Collection<String> keys) {
+        if (keys != null && !keys.isEmpty()) {
+            redisTemplate.delete(keys);
+        }
+    }
+
+    /**
+     * 获得缓存的基本对象列表
+     *
+     * @param pattern 字符串前缀
+     * @return {@link Collection}<{@link String}>
+     */
+    public Collection<String> keys(String pattern) {
+        return redisTemplate.keys(pattern);
     }
 
 

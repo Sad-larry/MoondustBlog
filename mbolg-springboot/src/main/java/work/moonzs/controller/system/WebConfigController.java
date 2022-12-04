@@ -13,7 +13,7 @@ import work.moonzs.service.WebConfigService;
 /**
  * @author Moondust月尘
  */
-@RestController("WebConfigC")
+@RestController("SystemWebConfigC")
 @RequestMapping("/system/webConfig")
 @RequiredArgsConstructor
 public class WebConfigController {

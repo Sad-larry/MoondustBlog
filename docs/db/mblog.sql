@@ -410,37 +410,18 @@ CREATE TABLE `t_user_role`
 DROP TABLE IF EXISTS `t_system_config`;
 CREATE TABLE `t_system_config`
 (
-    `id`                          bigint(20)   NOT NULL AUTO_INCREMENT COMMENT '主键ID',
-    `qi_niu_access_key`           varchar(255) NULL     DEFAULT NULL COMMENT '七牛云公钥',
-    `qi_niu_secret_key`           varchar(255) NULL     DEFAULT NULL COMMENT '七牛云私钥',
-    `qi_niu_area`                 varchar(20)  NULL     DEFAULT NULL COMMENT '七牛云存储区域',
-    `qi_niu_bucket`               varchar(255) NULL     DEFAULT NULL COMMENT '七牛云上传空间',
-    `qi_niu_picture_base_url`     varchar(255) NULL     DEFAULT NULL COMMENT '七牛云域名前缀+http',
-    `upload_qi_niu`               tinyint(1)   NULL     DEFAULT NULL COMMENT '文件上传七牛云(0否,1是)',
-    `open_email_activate`         tinyint(1)   NULL     DEFAULT NULL COMMENT '是否开启注册用户邮件激活(0否,1是)',
-    `start_email_notification`    tinyint(1)   NOT NULL DEFAULT 0 COMMENT '是否开启邮件通知(0否,1是)',
-    `open_dashboard_notification` tinyint(1)   NOT NULL DEFAULT 0 COMMENT '是否开启仪表盘通知(0否,1是)',
-    `dashboard_notification_md`   longtext     NULL COMMENT '仪表盘通知【用于首次登录弹框】MD',
-    `dashboard_notification`      longtext     NULL COMMENT '仪表盘通知【用于首次登录弹框】',
-    `search_model`                tinyint(1)   NOT NULL DEFAULT 0 COMMENT '搜索模式(0SQL搜索,1全文检索)',
-    `email_host`                  varchar(100) NULL     DEFAULT NULL COMMENT '邮箱地址',
-    `email_username`              varchar(100) NULL     DEFAULT NULL COMMENT '邮箱发件人',
-    `email_password`              varchar(255) NULL     DEFAULT NULL COMMENT '邮箱授权码',
-    `email_port`                  int(8)       NULL     DEFAULT NULL COMMENT '邮箱发送端口',
-    `open_email`                  tinyint(1)   NULL     DEFAULT NULL COMMENT '启用邮箱发送(0否,1是)',
-    `local_file_url`              varchar(255) NULL     DEFAULT NULL COMMENT '本地文件地址',
-    `file_upload_way`             tinyint(1)   NULL     DEFAULT NULL COMMENT '文件上传方式(1本地,2七牛云)',
-    `ali_yun_access_key`          varchar(100)          DEFAULT NULL COMMENT '阿里云ak',
-    `ali_yun_secret_key`          varchar(100)          DEFAULT NULL COMMENT '阿里云sk',
-    `ali_yun_bucket`              varchar(100)          DEFAULT NULL COMMENT '阿里云存储桶名',
-    `ali_yun_endpoint`            varchar(100)          DEFAULT NULL COMMENT '阿里云Endpoint',
-    `create_time`                 datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-    `update_time`                 datetime     NULL     DEFAULT NULL COMMENT '更新时间',
-    PRIMARY KEY (`id`) USING BTREE
+    `id`           bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+    `config_name`  varchar(100)        DEFAULT '' COMMENT '配置名称',
+    `config_key`   varchar(100)        DEFAULT '' COMMENT '配置键名',
+    `config_value` varchar(500)        DEFAULT '' COMMENT '配置键值',
+    `config_type`  tinyint(1)          DEFAULT '0' COMMENT '系统内置(0否,1是)',
+    `remark`       varchar(500)        DEFAULT NULL COMMENT '备注',
+    `create_time`  datetime   NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `update_time`  datetime            DEFAULT NULL COMMENT '更新时间',
+    PRIMARY KEY (`id`)
 ) ENGINE = InnoDB
-  CHARACTER SET = utf8mb4
-  COLLATE = utf8mb4_general_ci COMMENT = '系统配置表'
-  ROW_FORMAT = Dynamic;
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_0900_ai_ci COMMENT ='系统配置表';
 DROP TABLE IF EXISTS `t_web_config`;
 CREATE TABLE `t_web_config`
 (

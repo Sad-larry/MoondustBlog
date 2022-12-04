@@ -20,6 +20,7 @@ import work.moonzs.domain.vo.sys.SysUserBaseVO;
 import work.moonzs.domain.vo.sys.SysUserVO;
 import work.moonzs.mapper.UserAuthMapper;
 import work.moonzs.mapper.UserMapper;
+import work.moonzs.service.SystemConfigService;
 import work.moonzs.service.UserService;
 
 import java.util.List;
@@ -40,11 +41,17 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     private ITokenService iTokenService;
     @Autowired
     private UserAuthMapper userAuthMapper;
+    @Autowired
+    private SystemConfigService systemConfigService;
 
     @Override
     public String adminLogin(String username, String password, String uuid, String code) {
-        // TODO 验证验证码是否正确
-        // validateCaptcha(uuid, code);
+        // 是否开启了登录验证功能
+        boolean enabledCheck = systemConfigService.selectCaptchaEnabled();
+        if (enabledCheck) {
+            // 验证验证码是否正确
+            validateCaptcha(uuid, code);
+        }
         // SpringSecurity登录认证
         // 认证不通过时，SpringSecurity会主动抛出异常
         Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));

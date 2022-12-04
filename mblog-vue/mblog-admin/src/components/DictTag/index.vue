@@ -3,19 +3,17 @@
     <template v-for="(item, index) in options">
       <template v-if="values.includes(item.value)">
         <span
-          v-if="item.raw.listClass == 'default' || item.raw.listClass == ''"
-          :key="item.value"
+          v-if="item.style == 'default' || item.style == ''"
+          :key="item.id"
           :index="index"
-          :class="item.raw.cssClass"
           >{{ item.label }}</span
         >
         <el-tag
           v-else
           :disable-transitions="true"
-          :key="item.value"
+          :key="item.id"
           :index="index"
-          :type="item.raw.listClass == 'primary' ? '' : item.raw.listClass"
-          :class="item.raw.cssClass"
+          :type="item.style == 'primary' ? '' : item.style"
         >
           {{ item.label }}
         </el-tag>

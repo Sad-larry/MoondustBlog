@@ -17,6 +17,7 @@ import work.moonzs.domain.entity.LoginUser;
 import work.moonzs.domain.entity.Menu;
 import work.moonzs.domain.vo.CaptchaVo;
 import work.moonzs.service.MenuService;
+import work.moonzs.service.SystemConfigService;
 import work.moonzs.service.UserService;
 
 import java.util.List;
@@ -33,6 +34,8 @@ public class LoginController {
     private MenuService menuService;
     @Autowired
     private RedisCache redisCache;
+    @Autowired
+    private SystemConfigService systemConfigService;
 
     /**
      * 获取验证码图片并存入redis缓存
@@ -43,16 +46,20 @@ public class LoginController {
      */
     @GetMapping("/captchaImage")
     public ResponseResult captchaImage() {
+        CaptchaVo captchaVo = new CaptchaVo();
+        // 是否开启验证
+        captchaVo.setCaptchaEnabled(false);
+        boolean enabledCheck = systemConfigService.selectCaptchaEnabled();
+        if (!enabledCheck) {
+            // 如果不需要验证，则直接返回 false
+            return ResponseResult.success(captchaVo);
+        }
         //定义图形验证码的长、宽、验证码字符数、干扰线宽度
-        // GifCaptcha captcha = CaptchaUtil.createGifCaptcha(200, 100, 1);
         ShearCaptcha captcha = CaptchaUtil.createShearCaptcha(200, 100, 1, 1);
         String code = captcha.getCode();
         String uuid = IdUtil.simpleUUID();
         // 将验证码结构存入redis,设置唯一标识，用户用这个唯一标识去redis中查找验证码进行验证
         redisCache.set(CacheConstants.CAPTCHA_CODE_KEY + uuid, code);
-
-        CaptchaVo captchaVo = new CaptchaVo();
-        // TODO 是否开启验证应该从系统中读取判断
         captchaVo.setCaptchaEnabled(true);
         captchaVo.setUuid(uuid);
         captchaVo.setImg(captcha.getImageBase64());

@@ -19,6 +19,10 @@ public class BeanCopyUtil {
      * @return {@link T}
      */
     public static <T> T copyBean(Object source, Class<T> clazz) {
+        // 当源对象为空时，直接返回 null，业务就不用判断源对象是否为空了
+        if (source == null) {
+            return null;
+        }
         // 创建目标对象
         T result = null;
         try {
@@ -42,6 +46,9 @@ public class BeanCopyUtil {
      * @return {@link List}<{@link V}>
      */
     public static <O, V> List<V> copyBeanList(List<O> list, Class<V> clazz) {
+        if (list == null || list.isEmpty()) {
+            return null;
+        }
         return list.stream()
                 // 调用copyBean方法将list流中的每个对象实行操作
                 .map(o -> copyBean(o, clazz))
