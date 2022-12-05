@@ -6,6 +6,14 @@
                 <el-input v-model="article.title" size="medium" placeholder="输入文章标题" />
                 <el-button type="danger" size="medium" @click="openModel" style="margin-left: 10px"> 发布文章 </el-button>
             </div>
+            <div>
+                <!-- 用于本地上传文章 -->
+                <el-button type="danger" size="medium" @click="uploadArticleDialog = true" style="margin-left: 10px">
+                    上传文章
+                </el-button>
+                <el-button v-if="uploadArticleMd.imageCacheKey" type="danger" size="medium"
+                    @click="imagesUploadDialog = true" style="margin-left: 10px"> 上传图片 </el-button>
+            </div>
             <!-- 文章内容 -->
             <mavon-editor ref="md" v-model="article.contentMd" @imgAdd="uploadImg"
                 style="height: calc(100vh - 260px)" />
@@ -82,7 +90,7 @@
                         <el-input v-model="article.originalUrl" placeholder="请填写原文链接" />
                     </el-form-item>
                     <el-form-item label="上传封面">
-                        <el-upload class="upload-cover" drag action="uploadUrl" multiple :headers="headers"
+                        <el-upload class="upload-cover" drag :action="uploadUrl" multiple :headers="headers"
                             :before-upload="beforeUpload" :on-success="uploadCover">
                             <i class="el-icon-upload" v-if="article.avatar == ''" />
                             <div class="el-upload__text" v-if="article.avatar == ''">将文件拖到此处，或<em>点击上传</em></div>
@@ -112,21 +120,58 @@
                     <el-button type="danger" @click="saveOrUpdateArticle"> 发 表 </el-button>
                 </div>
             </el-dialog>
+
+            <!-- md文件上传 -->
+            <el-dialog center :visible.sync="uploadArticleDialog" append-to-body>
+                <div>
+                    <el-upload class="upload-cover" drag :action="uploadArticleUrl" multiple
+                        :http-request="uploadLocalArticle" :on-success="uploadArticleCover">
+                        <div class="el-upload__text" v-if="uploadArticleMd.imageCacheKey == ''">将文件拖到此处，或<em>点击上传</em>
+                        </div>
+                        <div>{{ uploadArticleMd.imageCacheKey }}</div>
+                    </el-upload>
+                </div>
+                <div slot="footer" class="dialog-footer">
+                    <el-button type="primary" @click="uploadLocalArticle">确 定</el-button>
+                    <el-button @click="uploadArticleDialog = false">取 消</el-button>
+                </div>
+            </el-dialog>
+
+            <!-- 图片上传 -->
+            <el-dialog width="400px" :visible.sync="imagesUploadDialog" append-to-body>
+                <div style="float:left">
+                    <el-upload class="upload-demo" ref="upload" :limit="10" accept=".jpg, .png, .gif, .jpeg"
+                        :multiple="true" action=" " :on-change="handleFileChange" :on-remove="onRemove"
+                        :before-remove="beforeRemove" :on-exceed="fileExceed" :auto-upload="false"
+                        :file-list="fileList">
+                        <el-button slot="trigger" size="small" type="primary">选取附件</el-button>
+                        <el-button style="margin-left: 10px;" v-if="fileList.length > 0" size="small" type="success"
+                            @click="uploadLocalArticleImages">上传附件</el-button>
+                    </el-upload>
+                </div>
+                <div slot="footer" class="dialog-footer">
+                    <el-button @click="imagesUploadDialog = false">取 消</el-button>
+                    <el-button type="primary" @click="uploadLocalArticleImages">确 定</el-button>
+                </div>
+            </el-dialog>
         </el-card>
     </div>
 </template>
   
 <script>
 import { parseTime } from "@/utils/ruoyi";
-import { getArticle, addArticle, updateArticle } from "@/api/system/article";
+import { getArticle, addArticle, updateArticle, uploadArticle } from "@/api/system/article";
 import { listCategory } from "@/api/system/category";
 import { listTag } from "@/api/system/tag";
 import * as imageConversion from 'image-conversion'
+import { uploadArticleImages } from "@/api/system/qiniu";
+
 export default {
     name: "PublishArticle",
     data() {
         return {
-            uploadUrl: process.env.VUE_APP_BASE_API + "/system/qiniu/file/upload",
+            uploadUrl: process.env.VUE_APP_BASE_API + "/system/qiniu/upload/image",
+            uploadArticleUrl: process.env.VUE_APP_BASE_API + "/system/qiniu/upload/article/images",
             addOrEdit: false,
             autoSave: true,
             categoryName: '',
@@ -153,7 +198,16 @@ export default {
                 categoryName: null,
                 tags: []
             },
-            headers: { token: sessionStorage.getItem('token') }
+            headers: { token: sessionStorage.getItem('token') },
+            uploadArticleMd: {
+                imageCacheKey: '',
+                imageUrl: [],
+                contentMd: null
+            },
+            imagesUploadDialog: false,
+            fileList: [],
+            files: [],
+            uploadArticleDialog: false
         }
     },
     created() {
@@ -202,6 +256,9 @@ export default {
         },
         uploadCover(response) {
             this.article.avatar = response.data
+        },
+        uploadArticleCover(response) {
+            this.uploadArticleMd = response.data
         },
         beforeUpload(file) {
             return new Promise((resolve) => {
@@ -353,7 +410,76 @@ export default {
         removeTag(item) {
             const index = this.article.tags.indexOf(item)
             this.article.tags.splice(index, 1)
+        },
+        uploadLocalArticle(param) {
+            let file = param.file
+            let formData = new FormData();
+            //-- 将上传的文件放到数据对象中 -->
+            formData.append('file', file)
+            uploadArticle(formData).then(res => {
+                this.uploadArticleMd = res.data
+                this.article.contentMd = res.data.contentMd
+                this.uploadArticleDialog = false
+            }).catch(error => {
+                this.uploadArticleDialog = false
+            })
+        },
+        //上传文件之前
+        beforeUpload(file) {
+            this.fileList.forEach(item => {
+                if (isEquael(item.fileName, file.name)) {
+                    return this.$message.warning("该文件已存在")
+                }
+            })
+        },
+        // 上传发生变化钩子
+        handleFileChange(file, fileList) {
+            this.files = fileList;
+            this.fileList.push(file)
+        },
+        //文件个数超过最大限制时
+        fileExceed(file, fileList) {
+            if (this.fileList.length > 10) {
+                this.$message.warning("附件个数不能超过10个")
+            }
+        },
+        //删除前的钩子
+        beforeRemove(file, fileList) {
+            return this.$confirm(`确定移除 ${file.name}？`);
+        },
+        //删除的钩子
+        onRemove(file, fileList) {
+            if (file.status === "success") {
+                this.fileList.pop(file)
+                this.fileList = [];
+                this.files = fileList;
+                this.$message({
+                    type: 'success',
+                    message: '删除成功!'
+                });
+            }
+        },
+        // 提交上传文件
+        uploadLocalArticleImages() {
+            //判断是否有文件再上传
+            if (this.files.length === 0) {
+                return this.$message.warning('请选取文件后再上传')
+            }
+            //-- 创建新的数据对象 -->
+            let formData = new FormData();
+            //-- 将上传的文件放到数据对象中 -->
+            this.files.forEach((file) => {
+                formData.append('files', file.raw)
+            })
+            formData.append("key", this.uploadArticleMd.imageCacheKey)
+            uploadArticleImages(formData).then(res => {
+                this.$message.success('图片上传成功')
+                this.imagesUploadDialog = false
+            }).catch(error => {
+                this.imagesUploadDialog = false
+            })
         }
+
     },
     computed: {
         tagClass() {

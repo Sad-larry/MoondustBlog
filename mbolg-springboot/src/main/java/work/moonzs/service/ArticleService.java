@@ -2,10 +2,12 @@ package work.moonzs.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import work.moonzs.domain.dto.ArticleDTO;
 import work.moonzs.domain.entity.Article;
 import work.moonzs.domain.vo.ArticleVo;
 import work.moonzs.domain.vo.PageVO;
+import work.moonzs.domain.vo.sys.SysUploadArticleVO;
 import work.moonzs.domain.vo.web.ArticleBaseVO;
 import work.moonzs.domain.vo.web.ArticleInfoVO;
 import work.moonzs.domain.vo.web.ArticlePreviewVO;
@@ -151,5 +153,13 @@ public interface ArticleService extends IService<Article> {
      * @return {@link PageVO}<{@link ArticleBaseVO}>
      */
     PageVO<ArticleBaseVO> getArchives(Integer pageNum, Integer pageSize);
+
+    /**
+     * 上传文章
+     *
+     * @param file Md文件
+     * @return {@link SysUploadArticleVO}
+     */
+    SysUploadArticleVO uploadArticle(MultipartFile file);
 }
 

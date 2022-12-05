@@ -12,8 +12,11 @@ import work.moonzs.base.qiniu.config.QiniuManager;
 import work.moonzs.base.qiniu.service.QiniuService;
 import work.moonzs.base.utils.IFileUtil;
 import work.moonzs.base.utils.PathUtil;
+import work.moonzs.base.utils.RedisCache;
 import work.moonzs.domain.ResponseResult;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -32,6 +35,7 @@ public class QiniuController {
     private String DOMAIN;
 
     private final QiniuService qiniuService;
+    private final RedisCache redisCache;
 
     /**
      * 上传图片
@@ -45,6 +49,36 @@ public class QiniuController {
         String filePath = PathUtil.generateFilePath(file.getOriginalFilename());
         boolean b = qiniuService.uploadFile(BUCKET, filePath, file);
         return ResponseResult.success(qiniuService.publicDownload(DOMAIN, filePath));
+    }
+
+    /**
+     * 上传文章为渲染的图片
+     *
+     * @param files 文件
+     * @param key   关键
+     * @return {@link ResponseResult}
+     */
+    @PostMapping(path = "/upload/article/images", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseResult uploadArticleImages(@RequestParam("files") List<MultipartFile> files, @RequestParam("key") String key) {
+        if (files == null || files.size() == 0) {
+            return ResponseResult.fail(500, "没有文件");
+        }
+        ArrayList<String> dowloadUrl = new ArrayList<>();
+        for (MultipartFile file : files) {
+            // 判断文件类型
+            if (!IFileUtil.determiningFile(file)) {
+                continue;
+            }
+            String filename = file.getOriginalFilename();
+            boolean hasKey = redisCache.hHasKey("mblog:upload:" + key, filename);
+            if (hasKey) {
+                String filePath = (String) redisCache.hget("mblog:upload:" + key, filename);
+                qiniuService.uploadFile(BUCKET, filePath, file);
+                redisCache.hdel("mblog:upload:" + key, filename);
+                dowloadUrl.add(qiniuService.publicDownload(DOMAIN, filePath));
+            }
+        }
+        return ResponseResult.success(dowloadUrl);
     }
 
     /**

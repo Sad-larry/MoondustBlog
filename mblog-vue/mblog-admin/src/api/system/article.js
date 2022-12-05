@@ -69,3 +69,15 @@ export function topArticle(data) {
     data: data
   })
 }
+
+// 上传文章
+export function uploadArticle(data) {
+  return request({
+    url: '/system/article/upload',
+    method: 'post',
+    data: data,
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  })
+}

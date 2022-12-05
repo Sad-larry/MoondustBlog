@@ -1,15 +1,20 @@
 package work.moonzs.service.impl;
 
 import cn.hutool.core.util.ObjUtil;
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import work.moonzs.base.enums.AppHttpCodeEnum;
 import work.moonzs.base.enums.StatusConstants;
 import work.moonzs.base.utils.BeanCopyUtil;
+import work.moonzs.base.utils.PathUtil;
+import work.moonzs.base.utils.RedisCache;
 import work.moonzs.base.utils.SecurityUtil;
 import work.moonzs.base.web.common.BusinessAssert;
 import work.moonzs.domain.dto.ArticleDTO;
@@ -17,6 +22,7 @@ import work.moonzs.domain.entity.Article;
 import work.moonzs.domain.entity.Tag;
 import work.moonzs.domain.vo.ArticleVo;
 import work.moonzs.domain.vo.PageVO;
+import work.moonzs.domain.vo.sys.SysUploadArticleVO;
 import work.moonzs.domain.vo.web.ArticleBaseVO;
 import work.moonzs.domain.vo.web.ArticleInfoVO;
 import work.moonzs.domain.vo.web.ArticlePreviewVO;
@@ -27,8 +33,15 @@ import work.moonzs.service.CategoryService;
 import work.moonzs.service.CommentService;
 import work.moonzs.service.TagService;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * 博客文章表(Article)表服务实现类
@@ -38,6 +51,13 @@ import java.util.List;
  */
 @Service("articleService")
 public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> implements ArticleService {
+    @Value("${spring.servlet.multipart.location}")
+    private String fileTempPath;
+    /**
+     * 文件类型为 Markdown 类型
+     */
+    public static final String FILE_TYPE_MD = "text/markdown";
+
     @Autowired
     private TagMapper tagMapper;
     @Autowired
@@ -46,6 +66,8 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     private TagService tagService;
     @Autowired
     private CommentService commentService;
+    @Autowired
+    private RedisCache redisCache;
 
     @Override
     public boolean publishArticle(ArticleDTO articleDTO) {
@@ -245,6 +267,167 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
                 .orderByDesc(Article::getCreateTime);
         page(page, queryWrapper);
         return new PageVO<>(BeanCopyUtil.copyBeanList(page.getRecords(), ArticleBaseVO.class), page.getTotal());
+    }
+
+    @Override
+    public SysUploadArticleVO uploadArticle(MultipartFile file) {
+        if (file.isEmpty()) {
+            BusinessAssert.fail("文件不能为空");
+        } else {
+            String filename = file.getOriginalFilename();
+            int i = filename.lastIndexOf(".");
+            String contentType = filename.substring(i + 1);
+            // 判断文件类型
+            if (!"md".equals(contentType)) {
+                // if (!FILE_TYPE_MD.equals(contentType)) {
+                BusinessAssert.fail("文件类型不匹配，需要 .md 文件格式");
+            } else {
+                // 将文件保存为临时文件，能进来的必为md文件
+                String fileName = PathUtil.getUUIDMdName();
+                // 临时目录
+                String localFilePath = StrUtil.appendIfMissing(fileTempPath, "/");
+                File saveFile = new File(localFilePath, fileName);
+                if (!saveFile.getParentFile().exists()) {
+                    saveFile.getParentFile().mkdirs();
+                }
+                try {
+                    // 保存至文件
+                    file.transferTo(saveFile);
+                    // 解析文件
+                    SysUploadArticleVO parseResult = parseFile(saveFile);
+                    // 解析完毕后删除文件
+                    if (saveFile.exists()) {
+                        // TODO 如果文件删除失败，则加入日志中
+                        saveFile.delete();
+                    }
+                    // 返回解析结果
+                    return parseResult;
+                } catch (IOException e) {
+                    BusinessAssert.fail("文件上传失败");
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 解析文件
+     *
+     * @param file 文件
+     * @return {@link SysUploadArticleVO}
+     */
+    private SysUploadArticleVO parseFile(File file) {
+        // 读取文件
+        try (FileReader fileReader = new FileReader(file)) {
+            char[] chs = new char[1024];
+            int len;
+            // 存储文件的内容
+            StringBuilder str = new StringBuilder();
+            while ((len = fileReader.read(chs)) != -1) {
+                str.append(new String(chs, 0, len));
+            }
+            // 提取图片的正则表达式
+            String regex = "!\\[(.*?)\\]\\((.*?)\\)";
+            // 编译正则表达式
+            Pattern pattern = Pattern.compile(regex);
+            // 指定要匹配的字符串
+            Matcher matcher = pattern.matcher(str);
+            // sb为替换图片链接后的内容
+            StringBuilder sb = new StringBuilder();
+            // imageLink的key值为需要上传的图片名称，value为新上传的图片名称
+            HashMap<String, Object> imageLink = new HashMap<>();
+            // 将文件中的图片URI取出，并读取相关文件上传到七牛云，该图片URI被替换为七牛云图片链接
+            while (matcher.find()) {
+                // 匹配成功的字符串
+                String group = matcher.group();
+                // 存有本地文件路径的字符串 -> imgs/2022-12-5.jpg "测试文件上传"
+                String $2 = group.replaceAll(regex, "$2");
+                // 提取图片名，并创建新的图片链接，使用map对应
+                String imageName = getImageName($2);
+                boolean isImage = checkImageName(imageName);
+                // 不为图片格式则跳过
+                if (!isImage) {
+                    continue;
+                }
+                // 获取新的随机名字
+                String newImageName = PathUtil.generateFilePath(imageName);
+                if (!imageLink.containsKey(imageName)) {
+                    // 将新和旧的图片上传到缓存，如果用户上传了图片的话，就能渲染出来
+                    imageLink.put(imageName, newImageName);
+                    // 匹配成功后替换为新的图片链接
+                    matcher.appendReplacement(sb, parseImageLink(newImageName));
+                } else {
+                    matcher.appendReplacement(sb, parseImageLink((String) imageLink.get(imageName)));
+                }
+            }
+            matcher.appendTail(sb);
+            // 将imageLink上传到缓存中
+            String uploadKey = PathUtil.simpleRandomUUID();
+            // 10 分钟内上传图片
+            redisCache.hmset(getGenerateKey(uploadKey), imageLink, 5 * 60L);
+            SysUploadArticleVO articleVO = new SysUploadArticleVO();
+            articleVO.setImageCacheKey(uploadKey);
+            articleVO.setImageUrl(imageLink.keySet());
+            articleVO.setContentMd(sb.toString());
+            return articleVO;
+        } catch (FileNotFoundException e) {
+            log.error("文件不存在");
+        } catch (IOException e) {
+            log.error("文件读取失败");
+        }
+        return null;
+    }
+
+    /**
+     * 获取生成密钥
+     *
+     * @param key 关键
+     * @return {@link String}
+     */
+    private String getGenerateKey(String key) {
+        return "mblog:upload:" + key;
+    }
+
+    /**
+     * 检查图像名称是否为图片格式
+     *
+     * @param imageName 图片名字
+     * @return boolean
+     */
+    private boolean checkImageName(String imageName) {
+        String fileType = imageName.substring(imageName.lastIndexOf(".") + 1);
+        return "jpg".equals(fileType) || "png".equals(fileType);
+    }
+
+    /**
+     * 得到图像名
+     * 提取markdown文件中的图片的名字
+     *
+     * @param $2 文件路径
+     * @return {@link String}
+     */
+    private String getImageName(String $2) {
+        // 切分最后一个 "/"
+        int i = $2.lastIndexOf("/");
+        String fileName = $2.substring(i + 1);
+        // 如果切割出来的文件还有说明 2022-12-5.jpg "测试文件上传" <-
+        if (fileName.contains(" ")) {
+            // 则再次切割
+            return fileName.substring(0, fileName.indexOf(" "));
+        } else {
+            return fileName;
+        }
+    }
+
+    /**
+     * 解析图片链接
+     * 返回![](http://domain/image)格式，以至于前端渲染时能看到图片
+     *
+     * @param imageName 图片名字
+     * @return {@link String}
+     */
+    private String parseImageLink(String imageName) {
+        return String.format("![](https://niu.moonzs.work/%s)", imageName);
     }
 }
 

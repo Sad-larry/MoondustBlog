@@ -3,17 +3,16 @@ package work.moonzs.controller.system;
 import cn.hutool.core.util.ObjUtil;
 import cn.hutool.json.JSONUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import work.moonzs.base.annotation.SystemLog;
 import work.moonzs.base.enums.AppHttpCodeEnum;
 import work.moonzs.base.validate.VG;
 import work.moonzs.domain.ResponseResult;
 import work.moonzs.domain.dto.ArticleDTO;
 import work.moonzs.service.ArticleService;
-import work.moonzs.service.ArticleTagService;
-import work.moonzs.service.CategoryService;
-import work.moonzs.service.TagService;
 
 import java.util.Collection;
 import java.util.List;
@@ -28,9 +27,6 @@ import java.util.Map;
 public class ArticleController {
     // 建议用构造器注入(需要写final?)而不是使用`@Autowired`注解，@RequiredArgsConstructor自动帮忙写构造器...
     private final ArticleService articleService;
-    private final CategoryService categoryService;
-    private final TagService tagService;
-    private final ArticleTagService articleTagService;
 
     /**
      * 发表文章
@@ -154,5 +150,17 @@ public class ArticleController {
         Integer isStick = articleDTO.getIsStick();
         articleService.topArticle(articleId, isStick);
         return ResponseResult.success();
+    }
+
+    /**
+     * 上传文章
+     *
+     * @param file 文件
+     * @return {@link ResponseResult}
+     */
+    @SystemLog(businessName = "上传Md文章")
+    @PostMapping(path = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseResult uploadArticle(@RequestParam(value = "file", required = false) MultipartFile file) {
+        return ResponseResult.success(articleService.uploadArticle(file));
     }
 }

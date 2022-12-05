@@ -12,6 +12,18 @@ export function uploadImage(data) {
   });
 }
 
+// 上传文章时，额外上传图片，另加key
+export function uploadArticleImages(data) {
+  return request({
+    url: '/system/qiniu/upload/article/images',
+    method: 'post',
+    data: data,
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  });
+}
+
 // 查询所有文件列表
 export function listFile(query) {
   return request({

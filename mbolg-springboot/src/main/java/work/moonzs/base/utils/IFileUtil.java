@@ -52,7 +52,7 @@ public class IFileUtil {
         if (file.isEmpty()) {
             BusinessAssert.fail(AppHttpCodeEnum.FILE_IS_EMPTY);
         }
-        // 图片大小不应超过2MB
+        // 图片大小不应超过5MB
         if (file.getSize() > SystemConstants.FILE_SIZE) {
             BusinessAssert.fail(AppHttpCodeEnum.FILE_SIZE_OVERFLOW);
         }
@@ -69,5 +69,25 @@ public class IFileUtil {
             e.printStackTrace();
         }
         return true;
+    }
+
+    public static boolean determiningFile(MultipartFile file) {
+        // 文件内容为空
+        if (file.isEmpty()) {
+            return false;
+        }
+        // 图片大小不应超过5MB
+        if (file.getSize() > SystemConstants.FILE_SIZE) {
+            return false;
+        }
+        // 图片名不能为空
+        String filename = file.getOriginalFilename();
+        if (filename == null || "".equals(filename)) {
+            return false;
+        }
+        // 图片类型应该符合
+        int index = filename.lastIndexOf(".");
+        String fileType = filename.substring(index + 1);
+        return isLegalFileType(fileType);
     }
 }
