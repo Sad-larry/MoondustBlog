@@ -22,4 +22,16 @@ public class CacheConstants {
      * 存放系统配置的键名前缀
      */
     public static final String SYS_CONFIG_KEY = "sys:config:";
+    /**
+     * 存放需要上传图片的键名前缀
+     */
+    public static final String NEED_UPLOAD_IMAGE = "mblog:upload:";
+    /**
+     * 博客浏览量
+     */
+    public static final String BLOG_VIEWS_QUANTITY = "mblog:viewsQuantity";
+    /**
+     * 博客点赞数
+     */
+    public static final String BLOG_LIKE_QUANTITY = "mblog:like:";
 }

@@ -161,6 +161,11 @@
                             </el-radio-group>
                         </el-form-item>
                     </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="备注">
+                            <el-input v-model="form.remark" placeholder="任务备注" />
+                        </el-form-item>
+                    </el-col>
                 </el-row>
             </el-form>
             <div slot="footer" class="dialog-footer">
@@ -213,6 +218,9 @@
                                 <div v-if="form.misfirePolicy == item.value" :key="index">{{ item.label }}</div>
                             </template>
                         </el-form-item>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-form-item label="备注："> {{ form.remark }} </el-form-item>
                     </el-col>
                 </el-row>
             </el-form>

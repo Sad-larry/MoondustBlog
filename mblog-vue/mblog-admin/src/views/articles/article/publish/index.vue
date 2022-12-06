@@ -419,6 +419,8 @@ export default {
             uploadArticle(formData).then(res => {
                 this.uploadArticleMd = res.data
                 this.article.contentMd = res.data.contentMd
+                this.$message.warning("还需要上传以下图片才能正常显示图片")
+                this.$message.warning(res.data.imageUrl)
                 this.uploadArticleDialog = false
             }).catch(error => {
                 this.uploadArticleDialog = false

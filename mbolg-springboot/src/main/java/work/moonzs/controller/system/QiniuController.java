@@ -8,6 +8,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import work.moonzs.base.annotation.SystemLog;
+import work.moonzs.base.enums.CacheConstants;
 import work.moonzs.base.qiniu.config.QiniuManager;
 import work.moonzs.base.qiniu.service.QiniuService;
 import work.moonzs.base.utils.IFileUtil;
@@ -70,11 +71,11 @@ public class QiniuController {
                 continue;
             }
             String filename = file.getOriginalFilename();
-            boolean hasKey = redisCache.hHasKey("mblog:upload:" + key, filename);
+            boolean hasKey = redisCache.hHasKey(CacheConstants.NEED_UPLOAD_IMAGE + key, filename);
             if (hasKey) {
-                String filePath = (String) redisCache.hget("mblog:upload:" + key, filename);
+                String filePath = (String) redisCache.hget(CacheConstants.NEED_UPLOAD_IMAGE + key, filename);
                 qiniuService.uploadFile(BUCKET, filePath, file);
-                redisCache.hdel("mblog:upload:" + key, filename);
+                redisCache.hdel(CacheConstants.NEED_UPLOAD_IMAGE + key, filename);
                 dowloadUrl.add(qiniuService.publicDownload(DOMAIN, filePath));
             }
         }

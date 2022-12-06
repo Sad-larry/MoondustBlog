@@ -57,7 +57,10 @@ public class ResponseResult extends HashMap<String, Object> {
         super.put(MSG_TAG, responseEnum.getMsg());
         // 本来不知道为啥要加这个，直到想到，如果我data为空，取而代之的是其他数据字段，那么这个就可以用了，比如token
         // 后面还是取消了非空判断，因为如果前端没有数据的话那么前端对于data数据是未定义的
-        super.put(DATA_TAG, data);
+        // 未定义就未定义吧
+        if (ObjectUtil.isNotEmpty(data)) {
+            super.put(DATA_TAG, data);
+        }
     }
 
     private ResponseResult(Integer code, String msg, Object data) {

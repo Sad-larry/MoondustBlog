@@ -8,9 +8,11 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import work.moonzs.base.enums.AppHttpCodeEnum;
+import work.moonzs.base.enums.CacheConstants;
 import work.moonzs.base.enums.StatusConstants;
 import work.moonzs.base.utils.BeanCopyUtil;
 import work.moonzs.base.utils.PathUtil;
@@ -68,6 +70,8 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     private CommentService commentService;
     @Autowired
     private RedisCache redisCache;
+    @Autowired
+    private ThreadPoolTaskExecutor threadPoolTaskExecutor;
 
     @Override
     public boolean publishArticle(ArticleDTO articleDTO) {
@@ -200,7 +204,12 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     @Override
     public ArticleInfoVO getArticleInfo(Long articleId) {
         // 根据 ID 查询文章
-        ArticleInfoVO blogArticle = BeanCopyUtil.copyBean(getById(articleId), ArticleInfoVO.class);
+        Article byId = getById(articleId);
+        if (byId == null) {
+            BusinessAssert.fail(AppHttpCodeEnum.DATA_NOT_EXIST);
+        }
+        // 返回的数据视图类
+        ArticleInfoVO blogArticle = BeanCopyUtil.copyBean(byId, ArticleInfoVO.class);
         // 设置分类
         blogArticle.setCategory(categoryService.getBlogCategoryById(blogArticle.getCategoryId()));
         // 设置标签
@@ -214,8 +223,10 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         blogArticle.setNextArticle(getNextOrLastArticle(blogArticle.getId(), StatusConstants.NEXT_ARTICLE));
         // 相关推荐
         blogArticle.setRecommendArticleList(listRecommendArticle(blogArticle.getId()));
-        // TODO redis 封装点赞量和浏览量
-        // TODO redis 增加文章阅读量
+        // 增加文章点赞量
+        // threadPoolTaskExecutor.execute(() -> incr(blogArticle.getId(), CacheConstants.BLOG_LIKE_QUANTITY));
+        // 异步 增加文章阅读量
+        threadPoolTaskExecutor.execute(() -> incr(blogArticle.getId(), CacheConstants.BLOG_VIEWS_QUANTITY));
         return blogArticle;
     }
 
@@ -385,7 +396,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
      * @return {@link String}
      */
     private String getGenerateKey(String key) {
-        return "mblog:upload:" + key;
+        return CacheConstants.NEED_UPLOAD_IMAGE + key;
     }
 
     /**
@@ -428,6 +439,18 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
      */
     private String parseImageLink(String imageName) {
         return String.format("![](https://niu.moonzs.work/%s)", imageName);
+    }
+
+
+    /**
+     * 一般用于增加文章的阅读量、标签点击量等等
+     *
+     * @param id  id
+     * @param key redis中的key
+     */
+    public void incr(Long id, String key) {
+        // 如果 hash key 存在就直接加一，否则创建一个
+        redisCache.hincr(key, id.toString(), 1);
     }
 }
 
