@@ -7,6 +7,7 @@ import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import work.moonzs.base.annotation.OperationLogger;
 import work.moonzs.base.annotation.SystemLog;
 import work.moonzs.base.enums.AppHttpCodeEnum;
 import work.moonzs.base.validate.VG;
@@ -35,6 +36,7 @@ public class ArticleController {
      * @return {@link ResponseResult}
      */
     @SystemLog(businessName = "发表文章")
+    @OperationLogger(value = "发表文章")
     @PostMapping
     public ResponseResult publishArticle(@Validated(value = VG.Insert.class) @RequestBody ArticleDTO articleDTO) {
         articleService.publishArticle(articleDTO);
@@ -77,6 +79,7 @@ public class ArticleController {
      * @return {@link ResponseResult}
      */
     @SystemLog(businessName = "更新文章")
+    @OperationLogger(value = "更新文章")
     @PutMapping
     public ResponseResult updateArticle(@Validated(value = {VG.Update.class}) @RequestBody ArticleDTO articleDTO) {
         articleService.updateArticle(articleDTO);
@@ -90,6 +93,7 @@ public class ArticleController {
      * @return {@link ResponseResult}
      */
     @SystemLog(businessName = "更新文章分类")
+    @OperationLogger(value = "更新文章分类")
     @PostMapping("/updateCategory")
     public ResponseResult updateArticleCategory(@RequestBody Map<String, Object> map) {
         Object mapId = map.get("id");
@@ -111,6 +115,7 @@ public class ArticleController {
      * @return {@link ResponseResult}
      */
     @SystemLog(businessName = "更新标签列表")
+    @OperationLogger(value = "更新标签列表")
     @PostMapping("/updateTags")
     public ResponseResult updateArticleTags(@RequestBody Map<String, Object> map) {
         Object mapId = map.get("id");
@@ -131,6 +136,7 @@ public class ArticleController {
      * @return {@link ResponseResult}
      */
     @SystemLog(businessName = "删除文章")
+    @OperationLogger(value = "删除文章")
     @DeleteMapping("/{ids}")
     public ResponseResult deleteArticle(@PathVariable(value = "ids") Long[] articleId) {
         // article_tag表数据也要删除
@@ -144,6 +150,7 @@ public class ArticleController {
      * @return {@link ResponseResult}
      */
     @SystemLog(businessName = "文章置顶")
+    @OperationLogger(value = "文章置顶")
     @PostMapping("/top")
     public ResponseResult topArticle(@Validated @RequestBody ArticleDTO articleDTO) {
         Long articleId = articleDTO.getId();
@@ -159,6 +166,7 @@ public class ArticleController {
      * @return {@link ResponseResult}
      */
     @SystemLog(businessName = "上传Md文章")
+    @OperationLogger(value = "上传本地文章")
     @PostMapping(path = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseResult uploadArticle(@RequestParam(value = "file", required = false) MultipartFile file) {
         return ResponseResult.success(articleService.uploadArticle(file));

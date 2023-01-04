@@ -3,6 +3,7 @@ package work.moonzs.controller.system;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import work.moonzs.base.annotation.OperationLogger;
 import work.moonzs.base.annotation.SystemLog;
 import work.moonzs.base.utils.BeanCopyUtil;
 import work.moonzs.base.validate.VG;
@@ -53,6 +54,7 @@ public class PhotoAlbumController {
      * @return {@link ResponseResult}
      */
     @SystemLog(businessName = "添加相册")
+    @OperationLogger(value = "添加相册")
     @PostMapping
     public ResponseResult addPhotoAlbum(@Validated(VG.Insert.class) @RequestBody PhotoAlbumDTO photoAlbumDTO) {
         photoAlbumService.insertPhotoAlbum(BeanCopyUtil.copyBean(photoAlbumDTO, PhotoAlbum.class));
@@ -67,6 +69,7 @@ public class PhotoAlbumController {
      * @return {@link ResponseResult}
      */
     @SystemLog(businessName = "更新相册")
+    @OperationLogger(value = "更新相册")
     @PutMapping
     public ResponseResult updatePhotoAlbum(@Validated(VG.Update.class) @RequestBody PhotoAlbumDTO photoAlbumDTO) {
         photoAlbumService.updatePhotoAlbum(BeanCopyUtil.copyBean(photoAlbumDTO, PhotoAlbum.class));
@@ -80,6 +83,7 @@ public class PhotoAlbumController {
      * @return {@link ResponseResult}
      */
     @SystemLog(businessName = "根据相册id进行批量删除操作")
+    @OperationLogger(value = "删除相册")
     @DeleteMapping("/{id}")
     public ResponseResult deletePhotoAlbum(@PathVariable(value = "id") Long photoAlbumId) {
         photoAlbumService.deletePhotoAlbum(photoAlbumId);

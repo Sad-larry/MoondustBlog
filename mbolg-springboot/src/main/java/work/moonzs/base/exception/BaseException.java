@@ -4,6 +4,9 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import work.moonzs.base.enums.AppHttpCodeEnum;
 
+import java.io.Serial;
+import java.io.Serializable;
+
 /**
  * 基本的自定义异常
  *
@@ -11,7 +14,9 @@ import work.moonzs.base.enums.AppHttpCodeEnum;
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class BaseException extends RuntimeException {
+public class BaseException extends RuntimeException implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
     private final Integer code;
     private final String msg;
 

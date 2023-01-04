@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.quartz.SchedulerException;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import work.moonzs.base.annotation.OperationLogger;
 import work.moonzs.base.annotation.SystemLog;
 import work.moonzs.base.utils.BeanCopyUtil;
 import work.moonzs.base.validate.VG;
@@ -52,6 +53,7 @@ public class JobController {
      * @return {@link ResponseResult}
      */
     @SystemLog(businessName = "添加任务")
+    @OperationLogger(value = "添加任务")
     @PostMapping
     public ResponseResult addJob(@Validated(VG.Insert.class) @RequestBody JobDTO jobDTO) throws SchedulerException {
         jobService.insertJob(BeanCopyUtil.copyBean(jobDTO, Job.class));
@@ -65,6 +67,7 @@ public class JobController {
      * @return {@link ResponseResult}
      */
     @SystemLog(businessName = "更新任务")
+    @OperationLogger(value = "更新任务")
     @PutMapping
     public ResponseResult updateJob(@Validated(VG.Update.class) @RequestBody JobDTO jobDTO) throws SchedulerException {
         jobService.updateJob(BeanCopyUtil.copyBean(jobDTO, Job.class));
@@ -78,6 +81,7 @@ public class JobController {
      * @return {@link ResponseResult}
      */
     @SystemLog(businessName = "根据任务id进行批量删除操作")
+    @OperationLogger(value = "删除任务")
     @DeleteMapping("/{ids}")
     public ResponseResult deleteJob(@PathVariable(value = "ids") Long[] jobIds) throws SchedulerException {
         jobService.deleteJob(jobIds);
@@ -92,6 +96,7 @@ public class JobController {
      * @return {@link ResponseResult}
      */
     @SystemLog(businessName = "立即执行一次任务")
+    @OperationLogger(value = "立即执行一次任务")
     @PostMapping("/run")
     public ResponseResult runJob(@Validated(VG.Select.class) @RequestBody JobDTO jobDTO) throws SchedulerException {
         jobService.runJob(BeanCopyUtil.copyBean(jobDTO, Job.class));
@@ -106,6 +111,7 @@ public class JobController {
      * @return {@link ResponseResult}
      */
     @SystemLog(businessName = "立即暂停任务")
+    @OperationLogger(value = "立即暂停任务")
     @PostMapping("/pause")
     public ResponseResult pauseJob(@Validated(VG.Select.class) @RequestBody JobDTO jobDTO) throws SchedulerException {
         jobService.pauseJob(BeanCopyUtil.copyBean(jobDTO, Job.class));
@@ -119,6 +125,7 @@ public class JobController {
      * @return {@link ResponseResult}
      */
     @SystemLog(businessName = "修改任务状态")
+    @OperationLogger(value = "修改任务状态")
     @PutMapping("/change")
     public ResponseResult changeJobStatus(@Validated(VG2.Update2.class) @RequestBody JobDTO jobDTO) throws SchedulerException {
         jobService.changeJobStatus(BeanCopyUtil.copyBean(jobDTO, Job.class));

@@ -12,7 +12,8 @@
       </el-col>
     </el-row>
 
-    <el-table border v-loading="loading" :data="commentList" @selection-change="handleSelectionChange" style="width: 100%;">
+    <el-table border v-loading="loading" :data="commentList" @selection-change="handleSelectionChange"
+      style="width: 100%;">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column prop="avatar" align="center" width="80" label="头像">
         <template slot-scope="scope">
@@ -40,7 +41,7 @@
     </el-table>
 
     <pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize"
-      @pagination="getList" />
+      ation="getList" />
   </div>
 </template>
 

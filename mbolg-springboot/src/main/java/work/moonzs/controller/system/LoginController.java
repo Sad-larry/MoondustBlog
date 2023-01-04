@@ -58,8 +58,8 @@ public class LoginController {
         ShearCaptcha captcha = CaptchaUtil.createShearCaptcha(200, 100, 1, 1);
         String code = captcha.getCode();
         String uuid = IdUtil.simpleUUID();
-        // 将验证码结构存入redis,设置唯一标识，用户用这个唯一标识去redis中查找验证码进行验证
-        redisCache.set(CacheConstants.CAPTCHA_CODE_KEY + uuid, code);
+        // 将验证码结构存入redis,设置唯一标识，用户用这个唯一标识去redis中查找验证码进行验证，一个验证码10分钟有效时间
+        redisCache.set(CacheConstants.CAPTCHA_CODE_KEY + uuid, code, 10 * 60L);
         captchaVo.setCaptchaEnabled(true);
         captchaVo.setUuid(uuid);
         captchaVo.setImg(captcha.getImageBase64());

@@ -3,6 +3,7 @@ package work.moonzs.controller.system;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import work.moonzs.base.annotation.OperationLogger;
 import work.moonzs.base.annotation.SystemLog;
 import work.moonzs.base.utils.BeanCopyUtil;
 import work.moonzs.base.validate.VG;
@@ -38,6 +39,7 @@ public class WebPageController {
      * @return {@link ResponseResult}
      */
     @SystemLog(businessName = "添加页面")
+    @OperationLogger(value = "添加页面")
     @PostMapping
     public ResponseResult addWebPage(@Validated(VG.Insert.class) @RequestBody WebPageDTO webPageDTO) {
         return ResponseResult.success(webPageService.insertWebPage(BeanCopyUtil.copyBean(webPageDTO, WebPage.class)));
@@ -51,6 +53,7 @@ public class WebPageController {
      * @return {@link ResponseResult}
      */
     @SystemLog(businessName = "更新页面")
+    @OperationLogger(value = "更新页面")
     @PutMapping
     public ResponseResult updateWebPage(@Validated(VG.Update.class) @RequestBody WebPageDTO webPageDTO) {
         webPageService.updateWebPage(BeanCopyUtil.copyBean(webPageDTO, WebPage.class));
@@ -64,6 +67,7 @@ public class WebPageController {
      * @return {@link ResponseResult}
      */
     @SystemLog(businessName = "删除指定ID页面")
+    @OperationLogger(value = "删除页面")
     @DeleteMapping("/{id}")
     public ResponseResult deleteWebPage(@PathVariable(value = "id") Long webPageId) {
         webPageService.deleteWebPage(webPageId);

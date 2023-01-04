@@ -2,6 +2,7 @@ package work.moonzs.controller.system;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import work.moonzs.base.annotation.OperationLogger;
 import work.moonzs.base.annotation.SystemLog;
 import work.moonzs.domain.ResponseResult;
 import work.moonzs.service.MessageService;
@@ -35,6 +36,7 @@ public class MessageController {
      * @return {@link ResponseResult}
      */
     @SystemLog(businessName = "审核通过留言")
+    @OperationLogger(value = "审核通过留言")
     @GetMapping("/pass/{ids}")
     public ResponseResult passMessage(@PathVariable("ids") Long[] messageIds) {
         messageService.passMessage(messageIds);
@@ -48,6 +50,7 @@ public class MessageController {
      * @return {@link ResponseResult}
      */
     @SystemLog(businessName = "根据留言id进行批量删除操作")
+    @OperationLogger(value = "删除消息")
     @DeleteMapping("/{ids}")
     public ResponseResult deleteMessage(@PathVariable("ids") Long[] messageIds) {
         messageService.deleteMessage(messageIds);

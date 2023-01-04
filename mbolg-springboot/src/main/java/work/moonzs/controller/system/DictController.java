@@ -4,6 +4,7 @@ package work.moonzs.controller.system;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import work.moonzs.base.annotation.OperationLogger;
 import work.moonzs.base.annotation.SystemLog;
 import work.moonzs.base.utils.BeanCopyUtil;
 import work.moonzs.base.validate.VG;
@@ -42,6 +43,7 @@ public class DictController {
      * @return {@link ResponseResult}
      */
     @SystemLog(businessName = "添加字典")
+    @OperationLogger(value = "添加字典")
     @PostMapping
     public ResponseResult addDict(@Validated(VG.Insert.class) @RequestBody DictDTO dictDTO) {
         dictService.insertDict(BeanCopyUtil.copyBean(dictDTO, Dict.class));
@@ -55,6 +57,7 @@ public class DictController {
      * @return {@link ResponseResult}
      */
     @SystemLog(businessName = "更新字典")
+    @OperationLogger(value = "更新字典")
     @PutMapping
     public ResponseResult updateDict(@Validated(VG.Update.class) @RequestBody DictDTO dictDTO) {
         dictService.updateDict(BeanCopyUtil.copyBean(dictDTO, Dict.class));
@@ -68,6 +71,7 @@ public class DictController {
      * @return {@link ResponseResult}
      */
     @SystemLog(businessName = "根据字典id进行批量删除操作")
+    @OperationLogger(value = "删除字典")
     @DeleteMapping("/{ids}")
     public ResponseResult deleteDict(@PathVariable(value = "ids") Long[] dictIds) {
         dictService.deleteDict(dictIds);

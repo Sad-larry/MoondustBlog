@@ -3,6 +3,7 @@ package work.moonzs.controller.system;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import work.moonzs.base.annotation.OperationLogger;
 import work.moonzs.base.annotation.SystemLog;
 import work.moonzs.base.utils.BeanCopyUtil;
 import work.moonzs.base.validate.VG;
@@ -53,6 +54,7 @@ public class TagController {
      * @return {@link ResponseResult}
      */
     @SystemLog(businessName = "添加标签")
+    @OperationLogger(value = "添加标签")
     @PostMapping
     public ResponseResult addTag(@Validated(VG.Insert.class) @RequestBody TagDTO tagDTO) {
         tagService.insertTag(BeanCopyUtil.copyBean(tagDTO, Tag.class));
@@ -66,6 +68,7 @@ public class TagController {
      * @return {@link ResponseResult}
      */
     @SystemLog(businessName = "更新标签")
+    @OperationLogger(value = "更新标签")
     @PutMapping
     public ResponseResult updateTag(@Validated(VG.Update.class) @RequestBody TagDTO tagDTO) {
         tagService.updateTag(BeanCopyUtil.copyBean(tagDTO, Tag.class));
@@ -79,6 +82,7 @@ public class TagController {
      * @return {@link ResponseResult}
      */
     @SystemLog(businessName = "根据标签id进行批量删除操作")
+    @OperationLogger(value = "删除标签")
     @DeleteMapping("/{ids}")
     public ResponseResult deleteTag(@PathVariable(value = "ids") Long[] tagIds) {
         tagService.deleteTag(tagIds);

@@ -353,6 +353,10 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
                 String group = matcher.group();
                 // 存有本地文件路径的字符串 -> imgs/2022-12-5.jpg "测试文件上传"
                 String $2 = group.replaceAll(regex, "$2");
+                // 如果是网络图片资源，则跳过
+                if ($2.startsWith("http://") || $2.startsWith("https://")) {
+                    continue;
+                }
                 // 提取图片名，并创建新的图片链接，使用map对应
                 String imageName = getImageName($2);
                 boolean isImage = checkImageName(imageName);
