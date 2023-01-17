@@ -2,7 +2,7 @@ package work.moonzs.controller.system;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import work.moonzs.base.annotation.OperationLogger;
+import work.moonzs.base.annotation.AdminOperationLogger;
 import work.moonzs.base.annotation.SystemLog;
 import work.moonzs.base.utils.BeanCopyUtil;
 import work.moonzs.domain.ResponseResult;
@@ -62,7 +62,7 @@ public class UserController {
      * @return {@link ResponseResult}
      */
     @SystemLog(businessName = "删除用户")
-    @OperationLogger(value = "删除用户")
+    @AdminOperationLogger(value = "删除用户")
     @DeleteMapping("/{ids}")
     public ResponseResult deleteUser(@PathVariable(value = "ids") Long[] userIds) {
         userService.deleteUser(userIds);

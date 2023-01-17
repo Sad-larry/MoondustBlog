@@ -2,7 +2,7 @@ package work.moonzs.controller.system;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import work.moonzs.base.annotation.OperationLogger;
+import work.moonzs.base.annotation.AdminOperationLogger;
 import work.moonzs.base.annotation.SystemLog;
 import work.moonzs.domain.ResponseResult;
 import work.moonzs.service.AdminLogService;
@@ -36,7 +36,7 @@ public class AdminLogController {
      * @return {@link ResponseResult}
      */
     @SystemLog(businessName = "根据操作日志id进行批量删除操作")
-    @OperationLogger(value = "删除操作日志")
+    @AdminOperationLogger(value = "删除操作日志")
     @DeleteMapping("/{ids}")
     public ResponseResult deleteAdminLog(@PathVariable(value = "ids") Long[] adminLogIds) {
         adminLogService.deleteAdminLog(adminLogIds);

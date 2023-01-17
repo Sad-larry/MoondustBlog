@@ -2,7 +2,7 @@ package work.moonzs.controller.system;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import work.moonzs.base.annotation.OperationLogger;
+import work.moonzs.base.annotation.AdminOperationLogger;
 import work.moonzs.base.annotation.SystemLog;
 import work.moonzs.domain.ResponseResult;
 import work.moonzs.service.ExceptionLogService;
@@ -36,7 +36,7 @@ public class ExceptionLogController {
      * @return {@link ResponseResult}
      */
     @SystemLog(businessName = "根据异常日志id进行批量删除异常")
-    @OperationLogger(value = "删除异常日志")
+    @AdminOperationLogger(value = "删除异常日志")
     @DeleteMapping("/{ids}")
     public ResponseResult deleteExceptionLog(@PathVariable(value = "ids") Long[] exceptionLogIds) {
         exceptionLogService.deleteExceptionLog(exceptionLogIds);

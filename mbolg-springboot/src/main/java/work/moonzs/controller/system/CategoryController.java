@@ -3,7 +3,7 @@ package work.moonzs.controller.system;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import work.moonzs.base.annotation.OperationLogger;
+import work.moonzs.base.annotation.AdminOperationLogger;
 import work.moonzs.base.annotation.SystemLog;
 import work.moonzs.base.utils.BeanCopyUtil;
 import work.moonzs.base.validate.VG;
@@ -54,7 +54,7 @@ public class CategoryController {
      * @return {@link ResponseResult}
      */
     @SystemLog(businessName = "添加分类")
-    @OperationLogger(value = "添加分类")
+    @AdminOperationLogger(value = "添加分类")
     @PostMapping
     public ResponseResult addCategory(@Validated(VG.Insert.class) @RequestBody CategoryDTO categoryDTO) {
         categoryService.insertCategory(BeanCopyUtil.copyBean(categoryDTO, Category.class));
@@ -69,7 +69,7 @@ public class CategoryController {
      * @return {@link ResponseResult}
      */
     @SystemLog(businessName = "更新分类")
-    @OperationLogger(value = "更新分类")
+    @AdminOperationLogger(value = "更新分类")
     @PutMapping
     public ResponseResult updateCategory(@Validated(VG.Update.class) @RequestBody CategoryDTO categoryDTO) {
         categoryService.updateCategory(BeanCopyUtil.copyBean(categoryDTO, Category.class));
@@ -83,7 +83,7 @@ public class CategoryController {
      * @return {@link ResponseResult}
      */
     @SystemLog(businessName = "根据分类id进行批量删除操作")
-    @OperationLogger(value = "删除分类")
+    @AdminOperationLogger(value = "删除分类")
     @DeleteMapping("/{ids}")
     public ResponseResult deleteCategory(@PathVariable(value = "ids") Long[] categoryIds) {
         categoryService.deleteCategory(categoryIds);

@@ -3,7 +3,7 @@ package work.moonzs.controller.system;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import work.moonzs.base.annotation.OperationLogger;
+import work.moonzs.base.annotation.AdminOperationLogger;
 import work.moonzs.base.annotation.SystemLog;
 import work.moonzs.base.utils.BeanCopyUtil;
 import work.moonzs.base.validate.VG;
@@ -41,7 +41,7 @@ public class MenuController {
      * @return {@link ResponseResult}
      */
     @SystemLog(businessName = "添加菜单")
-    @OperationLogger(value = "添加菜单")
+    @AdminOperationLogger(value = "添加菜单")
     @PostMapping
     public ResponseResult addMenu(@Validated(VG.Insert.class) @RequestBody MenuDTO menuDTO) {
         menuService.insertMenu(BeanCopyUtil.copyBean(menuDTO, Menu.class));
@@ -56,7 +56,7 @@ public class MenuController {
      * @return {@link ResponseResult}
      */
     @SystemLog(businessName = "更新菜单")
-    @OperationLogger(value = "更新菜单")
+    @AdminOperationLogger(value = "更新菜单")
     @PutMapping
     public ResponseResult updateMenu(@Validated(VG.Update.class) @RequestBody MenuDTO menuDTO) {
         menuService.updateMenu(BeanCopyUtil.copyBean(menuDTO, Menu.class));
@@ -70,7 +70,7 @@ public class MenuController {
      * @return {@link ResponseResult}
      */
     @SystemLog(businessName = "删除指定ID菜单")
-    @OperationLogger(value = "删除菜单")
+    @AdminOperationLogger(value = "删除菜单")
     @DeleteMapping("/{id}")
     public ResponseResult deleteMenu(@PathVariable(value = "id") Long menuId) {
         menuService.deleteMenu(menuId);

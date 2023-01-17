@@ -3,7 +3,7 @@ package work.moonzs.controller.system;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import work.moonzs.base.annotation.OperationLogger;
+import work.moonzs.base.annotation.AdminOperationLogger;
 import work.moonzs.base.annotation.SystemLog;
 import work.moonzs.base.utils.BeanCopyUtil;
 import work.moonzs.domain.ResponseResult;
@@ -38,7 +38,7 @@ public class WebConfigController {
      * @return {@link ResponseResult}
      */
     @SystemLog(businessName = "更新网站配置")
-    @OperationLogger(value = "更新网站配置")
+    @AdminOperationLogger(value = "更新网站配置")
     @PutMapping
     public ResponseResult updateWebConfig(@Validated @RequestBody WebConfigDTO webConfigDTO) {
         webConfigService.updateWebConfig(BeanCopyUtil.copyBean(webConfigDTO, WebConfig.class));

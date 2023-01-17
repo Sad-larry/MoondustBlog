@@ -55,6 +55,10 @@
                 <router-link :to="'/article/' + item.id">
                   {{ item.title }}
                 </router-link>
+                <span v-if="item.quantity >= 0 && item.quantity < 1000"
+                  style="font-size:12px;border-radius:3px;border: 1px solid  #f70;text-align: center">
+                  <font style="color: #f70;">次阅读</font>
+                </span>
                 <span v-if="item.quantity >= 1000 && item.quantity < 10000"
                   style="font-size:12px;border-radius:3px;border: 1px solid  #f70;text-align: center">
                   <font style="color: #f70;">千次阅读</font>
@@ -85,7 +89,7 @@
               <span class="separator">|</span>
               <!-- 文章标签 -->
               <router-link style="display:inline-block" :to="'/tags/' + tag.id" class="mr-1"
-                v-for="tag of item.tagVoList" :key="tag.id">
+                v-for="tag of item.tagVOList" :key="tag.id">
                 <v-icon size="14">mdi-tag-multiple</v-icon>{{ tag.name }}
               </router-link>
             </div>

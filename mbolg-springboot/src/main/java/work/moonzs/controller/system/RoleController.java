@@ -4,7 +4,7 @@ package work.moonzs.controller.system;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import work.moonzs.base.annotation.OperationLogger;
+import work.moonzs.base.annotation.AdminOperationLogger;
 import work.moonzs.base.annotation.SystemLog;
 import work.moonzs.base.utils.BeanCopyUtil;
 import work.moonzs.base.validate.VG;
@@ -56,7 +56,7 @@ public class RoleController {
      * @return {@link ResponseResult}
      */
     @SystemLog(businessName = "添加角色")
-    @OperationLogger(value = "添加角色")
+    @AdminOperationLogger(value = "添加角色")
     @PostMapping
     public ResponseResult addRole(@Validated(VG.Insert.class) @RequestBody RoleDTO roleDTO) {
         roleService.insertRole(BeanCopyUtil.copyBean(roleDTO, Role.class));
@@ -70,7 +70,7 @@ public class RoleController {
      * @return {@link ResponseResult}
      */
     @SystemLog(businessName = "更新角色")
-    @OperationLogger(value = "更新角色")
+    @AdminOperationLogger(value = "更新角色")
     @PutMapping
     public ResponseResult updateRole(@Validated(VG.Update.class) @RequestBody RoleDTO roleDTO) {
         roleService.updateRole(BeanCopyUtil.copyBean(roleDTO, Role.class));
@@ -84,7 +84,7 @@ public class RoleController {
      * @return {@link ResponseResult}
      */
     @SystemLog(businessName = "根据角色id进行批量删除操作")
-    @OperationLogger(value = "删除角色")
+    @AdminOperationLogger(value = "删除角色")
     @DeleteMapping("/{ids}")
     public ResponseResult deleteRole(@PathVariable(value = "ids") Long[] roleIds) {
         roleService.deleteRole(roleIds);

@@ -6,6 +6,7 @@ import org.lionsoul.ip2region.xdb.Searcher;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.util.Objects;
 
 /**
@@ -18,9 +19,10 @@ public class IpUtil {
     /**
      * 数据库路径
      */
-    private static final String dbPath;
+    private final static String dbPath;
     private static Searcher searcher;
     private static byte[] vIndex;
+    private final static String localIp = "127.0.0.1";
 
     static {
         // 1、获取 ip2region.xdb 离线数据库路径
@@ -53,6 +55,11 @@ public class IpUtil {
                 // 多次反向代理后会有多个ip值，第一个ip才是真实ip
                 if (ipAddress.contains(",")) {
                     ipAddress = ipAddress.split(",")[0];
+                }
+                // 如果是本地 ip，则根据网卡获取本机 ip
+                if (localIp.equals(ipAddress)) {
+                    InetAddress localHost = InetAddress.getLocalHost();
+                    ipAddress = localHost.getHostAddress();
                 }
             }
             if (checkIpAddressIsEmpty(ipAddress)) {

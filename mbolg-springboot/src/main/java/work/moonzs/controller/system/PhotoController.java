@@ -3,7 +3,7 @@ package work.moonzs.controller.system;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import work.moonzs.base.annotation.OperationLogger;
+import work.moonzs.base.annotation.AdminOperationLogger;
 import work.moonzs.base.annotation.SystemLog;
 import work.moonzs.base.utils.BeanCopyUtil;
 import work.moonzs.base.validate.VG;
@@ -54,7 +54,7 @@ public class PhotoController {
      * @return {@link ResponseResult}
      */
     @SystemLog(businessName = "添加照片")
-    @OperationLogger(value = "添加照片")
+    @AdminOperationLogger(value = "添加照片")
     @PostMapping
     public ResponseResult addPhoto(@Validated(VG.Insert.class) @RequestBody PhotoDTO photoDTO) {
         photoService.insertPhoto(BeanCopyUtil.copyBean(photoDTO, Photo.class));
@@ -69,7 +69,7 @@ public class PhotoController {
      * @return {@link ResponseResult}
      */
     @SystemLog(businessName = "更新照片")
-    @OperationLogger(value = "更新照片")
+    @AdminOperationLogger(value = "更新照片")
     @PutMapping
     public ResponseResult updatePhoto(@Validated(VG.Update.class) @RequestBody PhotoDTO photoDTO) {
         photoService.updatePhoto(BeanCopyUtil.copyBean(photoDTO, Photo.class));
@@ -83,7 +83,7 @@ public class PhotoController {
      * @return {@link ResponseResult}
      */
     @SystemLog(businessName = "根据照片id进行批量删除操作")
-    @OperationLogger(value = "删除照片")
+    @AdminOperationLogger(value = "删除照片")
     @DeleteMapping("/{ids}")
     public ResponseResult deletePhoto(@PathVariable(value = "ids") Long[] photoIds) {
         photoService.deletePhoto(photoIds);
@@ -98,7 +98,7 @@ public class PhotoController {
      * @return {@link ResponseResult}
      */
     @SystemLog(businessName = "移动照片")
-    @OperationLogger(value = "移动照片")
+    @AdminOperationLogger(value = "移动照片")
     @GetMapping(value = "/movePhoto")
     public ResponseResult movePhoto(@RequestParam Long albumId, @RequestParam Long[] ids) {
         photoService.movePhoto(albumId, ids);

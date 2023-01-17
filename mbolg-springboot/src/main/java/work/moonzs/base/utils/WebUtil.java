@@ -1,5 +1,9 @@
 package work.moonzs.base.utils;
 
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
+
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -41,5 +45,17 @@ public class WebUtil {
         response.setCharacterEncoding("utf-8");
         String fname = URLEncoder.encode(filename, StandardCharsets.UTF_8).replaceAll("\\+", "%20");
         response.setHeader("Content-disposition", "attachment; filename=" + fname);
+    }
+
+    /**
+     * 获取 http servlet 请求
+     *
+     * @return {@link HttpServletRequest}
+     */
+    public static HttpServletRequest getHttpServletRequest() {
+        // 获取 RequestAttributes
+        RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
+        // 从获取 RequestAttributes 中获取 HttpServletRequest 的信息
+        return (HttpServletRequest) requestAttributes.resolveReference(RequestAttributes.REFERENCE_REQUEST);
     }
 }

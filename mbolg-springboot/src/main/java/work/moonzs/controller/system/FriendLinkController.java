@@ -3,7 +3,7 @@ package work.moonzs.controller.system;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import work.moonzs.base.annotation.OperationLogger;
+import work.moonzs.base.annotation.AdminOperationLogger;
 import work.moonzs.base.annotation.SystemLog;
 import work.moonzs.base.utils.BeanCopyUtil;
 import work.moonzs.base.validate.VG;
@@ -43,7 +43,7 @@ public class FriendLinkController {
      * @return {@link ResponseResult}
      */
     @SystemLog(businessName = "添加友链")
-    @OperationLogger(value = "添加友链")
+    @AdminOperationLogger(value = "添加友链")
     @PostMapping
     public ResponseResult addFriendLink(@Validated(VG.Insert.class) @RequestBody FriendLinkDTO friendLinkDTO) {
         friendLinkService.insertFriendLink(BeanCopyUtil.copyBean(friendLinkDTO, FriendLink.class));
@@ -57,7 +57,7 @@ public class FriendLinkController {
      * @return {@link ResponseResult}
      */
     @SystemLog(businessName = "更新友链")
-    @OperationLogger(value = "更新友链")
+    @AdminOperationLogger(value = "更新友链")
     @PutMapping
     public ResponseResult updateFriendLink(@Validated(VG.Update.class) @RequestBody FriendLinkDTO friendLinkDTO) {
         friendLinkService.updateFriendLink(BeanCopyUtil.copyBean(friendLinkDTO, FriendLink.class));
@@ -71,7 +71,7 @@ public class FriendLinkController {
      * @return {@link ResponseResult}
      */
     @SystemLog(businessName = "根据友链id进行批量删除操作")
-    @OperationLogger(value = "删除友链")
+    @AdminOperationLogger(value = "删除友链")
     @DeleteMapping("/{ids}")
     public ResponseResult deleteFriendLink(@PathVariable(value = "ids") Long[] friendLinkIds) {
         friendLinkService.deleteFriendLink(friendLinkIds);
@@ -84,7 +84,7 @@ public class FriendLinkController {
      * @return {@link ResponseResult}
      */
     @SystemLog(businessName = "友链置顶")
-    @OperationLogger(value = "友链置顶")
+    @AdminOperationLogger(value = "友链置顶")
     @PostMapping("/top")
     public ResponseResult topFriendLink(@Validated @RequestBody FriendLinkDTO friendLinkDTO) {
         Long friendLinkId = friendLinkDTO.getId();
@@ -99,7 +99,7 @@ public class FriendLinkController {
      * @return {@link ResponseResult}
      */
     @SystemLog(businessName = "审核通过友链")
-    @OperationLogger(value = "审核通过友链")
+    @AdminOperationLogger(value = "审核通过友链")
     @GetMapping("/pass/{ids}")
     public ResponseResult passFriendLink(@PathVariable("ids") Long[] friendLinkIds) {
         friendLinkService.passFriendLink(friendLinkIds);

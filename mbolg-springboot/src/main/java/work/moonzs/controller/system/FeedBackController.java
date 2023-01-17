@@ -2,7 +2,7 @@ package work.moonzs.controller.system;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import work.moonzs.base.annotation.OperationLogger;
+import work.moonzs.base.annotation.AdminOperationLogger;
 import work.moonzs.base.annotation.SystemLog;
 import work.moonzs.domain.ResponseResult;
 import work.moonzs.service.FeedBackService;
@@ -35,7 +35,7 @@ public class FeedBackController {
      * @return {@link ResponseResult}
      */
     @SystemLog(businessName = "根据反馈id进行批量删除操作")
-    @OperationLogger(value = "删除反馈")
+    @AdminOperationLogger(value = "删除反馈")
     @DeleteMapping("/{ids}")
     public ResponseResult deleteFeedBack(@PathVariable("ids") Long[] feedBackIds) {
         feedBackService.deleteFeedBack(feedBackIds);

@@ -3,6 +3,7 @@ package work.moonzs.controller.web;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import work.moonzs.base.annotation.SystemLog;
+import work.moonzs.base.annotation.WebOperationLogger;
 import work.moonzs.base.utils.BeanCopyUtil;
 import work.moonzs.domain.ResponseResult;
 import work.moonzs.domain.dto.MessageDTO;
@@ -35,12 +36,9 @@ public class MessageController {
      * @return {@link ResponseResult}
      */
     @SystemLog(businessName = "添加留言")
+    @WebOperationLogger(value = "留言模块-用户留言", type = "添加", desc = "用户留言")
     @PostMapping("/add")
     public ResponseResult addWebMessage(@RequestBody MessageDTO messageDTO) {
-        // TODO 设置留言 Ip 地址
-        messageDTO.setIpAddress("");
-        // TODO 设置留言 Ip 来源
-        messageDTO.setIpSource("");
         messageService.addWebMessage(BeanCopyUtil.copyBean(messageDTO, Message.class));
         return ResponseResult.success();
     }

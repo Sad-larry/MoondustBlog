@@ -41,7 +41,7 @@
           <el-tag v-else type="info">审核中</el-tag>
         </template>
       </el-table-column>
-      <el-table-column prop="createTime" width="150" align="center" label="留言时间">
+      <el-table-column prop="createTime" width="160" align="center" label="留言时间">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.createTime) }}</span>
         </template>

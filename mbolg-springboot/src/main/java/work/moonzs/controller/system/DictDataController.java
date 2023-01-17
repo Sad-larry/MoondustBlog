@@ -4,7 +4,7 @@ package work.moonzs.controller.system;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import work.moonzs.base.annotation.OperationLogger;
+import work.moonzs.base.annotation.AdminOperationLogger;
 import work.moonzs.base.annotation.SystemLog;
 import work.moonzs.base.utils.BeanCopyUtil;
 import work.moonzs.base.validate.VG;
@@ -41,7 +41,7 @@ public class DictDataController {
      * @return {@link ResponseResult}
      */
     @SystemLog(businessName = "添加字典数据")
-    @OperationLogger(value = "添加字典数据")
+    @AdminOperationLogger(value = "添加字典数据")
     @PostMapping
     public ResponseResult addDictData(@Validated(VG.Insert.class) @RequestBody DictDataDTO dictDTO) {
         dictDataService.insertDictData(BeanCopyUtil.copyBean(dictDTO, DictData.class));
@@ -55,7 +55,7 @@ public class DictDataController {
      * @return {@link ResponseResult}
      */
     @SystemLog(businessName = "更新字典数据")
-    @OperationLogger(value = "更新字典数据")
+    @AdminOperationLogger(value = "更新字典数据")
     @PutMapping
     public ResponseResult updateDictData(@Validated(VG.Update.class) @RequestBody DictDataDTO dictDTO) {
         dictDataService.updateDictData(BeanCopyUtil.copyBean(dictDTO, DictData.class));
@@ -69,7 +69,7 @@ public class DictDataController {
      * @return {@link ResponseResult}
      */
     @SystemLog(businessName = "根据字典数据id进行批量删除操作")
-    @OperationLogger(value = "删除字典数据")
+    @AdminOperationLogger(value = "删除字典数据")
     @DeleteMapping("/{ids}")
     public ResponseResult deleteDictData(@PathVariable(value = "ids") Long[] dictIds) {
         dictDataService.deleteDictData(dictIds);

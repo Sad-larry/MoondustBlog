@@ -2,7 +2,7 @@ package work.moonzs.controller.system;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import work.moonzs.base.annotation.OperationLogger;
+import work.moonzs.base.annotation.AdminOperationLogger;
 import work.moonzs.base.annotation.SystemLog;
 import work.moonzs.domain.ResponseResult;
 import work.moonzs.service.CommentService;
@@ -36,7 +36,7 @@ public class CommentController {
      * @return {@link ResponseResult}
      */
     @SystemLog(businessName = "根据评论id进行批量删除操作")
-    @OperationLogger(value = "删除评论")
+    @AdminOperationLogger(value = "删除评论")
     @DeleteMapping("/{ids}")
     public ResponseResult deleteComment(@PathVariable(value = "ids") Long[] commentIds) {
         commentService.deleteComment(commentIds);
