@@ -3,11 +3,14 @@ package work.moonzs.base.utils;
 import cn.hutool.core.util.StrUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.lionsoul.ip2region.xdb.Searcher;
+import org.springframework.core.io.ClassPathResource;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.InetAddress;
-import java.util.Objects;
+import java.net.NetworkInterface;
+import java.net.UnknownHostException;
 
 /**
  * Ip 地址解析工具类
@@ -16,28 +19,18 @@ import java.util.Objects;
  */
 @Slf4j
 public class IpUtil {
-    /**
-     * 数据库路径
-     */
-    private final static String dbPath;
     private static Searcher searcher;
-    private static byte[] vIndex;
-    private final static String localIp = "127.0.0.1";
 
     static {
-        // 1、获取 ip2region.xdb 离线数据库路径
-        dbPath = Objects.requireNonNull(IpUtil.class.getResource("/ip2region.xdb")).getPath();
-        try {
-            // 2、从 dbPath 中预先加载 VectorIndex 缓存，并且把这个得到的数据作为全局变量，后续反复使用。
-            vIndex = Searcher.loadVectorIndexFromFile(dbPath);
-        } catch (Exception e) {
-            log.error("failed to load vector index from `{}`: {}", dbPath, e);
-        }
-        try {
-            // 3、使用全局的 vIndex 创建带 VectorIndex 缓存的查询对象。
-            searcher = Searcher.newWithVectorIndex(dbPath, vIndex);
+        // 从数据库路径中读取数据缓存
+        // byte[] cbuff = Searcher.loadContentFromFile(dbPath);
+        ClassPathResource classPathResource = new ClassPathResource("ip2region.xdb");
+        // 通过输入流的方式创建一个完全基于内存的查询对象
+        try (InputStream is = classPathResource.getInputStream();) {
+            byte[] cBuff = is.readAllBytes();
+            searcher = Searcher.newWithBuffer(cBuff);
         } catch (IOException e) {
-            log.error("failed to create vectorIndex cached searcher with `{}`: {}", dbPath, e);
+            log.error("failed to create content cached searcher: {}", e.toString());
         }
     }
 
@@ -48,52 +41,50 @@ public class IpUtil {
      * @return {@link String}
      */
     public static String getIpAddr(HttpServletRequest request) {
-        String ipAddress = null;
-        try {
-            ipAddress = request.getHeader("X-Forwarded-For");
-            if (!checkIpAddressIsEmpty(ipAddress)) {
-                // 多次反向代理后会有多个ip值，第一个ip才是真实ip
-                if (ipAddress.contains(",")) {
-                    ipAddress = ipAddress.split(",")[0];
-                }
-                // 如果是本地 ip，则根据网卡获取本机 ip
-                if (localIp.equals(ipAddress)) {
-                    InetAddress localHost = InetAddress.getLocalHost();
-                    ipAddress = localHost.getHostAddress();
-                }
+        String ipAddress = request.getHeader("x-forwarded-for");
+        if (ipAddress == null || ipAddress.length() == 0 || "unknown".equalsIgnoreCase(ipAddress)) {
+            ipAddress = request.getHeader("Proxy-Client-IP");
+        }
+        if (ipAddress == null || ipAddress.length() == 0 || "unknown".equalsIgnoreCase(ipAddress)) {
+            ipAddress = request.getHeader("WL-Proxy-Client-IP");
+        }
+        if (ipAddress == null || ipAddress.length() == 0 || "unknown".equalsIgnoreCase(ipAddress)) {
+            ipAddress = request.getHeader("HTTP_CLIENT_IP");
+        }
+        if (ipAddress == null || ipAddress.length() == 0 || "unknown".equalsIgnoreCase(ipAddress)) {
+            ipAddress = request.getHeader("HTTP_X_FORWARDED_FOR");
+        }
+        if (ipAddress == null || ipAddress.length() == 0 || "unknown".equalsIgnoreCase(ipAddress)) {
+            ipAddress = request.getRemoteAddr();
+        }
+        // 本机访问
+        if ("localhost".equalsIgnoreCase(ipAddress) || "127.0.0.1".equalsIgnoreCase(ipAddress) || "0:0:0:0:0:0:0:1".equalsIgnoreCase(ipAddress)) {
+            // 根据网卡取本机配置的IP
+            InetAddress inet;
+            try {
+                inet = InetAddress.getLocalHost();
+                ipAddress = inet.getHostAddress();
+            } catch (UnknownHostException e) {
+                e.printStackTrace();
             }
-            if (checkIpAddressIsEmpty(ipAddress)) {
-                ipAddress = request.getHeader("Proxy-Client-IP");
+        }
+        // 对于通过多个代理的情况，第一个IP为客户端真实IP,多个IP按照','分割
+        if (null != ipAddress && ipAddress.length() > 15) {
+            if (ipAddress.indexOf(",") > 15) {
+                ipAddress = ipAddress.substring(0, ipAddress.indexOf(","));
             }
-            if (checkIpAddressIsEmpty(ipAddress)) {
-                ipAddress = request.getHeader("WL-Proxy-Client-IP");
-            }
-            if (checkIpAddressIsEmpty(ipAddress)) {
-                ipAddress = request.getHeader("HTTP_CLIENT_IP");
-            }
-            if (checkIpAddressIsEmpty(ipAddress)) {
-                ipAddress = request.getRemoteAddr();
-            }
-        } catch (Exception e) {
-            log.error("IpUtil ERROR :", e);
         }
         return ipAddress;
     }
-
-    /**
-     * 检查 IP 地址是否为空
-     *
-     * @param ipAddress ip地址
-     * @return boolean
-     */
-    private static boolean checkIpAddressIsEmpty(String ipAddress) {
-        return ipAddress == null || ipAddress.length() == 0 || "unknown".equalsIgnoreCase(ipAddress);
-    }
-
+    
     /**
      * 获取 IP 地址归属地
      */
     public static String getCityInfo(String ip) {
+        // 若初始化失败，则返回空
+        if (null == searcher) {
+            return null;
+        }
         try {
             // 通过 searcher 查询 IP
             String ipInfo = searcher.search(ip);
@@ -107,5 +98,24 @@ public class IpUtil {
             log.error("failed to search({}): {}", ip, e);
         }
         return null;
+    }
+
+    /**
+     * 获取mac地址
+     */
+    public static String getMacAddress() throws Exception {
+        // 取mac地址
+        byte[] macAddressBytes = NetworkInterface.getByInetAddress(InetAddress.getLocalHost()).getHardwareAddress();
+        // 下面代码是把mac地址拼装成String
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < macAddressBytes.length; i++) {
+            if (i != 0) {
+                sb.append("-");
+            }
+            // mac[i] & 0xFF 是为了把byte转化为正整数
+            String s = Integer.toHexString(macAddressBytes[i] & 0xFF);
+            sb.append(s.length() == 1 ? 0 + s : s);
+        }
+        return sb.toString().trim().toUpperCase();
     }
 }

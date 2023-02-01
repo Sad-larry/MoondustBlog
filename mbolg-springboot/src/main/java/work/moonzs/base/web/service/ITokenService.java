@@ -41,7 +41,11 @@ public class ITokenService {
     /**
      * 设置秘钥明文
      */
-    public static final String SECRET_KEY = "this+is+my+moondust+blog";
+    private static final String SECRET_KEY = "this+is+my+moondust+blog";
+    /**
+     * redis缓存的key密钥
+     */
+    private static final String CACHE_SECRET_KEY = "refrainblog-cn";
 
     /**
      * 通过loginuser创建令牌
@@ -50,8 +54,9 @@ public class ITokenService {
      * @return {@link String}
      */
     public String createToken(LoginUser loginUser) {
-        // 用uuid填充loginuser里面的userUid，作为唯一标识
-        String userUid = IdUtil.fastUUID();
+        // 用加密16进制字符串填充loginuser里面的userUid，作为唯一标识
+        // String userUid = CryptoUtil.aesEncryptHex(CACHE_SECRET_KEY, loginUser.getUsername());
+        String userUid = IdUtil.fastSimpleUUID();
         loginUser.setUserUid(userUid);
         refreshToken(loginUser);
         HashMap<String, Object> claims = new HashMap<>();

@@ -50,6 +50,9 @@ public class SpringSecurityConfig {
         // 登录接口可以匿名访问 其他接口需要认证
         httpSecurity.authorizeRequests().antMatchers("/system/login", "/system/captchaImage", "/druid/**").anonymous()
                 .antMatchers("/web/**").permitAll()
+                .antMatchers("/swagger**/**").permitAll()
+                .antMatchers("/webjars/**").permitAll()
+                .antMatchers("/v2/**").permitAll()
                 .anyRequest().authenticated();
         // 添加过滤器
         httpSecurity.addFilterBefore(authenticationTokenFilter, UsernamePasswordAuthenticationFilter.class);

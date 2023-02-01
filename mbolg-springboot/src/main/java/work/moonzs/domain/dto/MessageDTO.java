@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Null;
 
@@ -53,8 +55,9 @@ public class MessageDTO {
     /**
      * 留言时间
      */
-    @ApiModelProperty(notes = "留言时间")
-    @Null(message = "MessageDTO.time.NotBlank")
+    @ApiModelProperty(notes = "留言展示时间")
+    @Min(value = 1, message = "{MessageDTO.time.Min}")
+    @Max(value = 100, message = "{MessageDTO.time.Max}")
     private Long time;
 }
 

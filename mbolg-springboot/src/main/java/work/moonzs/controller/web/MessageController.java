@@ -1,6 +1,7 @@
 package work.moonzs.controller.web;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import work.moonzs.base.annotation.SystemLog;
 import work.moonzs.base.annotation.WebOperationLogger;
@@ -38,7 +39,7 @@ public class MessageController {
     @SystemLog(businessName = "添加留言")
     @WebOperationLogger(value = "留言模块-用户留言", type = "添加", desc = "用户留言")
     @PostMapping("/add")
-    public ResponseResult addWebMessage(@RequestBody MessageDTO messageDTO) {
+    public ResponseResult addWebMessage(@Validated @RequestBody MessageDTO messageDTO) {
         messageService.addWebMessage(BeanCopyUtil.copyBean(messageDTO, Message.class));
         return ResponseResult.success();
     }

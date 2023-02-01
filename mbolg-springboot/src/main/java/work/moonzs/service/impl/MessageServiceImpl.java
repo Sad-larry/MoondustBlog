@@ -5,9 +5,12 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import work.moonzs.base.enums.StatusConstants;
 import work.moonzs.base.utils.BeanCopyUtil;
+import work.moonzs.base.utils.IpUtil;
 import work.moonzs.domain.entity.Message;
 import work.moonzs.domain.vo.PageVO;
 import work.moonzs.domain.vo.sys.SysMessageVO;
@@ -15,6 +18,7 @@ import work.moonzs.domain.vo.web.MessageVO;
 import work.moonzs.mapper.MessageMapper;
 import work.moonzs.service.MessageService;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -24,7 +28,10 @@ import java.util.List;
  * @since 2022-10-30 10:39:20
  */
 @Service("messageService")
+// 代替`@Autowired`注解，注入时需要用final定义
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> implements MessageService {
+    private final HttpServletRequest request;
 
     @Override
     public PageVO<SysMessageVO> listMessage(Integer pageNum, Integer pageSize, String fuzzyField) {
@@ -63,6 +70,11 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
 
     @Override
     public Long addWebMessage(Message message) {
+        // 设置 ip 以及 ip地址
+        String ipAddress = IpUtil.getIpAddr(request);
+        String ipSource = IpUtil.getCityInfo(ipAddress);
+        message.setIpAddress(ipAddress);
+        message.setIpSource(ipSource);
         int insert = baseMapper.insert(message);
         return insert > 0 ? message.getId() : null;
     }
