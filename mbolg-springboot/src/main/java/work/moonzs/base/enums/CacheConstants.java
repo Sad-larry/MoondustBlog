@@ -34,4 +34,8 @@ public class CacheConstants {
      * 博客点赞数
      */
     public static final String BLOG_LIKE_QUANTITY = "mblog:like:";
+    /**
+     * 存放在线用户有序集合的键
+     */
+    public static final String ONLINE_USER_KEY = "mblog:onlineUser";
 }

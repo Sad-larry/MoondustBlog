@@ -116,4 +116,18 @@ public class UserController {
         userService.updateById(user);
         return ResponseResult.success();
     }
+
+    @SystemLog(businessName = "查看在线用户")
+    @GetMapping(value = "/online")
+    public ResponseResult listOnlineUsers() {
+        return ResponseResult.successPageVO(userService.listOnlineUsers());
+    }
+
+    @SystemLog(businessName = "强制用户下线")
+    // TODO @AdminOperationLogger(value = "强制用户下线")
+    @GetMapping(value = "/kick")
+    public ResponseResult kick(@RequestParam String userUid) {
+        userService.kick(userUid);
+        return ResponseResult.success();
+    }
 }

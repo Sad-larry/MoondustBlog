@@ -5,6 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 import work.moonzs.domain.entity.User;
 import work.moonzs.domain.vo.PageVO;
 import work.moonzs.domain.vo.UserListVo;
+import work.moonzs.domain.vo.sys.SysOnlineUserVO;
 import work.moonzs.domain.vo.sys.SysUserBaseVO;
 import work.moonzs.domain.vo.sys.SysUserVO;
 
@@ -68,5 +69,20 @@ public interface UserService extends IService<User> {
      */
     @Transactional
     boolean deleteUser(Long[] userIds);
+
+    /**
+     * 在线用户列表
+     *
+     * @return {@link PageVO}<{@link SysOnlineUserVO}>
+     */
+    PageVO<SysOnlineUserVO> listOnlineUsers();
+
+    /**
+     * 强制用户下线
+     * 删除在线列表和登录记录中的数据
+     *
+     * @param userUid 用户uid
+     */
+    void kick(String userUid);
 }
 

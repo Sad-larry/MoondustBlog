@@ -12,10 +12,12 @@ import work.moonzs.base.enums.CacheConstants;
 import work.moonzs.base.utils.RedisCache;
 import work.moonzs.base.utils.SecurityUtil;
 import work.moonzs.base.web.common.BusinessAssert;
+import work.moonzs.base.web.service.IOnlineUserService;
 import work.moonzs.base.web.service.ITokenService;
 import work.moonzs.domain.entity.LoginUser;
 import work.moonzs.domain.entity.User;
 import work.moonzs.domain.vo.PageVO;
+import work.moonzs.domain.vo.sys.SysOnlineUserVO;
 import work.moonzs.domain.vo.sys.SysUserBaseVO;
 import work.moonzs.domain.vo.sys.SysUserVO;
 import work.moonzs.mapper.UserAuthMapper;
@@ -43,6 +45,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     private UserAuthMapper userAuthMapper;
     @Autowired
     private SystemConfigService systemConfigService;
+    @Autowired
+    private IOnlineUserService iOnlineUserService;
 
     @Override
     public String adminLogin(String username, String password, String uuid, String code) {
@@ -56,6 +60,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         // 认证不通过时，SpringSecurity会主动抛出异常
         Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
         LoginUser loginUser = (LoginUser) authenticate.getPrincipal();
+        // 为 loginUser 创建 token 并赋予 redis 缓存的唯一uuid键
         return iTokenService.createToken(loginUser);
     }
 
@@ -78,6 +83,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         LoginUser loginUser = SecurityUtil.getLoginUser();
         // 从redis中删除用户token以及用户login信息
         iTokenService.delLoginUser(loginUser.getUserUid());
+        // 用户主动退出登录时，直接删除redis离线用户
+        iOnlineUserService.userOffline(loginUser.getUserUid());
     }
 
     @Override
@@ -104,6 +111,17 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public boolean deleteUser(Long[] userIds) {
         userAuthMapper.deleteByUserIds(userIds);
         return removeBatchByIds(List.of(userIds));
+    }
+
+    @Override
+    public PageVO<SysOnlineUserVO> listOnlineUsers() {
+        return iOnlineUserService.userOnlineList();
+    }
+
+    @Override
+    public void kick(String userUid) {
+        iTokenService.delLoginUser(userUid);
+        iOnlineUserService.userOffline(userUid);
     }
 }
 

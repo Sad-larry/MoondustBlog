@@ -29,6 +29,8 @@ import java.util.Map;
 public class ITokenService {
     @Autowired
     private RedisCache redisCache;
+    @Autowired
+    private IOnlineUserService iOnlineUserService;
 
     /**
      * 令牌有效期60分钟
@@ -197,6 +199,8 @@ public class ITokenService {
         // 根据id将loginUser重新缓存
         String userKey = getTokenKey(loginUser.getUserUid());
         redisCache.set(userKey, loginUser);
+        // 更新在线用户
+        iOnlineUserService.userOnline(loginUser.getUserUid());
     }
 
     /**

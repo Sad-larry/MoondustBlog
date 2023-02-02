@@ -79,7 +79,12 @@ public class SystemConfigServiceImpl extends ServiceImpl<SystemConfigMapper, Sys
             return true;
         }
         // 将字符串类型转换成 boolean 类型
-        return Convert.toBool(captchaEnabled);
+        Boolean enabled = Convert.toBool(captchaEnabled);
+        // 如果转换失败，则返回 false
+        if (null == enabled) {
+            return false;
+        }
+        return enabled;
     }
 
     @Override

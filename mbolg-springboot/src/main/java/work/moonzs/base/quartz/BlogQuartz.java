@@ -6,6 +6,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 import work.moonzs.base.enums.CacheConstants;
 import work.moonzs.base.utils.RedisCache;
+import work.moonzs.base.web.service.IOnlineUserService;
 import work.moonzs.domain.entity.Article;
 import work.moonzs.service.ArticleService;
 
@@ -22,6 +23,7 @@ public class BlogQuartz {
     private final ThreadPoolTaskExecutor threadPoolTaskExecutor;
     private final RedisCache redisCache;
     private final ArticleService articleService;
+    private final IOnlineUserService iOnlineUserService;
 
     /**
      * 自动更新文章阅读数
@@ -40,6 +42,24 @@ public class BlogQuartz {
             });
             // 批量更新数据库中的浏览量
             articleService.updateBatchById(articles);
+        });
+    }
+
+    /**
+     * 清除离线用户
+     */
+    public void clearOfflineUser() {
+        // 默认清除 10 分钟未操作的用户
+        clearOfflineUser(10);
+    }
+
+    /**
+     * 方法参数一定得使用包装类，否则反射找不到该方法
+     */
+    public void clearOfflineUser(Integer minute) {
+        threadPoolTaskExecutor.execute(() -> {
+            Long cleanUserCount = iOnlineUserService.userOfflineClean(minute);
+            // log.info("清除已过期用户数量: {} 位", cleanUserCount);
         });
     }
 }

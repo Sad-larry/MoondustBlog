@@ -43,6 +43,22 @@ export function delUser(ids) {
   })
 }
 
+// 查看在线用户
+export function listOnlineUsers() {
+  return request({
+    url: '/system/user/online',
+    method: 'get'
+  })
+}
+
+// 强制用户下线
+export function kick(userUid) {
+  return request({
+    url: '/system/user/kick/',
+    method: 'get',
+    params: { userUid }
+  })
+}
 
 // 用户密码重置
 export function resetUserPwd(userId, password) {

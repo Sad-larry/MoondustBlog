@@ -575,4 +575,103 @@ public final class RedisCache {
             return 0;
         }
     }
+
+    // ===============================zset=================================
+
+    /**
+     * 获取zset缓存的内容
+     *
+     * @param key   键
+     * @param start 开始
+     * @param end   结束 0 到 -1 代表所有值
+     */
+    public Set<Object> zsetGet(String key, long start, long end) {
+        try {
+            return redisTemplate.opsForZSet().range(key, start, end);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * 将数据放入zset缓存
+     *
+     * @param key   键
+     * @param value 值
+     * @param score 权重
+     * @return {@link Boolean}
+     */
+    public Boolean zsetSet(String key, Object value, long score) {
+        try {
+            return redisTemplate.opsForZSet().add(key, value, score);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
+     * 获取zset缓存计数
+     *
+     * @param key 键
+     * @return {@link Long}
+     */
+    public Long zsetCount(String key) {
+        try {
+            return redisTemplate.opsForZSet().size(key);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 0L;
+        }
+    }
+
+    /**
+     * 移除zset在范围区间中的权值的值
+     *
+     * @param key      键
+     * @param minScore 最小权重
+     * @param maxScore 最大权重
+     * @return {@link Long}
+     */
+    public Long zsetRemove(String key, Long minScore, Long maxScore) {
+        try {
+            return redisTemplate.opsForZSet().removeRangeByScore(key, minScore, maxScore);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 0L;
+        }
+    }
+
+    /**
+     * 移除zset在范围区间中的权值的值
+     *
+     * @param key    键
+     * @param values 值（可多个）
+     * @return {@link Long}
+     */
+    public Long zsetRemove(String key, Object... values) {
+        try {
+            return redisTemplate.opsForZSet().remove(key, values);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 0L;
+        }
+    }
+
+    /**
+     * 获取zset在范围区间中的权值的值
+     *
+     * @param key      键
+     * @param minScore 最小权重
+     * @param maxScore 最大权重 0 到 -1 代表所有值
+     */
+    public Set<Object> zsetGetByScore(String key, Long minScore, Long maxScore) {
+        try {
+            return redisTemplate.opsForZSet().rangeByScore(key, minScore, maxScore);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 }
