@@ -1,6 +1,8 @@
 package work.moonzs.base.utils;
 
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.http.useragent.UserAgent;
+import cn.hutool.http.useragent.UserAgentUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.lionsoul.ip2region.xdb.Searcher;
 import org.springframework.core.io.ClassPathResource;
@@ -76,7 +78,7 @@ public class IpUtil {
         }
         return ipAddress;
     }
-    
+
     /**
      * 获取 IP 地址归属地
      */
@@ -117,5 +119,10 @@ public class IpUtil {
             sb.append(s.length() == 1 ? 0 + s : s);
         }
         return sb.toString().trim().toUpperCase();
+    }
+
+    public static UserAgent getUserAgent(HttpServletRequest request) {
+        // 获取请求的 User-Agent 字段
+        return UserAgentUtil.parse(request.getHeader("user-agent"));
     }
 }

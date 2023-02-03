@@ -412,13 +412,28 @@ public final class RedisCache {
      * @param values 值 可以是多个
      * @return 移除的个数
      */
-
     public long setRemove(String key, Object... values) {
         try {
             return redisTemplate.opsForSet().remove(key, values);
         } catch (Exception e) {
             e.printStackTrace();
             return 0;
+        }
+    }
+
+    /**
+     * 随机获取set缓存中的几个数据
+     *
+     * @param key   键
+     * @param count 数
+     * @return {@link List}<{@link Object}>
+     */
+    public List<Object> sGetRandomMembers(String key, long count) {
+        try {
+            return redisTemplate.opsForSet().randomMembers(key, count);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
         }
     }
 

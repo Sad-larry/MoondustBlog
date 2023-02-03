@@ -183,6 +183,9 @@ public class ITokenService {
         }
         if (expireTime - currentTime <= LEFT_EFFECTIVE_TIME) {
             refreshToken(loginUser);
+        } else {
+            // 令牌有效也要更新在线用户
+            iOnlineUserService.userOnline(loginUser.getUserUid());
         }
         return true;
     }
@@ -198,9 +201,9 @@ public class ITokenService {
         loginUser.setExpireTime(loginUser.getLoginTime() + TOTAL_EFFECTIVE_TIME);
         // 根据id将loginUser重新缓存
         String userKey = getTokenKey(loginUser.getUserUid());
-        redisCache.set(userKey, loginUser);
         // 更新在线用户
         iOnlineUserService.userOnline(loginUser.getUserUid());
+        redisCache.set(userKey, loginUser);
     }
 
     /**

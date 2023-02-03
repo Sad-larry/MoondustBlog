@@ -15,8 +15,8 @@
                 </template>
             </el-table-column>
             <el-table-column align="center" prop="nickname" label="昵称" width="180" />
-            <el-table-column align="center" prop="ip" label="IP地址" />
-            <el-table-column align="center" prop="city" label="登录地址" />
+            <el-table-column align="center" prop="ipAddress" label="IP地址" />
+            <el-table-column align="center" prop="ipSource" label="登录地址" />
             <el-table-column align="center" prop="browser" label="浏览器" />
             <el-table-column align="center" prop="os" label="操作系统" />
             <el-table-column align="center" prop="loginTime" label="登录时间" width="180" />

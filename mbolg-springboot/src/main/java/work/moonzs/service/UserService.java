@@ -84,5 +84,17 @@ public interface UserService extends IService<User> {
      * @param userUid 用户uid
      */
     void kick(String userUid);
+
+    /**
+     * 更新登录信息
+     *
+     * @param userId    用户id
+     * @param ipAddress ip地址
+     * @param ipSource  ip源
+     * @param os        操作系统
+     * @param browser   浏览器
+     * @return boolean
+     */
+    boolean updateLoginInfo(Long userId, String ipAddress, String ipSource, String os, String browser);
 }
 

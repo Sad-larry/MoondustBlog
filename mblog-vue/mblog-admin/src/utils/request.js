@@ -89,7 +89,7 @@ service.interceptors.response.use(res => {
       ).then(() => {
         isRelogin.show = false;
         store.dispatch('LogOut').then(() => {
-          location.href = '/index';
+          location.href = '/admin/login';
         })
       }).catch(() => {
         isRelogin.show = false;
@@ -109,7 +109,9 @@ service.interceptors.response.use(res => {
     })
     if (code === 45017 || code === 45013) {
       // 删除token
-      store.dispatch('FedLogOut');
+      store.dispatch('FedLogOut').then(() => {
+        location.href = '/admin/login';
+      });
       return Promise.reject('error')
     }
     // store.commit('SET_TOKEN', '')

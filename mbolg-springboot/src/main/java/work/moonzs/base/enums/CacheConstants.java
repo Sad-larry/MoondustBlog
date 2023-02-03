@@ -21,7 +21,7 @@ public class CacheConstants {
     /**
      * 存放系统配置的键名前缀
      */
-    public static final String SYS_CONFIG_KEY = "sys:config:";
+    public static final String SYS_CONFIG_KEY = "mblog:config:";
     /**
      * 存放需要上传图片的键名前缀
      */
@@ -38,4 +38,8 @@ public class CacheConstants {
      * 存放在线用户有序集合的键
      */
     public static final String ONLINE_USER_KEY = "mblog:onlineUser";
+    /**
+     * 保存的登录用户键
+     */
+    public static final String SAVE_LOGIN_USER_KEY = "mblog:loginUser";
 }

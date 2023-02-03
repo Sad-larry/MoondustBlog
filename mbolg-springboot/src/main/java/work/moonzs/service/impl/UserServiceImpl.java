@@ -1,18 +1,22 @@
 package work.moonzs.service.impl;
 
+import cn.hutool.http.useragent.UserAgent;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import work.moonzs.base.enums.AppHttpCodeEnum;
 import work.moonzs.base.enums.CacheConstants;
+import work.moonzs.base.utils.IpUtil;
 import work.moonzs.base.utils.RedisCache;
 import work.moonzs.base.utils.SecurityUtil;
 import work.moonzs.base.web.common.BusinessAssert;
 import work.moonzs.base.web.service.IOnlineUserService;
+import work.moonzs.base.web.service.ISaveUserService;
 import work.moonzs.base.web.service.ITokenService;
 import work.moonzs.domain.entity.LoginUser;
 import work.moonzs.domain.entity.User;
@@ -25,6 +29,7 @@ import work.moonzs.mapper.UserMapper;
 import work.moonzs.service.SystemConfigService;
 import work.moonzs.service.UserService;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -47,6 +52,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     private SystemConfigService systemConfigService;
     @Autowired
     private IOnlineUserService iOnlineUserService;
+    @Autowired
+    private ISaveUserService iSaveUserService;
+    @Autowired
+    private HttpServletRequest request;
+    @Autowired
+    private ThreadPoolTaskExecutor threadPoolTaskExecutor;
 
     @Override
     public String adminLogin(String username, String password, String uuid, String code) {
@@ -60,8 +71,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         // 认证不通过时，SpringSecurity会主动抛出异常
         Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
         LoginUser loginUser = (LoginUser) authenticate.getPrincipal();
+        // 更新登录用户信息
+        getLoginUserInfo(loginUser);
         // 为 loginUser 创建 token 并赋予 redis 缓存的唯一uuid键
-        return iTokenService.createToken(loginUser);
+        String token = iTokenService.createToken(loginUser);
+        iSaveUserService.saveUserToken(loginUser.getUserUid());
+        return token;
     }
 
     /**
@@ -83,8 +98,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         LoginUser loginUser = SecurityUtil.getLoginUser();
         // 从redis中删除用户token以及用户login信息
         iTokenService.delLoginUser(loginUser.getUserUid());
-        // 用户主动退出登录时，直接删除redis离线用户
+        // 用户主动退出登录时，直接删除redis离线用户，token也同时失效
         iOnlineUserService.userOffline(loginUser.getUserUid());
+        iSaveUserService.removeUserToken(loginUser.getUserUid());
     }
 
     @Override
@@ -120,8 +136,37 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Override
     public void kick(String userUid) {
-        iTokenService.delLoginUser(userUid);
         iOnlineUserService.userOffline(userUid);
+        // 重新登录
+        iSaveUserService.removeUserToken(userUid);
+    }
+
+    @Override
+    public boolean updateLoginInfo(Long userId, String ipAddress, String ipSource, String os, String browser) {
+        User user = new User();
+        user.setId(userId);
+        user.setIpAddress(ipAddress);
+        user.setIpSource(ipSource);
+        user.setOs(os);
+        user.setBrowser(browser);
+        return updateById(user);
+    }
+
+    public void getLoginUserInfo(LoginUser loginUser) {
+        //修改登录信息
+        String ipAddress = IpUtil.getIpAddr(request);
+        String ipSource = IpUtil.getCityInfo(ipAddress);
+        UserAgent userAgent = IpUtil.getUserAgent(request);
+        // 解析客户端操作系统类型
+        String os = userAgent.getOs().toString();
+        // 解析浏览器
+        String browser = userAgent.getBrowser().toString();
+        User user = loginUser.getUser();
+        user.setIpAddress(ipAddress);
+        user.setIpSource(ipSource);
+        user.setOs(os);
+        user.setBrowser(browser);
+        threadPoolTaskExecutor.execute(() -> updateLoginInfo(loginUser.getUser().getId(), ipAddress, ipSource, os, browser));
     }
 }
 
