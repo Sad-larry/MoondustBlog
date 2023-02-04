@@ -19,7 +19,7 @@ import java.util.Date;
 @NoArgsConstructor
 @TableName("t_job_log")
 public class JobLog {
-    //任务日志ID    
+    //任务日志ID
     @TableId
     private Long id;
     //任务ID

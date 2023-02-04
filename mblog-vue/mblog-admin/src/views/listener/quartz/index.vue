@@ -230,7 +230,7 @@
         </el-dialog>
     </div>
 </template>
-  
+
 <script>
 import { listJob, getJob, delJob, addJob, updateJob, run, change } from "@/api/system/job";
 import { getDataByDictType } from "@/api/system/dictData";
@@ -414,8 +414,9 @@ export default {
             });
         },
         /** 查看日志功能 */
-        handleJobLog() {
-            this.$modal.msgError("查看日志功能正在开放中...");
+        handleJobLog(row) {
+            const jobId = row.jobId || null;
+            this.$router.push({ path: '/jobLog', query: { jobId: jobId } })
         },
         /** 更多操作触发*/
         handleCommand(command, row) {
@@ -475,4 +476,3 @@ export default {
     }
 };
 </script>
-  

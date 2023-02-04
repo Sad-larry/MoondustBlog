@@ -1,6 +1,7 @@
 package work.moonzs.service;
 
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 网站服务接口
@@ -9,6 +10,13 @@ import java.util.HashMap;
  * @since 2022-11-27 11:03:30
  */
 public interface HomeService {
+    /**
+     * 获取redis缓存监控信息
+     *
+     * @return {@link HashMap}<{@link String}, {@link Object}>
+     */
+    Map<String, Object> getCacheInfo();
+
     /**
      * 获取网站信息
      *

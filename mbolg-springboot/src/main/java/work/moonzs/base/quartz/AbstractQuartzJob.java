@@ -32,10 +32,10 @@ public abstract class AbstractQuartzJob implements org.quartz.Job {
         Job job = new Job();
         BeanUtils.copyProperties(context.getMergedJobDataMap().get(ScheduleConstants.TASK_PROPERTIES), job);
         try {
-            // TODO 写入数据库日志功能
-            // before(context, job);
+            // 写入数据库日志功能
+            before(context, job);
             doExecute(context, job);
-            // after(context, job, null);
+            after(context, job, null);
         } catch (Exception e) {
             log.error("任务执行异常  - ：", e);
             try {
@@ -44,8 +44,8 @@ public abstract class AbstractQuartzJob implements org.quartz.Job {
             } catch (SchedulerException ex) {
                 log.error("删除任务异常  - ：", ex);
             }
-            // TODO 任务执行异常时，将任务状态设置为暂停，并且暂停该任务
-            // after(context, job, e);
+            // 任务执行异常时，将任务状态设置为暂停，并且暂停该任务
+            after(context, job, e);
         }
     }
 

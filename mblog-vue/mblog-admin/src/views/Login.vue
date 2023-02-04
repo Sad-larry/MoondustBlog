@@ -89,7 +89,7 @@ export default {
       },
       loading: false,
       // 验证码开关
-      captchaEnabled: true,
+      captchaEnabled: false,
       // 注册开关
       register: false,
       redirect: undefined
@@ -110,7 +110,7 @@ export default {
   methods: {
     getCode() { 
       getCodeImg().then(res => {
-        this.captchaEnabled = res.data.captchaEnabled === undefined ? true : res.data.captchaEnabled;
+        this.captchaEnabled = res.data.captchaEnabled === undefined ? false : res.data.captchaEnabled;
         if (this.captchaEnabled) {
           this.codeUrl = "data:image/png;base64," + res.data.img;
           this.loginForm.uuid = res.data.uuid;

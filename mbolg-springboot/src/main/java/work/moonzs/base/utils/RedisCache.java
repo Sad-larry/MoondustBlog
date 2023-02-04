@@ -20,6 +20,15 @@ public final class RedisCache {
     // =============================common============================
 
     /**
+     * 获取 redisTemplate 实例
+     *
+     * @return {@link RedisTemplate}<{@link String}, {@link Object}>
+     */
+    public RedisTemplate<String, Object> getRedisTemplate() {
+        return this.redisTemplate;
+    }
+
+    /**
      * 指定缓存失效时间
      *
      * @param key  键
