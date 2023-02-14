@@ -19,7 +19,7 @@ import work.moonzs.service.SystemConfigService;
 @RestController("SystemConfigC")
 @RequestMapping("/system/config")
 @RequiredArgsConstructor
-public class ConfigController {
+public class SystemConfigController {
     private final SystemConfigService systemConfigService;
 
     /**

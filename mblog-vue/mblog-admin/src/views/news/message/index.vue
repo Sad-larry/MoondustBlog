@@ -23,7 +23,8 @@
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <el-table border v-loading="loading" :data="messageList" style="width: 100%" @selection-change="handleSelectionChange">
+    <el-table border v-loading="loading" :data="messageList" style="width: 100%"
+      @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="40" align="center">
       </el-table-column>
       <el-table-column prop="avatar" align="center" width="80" label="头像">
@@ -46,9 +47,10 @@
           <span>{{ parseTime(scope.row.createTime) }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center"  class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
-          <el-button v-if="!scope.row.status" size="mini" type="text"  icon="el-icon-edit" @click="handlePass(scope.row)">
+          <el-button v-if="!scope.row.status" size="mini" type="text" icon="el-icon-edit"
+            @click="handlePass(scope.row)">
             通过</el-button>
           <el-button size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)">删除</el-button>
         </template>
@@ -119,6 +121,10 @@ export default {
     },
     /** 审核通过操作 */
     handlePass(row) {
+      if (this.ids != null) {
+        // 全部审核通过时，只提交被选取并且是待审核的数据
+        this.ids = this.messageList.filter(x => x.status === 0 && this.ids.includes(x.id)).map(x => x.id)
+      }
       const id = row.id || this.ids
       passMessage(id).then(res => {
         this.$modal.msgSuccess("审核通过");

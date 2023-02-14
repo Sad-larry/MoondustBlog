@@ -8,6 +8,8 @@ import work.moonzs.base.annotation.SystemLog;
 import work.moonzs.domain.ResponseResult;
 import work.moonzs.service.HomeService;
 
+import javax.servlet.http.HttpServletRequest;
+
 /**
  * @author Moondust月尘
  */
@@ -31,5 +33,17 @@ public class HomeController {
     @GetMapping("/blogInfo")
     public ResponseResult getBlogInfo() {
         return ResponseResult.success(homeService.getBlogInfo());
+    }
+
+    /**
+     * 访问网站
+     *
+     * @param request 请求
+     * @return {@link ResponseResult}
+     */
+    @SystemLog(businessName = "访问网站")
+    @GetMapping("/welcome")
+    public ResponseResult visitTheWebsite(HttpServletRequest request) {
+        return ResponseResult.success(homeService.visitTheWebsite(request));
     }
 }

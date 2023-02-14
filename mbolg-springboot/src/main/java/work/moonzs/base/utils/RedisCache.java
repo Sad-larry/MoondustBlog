@@ -446,6 +446,21 @@ public final class RedisCache {
         }
     }
 
+    /**
+     * 判断是否为set中的成员
+     *
+     * @param key   键
+     * @param value 值
+     * @return {@link Boolean}
+     */
+    public Boolean sIsMember(String key, Object value) {
+        try {
+            return redisTemplate.opsForSet().isMember(key, value);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
     // ===============================list=================================
 

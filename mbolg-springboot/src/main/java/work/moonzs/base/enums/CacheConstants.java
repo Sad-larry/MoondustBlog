@@ -42,4 +42,16 @@ public class CacheConstants {
      * 保存的登录用户键
      */
     public static final String SAVE_LOGIN_USER_KEY = "mblog:loginUser";
+    /**
+     * 博客访问量
+     */
+    public static final String BLOG_VISITS_COUNT = "mblog:visitorCount";
+    /**
+     * 唯一标志的访客
+     */
+    public static final String UNIQUE_VISITOR = "mblog:uniqueVisitor";
+    /**
+     * 访客地理位置
+     */
+    public static final String VISITOR_AREA = "mblog:visitorArea";
 }

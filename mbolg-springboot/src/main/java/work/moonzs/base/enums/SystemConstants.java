@@ -34,4 +34,16 @@ public class SystemConstants {
      * 文件大小限制
      */
     public static final long FILE_SIZE = 5 * 1024 * 1024L;
+    /**
+     * 未知的
+     */
+    public static final String UNKNOWN = "未知";
+    /**
+     * 省
+     */
+    public static final String PROVINCE = "省";
+    /**
+     * 市
+     */
+    public static final String CITY = "市";
 }

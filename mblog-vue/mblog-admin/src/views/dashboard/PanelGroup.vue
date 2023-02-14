@@ -1,15 +1,41 @@
 <template>
   <el-row :gutter="40" class="panel-group">
     <el-col :xs="12" :sm="12" :lg="6" class="card-panel-col">
+      <div class="card-panel" @click="handleSetLineChartData('shoppings')">
+        <div class="card-panel-icon-wrapper icon-list">
+          <svg-icon icon-class="list" class-name="card-panel-icon" />
+        </div>
+        <div class="card-panel-description">
+          <div class="card-panel-text">
+            总访问量
+          </div>
+          <count-to :start-val="0" :end-val="lineCount.totalVisitis" :duration="3200" class="card-panel-num" />
+        </div>
+      </div>
+    </el-col>
+    <el-col :xs="12" :sm="12" :lg="6" class="card-panel-col">
       <div class="card-panel" @click="handleSetLineChartData('newVisitis')">
         <div class="card-panel-icon-wrapper icon-people">
           <svg-icon icon-class="peoples" class-name="card-panel-icon" />
         </div>
         <div class="card-panel-description">
           <div class="card-panel-text">
-            访客
+            用户数
           </div>
-          <count-to :start-val="0" :end-val="102400" :duration="2600" class="card-panel-num" />
+          <count-to :start-val="0" :end-val="lineCount.totalUsers" :duration="2000" class="card-panel-num" />
+        </div>
+      </div>
+    </el-col>
+    <el-col :xs="12" :sm="12" :lg="6" class="card-panel-col">
+      <div class="card-panel" @click="handleSetLineChartData('purchases')">
+        <div class="card-panel-icon-wrapper icon-documentation">
+          <svg-icon icon-class="documentation" class-name="card-panel-icon" />
+        </div>
+        <div class="card-panel-description">
+          <div class="card-panel-text">
+            文章数
+          </div>
+          <count-to :start-val="0" :end-val="lineCount.totalArticles" :duration="2800" class="card-panel-num" />
         </div>
       </div>
     </el-col>
@@ -20,35 +46,9 @@
         </div>
         <div class="card-panel-description">
           <div class="card-panel-text">
-            消息
+            留言数
           </div>
-          <count-to :start-val="0" :end-val="81212" :duration="3000" class="card-panel-num" />
-        </div>
-      </div>
-    </el-col>
-    <el-col :xs="12" :sm="12" :lg="6" class="card-panel-col">
-      <div class="card-panel" @click="handleSetLineChartData('purchases')">
-        <div class="card-panel-icon-wrapper icon-money">
-          <svg-icon icon-class="money" class-name="card-panel-icon" />
-        </div>
-        <div class="card-panel-description">
-          <div class="card-panel-text">
-            金额
-          </div>
-          <count-to :start-val="0" :end-val="9280" :duration="3200" class="card-panel-num" />
-        </div>
-      </div>
-    </el-col>
-    <el-col :xs="12" :sm="12" :lg="6" class="card-panel-col">
-      <div class="card-panel" @click="handleSetLineChartData('shoppings')">
-        <div class="card-panel-icon-wrapper icon-shopping">
-          <svg-icon icon-class="shopping" class-name="card-panel-icon" />
-        </div>
-        <div class="card-panel-description">
-          <div class="card-panel-text">
-            订单
-          </div>
-          <count-to :start-val="0" :end-val="13600" :duration="3600" class="card-panel-num" />
+          <count-to :start-val="0" :end-val="lineCount.totalMessages" :duration="2400" class="card-panel-num" />
         </div>
       </div>
     </el-col>
@@ -57,14 +57,30 @@
 
 <script>
 import CountTo from 'vue-count-to'
+import { lineCount } from '@/api/system/home'
 
 export default {
   components: {
     CountTo
   },
+  data() {
+    return {
+      lineCount: {
+        totalVisitis: 0,
+        totalUsers: 0,
+        totalArticles: 0,
+        totalMessages: 0
+      }
+    }
+  },
+  created() {
+    lineCount().then(res => {
+      this.lineCount = res.data
+    })
+  },
   methods: {
     handleSetLineChartData(type) {
-      this.$emit('handleSetLineChartData', type)
+      // this.$emit('handleSetLineChartData', type)
     }
   }
 }
@@ -102,11 +118,11 @@ export default {
         background: #36a3f7;
       }
 
-      .icon-money {
+      .icon-documentation {
         background: #f4516c;
       }
 
-      .icon-shopping {
+      .icon-list {
         background: #34bfa3
       }
     }
@@ -119,11 +135,11 @@ export default {
       color: #36a3f7;
     }
 
-    .icon-money {
+    .icon-documentation {
       color: #f4516c;
     }
 
-    .icon-shopping {
+    .icon-list {
       color: #34bfa3
     }
 

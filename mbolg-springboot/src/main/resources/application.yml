@@ -63,9 +63,9 @@ spring:
       max-request-size: 100MB
       enabled: true
       # linux
-      # location: /usr/local/tomcat/temp
+      location: /usr/local/tomcat/temp
       # windows
-      location: D:\Java-workspace\temp
+      # location: D:\Java-workspace\temp
   redis:
     host: localhost
     port: 6379

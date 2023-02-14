@@ -170,12 +170,11 @@ export function weiboLogin(code) {
         }
     })
 }
-//添加访客信息
-export function report() {
+// 添加访客信息
+export function visitTheWebsite() {
     return request({
-        url: '/web/home/report',
+        url: '/web/home/welcome',
         method: 'get',
-        params: {}
     })
 }
 //相册接口

@@ -32,4 +32,20 @@ public class WebConstants {
      * 网站浏览量
      */
     public static final String VIEWS_COUNT = "viewsCount";
+    /**
+     * 总访问量
+     */
+    public static final String TOTAL_VISITS = "totalVisitis";
+    /**
+     * 总用户量
+     */
+    public static final String TOTAL_USERS = "totalUsers";
+    /**
+     * 总文章数
+     */
+    public static final String TOTAL_ARTICLES = "totalArticles";
+    /**
+     * 总留言数
+     */
+    public static final String TOTAL_MESSAGES = "totalMessages";
 }

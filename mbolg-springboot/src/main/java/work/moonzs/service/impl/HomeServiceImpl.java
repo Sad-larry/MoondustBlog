@@ -1,16 +1,24 @@
 package work.moonzs.service.impl;
 
+import cn.hutool.core.util.ObjUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.crypto.digest.DigestUtil;
+import cn.hutool.http.useragent.Browser;
+import cn.hutool.http.useragent.UserAgent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.connection.RedisServerCommands;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import work.moonzs.base.enums.CacheConstants;
+import work.moonzs.base.enums.SystemConstants;
 import work.moonzs.base.enums.WebConstants;
+import work.moonzs.base.utils.IpUtil;
 import work.moonzs.base.utils.RedisCache;
 import work.moonzs.domain.vo.sys.SysWebConfigVO;
 import work.moonzs.service.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
 /**
@@ -30,6 +38,10 @@ public class HomeServiceImpl implements HomeService {
     private WebPageService webPageService;
     @Autowired
     private RedisCache redisCache;
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private MessageService messageService;
 
     @Override
     public Map<String, Object> getCacheInfo() {
@@ -78,8 +90,59 @@ public class HomeServiceImpl implements HomeService {
         result.put(WebConstants.ARTICLE_COUNT, articleService.articleCount());
         result.put(WebConstants.CATEGORY_COUNT, categoryService.count());
         result.put(WebConstants.TAG_COUNT, tagService.count());
-        // TODO 网站浏览量应该用redis缓存存储数据
-        result.put(WebConstants.VIEWS_COUNT, 0);
+        // 网站浏览量应该用redis缓存存储数据
+        result.put(WebConstants.VIEWS_COUNT, getTotalVisits());
         return result;
+    }
+
+    @Override
+    public Map<String, Long> lineCount() {
+        Map<String, Long> result = new HashMap<>();
+        result.put(WebConstants.TOTAL_VISITS, getTotalVisits());
+        result.put(WebConstants.TOTAL_USERS, userService.count());
+        result.put(WebConstants.TOTAL_ARTICLES, articleService.count());
+        result.put(WebConstants.TOTAL_MESSAGES, messageService.count());
+        return result;
+    }
+
+    @Override
+    public String visitTheWebsite(HttpServletRequest request) {
+        // 获取ip
+        String ipAddress = IpUtil.getIpAddr(request);
+        // 获取访问设备
+        UserAgent userAgent = IpUtil.getUserAgent(request);
+        Browser browser = userAgent.getBrowser();
+        // 生成唯一用户标识
+        String uuid = ipAddress + browser.getName() + userAgent.getOs().getName();
+        String md5 = DigestUtil.md5Hex(uuid.getBytes());
+        // 判断是否访问
+        if (!redisCache.sIsMember(CacheConstants.UNIQUE_VISITOR, md5)) {
+            // 统计游客地域分布
+            String ipSource = IpUtil.getCityInfo(ipAddress);
+            if (StrUtil.isNotBlank(ipSource)) {
+                ipSource = ipSource.substring(0, 2)
+                        .replaceAll(SystemConstants.PROVINCE, "")
+                        .replaceAll(SystemConstants.CITY, "");
+                redisCache.hincr(CacheConstants.VISITOR_AREA, ipSource, 1);
+            } else {
+                redisCache.hincr(CacheConstants.VISITOR_AREA, SystemConstants.UNKNOWN, 1L);
+            }
+            // 访问量+1
+            redisCache.incr(CacheConstants.BLOG_VISITS_COUNT, 1L);
+            // 保存唯一标识
+            redisCache.sSet(CacheConstants.UNIQUE_VISITOR, md5);
+        }
+        return null;
+    }
+
+
+    /**
+     * 获取网站访问量
+     *
+     * @return {@link Long}
+     */
+    private Long getTotalVisits() {
+        Object count = redisCache.get(CacheConstants.BLOG_VISITS_COUNT);
+        return ObjUtil.isNull(count) ? 0L : Long.parseLong(count.toString());
     }
 }

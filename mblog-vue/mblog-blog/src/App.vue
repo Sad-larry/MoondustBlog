@@ -43,7 +43,7 @@ import EmailModel from "@/components/model/EmailModel";
 import Player from "@/components/zw-player/player.vue";
 //import ChatRoom from "@/components/ChatRoom";
 import FeedBack from "@/components/FeedBack";
-import { getWebSiteInfo, report } from '@/api'
+import { getWebSiteInfo, visitTheWebsite } from '@/api'
 export default {
   components: {
     TopNavBar,
@@ -61,7 +61,7 @@ export default {
   mounted() {
     this.getBlogInfo()
     // 上传访客信息
-    // report();
+    visitTheWebsite();
   },
   computed: {
     blogInfo() {

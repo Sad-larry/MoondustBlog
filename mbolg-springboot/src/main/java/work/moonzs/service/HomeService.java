@@ -1,5 +1,6 @@
 package work.moonzs.service;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,4 +24,20 @@ public interface HomeService {
      * @return {@link HashMap}<{@link String}, {@link Object}>
      */
     HashMap<String, Object> getBlogInfo();
+
+    /**
+     * 后台首页图表数据
+     * 总访问量、用户数、文章数、留言数
+     *
+     * @return {@link Map}<{@link String}, {@link Long}>
+     */
+    Map<String, Long> lineCount();
+
+    /**
+     * 访问网站，增加浏览量
+     *
+     * @param request 请求
+     * @return {@link String}
+     */
+    String visitTheWebsite(HttpServletRequest request);
 }
