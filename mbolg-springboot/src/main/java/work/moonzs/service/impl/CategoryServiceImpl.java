@@ -129,9 +129,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
 
     @Override
     public CategoryVO getBlogCategoryById(Long articleId) {
-        Category category = getOne(new LambdaQueryWrapper<Category>()
-                .select(Category::getId, Category::getName)
-                .eq(Category::getId, articleId));
+        Category category = getOne(new LambdaQueryWrapper<Category>().select(Category::getId, Category::getName).eq(Category::getId, articleId));
         return BeanCopyUtil.copyBean(category, CategoryVO.class);
     }
 }

@@ -168,7 +168,7 @@ public class ArticleController {
     @SystemLog(businessName = "上传Md文章")
     @AdminOperationLogger(value = "上传本地文章")
     @PostMapping(path = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseResult uploadArticle(@RequestParam(value = "file", required = false) MultipartFile file) {
+    public ResponseResult uploadArticle(MultipartFile file) {
         return ResponseResult.success(articleService.uploadArticle(file));
     }
 }

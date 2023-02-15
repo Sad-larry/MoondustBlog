@@ -6,6 +6,8 @@ import work.moonzs.domain.entity.UserLog;
 import work.moonzs.domain.vo.PageVO;
 import work.moonzs.domain.vo.sys.SysUserLogVO;
 
+import java.util.Map;
+
 /**
  * 日志表(UserLog)表服务接口
  *
@@ -30,5 +32,12 @@ public interface UserLogService extends IService<UserLog> {
      */
     @Transactional
     boolean deleteUserLog(Long[] userLogIds);
+
+    /**
+     * 列表每周访问量
+     *
+     * @return {@link Map}<{@link String}, {@link Object}>
+     */
+    Map<String, Object> getWeeklyVisits();
 }
 

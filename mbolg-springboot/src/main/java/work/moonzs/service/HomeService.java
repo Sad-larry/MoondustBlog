@@ -40,4 +40,11 @@ public interface HomeService {
      * @return {@link String}
      */
     String visitTheWebsite(HttpServletRequest request);
+
+    /**
+     * 初始化图表
+     *
+     * @return {@link Map}<{@link String}, {@link Object}>
+     */
+    Map<String, Object> initChart();
 }

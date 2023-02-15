@@ -1,5 +1,8 @@
 package work.moonzs.service.impl;
 
+import cn.hutool.core.date.DateField;
+import cn.hutool.core.date.DateTime;
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.ObjUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -24,6 +27,7 @@ import work.moonzs.domain.entity.Article;
 import work.moonzs.domain.entity.Tag;
 import work.moonzs.domain.vo.ArticleVo;
 import work.moonzs.domain.vo.PageVO;
+import work.moonzs.domain.vo.sys.SysArticleReadVO;
 import work.moonzs.domain.vo.sys.SysUploadArticleVO;
 import work.moonzs.domain.vo.web.ArticleBaseVO;
 import work.moonzs.domain.vo.web.ArticleInfoVO;
@@ -42,6 +46,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -282,7 +287,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
 
     @Override
     public SysUploadArticleVO uploadArticle(MultipartFile file) {
-        if (file.isEmpty()) {
+        if (file == null || file.isEmpty()) {
             BusinessAssert.fail("文件不能为空");
         } else {
             String filename = file.getOriginalFilename();
@@ -296,7 +301,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
                 // 将文件保存为临时文件，能进来的必为md文件
                 String fileName = PathUtil.getUUIDMdName();
                 // 临时目录
-                String localFilePath = StrUtil.appendIfMissing(fileTempPath, "/");
+                String localFilePath = StrUtil.appendIfMissing(PathUtil.getResPhysicalPath(), File.separator);
                 File saveFile = new File(localFilePath, fileName);
                 if (!saveFile.getParentFile().exists()) {
                     saveFile.getParentFile().mkdirs();
@@ -305,7 +310,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
                     // 保存至文件
                     file.transferTo(saveFile);
                     // 解析文件
-                    SysUploadArticleVO parseResult = parseFile(saveFile);
+                    SysUploadArticleVO parseResult = parseFile(saveFile, file.getName().replaceAll(".md", ""));
                     // 解析完毕后删除文件
                     if (saveFile.exists()) {
                         // TODO 如果文件删除失败，则加入日志中
@@ -321,13 +326,64 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         return null;
     }
 
+    @Override
+    public Map<String, Object> getBlogContributeCount() {
+        // 获取截止今天结束日期
+        DateTime endDateTime = DateUtil.date();
+        String endTime = endDateTime.toDateStr();
+        // 获取当前时间前一年的日期
+        DateTime startDateTime = DateUtil.offset(DateUtil.date(), DateField.YEAR, -1);
+        String startTime = startDateTime.toDateStr();
+        // 获取博客贡献度数据
+        List<Map<String, Object>> blogContributeMap = baseMapper.listBlogContributeCount(startTime, endTime);
+        // 获取时间区间集合，时间单位为 天
+        List<DateTime> dateList = DateUtil.rangeToList(startDateTime, endDateTime, DateField.DAY_OF_YEAR);
+        Map<String, Object> dateMap = new HashMap<>();
+        // 读取博客贡献的数据，格式为 具体日期-数量
+        for (Map<String, Object> itemMap : blogContributeMap) {
+            dateMap.put(itemMap.get("date").toString(), itemMap.get("count"));
+        }
+        List<List<Object>> resultList = new ArrayList<>();
+        for (DateTime item : dateList) {
+            int count = 0;
+            // 若有数据，则加入数据
+            if (dateMap.get(item.toDateStr()) != null) {
+                count = Integer.parseInt(dateMap.get(item.toDateStr()).toString());
+            }
+            List<Object> objectList = new ArrayList<>();
+            objectList.add(item.toDateStr());
+            objectList.add(count);
+            resultList.add(objectList);
+        }
+        Map<String, Object> resultMap = new HashMap<>();
+        List<String> contributeDateList = new ArrayList<>();
+        contributeDateList.add(startTime);
+        contributeDateList.add(endTime);
+        resultMap.put("contributeDate", contributeDateList);
+        resultMap.put("contributeCount", resultList);
+        return resultMap;
+    }
+
+    @Override
+    public List<SysArticleReadVO> getBlogReadVolume() {
+        LambdaQueryWrapper<Article> queryWrapper = new LambdaQueryWrapper<>();
+        // 获取文章Id方便链接到前端详细页面，文章标题以及阅读量
+        queryWrapper.select(Article::getId, Article::getTitle, Article::getQuantity);
+        queryWrapper.eq(Article::getIsPublish, StatusConstants.NORMAL);
+        queryWrapper.eq(Article::getIsSecret, StatusConstants.DISABLE);
+        queryWrapper.orderByDesc(Article::getQuantity);
+        queryWrapper.last(StatusConstants.LIMIT_TEN);
+        List<Article> list = list(queryWrapper);
+        return BeanCopyUtil.copyBeanList(list, SysArticleReadVO.class);
+    }
+
     /**
      * 解析文件
      *
      * @param file 文件
      * @return {@link SysUploadArticleVO}
      */
-    private SysUploadArticleVO parseFile(File file) {
+    private SysUploadArticleVO parseFile(File file, String originalFileName) {
         // 读取文件
         try (FileReader fileReader = new FileReader(file)) {
             char[] chs = new char[1024];
@@ -383,6 +439,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
             SysUploadArticleVO articleVO = new SysUploadArticleVO();
             articleVO.setImageCacheKey(uploadKey);
             articleVO.setImageUrl(imageLink.keySet());
+            articleVO.setTitle(originalFileName);
             articleVO.setContentMd(sb.toString());
             return articleVO;
         } catch (FileNotFoundException e) {

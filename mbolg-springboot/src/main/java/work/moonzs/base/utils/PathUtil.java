@@ -1,5 +1,8 @@
 package work.moonzs.base.utils;
 
+import org.springframework.boot.system.ApplicationHome;
+
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
@@ -42,5 +45,20 @@ public class PathUtil {
      */
     public static String getUUIDMdName() {
         return simpleRandomUUID() + ".md";
+    }
+
+    /**
+     * 得到jar包资源物理路径
+     *
+     * @return {@link String}
+     */
+    public static String getResPhysicalPath() {
+        ApplicationHome home = new ApplicationHome(PathUtil.class);
+        File jarFile = home.getSource();
+        //项目部署的目录
+        if (jarFile != null) {
+            return jarFile.getParentFile().getPath();
+        }
+        return null;
     }
 }

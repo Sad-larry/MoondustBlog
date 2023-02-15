@@ -1,5 +1,5 @@
 <template>
-  <div :class="className" :style="{height:height,width:width}" />
+  <div :class="className" :style="{ height: height, width: width }" />
 </template>
 
 <script>
@@ -21,11 +21,24 @@ export default {
     height: {
       type: String,
       default: '300px'
+    },
+    chartData: {
+      type: Array,
+      required: true,
+      default: []
     }
   },
   data() {
     return {
       chart: null
+    }
+  },
+  watch: {
+    chartData: {
+      deep: true,
+      handler(val) {
+        this.setOptions(val)
+      }
     }
   },
   mounted() {
@@ -43,36 +56,60 @@ export default {
   methods: {
     initChart() {
       this.chart = echarts.init(this.$el, 'macarons')
-
+      this.setOptions(this.chartData)
+    },
+    setOptions(baseData = []) {
+      const optionData = this.generateDate(baseData)
       this.chart.setOption({
+        title: {
+          text: '文章分类统计',
+          left: 'center'
+        },
         tooltip: {
           trigger: 'item',
-          formatter: '{a} <br/>{b} : {c} ({d}%)'
+          formatter: '{a} <br/>{b} : {c} 篇 ({d}%)'
         },
         legend: {
+          type: 'scroll',
           left: 'center',
-          bottom: '10',
-          data: ['Industries', 'Technology', 'Forex', 'Gold', 'Forecasts']
+          bottom: '20',
+          data: optionData.legendData,
+          selected: optionData.selectedLegent
         },
         series: [
           {
-            name: 'WEEKLY WRITE ARTICLES',
+            name: '文章数',
             type: 'pie',
             roseType: 'radius',
-            radius: [15, 95],
-            center: ['50%', '38%'],
-            data: [
-              { value: 320, name: 'Industries' },
-              { value: 240, name: 'Technology' },
-              { value: 149, name: 'Forex' },
-              { value: 100, name: 'Gold' },
-              { value: 59, name: 'Forecasts' }
-            ],
+            radius: [15, 65],
+            center: ['50%', '45%'],
+            data: optionData.seriesData,
             animationEasing: 'cubicInOut',
             animationDuration: 2600
           }
         ]
       })
+    },
+    generateDate(data) {
+      const legendData = [];
+      const selectedLegent = {};
+      const seriesData = [];
+      data.forEach(item => {
+        legendData.push(item.name);
+        if (item.articleNum === 0) {
+          // 若文章数为0，则默认置灰
+          selectedLegent[item.name] = false
+        }
+        seriesData.push({
+          name: item.name,
+          value: item.articleNum
+        });
+      })
+      return {
+        legendData: legendData,
+        selectedLegent: selectedLegent,
+        seriesData: seriesData
+      };
     }
   }
 }

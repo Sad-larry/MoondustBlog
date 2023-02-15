@@ -1,16 +1,29 @@
 <template>
   <div class="upload-file">
+    <!-- 
+    action	必选参数，上传的地址
+    headers	设置上传的请求头部
+    multiple	是否支持多选文件
+    show-file-list	是否显示已上传文件列表
+    on-success	文件上传成功时的钩子
+    on-error	文件上传失败时的钩子
+    on-exceed	文件超出个数限制时的钩子
+    before-upload	上传文件之前的钩子，参数为上传的文件，若返回 false 或者返回 Promise 且被 reject，则停止上传。
+    auto-upload	是否在选取文件后立即进行上传
+    file-list	上传的文件列表
+    limit	最大允许上传个数
+    -->
     <el-upload
       multiple
-      :action="uploadFileUrl"
-      :before-upload="handleBeforeUpload"
-      :file-list="fileList"
-      :limit="limit"
+      :action="actionUrl()"
+      :headers="headers"
+      :show-file-list="false"
+      :on-success="handleUploadSuccess"
       :on-error="handleUploadError"
       :on-exceed="handleExceed"
-      :on-success="handleUploadSuccess"
-      :show-file-list="false"
-      :headers="headers"
+      :before-upload="handleBeforeUpload"
+      :file-list="fileList"
+      :limit="limit + 1"
       class="upload-file-uploader"
       ref="fileUpload"
     >
@@ -19,8 +32,14 @@
       <!-- 上传提示 -->
       <div class="el-upload__tip" slot="tip" v-if="showTip">
         请上传
-        <template v-if="fileSize"> 大小不超过 <b style="color: #f56c6c">{{ fileSize }}MB</b> </template>
-        <template v-if="fileType"> 格式为 <b style="color: #f56c6c">{{ fileType.join("/") }}</b> </template>
+        <template v-if="fileSize">
+          大小不超过
+          <b style="color: #f56c6c">{{ fileSize }}MB</b>
+        </template>
+        <template v-if="fileType">
+          格式为
+          <b style="color: #f56c6c">{{ fileType.join("/") }}</b>
+        </template>
         的文件
       </div>
     </el-upload>
@@ -29,7 +48,7 @@
     <transition-group class="upload-file-list el-upload-list el-upload-list--text" name="el-fade-in-linear" tag="ul">
       <li :key="file.url" class="el-upload-list__item ele-upload-list__item-content" v-for="(file, index) in fileList">
         <el-link :href="`${baseUrl}${file.url}`" :underline="false" target="_blank">
-          <span class="el-icon-document"> {{ getFileName(file.name) }} </span>
+          <span class="el-icon-document">{{ getFileName(file.name) }}</span>
         </el-link>
         <div class="ele-upload-list__item-content-action">
           <el-link :underline="false" @click="handleDelete(index)" type="danger">删除</el-link>
@@ -65,15 +84,18 @@ export default {
     // 是否显示提示
     isShowTip: {
       type: Boolean,
-      default: true
-    }
+      default: true,
+    },
   },
   data() {
     return {
       number: 0,
       uploadList: [],
       baseUrl: process.env.VUE_APP_BASE_API,
-      uploadFileUrl: process.env.VUE_APP_BASE_API + "/common/upload", // 上传的图片服务器地址
+      listUrl: [
+        "/system/article/upload",
+        "/system/qiniu/upload/article/images",
+      ],
       headers: {
         Authorization: "Bearer " + getToken(),
       },
@@ -86,9 +108,9 @@ export default {
         if (val) {
           let temp = 1;
           // 首先将值转为数组
-          const list = Array.isArray(val) ? val : this.value.split(',');
+          const list = Array.isArray(val) ? val : this.value.split(",");
           // 然后将数组转为对象数组
-          this.fileList = list.map(item => {
+          this.fileList = list.map((item) => {
             if (typeof item === "string") {
               item = { name: item, url: item };
             }
@@ -101,8 +123,8 @@ export default {
         }
       },
       deep: true,
-      immediate: true
-    }
+      immediate: true,
+    },
   },
   computed: {
     // 是否显示提示
@@ -111,6 +133,14 @@ export default {
     },
   },
   methods: {
+    // 根据文件扩展选择文件上传的地址
+    actionUrl() {
+      if (this.fileType.includes("md")) {
+        return this.baseUrl + this.listUrl[0];
+      } else if (this.fileType.includes("jpg", "png", "gif", "jpeg")) {
+        return this.baseUrl + this.listUrl[1];
+      }
+    },
     // 上传前校检格式和大小
     handleBeforeUpload(file) {
       // 校检文件类型
@@ -125,7 +155,9 @@ export default {
           return false;
         });
         if (!isTypeOk) {
-          this.$modal.msgError(`文件格式不正确, 请上传${this.fileType.join("/")}格式文件!`);
+          this.$modal.msgError(
+            `文件格式不正确, 请上传${this.fileType.join("/")}格式文件!`
+          );
           return false;
         }
       }
@@ -147,12 +179,16 @@ export default {
     },
     // 上传失败
     handleUploadError(err) {
-      this.$modal.msgError("上传图片失败，请重试");
-      this.$modal.closeLoading()
+      console.log(err);
+      this.$modal.msgError("上传文件失败，请重试");
+      this.$modal.closeLoading();
     },
     // 上传成功回调
     handleUploadSuccess(res, file) {
       if (res.code === 200) {
+        console.log(res);
+        // 当有数据返回时，向父组件传递数据
+        this.$emit("return-data", res);
         this.uploadList.push({ name: res.fileName, url: res.fileName });
         this.uploadedSuccessfully();
       } else {
@@ -193,9 +229,9 @@ export default {
       for (let i in list) {
         strs += list[i].url + separator;
       }
-      return strs != '' ? strs.substr(0, strs.length - 1) : '';
-    }
-  }
+      return strs != "" ? strs.substr(0, strs.length - 1) : "";
+    },
+  },
 };
 </script>
 
@@ -203,18 +239,21 @@ export default {
 .upload-file-uploader {
   margin-bottom: 5px;
 }
+
 .upload-file-list .el-upload-list__item {
   border: 1px solid #e4e7ed;
   line-height: 2;
   margin-bottom: 10px;
   position: relative;
 }
+
 .upload-file-list .ele-upload-list__item-content {
   display: flex;
   justify-content: space-between;
   align-items: center;
   color: inherit;
 }
+
 .ele-upload-list__item-content-action .el-link {
   margin-right: 10px;
 }

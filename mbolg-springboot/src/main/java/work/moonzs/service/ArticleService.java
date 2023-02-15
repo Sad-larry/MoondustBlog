@@ -7,12 +7,14 @@ import work.moonzs.domain.dto.ArticleDTO;
 import work.moonzs.domain.entity.Article;
 import work.moonzs.domain.vo.ArticleVo;
 import work.moonzs.domain.vo.PageVO;
+import work.moonzs.domain.vo.sys.SysArticleReadVO;
 import work.moonzs.domain.vo.sys.SysUploadArticleVO;
 import work.moonzs.domain.vo.web.ArticleBaseVO;
 import work.moonzs.domain.vo.web.ArticleInfoVO;
 import work.moonzs.domain.vo.web.ArticlePreviewVO;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 博客文章表(Article)表服务接口
@@ -161,5 +163,19 @@ public interface ArticleService extends IService<Article> {
      * @return {@link SysUploadArticleVO}
      */
     SysUploadArticleVO uploadArticle(MultipartFile file);
+
+    /**
+     * 获取每日博客贡献数
+     *
+     * @return {@link Map}<{@link String}, {@link Object}>
+     */
+    Map<String, Object> getBlogContributeCount();
+
+    /**
+     * 获取博客阅读排行榜
+     *
+     * @return {@link List}<{@link SysArticleReadVO}>
+     */
+    List<SysArticleReadVO> getBlogReadVolume();
 }
 

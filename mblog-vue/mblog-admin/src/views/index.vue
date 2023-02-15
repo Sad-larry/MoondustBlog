@@ -1,77 +1,73 @@
 <template>
   <div class="dashboard-editor-container">
 
-    <panel-group @handleSetLineChartData="handleSetLineChartData" />
+    <panel-group :chart-data="initChartData.groupCountData" @handleSetLineChartData="handleSetLineChartData" />
 
     <el-row style="background:#fff;padding:16px 16px 0;margin-bottom:32px;">
-      <line-chart :chart-data="lineChartData" />
+      <calendar-chart :chart-data="initChartData.blogContributeCount" />
     </el-row>
 
     <el-row :gutter="32">
       <el-col :xs="24" :sm="24" :lg="8">
         <div class="chart-wrapper">
-          <raddar-chart />
+          <article-top-list :chart-data="initChartData.blogReadVolume" />
         </div>
       </el-col>
       <el-col :xs="24" :sm="24" :lg="8">
         <div class="chart-wrapper">
-          <pie-chart />
+          <pie-chart :chart-data="initChartData.blogCategory" />
         </div>
       </el-col>
       <el-col :xs="24" :sm="24" :lg="8">
         <div class="chart-wrapper">
-          <bar-chart />
+          <span style="float: left;">文章标签词云</span>
+          <tag-cloud :data="initChartData.blogTag" />
         </div>
       </el-col>
     </el-row>
 
-    
   </div>
 </template>
 
 <script>
+import { initChartData } from "@/api/system/home"
 import PanelGroup from './dashboard/PanelGroup'
-import LineChart from './dashboard/LineChart'
-import RaddarChart from './dashboard/RaddarChart'
 import PieChart from './dashboard/PieChart'
 import BarChart from './dashboard/BarChart'
-
-const lineChartData = {
-  newVisitis: {
-    expectedData: [100, 120, 161, 134, 105, 160, 165],
-    actualData: [120, 82, 91, 154, 162, 140, 145]
-  },
-  messages: {
-    expectedData: [200, 192, 120, 144, 160, 130, 140],
-    actualData: [180, 160, 151, 106, 145, 150, 130]
-  },
-  purchases: {
-    expectedData: [80, 100, 121, 104, 105, 90, 100],
-    actualData: [120, 90, 100, 138, 142, 130, 130]
-  },
-  shoppings: {
-    expectedData: [130, 140, 141, 142, 145, 150, 160],
-    actualData: [120, 82, 91, 154, 162, 140, 130]
-  }
-}
+import CalendarChart from './dashboard/CalendarChart'
+import ArticleTopList from './dashboard/ArticleTopList'
+import TagCloud from "@/components/TagCloud/index";
 
 export default {
   name: 'Index',
   components: {
     PanelGroup,
-    LineChart,
-    RaddarChart,
     PieChart,
-    BarChart
+    BarChart,
+    CalendarChart,
+    ArticleTopList,
+    TagCloud
   },
   data() {
     return {
-      lineChartData: lineChartData.newVisitis
+      initChartData: {
+        groupCountData: {},
+        blogContributeCount: {},
+        blogReadVolume: [],
+        blogCategory: [],
+        blogTag: [],
+        weeklyVisits: {}
+      }
     }
+  },
+  mounted() {
+    initChartData().then(res => {
+      this.initChartData = res.data
+    })
   },
   methods: {
     handleSetLineChartData(type) {
-      this.lineChartData = lineChartData[type]
+
     }
   }
 }

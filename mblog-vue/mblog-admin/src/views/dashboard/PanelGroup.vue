@@ -9,7 +9,7 @@
           <div class="card-panel-text">
             总访问量
           </div>
-          <count-to :start-val="0" :end-val="lineCount.totalVisitis" :duration="3200" class="card-panel-num" />
+          <count-to :start-val="0" :end-val="panelGroupData.totalVisitis" :duration="3200" class="card-panel-num" />
         </div>
       </div>
     </el-col>
@@ -22,7 +22,7 @@
           <div class="card-panel-text">
             用户数
           </div>
-          <count-to :start-val="0" :end-val="lineCount.totalUsers" :duration="2000" class="card-panel-num" />
+          <count-to :start-val="0" :end-val="panelGroupData.totalUsers" :duration="2000" class="card-panel-num" />
         </div>
       </div>
     </el-col>
@@ -35,7 +35,7 @@
           <div class="card-panel-text">
             文章数
           </div>
-          <count-to :start-val="0" :end-val="lineCount.totalArticles" :duration="2800" class="card-panel-num" />
+          <count-to :start-val="0" :end-val="panelGroupData.totalArticles" :duration="2800" class="card-panel-num" />
         </div>
       </div>
     </el-col>
@@ -48,7 +48,7 @@
           <div class="card-panel-text">
             留言数
           </div>
-          <count-to :start-val="0" :end-val="lineCount.totalMessages" :duration="2400" class="card-panel-num" />
+          <count-to :start-val="0" :end-val="panelGroupData.totalMessages" :duration="2400" class="card-panel-num" />
         </div>
       </div>
     </el-col>
@@ -57,15 +57,20 @@
 
 <script>
 import CountTo from 'vue-count-to'
-import { lineCount } from '@/api/system/home'
 
 export default {
+  props: {
+    chartData: {
+      type: Object,
+      required: true
+    }
+  },
   components: {
     CountTo
   },
   data() {
     return {
-      lineCount: {
+      panelGroupData: {
         totalVisitis: 0,
         totalUsers: 0,
         totalArticles: 0,
@@ -73,10 +78,13 @@ export default {
       }
     }
   },
-  created() {
-    lineCount().then(res => {
-      this.lineCount = res.data
-    })
+  watch: {
+    chartData: {
+      deep: true,
+      handler(val) {
+        this.panelGroupData = val
+      }
+    }
   },
   methods: {
     handleSetLineChartData(type) {

@@ -47,6 +47,10 @@ public class StatusConstants {
      * SQL语句限制 限制 5 条数据
      */
     public static final String LIMIT_FIVE = "LIMIT 5";
+    /**
+     * SQL语句限制 限制 10 条数据
+     */
+    public static final String LIMIT_TEN = "LIMIT 10";
 
     /**
      * 上一篇文章

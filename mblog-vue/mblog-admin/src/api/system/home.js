@@ -7,3 +7,11 @@ export function lineCount() {
     method: 'get'
   })
 }
+
+// 初始化图表数据
+export function initChartData() {
+  return request({
+    url: '/system/home/init',
+    method: 'get'
+  })
+}

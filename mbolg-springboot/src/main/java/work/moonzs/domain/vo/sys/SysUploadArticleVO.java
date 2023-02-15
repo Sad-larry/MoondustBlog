@@ -22,6 +22,10 @@ public class SysUploadArticleVO {
      */
     private String imageCacheKey;
     /**
+     * md文件名
+     */
+    private String title;
+    /**
      * md文件内容
      */
     private String contentMd;

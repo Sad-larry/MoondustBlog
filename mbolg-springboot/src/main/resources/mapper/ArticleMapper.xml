@@ -71,4 +71,11 @@
         ORDER BY is_stick DESC, id DESC
         LIMIT 6;
     </select>
+    <select id="listBlogContributeCount" resultType="java.util.Map">
+        SELECT DISTINCT DATE_FORMAT(create_time, '%Y-%m-%d') date, COUNT(id) count
+        FROM t_article
+        WHERE create_time BETWEEN #{startTime} AND #{endTime}
+        GROUP BY DATE_FORMAT(create_time, '%Y-%m-%d');
+    </select>
+
 </mapper>

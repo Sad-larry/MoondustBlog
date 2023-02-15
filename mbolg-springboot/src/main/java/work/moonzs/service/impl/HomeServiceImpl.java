@@ -42,6 +42,8 @@ public class HomeServiceImpl implements HomeService {
     private UserService userService;
     @Autowired
     private MessageService messageService;
+    @Autowired
+    private UserLogService userLogService;
 
     @Override
     public Map<String, Object> getCacheInfo() {
@@ -120,9 +122,13 @@ public class HomeServiceImpl implements HomeService {
             // 统计游客地域分布
             String ipSource = IpUtil.getCityInfo(ipAddress);
             if (StrUtil.isNotBlank(ipSource)) {
-                ipSource = ipSource.substring(0, 2)
-                        .replaceAll(SystemConstants.PROVINCE, "")
-                        .replaceAll(SystemConstants.CITY, "");
+                if (ipSource.startsWith("中国")) {
+                    ipSource = ipSource.split("\\|")[1]
+                            .replaceAll(SystemConstants.PROVINCE, "")
+                            .replaceAll(SystemConstants.CITY, "");
+                } else {
+                    ipSource = ipSource.split("\\|")[0];
+                }
                 redisCache.hincr(CacheConstants.VISITOR_AREA, ipSource, 1);
             } else {
                 redisCache.hincr(CacheConstants.VISITOR_AREA, SystemConstants.UNKNOWN, 1L);
@@ -133,6 +139,24 @@ public class HomeServiceImpl implements HomeService {
             redisCache.sSet(CacheConstants.UNIQUE_VISITOR, md5);
         }
         return null;
+    }
+
+    @Override
+    public Map<String, Object> initChart() {
+        Map<String, Object> result = new HashMap<>();
+        // 访问量、用户数、文章数、留言数数据
+        result.put("groupCountData", lineCount());
+        // 博客贡献图
+        result.put("blogContributeCount", articleService.getBlogContributeCount());
+        // 文章阅读量排行，排名从高到底
+        result.put("blogReadVolume", articleService.getBlogReadVolume());
+        // 文章分类统计，获取分类在文章中使用的数量
+        result.put("blogCategory", categoryService.listWebCategory());
+        // 文章标签统计
+        result.put("blogTag", tagService.listWebTag());
+        // 一周访问量
+        result.put("weeklyVisits", userLogService.getWeeklyVisits());
+        return result;
     }
 
 

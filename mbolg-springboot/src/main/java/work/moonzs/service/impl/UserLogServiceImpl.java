@@ -1,5 +1,7 @@
 package work.moonzs.service.impl;
 
+import cn.hutool.core.date.DateTime;
+import cn.hutool.core.date.DateUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -12,6 +14,7 @@ import work.moonzs.mapper.UserLogMapper;
 import work.moonzs.service.UserLogService;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 日志表(UserLog)表服务实现类
@@ -34,6 +37,12 @@ public class UserLogServiceImpl extends ServiceImpl<UserLogMapper, UserLog> impl
     @Override
     public boolean deleteUserLog(Long[] userLogIds) {
         return removeBatchByIds(List.of(userLogIds));
+    }
+
+    @Override
+    public Map<String, Object> getWeeklyVisits() {
+        DateTime dateTime = DateUtil.offsetWeek(DateUtil.date(), -1);
+        return baseMapper.listWeeklyVisits(dateTime.toDateStr());
     }
 }
 

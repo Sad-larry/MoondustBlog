@@ -2,6 +2,7 @@ package work.moonzs.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.apache.ibatis.annotations.MapKey;
 import org.apache.ibatis.annotations.Param;
 import work.moonzs.domain.entity.Article;
 import work.moonzs.domain.vo.ArticleVo;
@@ -9,6 +10,7 @@ import work.moonzs.domain.vo.web.ArticleBaseVO;
 import work.moonzs.domain.vo.web.ArticlePreviewVO;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 博客文章表(Article)表数据库访问层
@@ -52,5 +54,15 @@ public interface ArticleMapper extends BaseMapper<Article> {
      * @return {@link List}<{@link ArticleBaseVO}>
      */
     List<ArticleBaseVO> listRecommendArticle(Long articleId);
+
+    /**
+     * 博客列表提供数
+     *
+     * @param startTime 开始时间
+     * @param endTime   结束时间
+     * @return {@link List}<{@link Map}<{@link String}, {@link Object}>>
+     */
+    @MapKey("date")
+    List<Map<String, Object>> listBlogContributeCount(@Param("startTime") String startTime, @Param("endTime") String endTime);
 }
 
