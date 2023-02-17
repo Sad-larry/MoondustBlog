@@ -13,9 +13,9 @@ export function uploadImage(data) {
 }
 
 // 上传文章时，额外上传图片，另加key
-export function uploadArticleImages(data) {
+export function uploadArticleImage(data) {
   return request({
-    url: '/system/qiniu/upload/article/images',
+    url: '/system/qiniu/upload/article/image',
     method: 'post',
     data: data,
     headers: {

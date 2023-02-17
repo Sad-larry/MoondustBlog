@@ -8,6 +8,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import work.moonzs.base.annotation.SystemLog;
+import work.moonzs.base.enums.AppHttpCodeEnum;
 import work.moonzs.base.enums.CacheConstants;
 import work.moonzs.base.qiniu.config.QiniuManager;
 import work.moonzs.base.qiniu.service.QiniuService;
@@ -16,8 +17,7 @@ import work.moonzs.base.utils.PathUtil;
 import work.moonzs.base.utils.RedisCache;
 import work.moonzs.domain.ResponseResult;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -55,31 +55,31 @@ public class QiniuController {
     /**
      * 上传文章为渲染的图片
      *
-     * @param files 文件
-     * @param key   关键
+     * @param file 文件
+     * @param key  关键
      * @return {@link ResponseResult}
      */
-    @PostMapping(path = "/upload/article/images", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseResult uploadArticleImages(@RequestParam("files") List<MultipartFile> files, @RequestParam("key") String key) {
-        if (files == null || files.size() == 0) {
-            return ResponseResult.fail(500, "没有文件");
+    @PostMapping(path = "/upload/article/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseResult uploadArticleImage(MultipartFile file, @RequestParam("key") String key) {
+        if (file == null) {
+            return ResponseResult.fail(500, "文件不能为空");
         }
-        ArrayList<String> dowloadUrl = new ArrayList<>();
-        for (MultipartFile file : files) {
-            // 判断文件类型
-            if (!IFileUtil.determiningFile(file)) {
-                continue;
-            }
-            String filename = file.getOriginalFilename();
-            boolean hasKey = redisCache.hHasKey(CacheConstants.NEED_UPLOAD_IMAGE + key, filename);
-            if (hasKey) {
-                String filePath = (String) redisCache.hget(CacheConstants.NEED_UPLOAD_IMAGE + key, filename);
-                qiniuService.uploadFile(BUCKET, filePath, file);
-                redisCache.hdel(CacheConstants.NEED_UPLOAD_IMAGE + key, filename);
-                dowloadUrl.add(qiniuService.publicDownload(DOMAIN, filePath));
-            }
+        // 判断文件类型
+        if (!IFileUtil.determiningFile(file)) {
+            return ResponseResult.fail(500, "文件类型错误");
         }
-        return ResponseResult.success(dowloadUrl);
+        String filename = file.getOriginalFilename();
+        boolean hasKey = redisCache.hHasKey(CacheConstants.NEED_UPLOAD_IMAGE + key, filename);
+        if (hasKey) {
+            String filePath = (String) redisCache.hget(CacheConstants.NEED_UPLOAD_IMAGE + key, filename);
+            qiniuService.uploadFile(BUCKET, filePath, file);
+            redisCache.hdel(CacheConstants.NEED_UPLOAD_IMAGE + key, filename);
+            Map<String, String> result = new HashMap<>();
+            result.put("filename", filename);
+            result.put("fileLink", qiniuService.publicDownload(DOMAIN, filePath));
+            return ResponseResult.success(result);
+        }
+        return ResponseResult.fail(AppHttpCodeEnum.FILE_UPLOAD_FAIL);
     }
 
     /**

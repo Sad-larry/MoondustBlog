@@ -4,6 +4,7 @@
     action	必选参数，上传的地址
     headers	设置上传的请求头部
     multiple	是否支持多选文件
+    data	上传时附带的额外参数
     show-file-list	是否显示已上传文件列表
     on-success	文件上传成功时的钩子
     on-error	文件上传失败时的钩子
@@ -17,13 +18,13 @@
       multiple
       :action="actionUrl()"
       :headers="headers"
+      :data="params"
       :show-file-list="false"
       :on-success="handleUploadSuccess"
       :on-error="handleUploadError"
       :on-exceed="handleExceed"
       :before-upload="handleBeforeUpload"
-      :file-list="fileList"
-      :limit="limit + 1"
+      :limit="limit"
       class="upload-file-uploader"
       ref="fileUpload"
     >
@@ -43,18 +44,6 @@
         的文件
       </div>
     </el-upload>
-
-    <!-- 文件列表 -->
-    <transition-group class="upload-file-list el-upload-list el-upload-list--text" name="el-fade-in-linear" tag="ul">
-      <li :key="file.url" class="el-upload-list__item ele-upload-list__item-content" v-for="(file, index) in fileList">
-        <el-link :href="`${baseUrl}${file.url}`" :underline="false" target="_blank">
-          <span class="el-icon-document">{{ getFileName(file.name) }}</span>
-        </el-link>
-        <div class="ele-upload-list__item-content-action">
-          <el-link :underline="false" @click="handleDelete(index)" type="danger">删除</el-link>
-        </div>
-      </li>
-    </transition-group>
   </div>
 </template>
 
@@ -64,8 +53,6 @@ import { getToken } from "@/utils/auth";
 export default {
   name: "FileUpload",
   props: {
-    // 值
-    value: [String, Object, Array],
     // 数量限制
     limit: {
       type: Number,
@@ -86,45 +73,21 @@ export default {
       type: Boolean,
       default: true,
     },
+    // 上传时附带的额外参数
+    params: {
+      type: Object,
+      default: () => {},
+    },
   },
   data() {
     return {
       number: 0,
       uploadList: [],
       baseUrl: process.env.VUE_APP_BASE_API,
-      listUrl: [
-        "/system/article/upload",
-        "/system/qiniu/upload/article/images",
-      ],
       headers: {
         Authorization: "Bearer " + getToken(),
       },
-      fileList: [],
     };
-  },
-  watch: {
-    value: {
-      handler(val) {
-        if (val) {
-          let temp = 1;
-          // 首先将值转为数组
-          const list = Array.isArray(val) ? val : this.value.split(",");
-          // 然后将数组转为对象数组
-          this.fileList = list.map((item) => {
-            if (typeof item === "string") {
-              item = { name: item, url: item };
-            }
-            item.uid = item.uid || new Date().getTime() + temp++;
-            return item;
-          });
-        } else {
-          this.fileList = [];
-          return [];
-        }
-      },
-      deep: true,
-      immediate: true,
-    },
   },
   computed: {
     // 是否显示提示
@@ -133,12 +96,17 @@ export default {
     },
   },
   methods: {
-    // 根据文件扩展选择文件上传的地址
+    // 根据文件扩展选择文件上传的地址，重要！
     actionUrl() {
       if (this.fileType.includes("md")) {
-        return this.baseUrl + this.listUrl[0];
+        return this.baseUrl + "/system/article/upload";
       } else if (this.fileType.includes("jpg", "png", "gif", "jpeg")) {
-        return this.baseUrl + this.listUrl[1];
+        // 没有额外的参数则选择普通的上传
+        if (!this.params) {
+          return this.baseUrl + "/system/qiniu/upload/image";
+        } else {
+          return this.baseUrl + "/system/qiniu/upload/article/image";
+        }
       }
     },
     // 上传前校检格式和大小
@@ -179,17 +147,16 @@ export default {
     },
     // 上传失败
     handleUploadError(err) {
-      console.log(err);
       this.$modal.msgError("上传文件失败，请重试");
       this.$modal.closeLoading();
     },
     // 上传成功回调
     handleUploadSuccess(res, file) {
       if (res.code === 200) {
-        console.log(res);
+        console.log("上传成功回调res", res);
         // 当有数据返回时，向父组件传递数据
         this.$emit("return-data", res);
-        this.uploadList.push({ name: res.fileName, url: res.fileName });
+        this.uploadList.push({ name: file.name, size: file.size });
         this.uploadedSuccessfully();
       } else {
         this.number--;
@@ -199,37 +166,13 @@ export default {
         this.uploadedSuccessfully();
       }
     },
-    // 删除文件
-    handleDelete(index) {
-      this.fileList.splice(index, 1);
-      this.$emit("input", this.listToString(this.fileList));
-    },
     // 上传结束处理
     uploadedSuccessfully() {
       if (this.number > 0 && this.uploadList.length === this.number) {
-        this.fileList = this.fileList.concat(this.uploadList);
         this.uploadList = [];
         this.number = 0;
-        this.$emit("input", this.listToString(this.fileList));
         this.$modal.closeLoading();
       }
-    },
-    // 获取文件名称
-    getFileName(name) {
-      if (name.lastIndexOf("/") > -1) {
-        return name.slice(name.lastIndexOf("/") + 1);
-      } else {
-        return "";
-      }
-    },
-    // 对象转成指定字符串分隔
-    listToString(list, separator) {
-      let strs = "";
-      separator = separator || ",";
-      for (let i in list) {
-        strs += list[i].url + separator;
-      }
-      return strs != "" ? strs.substr(0, strs.length - 1) : "";
     },
   },
 };

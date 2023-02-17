@@ -289,39 +289,37 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     public SysUploadArticleVO uploadArticle(MultipartFile file) {
         if (file == null || file.isEmpty()) {
             BusinessAssert.fail("文件不能为空");
-        } else {
-            String filename = file.getOriginalFilename();
-            int i = filename.lastIndexOf(".");
-            String contentType = filename.substring(i + 1);
-            // 判断文件类型
-            if (!"md".equals(contentType)) {
-                // if (!FILE_TYPE_MD.equals(contentType)) {
-                BusinessAssert.fail("文件类型不匹配，需要 .md 文件格式");
-            } else {
-                // 将文件保存为临时文件，能进来的必为md文件
-                String fileName = PathUtil.getUUIDMdName();
-                // 临时目录
-                String localFilePath = StrUtil.appendIfMissing(PathUtil.getResPhysicalPath(), File.separator);
-                File saveFile = new File(localFilePath, fileName);
-                if (!saveFile.getParentFile().exists()) {
-                    saveFile.getParentFile().mkdirs();
-                }
-                try {
-                    // 保存至文件
-                    file.transferTo(saveFile);
-                    // 解析文件
-                    SysUploadArticleVO parseResult = parseFile(saveFile, file.getName().replaceAll(".md", ""));
-                    // 解析完毕后删除文件
-                    if (saveFile.exists()) {
-                        // TODO 如果文件删除失败，则加入日志中
-                        saveFile.delete();
-                    }
-                    // 返回解析结果
-                    return parseResult;
-                } catch (IOException e) {
-                    BusinessAssert.fail("文件上传失败");
-                }
+        }
+        String filename = file.getOriginalFilename();
+        int i = filename.lastIndexOf(".");
+        String contentType = filename.substring(i + 1);
+        // 判断文件类型
+        if (!"md".equals(contentType)) {
+            // if (!FILE_TYPE_MD.equals(contentType)) {
+            BusinessAssert.fail("文件类型不匹配，需要 .md 文件格式");
+        }
+        // 将文件保存为临时文件，能进来的必为md文件
+        String fileName = PathUtil.getUUIDMdName();
+        // 临时目录
+        String localFilePath = StrUtil.appendIfMissing(PathUtil.getResPhysicalPath(), File.separator);
+        File saveFile = new File(localFilePath, fileName);
+        if (!saveFile.getParentFile().exists()) {
+            saveFile.getParentFile().mkdirs();
+        }
+        try {
+            // 保存至文件
+            file.transferTo(saveFile);
+            // 解析文件
+            SysUploadArticleVO parseResult = parseFile(saveFile, file.getOriginalFilename().replaceAll(".md", ""));
+            // 解析完毕后删除文件
+            if (saveFile.exists()) {
+                // TODO 如果文件删除失败，则加入日志中
+                saveFile.delete();
             }
+            // 返回解析结果
+            return parseResult;
+        } catch (IOException e) {
+            BusinessAssert.fail("文件上传失败");
         }
         return null;
     }
@@ -424,18 +422,18 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
                 String newImageName = PathUtil.generateFilePath(imageName);
                 if (!imageLink.containsKey(imageName)) {
                     // 将新和旧的图片上传到缓存，如果用户上传了图片的话，就能渲染出来
+                    // 2.17:不建议直接替换，只有等用户上传了图片，再去文章中替换图片链接，
+                    //  不然mavon-editor中的文章会直接访问未上传的图片链接，控制台会报很多错
                     imageLink.put(imageName, newImageName);
-                    // 匹配成功后替换为新的图片链接
-                    matcher.appendReplacement(sb, parseImageLink(newImageName));
-                } else {
-                    matcher.appendReplacement(sb, parseImageLink((String) imageLink.get(imageName)));
                 }
+                // 匹配成功后替换为新的图片链接
+                matcher.appendReplacement(sb, parseImageLink(imageName));
             }
             matcher.appendTail(sb);
             // 将imageLink上传到缓存中
             String uploadKey = PathUtil.simpleRandomUUID();
             // 10 分钟内上传图片
-            redisCache.hmset(getGenerateKey(uploadKey), imageLink, 5 * 60L);
+            redisCache.hmset(getGenerateKey(uploadKey), imageLink, 10 * 60L);
             SysUploadArticleVO articleVO = new SysUploadArticleVO();
             articleVO.setImageCacheKey(uploadKey);
             articleVO.setImageUrl(imageLink.keySet());
@@ -499,7 +497,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
      * @return {@link String}
      */
     private String parseImageLink(String imageName) {
-        return String.format("![](https://niu.moonzs.work/%s)", imageName);
+        return String.format("![](%s)", imageName);
     }
 
 

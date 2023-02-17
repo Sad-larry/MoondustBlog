@@ -15,10 +15,10 @@
         <!-- 用于本地上传文章 -->
         <el-button type="primary" size="medium" @click="uploadArticleDialog = true" style="margin-left: 10px">上传文章</el-button>
         <el-button
-          v-if="uploadArticleMd.imageCacheKey"
+          v-if="imagesUploadFiles.length"
           type="warning"
           size="medium"
-          @click="imagesUploadDialog = true"
+          @click="uploadImagesDialog = true"
           style="margin-left: 10px"
         >上传图片</el-button>
       </div>
@@ -117,22 +117,14 @@
             <el-input v-model="article.originalUrl" placeholder="请填写原文链接" />
           </el-form-item>
           <el-form-item label="上传封面">
-            <el-upload
-              class="upload-cover"
-              drag
-              :action="uploadUrl"
-              multiple
-              :headers="headers"
-              :before-upload="beforeUpload"
-              :on-success="uploadCover"
-            >
-              <i class="el-icon-upload" v-if="article.avatar == ''" />
-              <div class="el-upload__text" v-if="article.avatar == ''">
-                将文件拖到此处，或
-                <em>点击上传</em>
-              </div>
-              <img v-else :src="article.avatar" width="360px" height="180px" />
-            </el-upload>
+            <file-upload
+              v-if="!article.avatar"
+              :limit="uploadAvatarOption.limit"
+              :file-size="uploadAvatarOption.fileSize"
+              :file-type="uploadAvatarOption.fileType"
+              @return-data="returnAvatarUpload"
+            />
+            <img v-else :src="article.avatar" height="180px" />
           </el-form-item>
           <el-form-item label="置顶">
             <el-switch
@@ -175,53 +167,47 @@
             :limit="uploadArticleOption.limit"
             :file-size="uploadArticleOption.fileSize"
             :file-type="uploadArticleOption.fileType"
-            @return-data="returnData"
+            @return-data="returnUploadArticle"
           />
         </div>
-        <!-- <div>
-                    <el-upload class="upload-cover" drag :action="uploadArticleUrl" multiple
-                        :http-request="uploadLocalArticle" :on-success="uploadArticleCover">
-                        <div class="el-upload__text" v-if="uploadArticleMd.imageCacheKey == ''">将文件拖到此处，或<em>点击上传</em>
-                        </div>
-                        <div>{{ uploadArticleMd.imageCacheKey }}</div>
-                    </el-upload>
-        </div>-->
         <div slot="footer" class="dialog-footer">
-          <el-button type="primary" @click="uploadLocalArticle">确 定</el-button>
           <el-button @click="uploadArticleDialog = false">取 消</el-button>
         </div>
       </el-dialog>
 
       <!-- 图片上传 -->
-      <el-dialog width="400px" :visible.sync="imagesUploadDialog" append-to-body>
-        <div style="float:left">
-          <el-upload
-            class="upload-demo"
-            ref="upload"
-            :limit="10"
-            accept=".jpg, .png, .gif, .jpeg"
-            :multiple="true"
-            action=" "
-            :on-change="handleFileChange"
-            :on-remove="onRemove"
-            :before-remove="beforeRemove"
-            :on-exceed="fileExceed"
-            :auto-upload="false"
-            :file-list="fileList"
-          >
-            <el-button slot="trigger" size="small" type="primary">选取附件</el-button>
-            <el-button
-              style="margin-left: 10px;"
-              v-if="fileList.length > 0"
-              size="small"
-              type="success"
-              @click="uploadLocalArticleImages"
-            >上传附件</el-button>
-          </el-upload>
+      <el-dialog width="400px" :visible.sync="uploadImagesDialog" append-to-body>
+        <div>
+          <file-upload
+            :params="uploadImagesOption.params"
+            :limit="uploadImagesOption.limit"
+            :file-size="uploadImagesOption.fileSize"
+            :file-type="uploadImagesOption.fileType"
+            @return-data="returnImagesUpload"
+          />
+        </div>
+        <!-- 待上传的图片名称 -->
+        <div>
+          <el-card>
+            <el-row :gutter="20">
+              <el-col>请上传以下图片（成功上传的图片为不可选中）</el-col>
+            </el-row>
+            <!-- 待上传的图片 -->
+            <el-row :gutter="20" v-for="(item,index) in imagesUploadFiles" :key="index">
+              <el-col :offset="1">待上传：{{item}}</el-col>
+            </el-row>
+            <div>
+              <!-- 已经上传成功的图片 -->
+              <el-row :gutter="20" v-for="(item,index) in imagesUploadSuccess" :key="index">
+                <el-col>
+                  <el-checkbox :label="item" disabled checked>已完成：{{item}}</el-checkbox>
+                </el-col>
+              </el-row>
+            </div>
+          </el-card>
         </div>
         <div slot="footer" class="dialog-footer">
-          <el-button @click="imagesUploadDialog = false">取 消</el-button>
-          <el-button type="primary" @click="uploadLocalArticleImages">确 定</el-button>
+          <el-button @click="uploadImagesDialog = false">取 消</el-button>
         </div>
       </el-dialog>
     </el-card>
@@ -230,24 +216,16 @@
 
 <script>
 import { parseTime } from "@/utils/ruoyi";
-import {
-  getArticle,
-  addArticle,
-  updateArticle,
-  uploadArticle,
-} from "@/api/system/article";
+import { getArticle, addArticle, updateArticle } from "@/api/system/article";
 import { listCategory } from "@/api/system/category";
 import { listTag } from "@/api/system/tag";
 import * as imageConversion from "image-conversion";
-import { uploadArticleImages } from "@/api/system/qiniu";
+import { uploadImage } from "@/api/system/qiniu";
 
 export default {
   name: "PublishArticle",
   data() {
     return {
-      uploadUrl: process.env.VUE_APP_BASE_API + "/system/qiniu/upload/image",
-      uploadArticleUrl:
-        process.env.VUE_APP_BASE_API + "/system/qiniu/upload/article/images",
       addOrEdit: false,
       autoSave: true,
       categoryName: "",
@@ -274,23 +252,31 @@ export default {
         categoryName: null,
         tags: [],
       },
-      headers: { token: sessionStorage.getItem("token") },
-      uploadArticleMd: {
-        imageCacheKey: "",
-        imageUrl: [],
-        contentMd: null,
+      // 负责文章封面上传
+      uploadAvatarOption: {
+        limit: 1,
+        fileSize: 5,
+        fileType: ["jpg", "png", "gif", "jpeg"],
       },
-      imagesUploadDialog: false,
-      fileList: [],
-      files: [],
       // 负责 md 本地文件上传
       uploadArticleDialog: false,
       uploadArticleOption: {
         limit: 1,
         fileSize: 10,
         fileType: ["md"],
-        isShowTip: true,
       },
+      // 负责上传本地文章后的图片上传
+      uploadImagesDialog: false,
+      uploadImagesOption: {
+        params: { key: "" },
+        limit: 100,
+        fileSize: 5,
+        fileType: ["jpg", "png", "gif", "jpeg"],
+      },
+      // 待上传的图片名称
+      imagesUploadFiles: [],
+      // 已经上传成功的图片名称
+      imagesUploadSuccess: [],
     };
   },
   created() {
@@ -343,32 +329,13 @@ export default {
       this.listTags();
       this.addOrEdit = true;
     },
-    uploadCover(response) {
-      this.article.avatar = response.data;
-    },
-    uploadArticleCover(response) {
-      this.uploadArticleMd = response.data;
-    },
-    beforeUpload(file) {
-      return new Promise((resolve) => {
-        if (file.size / 1024 < process.env.UPLOAD_SIZE) {
-          resolve(file);
-        }
-        // 压缩到200KB,这里的200就是要压缩的大小,可自定义
-        imageConversion
-          .compressAccurately(file, process.env.UPLOAD_SIZE)
-          .then((res) => {
-            resolve(res);
-          });
-      });
-    },
     uploadImg(pos, file) {
       var formdata = new FormData();
       if (file.size / 1024 < process.env.UPLOAD_SIZE) {
         formdata.append("file", file);
-        // this.axios.post('/api/admin/articles/images', formdata).then(({ data }) => {
-        //     this.$refs.md.$img2Url(pos, data.data)
-        // })
+        uploadImage(formdata).then((res) => {
+          this.$refs.md.$img2Url(pos, res.data);
+        });
       } else {
         // 压缩到200KB,这里的200就是要压缩的大小,可自定义
         imageConversion
@@ -378,9 +345,9 @@ export default {
               "file",
               new window.File([res], file.name, { type: file.type })
             );
-            // this.axios.post('/api/admin/articles/images', formdata).then(({ data }) => {
-            //     this.$refs.md.$img2Url(pos, data.data)
-            // })
+            uploadImage(formdata).then((res) => {
+              this.$refs.md.$img2Url(pos, res.data);
+            });
           });
       }
     },
@@ -430,28 +397,7 @@ export default {
       this.autoSave = false;
     },
     autoSaveArticle() {
-      // 自动上传文章
-      if (
-        this.autoSave &&
-        this.article.title.trim() != "" &&
-        this.article.contentMd.trim() != "" &&
-        this.article.id != null
-      ) {
-        // this.axios.post('/api/admin/articles', this.article).then(({ data }) => {
-        //     if (data.flag) {
-        //         this.$notify.success({
-        //             title: '成功',
-        //             message: '自动保存成功'
-        //         })
-        //     } else {
-        //         this.$notify.error({
-        //             title: '失败',
-        //             message: '自动保存失败'
-        //         })
-        //     }
-        // })
-      }
-      // 保存本地文章记录
+      // 自动保存本地文章记录
       if (this.autoSave && this.article.id == null) {
         sessionStorage.setItem("article", JSON.stringify(this.article));
       }
@@ -475,7 +421,7 @@ export default {
       }
     },
     addCategory(item) {
-      this.article.categoryName = item.categoryName;
+      this.article.categoryName = item.name;
     },
     removeCategory() {
       this.article.categoryName = null;
@@ -507,89 +453,37 @@ export default {
       const index = this.article.tags.indexOf(item);
       this.article.tags.splice(index, 1);
     },
+    /** 上传文章封面返回的响应数据 */
+    returnAvatarUpload(res) {
+      this.article.avatar = res.data;
+    },
     /** 上传md文件时返回的响应数据 */
-    returnData(res) {
-      console.log("---", res);
-      this.uploadArticleMd = res.data;
+    returnUploadArticle(res) {
       this.article.contentMd = res.data.contentMd;
       this.article.title = res.data.title;
-      this.$message.warning("还需要上传以下图片才能正常显示图片");
-      this.$message.warning(res.data.imageUrl);
+      this.uploadImagesOption.params.key = res.data.imageCacheKey;
+      this.imagesUploadFiles = res.data.imageUrl;
+      this.$message.warning("可在10分钟内上传图片，以至能正常显示图片");
+      // 关闭上传文章对话框
       this.uploadArticleDialog = false;
     },
-    uploadLocalArticle(param) {
-      let file = param.file;
-      let formData = new FormData();
-      //-- 将上传的文件放到数据对象中 -->
-      formData.append("file", file);
-      uploadArticle(formData)
-        .then((res) => {
-          this.uploadArticleMd = res.data;
-          this.article.contentMd = res.data.contentMd;
-          this.$message.warning("还需要上传以下图片才能正常显示图片");
-          this.$message.warning(res.data.imageUrl);
-          this.uploadArticleDialog = false;
-        })
-        .catch((error) => {
-          this.uploadArticleDialog = false;
-        });
-    },
-    //上传文件之前
-    beforeUpload(file) {
-      this.fileList.forEach((item) => {
-        if (isEquael(item.fileName, file.name)) {
-          return this.$message.warning("该文件已存在");
-        }
-      });
-    },
-    // 上传发生变化钩子
-    handleFileChange(file, fileList) {
-      this.files = fileList;
-      this.fileList.push(file);
-    },
-    //文件个数超过最大限制时
-    fileExceed(file, fileList) {
-      if (this.fileList.length > 10) {
-        this.$message.warning("附件个数不能超过10个");
+    /** 上传本地图片时返回的响应数据 */
+    returnImagesUpload(res) {
+      // 删除已上传的图片名称
+      let new_set = new Set(this.imagesUploadFiles);
+      new_set.delete(res.data.filename);
+      this.imagesUploadFiles = [...new_set];
+      // 添加成功上传的图片
+      this.imagesUploadSuccess.push(res.data.filename);
+      // 文章中替换掉图片链接
+      this.article.contentMd = this.article.contentMd.replace(
+        new RegExp(res.data.filename, "g"),
+        res.data.fileLink
+      );
+      // 若图片全部上传成功，则自动退出对话框
+      if (!this.imagesUploadFiles.length) {
+        this.uploadImagesDialog = false;
       }
-    },
-    //删除前的钩子
-    beforeRemove(file, fileList) {
-      return this.$confirm(`确定移除 ${file.name}？`);
-    },
-    //删除的钩子
-    onRemove(file, fileList) {
-      if (file.status === "success") {
-        this.fileList.pop(file);
-        this.fileList = [];
-        this.files = fileList;
-        this.$message({
-          type: "success",
-          message: "删除成功!",
-        });
-      }
-    },
-    // 提交上传文件
-    uploadLocalArticleImages() {
-      //判断是否有文件再上传
-      if (this.files.length === 0) {
-        return this.$message.warning("请选取文件后再上传");
-      }
-      //-- 创建新的数据对象 -->
-      let formData = new FormData();
-      //-- 将上传的文件放到数据对象中 -->
-      this.files.forEach((file) => {
-        formData.append("files", file.raw);
-      });
-      formData.append("key", this.uploadArticleMd.imageCacheKey);
-      uploadArticleImages(formData)
-        .then((res) => {
-          this.$message.success("图片上传成功");
-          this.imagesUploadDialog = false;
-        })
-        .catch((error) => {
-          this.imagesUploadDialog = false;
-        });
     },
   },
   computed: {
