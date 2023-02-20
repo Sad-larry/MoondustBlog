@@ -11,7 +11,7 @@
     <!-- 页脚 -->
     <Footer></Footer>
     <!-- 返回顶部 -->
-    <!-- <BackTop></BackTop> -->
+    <BackTop></BackTop>
     <!-- 搜索模态框 -->
     <!-- <searchModel></searchModel> -->
     <!-- 登录模态框 -->

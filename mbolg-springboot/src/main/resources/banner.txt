@@ -7,4 +7,5 @@ ${AnsiColor.BLUE}/_/  /_/\____/\____/_/ /_/\__,_/\__,_/____/\__/  ${AnsiColor.BR
 ${AnsiColor.BLUE}                                                 ${AnsiColor.BRIGHT_YELLOW}              /____/
 
 ${AnsiStyle.ITALIC}${AnsiColor.GREEN} :: 月尘博客系统作者 :: ${AnsiStyle.NORMAL}              吴灵
+${AnsiStyle.ITALIC}${AnsiColor.GREEN} :: 月尘博客网址 :: ${AnsiStyle.NORMAL}              refrainblog.cn
 ${AnsiStyle.ITALIC}${AnsiColor.GREEN} :: Spring Boot :: ${AnsiStyle.NORMAL}               (v2.7.3)

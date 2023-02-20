@@ -39,5 +39,11 @@ public class FeedBackServiceImpl extends ServiceImpl<FeedBackMapper, FeedBack> i
     public boolean deleteFeedBack(Long[] feedBackIds) {
         return removeBatchByIds(List.of(feedBackIds));
     }
+
+    @Override
+    public Long addWebFeedback(FeedBack feedBack) {
+        int insert = baseMapper.insert(feedBack);
+        return insert > 0 ? feedBack.getId() : null;
+    }
 }
 

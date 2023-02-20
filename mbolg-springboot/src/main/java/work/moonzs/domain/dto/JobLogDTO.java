@@ -9,10 +9,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.util.Date;
 
 /**
- * 定时任务调度日志表(JobLog)表实体类
- *
  * @author Moondust月尘
- * @since 2022-10-30 10:17:48
  */
 @Data
 @AllArgsConstructor

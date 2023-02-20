@@ -30,5 +30,13 @@ public interface FeedBackService extends IService<FeedBack> {
      */
     @Transactional
     boolean deleteFeedBack(Long[] feedBackIds);
+
+    /**
+     * 添加反馈
+     *
+     * @param feedBack 反馈
+     */
+    @Transactional
+    Long addWebFeedback(FeedBack feedBack);
 }
 

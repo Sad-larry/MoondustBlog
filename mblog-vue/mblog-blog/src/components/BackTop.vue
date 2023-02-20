@@ -6,8 +6,8 @@
     <div class="setting-container" @click="show">
       <i class="iconfont iconshezhi setting" />
     </div>
-    <div @click="openFeedback" class="setting-container">
-      <img title="反馈" style="width: 22px;height: 22px;margin-top: 3px" src="http://img.shiyit.com/fankui_1.png" />
+    <div @click="openFeedback" class="rightside-icon">
+      <i class="iconfont iconqita" />
     </div>
     <i @click="backTop" class="iconfont rightside-icon iconziyuanldpi" />
   </div>
@@ -19,7 +19,7 @@ export default {
     return {
       isShow: "",
       isOut: "rightside-out",
-      icon: "iconyueliang"
+      icon: "iconyueliang",
     };
   },
   mounted() {
@@ -33,7 +33,7 @@ export default {
     backTop() {
       window.scrollTo({
         behavior: "smooth",
-        top: 0
+        top: 0,
       });
     },
     // 为了计算距离顶部的高度，当高度大于100显示回顶部图标，小于100则隐藏
@@ -58,7 +58,7 @@ export default {
       const flag = this.icon == "iconyueliang";
       this.icon = flag ? "icontaiyang" : "iconyueliang";
       this.$vuetify.theme.dark = !this.$vuetify.theme.dark;
-    }
+    },
   },
   destroyed() {
     window.removeEventListener("scroll", this.scrollToTop);

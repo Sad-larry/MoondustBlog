@@ -13,10 +13,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Null;
 
 /**
- * 前端页面表(WebPage)表实体类
- *
  * @author Moondust月尘
- * @since 2022-10-30 10:17:48
  */
 @Data
 @AllArgsConstructor

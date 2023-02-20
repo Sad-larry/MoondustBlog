@@ -192,6 +192,8 @@ export function getPhotos(params) {
         params: params
     })
 }
+
+// 添加反馈
 export function addFeedback(data) {
     return request({
         url: '/web/feedback/add',

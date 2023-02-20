@@ -1,60 +1,71 @@
 <template>
   <div>
-    <el-dialog :close-on-click-modal="false" :show-close="false" width="40%" title="反馈"
-      :visible.sync="this.$store.state.dialogFormVisible">
-      <el-form :rules="rules" ref="dataForm" label-position="left" :model="form">
-        <el-form-item label="反馈类型" prop="type">
-          <el-radio v-model="form.type" :label="1">给 {{ blogInfo.webSite.author }} 提交需求</el-radio>
-          <el-radio v-model="form.type" :label="2">向 {{ blogInfo.webSite.author }} 反馈缺陷</el-radio>
-        </el-form-item>
-        <el-form-item label="联系邮箱" prop="email" :label-width="formLabelWidth">
-          <el-input placeholder="请填写您的联系邮箱" v-model="form.email" />
-        </el-form-item>
-        <el-form-item label="需求" prop="title" :label-width="formLabelWidth">
-          <el-input placeholder="请用一句话描述你的需求" v-model="form.title" />
-        </el-form-item>
-        <div class="contentInput">
-          <el-form-item label="需求简述" prop="content" :label-width="formLabelWidth">
-            <el-input placeholder="请在此详细描述你的需求" :rows="6" type="textarea" v-model="form.content"
-              :label-width="formLabelWidth" />
-            <a @click="screenshot" v-if="!form.imgUrl" style="color: #03a9f4"><i class="el-icon-camera"></i> 截取页面</a>
-            <img v-else :src="form.imgUrl">
-          </el-form-item>
-        </div>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="closeDialog">取 消</el-button>
-        <el-button type="primary" @click="submit">确 定</el-button>
-      </div>
-    </el-dialog>
+    <v-dialog
+      @keydown.esc="closeDialog"
+      @click:outside="closeDialog"
+      max-width="600px"
+      transition="dialog-top-transition"
+      :value.sync="this.$store.state.dialogFormVisible"
+    >
+      <v-card>
+        <v-card-title>
+          <span class="text-h5">留言反馈</span>
+        </v-card-title>
+        <v-card-text>
+          <v-container>
+            <v-form ref="dataForm" lazy-validation>
+              <v-radio-group v-model="feedback.type" row label="反馈类型" required :rules="rules.type">
+                <v-radio :value="1">
+                  <template v-slot:label>
+                    <div>
+                      给 {{ blogInfo.webSite.author }}提交
+                      <strong class="success--text">需求</strong>
+                    </div>
+                  </template>
+                </v-radio>
+                <v-radio :value="2">
+                  <template v-slot:label>
+                    <div>
+                      给 {{ blogInfo.webSite.author }}提交
+                      <strong class="primary--text">缺陷</strong>
+                    </div>
+                  </template>
+                </v-radio>
+              </v-radio-group>
+              <v-text-field v-model="feedback.email" :rules="rules.email" label="联系邮箱" required></v-text-field>
+              <v-text-field v-model="feedback.title" :rules="rules.title" :label="titleLabel" required></v-text-field>
+              <v-textarea v-model="feedback.content" solo name="内容详细(可不填)" label="内容详细(可不填)" hint="内容详细(可不填)" rows="1"></v-textarea>
+            </v-form>
+          </v-container>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="warning" @click="close">取 消</v-btn>
+          <v-btn color="success" @click="submit">确 定</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
 <script>
-import { addFeedback } from '@/api'
+import { addFeedback } from "@/api";
 export default {
   data() {
     return {
-      formLabelWidth: "80px",
-      form: {
+      feedback: {
         type: 1,
         email: null,
         title: null,
         content: null,
-        imgUrl: null
       },
-      img: process.env.VUE_APP_IMG_API,
       rules: {
-        type: [
-          { required: true, message: '必填字段', trigger: 'blur' },
-        ],
+        type: [(v) => !!v || "必填字段"],
         email: [
-          { required: true, message: '必填字段', trigger: 'blur' },
-          { pattern: /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+((.[a-zA-Z0-9_-]{2,3}){1,2})$/, message: '填写正确的邮箱' }
+          (v) => !!v || "填写邮箱",
+          (v) => /.+@.+\..+/.test(v) || "填写正确的邮箱",
         ],
-        title: [
-          { required: true, message: '必填字段', trigger: 'blur' },
-        ]
+        title: [(v) => !!v || "必填字段"],
       },
     };
   },
@@ -62,31 +73,35 @@ export default {
     blogInfo() {
       return this.$store.state.blogInfo;
     },
+    titleLabel() {
+      return this.feedback.type === 1 ? "需求" : "缺陷反馈";
+    },
   },
   methods: {
-    screenshot() {
-      this.$toast({ type: "error", message: "敬请期待!" });
+    close() {
+      this.feedback.type = 1;
+      this.feedback.email = null;
+      this.feedback.title = null;
+      this.feedback.content = null;
+      this.closeDialog();
     },
     closeDialog() {
-      this.form.type = 1
-      this.form.email = null
-      this.form.title = null
-      this.form.content = null
-      this.$store.commit("setDialogFormVisible")
+      this.$refs["dataForm"].resetValidation();
+      this.$store.commit("setDialogFormVisible");
     },
     submit() {
-      this.$refs['dataForm'].validate((valid) => {
-        if (valid) {
-          addFeedback(this.form).then(res => {
+      if (this.$refs["dataForm"].validate()) {
+        addFeedback(this.feedback)
+          .then((res) => {
             this.$toast({ type: "success", message: "提交反馈成功" });
-            this.closeDialog()
-          }).catch(err => {
-            this.$toast({ type: "error", message: "提交反馈失败" });
+            this.close();
           })
-        } else {
-          this.$toast({ type: "error", message: "存在必填字段未填" });
-        }
-      })
+          .catch((err) => {
+            this.$toast({ type: "error", message: "提交反馈失败" });
+          });
+      } else {
+        this.$toast({ type: "error", message: "存在必填字段未填" });
+      }
     },
   },
 };

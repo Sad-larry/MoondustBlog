@@ -102,6 +102,9 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     private List<Long> getTagList(List<String> tags) {
         List<Long> tagIds = new ArrayList<>();
         tags.forEach(name -> {
+            if (null == name) {
+                return;
+            }
             Tag tag = tagMapper.selectOne(new LambdaQueryWrapper<Tag>().eq(Tag::getName, name));
             if (tag == null) {
                 tag = Tag.builder().name(name).build();
