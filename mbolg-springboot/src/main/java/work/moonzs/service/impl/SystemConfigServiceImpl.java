@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import work.moonzs.base.enums.CacheConstants;
 import work.moonzs.base.enums.StatusConstants;
+import work.moonzs.base.enums.SystemConstants;
 import work.moonzs.base.utils.BeanCopyUtil;
 import work.moonzs.base.utils.RedisCache;
 import work.moonzs.base.web.common.BusinessAssert;
@@ -73,7 +74,7 @@ public class SystemConfigServiceImpl extends ServiceImpl<SystemConfigMapper, Sys
 
     @Override
     public boolean selectCaptchaEnabled() {
-        String captchaEnabled = selectConfigByKey("sys.account.captchaEnabled");
+        String captchaEnabled = selectConfigByKey(SystemConstants.CAPTCHA_ENABLED);
         // 若没找到相对应的value，则采用默认值，默认为 true，需要验证码验证
         if (StrUtil.isBlank(captchaEnabled)) {
             return true;
@@ -85,6 +86,15 @@ public class SystemConfigServiceImpl extends ServiceImpl<SystemConfigMapper, Sys
             return false;
         }
         return enabled;
+    }
+
+    @Override
+    public String selectDefaultRegisterAvatar() {
+        String defaultAvatar = selectConfigByKey(SystemConstants.DEFAULT_REGISTER_AVATAR);
+        if (StrUtil.isBlank(defaultAvatar)) {
+            defaultAvatar = "";
+        }
+        return defaultAvatar;
     }
 
     @Override
@@ -155,6 +165,13 @@ public class SystemConfigServiceImpl extends ServiceImpl<SystemConfigMapper, Sys
         queryWrapper.eq(SystemConfig::getConfigKey, systemConfig.getConfigKey());
         // 查询 configkey 的数量是否大于1
         return count(queryWrapper) > 1;
+    }
+
+    @Override
+    public SystemConfig getConfigByConfigKey(String systemConfigKey) {
+        LambdaQueryWrapper<SystemConfig> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(SystemConfig::getConfigKey, systemConfigKey);
+        return getOne(queryWrapper, false);
     }
 
     /**

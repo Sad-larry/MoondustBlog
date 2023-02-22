@@ -41,6 +41,13 @@ public interface SystemConfigService extends IService<SystemConfig> {
     boolean selectCaptchaEnabled();
 
     /**
+     * 获取默认注册头像
+     *
+     * @return {@link String}
+     */
+    String selectDefaultRegisterAvatar();
+
+    /**
      * 查询系统配置列表
      *
      * @param pageNum    页面num
@@ -92,5 +99,14 @@ public interface SystemConfigService extends IService<SystemConfig> {
      * @return boolean
      */
     boolean checkConfigKeyUnique(SystemConfig systemConfig);
+
+    /**
+     * 通过配置键获取系统配置
+     * 由于配置键是唯一的，所以可以通过配置键获取系统配置
+     *
+     * @param systemConfigKey 系统配置关键
+     * @return {@link SystemConfig}
+     */
+    SystemConfig getConfigByConfigKey(String systemConfigKey);
 }
 

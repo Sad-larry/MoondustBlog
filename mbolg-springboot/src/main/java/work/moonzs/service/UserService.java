@@ -96,5 +96,16 @@ public interface UserService extends IService<User> {
      * @return boolean
      */
     boolean updateLoginInfo(Long userId, String ipAddress, String ipSource, String os, String browser);
+
+    /**
+     * 注册用户
+     * 注册方式有几种：1-账号密码,2-码云,3-Github,4-QQ,5-微信
+     * 除了第一种方式需要使用邮箱登录，需要邮箱验证码验证
+     *
+     * @param user 用户
+     * @return boolean
+     */
+    @Transactional
+    boolean registerUser(User user);
 }
 

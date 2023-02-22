@@ -1,8 +1,8 @@
 package work.moonzs;
 
+import com.ulisesbocchio.jasyptspringboot.annotation.EnableEncryptableProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import work.moonzs.base.annotation.EnableSystemLog;
 
 /**
  * @author Moondust月尘
@@ -10,6 +10,7 @@ import work.moonzs.base.annotation.EnableSystemLog;
  */
 // @EnableSystemLog
 @SpringBootApplication
+@EnableEncryptableProperties
 public class MBlogApplication {
     public static void main(String[] args) {
         SpringApplication.run(MBlogApplication.class, args);

@@ -2,7 +2,7 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3306/m_blog
     username: root
-    password: wzw006
+    password: ENC(1oA92+CN84vf9+tUFqWP1w==)
     driver-class-name: com.mysql.cj.jdbc.Driver
     type: com.alibaba.druid.pool.DruidDataSource
     # 连接池配置
@@ -47,7 +47,7 @@ spring:
         # 不允许清空统计数据
         reset-enable: false
         login-username: root
-        login-password: 123
+        login-password: ENC(XEmv5fEUuLFMIqhLSfRerQ==)
         allow: 127.0.0.1
         deny:
   mvc:
@@ -69,8 +69,33 @@ spring:
   redis:
     host: localhost
     port: 6379
-    password: 1234
+    password: ENC(XEmv5fEUuLFMIqhLSfRerQ==)
     timeout: 10000ms
+  mail:
+    # 发件服务器地址,不同邮件平台地址不同
+    host: smtp.qq.com
+    # 常用邮件端口25、109、110、143、465、995、993、994 如果开启了SSL安全则使用对应的端口号，25为非加密端口号
+    # port: 25
+    # 发送邮件的账号
+    username: 1872780430@qq.com
+    # 发送邮件账号的授权码
+    password: ENC(ttV+WM30LjoVvPuYTshzcWY9raP516Bjj5Ysw9Lnu0s=)
+    # 设置编码
+    default-encoding: utf-8
+    # 设置邮件超时时间防止服务器阻塞
+    properties:
+      timeout: 5000
+      connection-timeout: 5000
+      write-timeout: 5000
+  thymeleaf:
+    # 默认不缓存
+    cache: false
+    #类型
+    mode: HTML
+    #模板存放的位置
+    prefix: classpath:/templates/
+    #模板的后缀
+    suffix: .html
 mybatis-plus:
   #  configuration:
   #    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
@@ -80,7 +105,21 @@ mybatis-plus:
     banner: false
 oss:
   qiniu:
-    access-key: IzTywocCdtTl4ASlp5WRNDf4jPEDIESEy0W-NM53
-    secret-key: cRTwVGhCWgHU4nipm-1sSMmgK9aksMWYxQuPn-OD
+    access-key: ENC(O8OZlU0HY8EpU3VeOPtI9s6N6KY3zmHMGLrNN/7p8sMh5CZlamrMN01IXqMmBMpoDNBh4jmQeEE=)
+    secret-key: ENC(yzwL8h7M3Jn6EhLtsSbw+GrCPYm7smi+wPNKBmRw8JDkR2TeCVHvZ6KWyDBkbY5Zxa4Uhp4exVU=)
     domain: niu.moonzs.work
     bucket: aqi-moon
+jasypt:
+  encryptor:
+    # 在Maven仓库中找到org.jasypt组中的jasypt-1.9.3.jar
+    # 加密：java -cp jasypt-1.9.3.jar org.jasypt.intf.cli.JasyptPBEStringEncryptionCLI input="待加密内容" password=盐值 algorithm=PBEWithMD5AndDES
+    # 解密：java -cp jasypt-1.9.3.jar org.jasypt.intf.cli.JasyptPBEStringDecryptionCLI input="密文" password=盐值 algorithm=PBEWithMD5AndDES
+    # 盐值建议作为程序启动时的命令行参数来带入
+    # password: xxx
+    algorithm: PBEWithMD5AndDES
+    # 默认池大小
+    pool-size: 1
+    # 默认迭代次数
+    key-obtention-iterations: 1000
+    # 生成器类名，建议使用这个，不然密码数据类型不能成功转换
+    iv-generator-classname: org.jasypt.iv.NoIvGenerator

@@ -30,6 +30,7 @@ import work.moonzs.service.SystemConfigService;
 import work.moonzs.service.UserService;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -149,7 +150,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         user.setIpSource(ipSource);
         user.setOs(os);
         user.setBrowser(browser);
+        user.setLastLoginTime(new Date());
         return updateById(user);
+    }
+
+    @Override
+    public boolean registerUser(User user) {
+        
+        return false;
     }
 
     public void getLoginUserInfo(LoginUser loginUser) {

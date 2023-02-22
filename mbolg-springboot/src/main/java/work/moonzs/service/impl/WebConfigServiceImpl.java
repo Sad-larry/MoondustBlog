@@ -2,13 +2,18 @@ package work.moonzs.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjUtil;
+import cn.hutool.core.util.StrUtil;
+import cn.hutool.extra.spring.SpringUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
+import work.moonzs.base.enums.SystemConstants;
 import work.moonzs.base.utils.BeanCopyUtil;
+import work.moonzs.domain.entity.SystemConfig;
 import work.moonzs.domain.entity.WebConfig;
 import work.moonzs.domain.vo.sys.SysWebConfigVO;
 import work.moonzs.mapper.WebConfigMapper;
+import work.moonzs.service.SystemConfigService;
 import work.moonzs.service.WebConfigService;
 
 import java.util.List;
@@ -40,9 +45,29 @@ public class WebConfigServiceImpl extends ServiceImpl<WebConfigMapper, WebConfig
         if (ObjUtil.isNull(byId)) {
             return false;
         }
+        updateTouristAvatar(webConfig, byId);
         // 因为mybatis-plus默认更新策略是NOT_EMPTY，所以当要更新的字段为空值，不更新该字段
         // 但是有些数据我们要更新为空，所以可以改变全局更新策略，或者在实体类上添加策略，再是使用updateWrapper设置为空
         return updateById(webConfig);
+    }
+
+    /**
+     * 更新注册时默认的游客头像
+     *
+     * @param webConfig 网络配置
+     */
+    private void updateTouristAvatar(WebConfig webConfig, WebConfig newWebConfig) {
+        // 当游客头像有更新时，更新
+        if (StrUtil.isNotBlank(webConfig.getTouristAvatar()) && !webConfig.getTouristAvatar().equals(newWebConfig.getTouristAvatar())) {
+            SystemConfigService systemConfigService = SpringUtil.getBean(SystemConfigService.class);
+            // 只有数据库中有值才进行更新
+            SystemConfig config = systemConfigService.getConfigByConfigKey(SystemConstants.DEFAULT_REGISTER_AVATAR);
+            if (config != null) {
+                // 设置更新后的值
+                config.setConfigValue(webConfig.getTouristAvatar());
+                systemConfigService.updateConfig(config);
+            }
+        }
     }
 
     @Override
@@ -77,5 +102,7 @@ public class WebConfigServiceImpl extends ServiceImpl<WebConfigMapper, WebConfig
         }
         return BeanCopyUtil.copyBean(webConfig, SysWebConfigVO.class);
     }
+
+
 }
 

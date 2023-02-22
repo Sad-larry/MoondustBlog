@@ -58,6 +58,17 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-quartz</artifactId>
         </dependency>
+        <!--springBoot EMail邮件-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
+        </dependency>
+        <!--springBoot thymeleaf模板 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+        </dependency>
+
 
         <!--lombk类开发小帮手-->
         <dependency>
@@ -135,6 +146,12 @@
             <groupId>org.lionsoul</groupId>
             <artifactId>ip2region</artifactId>
             <version>2.6.6</version>
+        </dependency>
+        <!-- 配置文件 加密功能 -->
+        <dependency>
+            <groupId>com.github.ulisesbocchio</groupId>
+            <artifactId>jasypt-spring-boot-starter</artifactId>
+            <version>3.0.4</version>
         </dependency>
     </dependencies>
 

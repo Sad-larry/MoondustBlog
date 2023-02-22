@@ -46,4 +46,13 @@ public class SystemConstants {
      * 市
      */
     public static final String CITY = "市";
+
+    /**
+     * 启用验证码
+     */
+    public static final String CAPTCHA_ENABLED = "sys.account.captchaEnabled";
+    /**
+     * 默认注册头像
+     */
+    public static final String DEFAULT_REGISTER_AVATAR = "sys.account.defaultAvatar";
 }
