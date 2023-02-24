@@ -201,6 +201,16 @@ export function addFeedback(data) {
         data
     })
 }
+
+// 用户注册
+export function userRegister(data) {
+    return request({
+        url: '/web/user/register',
+        method: 'post',
+        data
+    })
+}
+
 export function sendEmailCode(email) {
     return request({
         url: '/user/sendEmailCode',
@@ -210,6 +220,7 @@ export function sendEmailCode(email) {
         }
     })
 }
+
 export function bindEmail(data) {
     return request({
         url: '/user/bindEmail',
@@ -224,9 +235,11 @@ export function emailRegister(data) {
         data
     })
 }
+
+// 用户使用邮箱登录
 export function emailLogin(data) {
     return request({
-        url: '/user/emailLogin',
+        url: '/web/user/emailLogin',
         method: 'post',
         data
     })

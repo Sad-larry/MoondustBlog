@@ -54,4 +54,9 @@ public class CacheConstants {
      * 访客地理位置
      */
     public static final String VISITOR_AREA = "mblog:visitorArea";
+    /**
+     * 注册邮件
+     */
+    public static final String REGISTER_MAIL = "mblog:registerMail:";
+
 }

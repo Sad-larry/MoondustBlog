@@ -89,7 +89,7 @@ public final class BusinessAssert {
     }
 
     /**
-     * 断言不满足条件，一旦满足条件，即fail为true，则断言失败，负责抛出异常信息
+     * 断言不满足条件，一旦满足条件，即bool为true，则断言失败，负责抛出异常信息
      *
      * @param message 消息
      */
@@ -99,6 +99,10 @@ public final class BusinessAssert {
 
     public static void isFalse(boolean bool, AppHttpCodeEnum codeEnum) {
         state(!bool, codeEnum);
+    }
+
+    public static void isTure(boolean bool, String message) {
+        state(bool, message);
     }
 
     public static void isTure(boolean bool, AppHttpCodeEnum codeEnum) {

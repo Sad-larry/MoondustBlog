@@ -37,4 +37,15 @@ public class RegisterUserDTO {
     @ApiModelProperty(notes = "登录方式")
     @NotNull(message = "登录方式不能为空")
     private Integer loginType;
+    /**
+     * 邮件uuid
+     * 验证缓存中的邮件验证码的key
+     */
+    @ApiModelProperty(notes = "邮件uuid")
+    private String mailUuid;
+    /**
+     * 邮件注册验证码
+     */
+    @ApiModelProperty(notes = "邮件注册验证码")
+    private String mailCode;
 }

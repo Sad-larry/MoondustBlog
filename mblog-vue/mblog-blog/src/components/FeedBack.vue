@@ -1,51 +1,49 @@
 <template>
-  <div>
-    <v-dialog
-      @keydown.esc="closeDialog"
-      @click:outside="closeDialog"
-      max-width="600px"
-      transition="dialog-top-transition"
-      :value.sync="this.$store.state.dialogFormVisible"
-    >
-      <v-card>
-        <v-card-title>
-          <span class="text-h5">留言反馈</span>
-        </v-card-title>
-        <v-card-text>
-          <v-container>
-            <v-form ref="dataForm" lazy-validation>
-              <v-radio-group v-model="feedback.type" row label="反馈类型" required :rules="rules.type">
-                <v-radio :value="1">
-                  <template v-slot:label>
-                    <div>
-                      给 {{ blogInfo.webSite.author }}提交
-                      <strong class="success--text">需求</strong>
-                    </div>
-                  </template>
-                </v-radio>
-                <v-radio :value="2">
-                  <template v-slot:label>
-                    <div>
-                      给 {{ blogInfo.webSite.author }}提交
-                      <strong class="primary--text">缺陷</strong>
-                    </div>
-                  </template>
-                </v-radio>
-              </v-radio-group>
-              <v-text-field v-model="feedback.email" :rules="rules.email" label="联系邮箱" required></v-text-field>
-              <v-text-field v-model="feedback.title" :rules="rules.title" :label="titleLabel" required></v-text-field>
-              <v-textarea v-model="feedback.content" solo name="内容详细(可不填)" label="内容详细(可不填)" hint="内容详细(可不填)" rows="1"></v-textarea>
-            </v-form>
-          </v-container>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="warning" @click="close">取 消</v-btn>
-          <v-btn color="success" @click="submit">确 定</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-  </div>
+  <v-dialog
+    @keydown.esc="closeDialog"
+    @click:outside="closeDialog"
+    max-width="600px"
+    transition="dialog-top-transition"
+    :value.sync="this.$store.state.dialogFormVisible"
+  >
+    <v-card>
+      <v-card-title>
+        <span class="text-h5">留言反馈</span>
+      </v-card-title>
+      <v-card-text>
+        <v-container>
+          <v-form ref="dataForm" lazy-validation>
+            <v-radio-group v-model="feedback.type" row label="反馈类型" required :rules="rules.type">
+              <v-radio :value="1">
+                <template v-slot:label>
+                  <div>
+                    给 {{ blogInfo.webSite.author }}提交
+                    <strong class="success--text">需求</strong>
+                  </div>
+                </template>
+              </v-radio>
+              <v-radio :value="2">
+                <template v-slot:label>
+                  <div>
+                    给 {{ blogInfo.webSite.author }}提交
+                    <strong class="primary--text">缺陷</strong>
+                  </div>
+                </template>
+              </v-radio>
+            </v-radio-group>
+            <v-text-field v-model="feedback.email" :rules="rules.email" label="联系邮箱" required clearable></v-text-field>
+            <v-text-field v-model="feedback.title" :rules="rules.title" :label="titleLabel" required clearable></v-text-field>
+            <v-textarea v-model="feedback.content" solo name="内容详细(可不填)" label="内容详细(可不填)" hint="内容详细(可不填)" rows="1"></v-textarea>
+          </v-form>
+        </v-container>
+      </v-card-text>
+      <v-card-actions>
+        <v-spacer></v-spacer>
+        <v-btn color="warning" @click="close">取 消</v-btn>
+        <v-btn color="success" @click="submit">确 定</v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
 </template>
 
 <script>

@@ -221,6 +221,10 @@ public enum AppHttpCodeEnum {
      * 文件大小超出限制
      */
     FILE_SIZE_OVERFLOW(45048, "文件大小超出限制"),
+    /**
+     * 该用户已经注册
+     */
+    USER_ALREADY_REGISTER(45049, "该用户已经注册"),
 
 
     /**

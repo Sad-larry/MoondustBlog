@@ -7,6 +7,7 @@ import work.moonzs.base.exception.BaseException;
 import work.moonzs.domain.vo.PageVO;
 
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 封装前端响应实体类
@@ -80,6 +81,14 @@ public class ResponseResult extends HashMap<String, Object> {
 
     public static ResponseResult result(Integer code, String msg, Object data) {
         return new ResponseResult(code, msg, data);
+    }
+
+    public static ResponseResult result(Map<String, ?> result) {
+        ResponseResult responseResult = success();
+        for (String key : result.keySet()) {
+            responseResult.put(key, result.get(key));
+        }
+        return responseResult;
     }
 
     /**

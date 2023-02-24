@@ -1,6 +1,11 @@
 package work.moonzs.service.impl;
 
+import cn.hutool.core.util.RandomUtil;
+import cn.hutool.core.util.StrUtil;
+import cn.hutool.crypto.digest.DigestUtil;
 import cn.hutool.http.useragent.UserAgent;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +16,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import work.moonzs.base.enums.AppHttpCodeEnum;
 import work.moonzs.base.enums.CacheConstants;
+import work.moonzs.base.utils.IMailUtil;
 import work.moonzs.base.utils.IpUtil;
 import work.moonzs.base.utils.RedisCache;
 import work.moonzs.base.utils.SecurityUtil;
@@ -19,7 +25,9 @@ import work.moonzs.base.web.service.IOnlineUserService;
 import work.moonzs.base.web.service.ISaveUserService;
 import work.moonzs.base.web.service.ITokenService;
 import work.moonzs.domain.entity.LoginUser;
+import work.moonzs.domain.entity.MailEntity;
 import work.moonzs.domain.entity.User;
+import work.moonzs.domain.entity.UserAuth;
 import work.moonzs.domain.vo.PageVO;
 import work.moonzs.domain.vo.sys.SysOnlineUserVO;
 import work.moonzs.domain.vo.sys.SysUserBaseVO;
@@ -31,7 +39,9 @@ import work.moonzs.service.UserService;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 用户基础信息表(User)表服务实现类
@@ -59,6 +69,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     private HttpServletRequest request;
     @Autowired
     private ThreadPoolTaskExecutor threadPoolTaskExecutor;
+    @Autowired
+    private IMailUtil iMailUtil;
 
     @Override
     public String adminLogin(String username, String password, String uuid, String code) {
@@ -143,38 +155,145 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
-    public boolean updateLoginInfo(Long userId, String ipAddress, String ipSource, String os, String browser) {
-        User user = new User();
-        user.setId(userId);
-        user.setIpAddress(ipAddress);
-        user.setIpSource(ipSource);
-        user.setOs(os);
-        user.setBrowser(browser);
-        user.setLastLoginTime(new Date());
-        return updateById(user);
-    }
-
-    @Override
     public boolean registerUser(User user) {
-        
+        UserAuth userAuth = UserAuth.builder().email(user.getUsername()).nickname(user.getUsername()).avatar(systemConfigService.selectDefaultRegisterAvatar()).intro("介绍下你自己吧").webSite("http://refrainblog.cn").build();
+        int insert = userAuthMapper.insert(userAuth);
+        if (insert > 0) {
+            // 密码加密
+            user.setPassword(SecurityUtil.encryptPassword(user.getPassword()));
+            user.setUserAuthId(userAuth.getId());
+            // 默认是用户
+            user.setRoleId(2L);
+            // 初始化基本信息
+            initUserInfo(user);
+            user.setLastLoginTime(new Date());
+            return save(user);
+        }
         return false;
     }
 
+    @Override
+    public Map<String, Object> sendRegisterMailCode(String username, String mailUuid, String mailCode) {
+        // 验证邮箱格式是否正确
+        BusinessAssert.isTure(iMailUtil.verifyMail(username), "邮箱格式不正确");
+        HashMap<String, Object> result = new HashMap<>();
+        // mailUuid = 用邮箱生成的随机ID，若重复生成则之前的失效
+        // mailCode = random.IntNumber(6)随机6位数字
+        // 正常情况下 mailUuid 和 mailCode 不为空，否则就是数据不完整
+        String uuid = DigestUtil.md5Hex(username.getBytes());
+        // 当验证邮箱码不和上传的 mailUuid 相同时直接重新发送邮箱
+        if (uuid.equals(mailUuid)) {
+            // 1、两个数据完整时，进行验证码验证
+            if (StrUtil.isNotBlank(mailCode)) {
+                // 从缓存中读取邮件对应的验证码
+                BusinessAssert.isTure(redisCache.hasKey(getMailCodeKey(uuid)), "数据不存在，请重新发送验证码");
+                String verifyCode = (String) redisCache.get(getMailCodeKey(uuid));
+                // 如果验证码错误则返回错误
+                BusinessAssert.isFalse(!mailCode.equals(verifyCode), "验证码错误，请重新输入");
+                // 验证成功则删除缓存数据
+                redisCache.del(getMailCodeKey(uuid));
+                // 若验证通过则返回空结果，表示验证成功
+                return null;
+            }
+            // 2、数据不完整时，要考虑没有给用户发送验证码或者重复发起请求
+            if (redisCache.hasKey(getMailCodeKey(uuid))) {
+                // 发了邮件所以 60s 内不能再次发送邮件，这里给值设置5分钟过期时间，若有值则查询有效时间是否小于240s
+                long expireTime = redisCache.getExpire(getMailCodeKey(uuid));
+                // 若有效时间大于240，则60s内不能重复发送邮件
+                if (expireTime > 240L) {
+                    // 返回 60s 倒计时时间
+                    result.put("countdown", expireTime - 240L);
+                    return result;
+                }
+            }
+        }
+        // 若过了 60s 倒计时或没有发邮件则需要发送邮件
+        String code = RandomUtil.randomNumbers(6);
+        MailEntity mailEntity = MailEntity.builder().sendTo(username).subject("注册验证码").text(iMailUtil.getRegisterMailCode(username, code, 5)).build();
+        iMailUtil.sendHtmlEMail(mailEntity);
+        // 缓存中记录邮件数据
+        redisCache.set(getMailCodeKey(uuid), code, 300L);
+        result.put("countdown", 60L);
+        result.put("mailUuid", uuid);
+        return result;
+    }
+
+    @Override
+    public boolean alreadyRegister(String username) {
+        LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<User>().eq(User::getUsername, username);
+        // 用户名是唯一的，若已经注册则返回 true
+        return getOne(queryWrapper) != null;
+    }
+
+    @Override
+    public User userLogin(User user) {
+        // SpringSecurity登录认证
+        // 认证不通过时，SpringSecurity会主动抛出异常
+        Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
+        LoginUser loginUser = (LoginUser) authenticate.getPrincipal();
+        // // 更新登录用户信息
+        getLoginUserInfo(loginUser);
+        // // 为 loginUser 创建 token 并赋予 redis 缓存的唯一uuid键
+        String token = iTokenService.createToken(loginUser);
+        iSaveUserService.saveUserToken(loginUser.getUserUid());
+        return loginUser.getUser();
+    }
+
+    /**
+     * 得到邮件代码关键key
+     *
+     * @param key 关键
+     * @return {@link String}
+     */
+    private String getMailCodeKey(String key) {
+        return CacheConstants.REGISTER_MAIL + key;
+    }
+
+    /**
+     * 获取登录用户信息
+     *
+     * @param loginUser 登录用户
+     */
     public void getLoginUserInfo(LoginUser loginUser) {
         //修改登录信息
+        initUserInfo(loginUser.getUser());
+        threadPoolTaskExecutor.execute(() -> updateLoginInfo(loginUser.getUser()));
+    }
+
+    /**
+     * 更新登录信息
+     *
+     * @param user 用户
+     * @return boolean
+     */
+    public boolean updateLoginInfo(User user) {
+        LambdaUpdateWrapper<User> updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper.set(User::getIpAddress, user.getIpAddress());
+        updateWrapper.set(User::getIpSource, user.getIpSource());
+        updateWrapper.set(User::getOs, user.getOs());
+        updateWrapper.set(User::getBrowser, user.getBrowser());
+        updateWrapper.set(User::getLastLoginTime, new Date());
+        updateWrapper.eq(User::getId, user.getId());
+        return update(updateWrapper);
+    }
+
+    /**
+     * 初始化用户信息
+     *
+     * @param user 用户
+     */
+    private void initUserInfo(User user) {
         String ipAddress = IpUtil.getIpAddr(request);
         String ipSource = IpUtil.getCityInfo(ipAddress);
         UserAgent userAgent = IpUtil.getUserAgent(request);
         // 解析客户端操作系统类型
-        String os = userAgent.getOs().toString();
+        String os = userAgent.getOs().getName();
         // 解析浏览器
-        String browser = userAgent.getBrowser().toString();
-        User user = loginUser.getUser();
+        String browser = userAgent.getBrowser().getName();
         user.setIpAddress(ipAddress);
         user.setIpSource(ipSource);
         user.setOs(os);
         user.setBrowser(browser);
-        threadPoolTaskExecutor.execute(() -> updateLoginInfo(loginUser.getUser().getId(), ipAddress, ipSource, os, browser));
     }
 }
 

@@ -9,6 +9,8 @@ import work.moonzs.domain.vo.sys.SysOnlineUserVO;
 import work.moonzs.domain.vo.sys.SysUserBaseVO;
 import work.moonzs.domain.vo.sys.SysUserVO;
 
+import java.util.Map;
+
 /**
  * 用户基础信息表(User)表服务接口
  *
@@ -86,18 +88,6 @@ public interface UserService extends IService<User> {
     void kick(String userUid);
 
     /**
-     * 更新登录信息
-     *
-     * @param userId    用户id
-     * @param ipAddress ip地址
-     * @param ipSource  ip源
-     * @param os        操作系统
-     * @param browser   浏览器
-     * @return boolean
-     */
-    boolean updateLoginInfo(Long userId, String ipAddress, String ipSource, String os, String browser);
-
-    /**
      * 注册用户
      * 注册方式有几种：1-账号密码,2-码云,3-Github,4-QQ,5-微信
      * 除了第一种方式需要使用邮箱登录，需要邮箱验证码验证
@@ -107,5 +97,30 @@ public interface UserService extends IService<User> {
      */
     @Transactional
     boolean registerUser(User user);
+
+    /**
+     * 发送注册邮件验证码
+     *
+     * @param username 用户名
+     * @param mailUuid 邮件uuid
+     * @param mailCode 邮件验证码
+     */
+    Map<String, Object> sendRegisterMailCode(String username, String mailUuid, String mailCode);
+
+    /**
+     * 判断用户是否已经注册
+     *
+     * @param username 用户名
+     * @return boolean
+     */
+    boolean alreadyRegister(String username);
+
+    /**
+     * 用户登录
+     *
+     * @param user 用户
+     * @return {@link String}
+     */
+    User userLogin(User user);
 }
 

@@ -1,5 +1,6 @@
 package work.moonzs.base.utils;
 
+import cn.hutool.core.lang.Validator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -98,4 +99,13 @@ public class IMailUtil {
         return templateEngine.process("/RegisterMailCode", context);
     }
 
+    /**
+     * 验证是否为可用邮箱地址
+     *
+     * @param email 电子邮件
+     * @return boolean
+     */
+    public boolean verifyMail(String email) {
+        return Validator.isEmail(email);
+    }
 }
