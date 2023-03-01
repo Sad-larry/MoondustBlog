@@ -177,5 +177,13 @@ public interface ArticleService extends IService<Article> {
      * @return {@link List}<{@link SysArticleReadVO}>
      */
     List<SysArticleReadVO> getBlogReadVolume();
+
+    /**
+     * 搜索文章
+     *
+     * @param keywords 关键字
+     * @return {@link PageVO}<{@link ArticlePreviewVO}>
+     */
+    PageVO<ArticlePreviewVO> searchArticles(String keywords);
 }
 

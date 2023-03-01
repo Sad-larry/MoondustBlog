@@ -202,7 +202,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     @Override
     public PageVO<ArticlePreviewVO> listWebArticle(Integer pageNum, Integer pageSize, Long categoryId, Long tagId) {
         Page<Article> page = new Page<>(pageNum, pageSize);
-        List<ArticlePreviewVO> articlePreviews = baseMapper.listPreviewPage(page, categoryId, tagId);
+        List<ArticlePreviewVO> articlePreviews = baseMapper.listPreviewPage(page, categoryId, tagId, null);
         articlePreviews.forEach(item -> {
             item.setTagVOList(tagService.getBlogTagsByArticleId(item.getId()));
         });
@@ -376,6 +376,16 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         queryWrapper.last(StatusConstants.LIMIT_TEN);
         List<Article> list = list(queryWrapper);
         return BeanCopyUtil.copyBeanList(list, SysArticleReadVO.class);
+    }
+
+    @Override
+    public PageVO<ArticlePreviewVO> searchArticles(String keywords) {
+        Page<Article> page = new Page<>(1, 10);
+        List<ArticlePreviewVO> articlePreviews = baseMapper.listPreviewPage(page, null, null, keywords);
+        articlePreviews.forEach(item -> {
+            item.setTagVOList(tagService.getBlogTagsByArticleId(item.getId()));
+        });
+        return new PageVO<>(articlePreviews, page.getTotal());
     }
 
     /**

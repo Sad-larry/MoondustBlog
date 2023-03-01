@@ -34,9 +34,11 @@ export function getArticleInfo(params) {
         params: params
     })
 }
+
+// 搜索文章
 export function searchArticle(keywords) {
     return request({
-        url: '/web/article/searchArticle',
+        url: '/web/article/search',
         method: 'get',
         params: {
             keywords: keywords
@@ -94,18 +96,19 @@ export function listMessage() {
     })
 }
 
-//友链页面请求接口
+// 友链页面请求接口
 export function addLink(data) {
     return request({
-        url: '/web/friend/add',
-        method: 'POST',
+        url: '/web/friendlink/add',
+        method: 'post',
         data
     })
 }
+// 友链列表
 export function fetchFriend() {
     return request({
-        url: '/web/friend/list',
-        method: 'post',
+        url: '/web/friendlink/list',
+        method: 'get',
         params: {}
     })
 }
@@ -210,7 +213,6 @@ export function userRegister(data) {
         data
     })
 }
-
 export function sendEmailCode(email) {
     return request({
         url: '/user/sendEmailCode',

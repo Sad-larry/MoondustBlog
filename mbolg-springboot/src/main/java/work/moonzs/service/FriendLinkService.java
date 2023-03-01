@@ -5,6 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 import work.moonzs.domain.entity.FriendLink;
 import work.moonzs.domain.vo.PageVO;
 import work.moonzs.domain.vo.sys.SysFriendLinkVO;
+import work.moonzs.domain.vo.web.FriendLinkVO;
 
 /**
  * 友情链接表(FriendLink)表服务接口
@@ -68,5 +69,21 @@ public interface FriendLinkService extends IService<FriendLink> {
      */
     @Transactional
     void passFriendLink(Long[] friendLinkIds);
+
+    /**
+     * 前端网页友链列表
+     *
+     * @return {@link PageVO}<{@link FriendLinkVO}>
+     */
+    PageVO<FriendLinkVO> listWebFriendLink();
+
+    /**
+     * 添加友链
+     *
+     * @param friendLink 友链
+     * @return {@link Long}
+     */
+    @Transactional
+    Long addWebFriendLink(FriendLink friendLink);
 }
 

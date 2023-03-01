@@ -131,7 +131,7 @@ export default {
     },
     listFriendLink() {
       fetchFriend().then(res => {
-        this.friendLinkList = res.data;
+        this.friendLinkList = res.records;
       });
     },
     submit() {

@@ -11,25 +11,19 @@
       <div class="blog-info-data">
         <router-link to="/archives">
           <div style="font-size: 0.875rem">文章</div>
-          <div style="font-size: 1.125rem;">
-            {{ this.$store.state.blogInfo.count.articleCount }}
-          </div>
+          <div style="font-size: 1.125rem;">{{ this.$store.state.blogInfo.count.articleCount }}</div>
         </router-link>
       </div>
       <div class="blog-info-data">
         <router-link to="/categories">
           <div style="font-size: 0.875rem">分类</div>
-          <div style="font-size: 1.125rem">
-            {{ this.$store.state.blogInfo.count.categoryCount }}
-          </div>
+          <div style="font-size: 1.125rem">{{ this.$store.state.blogInfo.count.categoryCount }}</div>
         </router-link>
       </div>
       <div class="blog-info-data">
         <router-link to="/tags">
           <div style="font-size: 0.875rem">标签</div>
-          <div style="font-size: 1.125rem">
-            {{ this.$store.state.blogInfo.count.tagCount }}
-          </div>
+          <div style="font-size: 1.125rem">{{ this.$store.state.blogInfo.count.tagCount }}</div>
         </router-link>
       </div>
     </div>
@@ -76,25 +70,11 @@
           <i class="iconfont iconpinglunzu" /> 留言
         </router-link>
       </div>
-      <div class="menus-item" v-if="!this.$store.state.avatar">
-        <a @click="openLogin"><i class="iconfont icondenglu" /> 登录 </a>
-      </div>
-      <div v-else>
-        <div class="menus-item">
-          <router-link to="/user">
-            <i class="iconfont icongerenzhongxin" /> 个人中心
-          </router-link>
-        </div>
-        <div class="menus-item">
-          <a @click="logout"><i class="iconfont icontuichu" /> 退出</a>
-        </div>
-      </div>
     </div>
   </v-navigation-drawer>
 </template>
 
 <script>
-import { logout } from '@/api'
 export default {
   computed: {
     drawer: {
@@ -103,29 +83,9 @@ export default {
       },
       get() {
         return this.$store.state.drawer;
-      }
+      },
     },
-    isLogin() {
-      return this.$store.state.userId;
-    }
   },
-  methods: {
-    openLogin() {
-      this.$store.state.loginFlag = true;
-    },
-    logout() {
-      //如果在个人中心则跳回上一页
-      if (this.$route.path === "/user") {
-        this.$router.go(-1);
-      }
-      logout().then(res => {
-        this.$store.commit("logout");
-        this.$toast({ type: "success", message: "注销成功" });
-      }).catch(err => {
-        console.log(err)
-      });;
-    }
-  }
 };
 </script>
 

@@ -1,13 +1,11 @@
 import Vue from "vue";
 import Vuex from "vuex";
-import getters from './getters';
 import blogInfo from "./modules/blogInfo";
 import createPersistedState from "vuex-persistedstate";
 
 Vue.use(Vuex);
 
 export default new Vuex.Store({
-  getters,
   modules: {
     blogInfo
   },
@@ -32,33 +30,6 @@ export default new Vuex.Store({
     commentLikeSet: []
   },
   mutations: {
-    login(state, user) {
-      state.userId = user.id;
-      state.avatar = user.avatar;
-      state.nickname = user.nickname;
-      state.intro = user.intro;
-      state.webSite = user.webSite;
-      state.articleLikeSet = user.articleLikeSet ? user.articleLikeSet : [];
-      state.commentLikeSet = user.commentLikeSet ? user.commentLikeSet : [];
-      state.email = user.email;
-      state.token = user.token;
-      state.loginType = user.loginType;
-    },
-    logout(state) {
-      state.userId = null;
-      state.avatar = null;
-      state.nickname = null;
-      state.intro = null;
-      state.token = null;
-      state.webSite = null;
-      state.articleLikeSet = [];
-      state.commentLikeSet = [];
-      state.email = null;
-      state.loginType = null;
-    },
-    saveLoginUrl(state, url) {
-      state.loginUrl = url;
-    },
     saveEmail(state, email) {
       state.email = email;
     },

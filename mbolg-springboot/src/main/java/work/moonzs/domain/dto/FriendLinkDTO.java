@@ -28,42 +28,42 @@ public class FriendLinkDTO {
      * 主键ID
      */
     @ApiModelProperty(notes = "主键ID")
-    @Null(message = "添加友链时ID必须为空", groups = VG.Insert.class)
-    @NotNull(message = "友链ID不能为空", groups = {VG.Update.class, Default.class})
+    @Null(message = "{FriendLinkDTO.id.Null}", groups = VG.Insert.class)
+    @NotNull(message = "{FriendLinkDTO.id.NotNull}", groups = {VG.Update.class, Default.class})
     private Long id;
     /**
      * 网站名称
      */
     @ApiModelProperty(notes = "网站名称")
-    @NotBlank(message = "网站名称不能为空", groups = {VG.Insert.class, VG.Update.class})
-    @Length(message = "网站名称长度在1到20个字符", min = 1, max = 20, groups = {VG.Insert.class, VG.Update.class})
+    @NotBlank(message = "{FriendLinkDTO.name.NotBlank}", groups = {VG.Insert.class, VG.Update.class})
+    @Length(message = "{FriendLinkDTO.name.Length}", min = 1, max = 20, groups = {VG.Insert.class, VG.Update.class})
     private String name;
     /**
      * 网站地址
      */
     @ApiModelProperty(notes = "网站地址")
-    @NotBlank(message = "网站地址不能为空", groups = {VG.Insert.class, VG.Update.class})
-    @URL(message = "网站地址无效", groups = {VG.Insert.class, VG.Update.class})
+    @NotBlank(message = "{FriendLinkDTO.url.NotBlank}", groups = {VG.Insert.class, VG.Update.class})
+    @URL(message = "{FriendLinkDTO.url.URL}", groups = {VG.Insert.class, VG.Update.class})
     private String url;
     /**
      * 网站头像地址
      */
     @ApiModelProperty(notes = "网站头像地址")
-    @NotBlank(message = "网站头像地址不能为空", groups = {VG.Insert.class, VG.Update.class})
-    @URL(message = "网站头像地址无效", groups = {VG.Insert.class, VG.Update.class})
+    @NotBlank(message = "{FriendLinkDTO.avatar.NotBlank}", groups = {VG.Insert.class, VG.Update.class})
+    @URL(message = "{FriendLinkDTO.avatar.URL}", groups = {VG.Insert.class, VG.Update.class})
     private String avatar;
     /**
      * 网站描述
      */
     @ApiModelProperty(notes = "网站描述")
-    @Length(message = "网站描述不宜太长", max = 512, groups = {VG.Insert.class, VG.Update.class})
+    @Length(message = "{FriendLinkDTO.info.Length}", max = 512, groups = {VG.Insert.class, VG.Update.class})
     private String info;
     /**
      * 邮箱
      */
     @ApiModelProperty(notes = "邮箱")
-    @NotBlank(message = "邮箱不能为空", groups = {VG.Insert.class, VG.Update.class})
-    @Email(message = "邮箱无效", groups = {VG.Insert.class, VG.Update.class})
+    @NotBlank(message = "{FriendLinkDTO.email.NotBlank}", groups = {VG.Insert.class, VG.Update.class})
+    @Email(message = "{FriendLinkDTO.email.Email}", groups = {VG.Insert.class, VG.Update.class})
     private String email;
     /**
      * 排序
@@ -74,8 +74,8 @@ public class FriendLinkDTO {
      * ENUM-状态(0待审核,1通过)
      */
     @ApiModelProperty(notes = "ENUM-状态(0待审核,1通过)")
-    @Null(message = "添加友链时状态必须为空", groups = VG.Insert.class)
-    @NotNull(message = "友链状态不能为空", groups = VG.Update.class)
-    @Range(min = 0, max = 1, groups = VG.Update.class)
+    @Null(message = "{FriendLinkDTO.status.Null}", groups = VG.Insert.class)
+    @NotNull(message = "{FriendLinkDTO.status.NotNull}", groups = VG.Update.class)
+    @Range(message = "{FriendLinkDTO.status.Range}", min = 0, max = 1, groups = VG.Update.class)
     private Integer status;
 }

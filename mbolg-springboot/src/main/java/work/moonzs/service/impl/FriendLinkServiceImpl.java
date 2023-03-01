@@ -14,6 +14,7 @@ import work.moonzs.base.web.common.BusinessAssert;
 import work.moonzs.domain.entity.FriendLink;
 import work.moonzs.domain.vo.PageVO;
 import work.moonzs.domain.vo.sys.SysFriendLinkVO;
+import work.moonzs.domain.vo.web.FriendLinkVO;
 import work.moonzs.mapper.FriendLinkMapper;
 import work.moonzs.service.FriendLinkService;
 
@@ -96,6 +97,18 @@ public class FriendLinkServiceImpl extends ServiceImpl<FriendLinkMapper, FriendL
         LambdaUpdateWrapper<FriendLink> updateWrapper = new LambdaUpdateWrapper<>();
         updateWrapper.in(FriendLink::getId, List.of(friendLinkIds)).set(FriendLink::getStatus, StatusConstants.NORMAL);
         update(updateWrapper);
+    }
+
+    @Override
+    public PageVO<FriendLinkVO> listWebFriendLink() {
+        return new PageVO<>(BeanCopyUtil.copyBeanList(list(), FriendLinkVO.class), count());
+    }
+
+    @Override
+    public Long addWebFriendLink(FriendLink friendLink) {
+        BusinessAssert.isFalse(isExistFriendLinkByUrl(friendLink.getUrl()), AppHttpCodeEnum.DATA_EXIST);
+        baseMapper.insert(friendLink);
+        return friendLink.getId();
     }
 }
 

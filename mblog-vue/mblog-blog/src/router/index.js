@@ -21,17 +21,6 @@ const routes = [
     }
   },
   {
-    path: "/albums",
-    component: resolve => require(["../views/album/Album.vue"], resolve),
-    meta: {
-      title: "相册"
-    }
-  },
-  {
-    path: "/albums/:albumId",
-    component: resolve => require(["../views/album/Photo.vue"], resolve)
-  },
-  {
     path: "/tags",
     component: resolve => require(["../views/tag/Tag.vue"], resolve),
     meta: {
@@ -74,25 +63,6 @@ const routes = [
       title: "留言板"
     }
   },
-  {
-    path: "/user",
-    component: resolve => require(["../views/user/User.vue"], resolve),
-    meta: {
-      title: "个人中心"
-    }
-  },
-  // {
-  //   path: "/callback/qq",
-  //   component: resolve => require(["../components/OauthLogin.vue"], resolve)
-  // },
-  // {
-  //   path: "/callback/gitee",
-  //   component: resolve => require(["../components/OauthLogin.vue"], resolve)
-  // },
-  // {
-  //   path: "/callback/weibo",
-  //   component: resolve => require(["../components/OauthLogin.vue"], resolve)
-  // }
   {
     path: '*',
     redirect: '/',

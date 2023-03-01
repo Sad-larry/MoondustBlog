@@ -5,9 +5,7 @@
       <div class="mb-3">
         <span class="search-title">本地搜索</span>
         <!-- 关闭按钮 -->
-        <v-icon class="float-right" @click="searchFlag = false">
-          mdi-close
-        </v-icon>
+        <v-icon class="float-right" @click="searchFlag = false">mdi-close</v-icon>
       </div>
       <!-- 输入框 -->
       <div class="search-input-wrapper">
@@ -22,59 +20,57 @@
             <!-- 文章标题 -->
             <a @click="goTo(item.id)" v-html="item.title" />
             <!-- 文章内容 -->
-            <p class="search-reslut-content text-justify" v-html="item.content" />
+            <p class="search-reslut-content text-justify" v-html="item.contentMd" />
           </li>
         </ul>
         <!-- 搜索结果不存在提示 -->
-        <div v-show="flag && articleList.length == 0" style="font-size:0.875rem">
-          找不到您查询的内容：{{ keywords }}
-        </div>
+        <div v-show="flag && articleList.length == 0" style="font-size:0.875rem">找不到您查询的内容：{{ keywords }}</div>
       </div>
     </v-card>
   </v-dialog>
 </template>
 
 <script>
-import { searchArticle } from '@/api'
+import { searchArticle } from "@/api";
 export default {
   data() {
     return {
       keywords: "",
       articleList: [],
-      flag: false
+      flag: false,
     };
   },
   computed: {
     searchFlag: {
       set(value) {
-        this.keywords = ""
-        this.articleList = []
+        this.keywords = "";
+        this.articleList = [];
         this.$store.state.searchFlag = value;
       },
       get() {
         return this.$store.state.searchFlag;
-      }
+      },
     },
     isMobile() {
       const clientWidth = document.documentElement.clientWidth;
       return clientWidth <= 960;
-    }
+    },
   },
   watch: {
     keywords(value) {
       this.flag = value.trim() !== "";
       if (this.flag) {
-        searchArticle(value).then(res => {
-          this.articleList = res.data;
+        searchArticle(value).then((res) => {
+          this.articleList = res.records;
         });
       }
-    }
+    },
   },
   methods: {
     goTo(articleId) {
       this.$store.state.searchFlag = false;
       this.$router.push({ path: "/article/" + articleId });
-    }
+    },
   },
 };
 </script>
@@ -110,7 +106,7 @@ export default {
 @media (min-width: 960px) {
   .search-result-wrapper {
     padding-right: 5px;
-    height: 450px;
+    height: 400px;
     overflow: auto;
   }
 }

@@ -9,7 +9,6 @@ import "./assets/css/index.css";
 import "./assets/css/iconfont.css";
 import "./assets/css/markdown.css";
 import "./assets/css/vue-social-share/client.css";
-import config from "./assets/js/config";
 import Share from "vue-social-share";
 import dayjs from "dayjs";
 import { vueBaberrage } from "vue-baberrage";
@@ -25,7 +24,6 @@ import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 import MetaInfo from 'vue-meta-info'
 Vue.use(MetaInfo)
-Vue.prototype.config = config;
 Vue.config.productionTip = false;
 Vue.use(ElementUI);
 Vue.use(animated);

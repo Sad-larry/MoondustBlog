@@ -45,7 +45,7 @@ public interface ArticleMapper extends BaseMapper<Article> {
      * @param tagId      标签id
      * @return {@link List}<{@link ArticlePreviewVO}>
      */
-    List<ArticlePreviewVO> listPreviewPage(@Param("page") Page<Article> page, @Param("categoryId") Long categoryId, @Param("tagId") Long tagId);
+    List<ArticlePreviewVO> listPreviewPage(@Param("page") Page<Article> page, @Param("categoryId") Long categoryId, @Param("tagId") Long tagId, @Param("keywords") String keywords);
 
     /**
      * 推荐文章列表

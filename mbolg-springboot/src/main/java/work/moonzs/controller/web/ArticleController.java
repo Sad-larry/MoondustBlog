@@ -81,4 +81,15 @@ public class ArticleController {
                                       @RequestParam(defaultValue = "10", required = false) Integer pageSize) {
         return ResponseResult.successPageVO(articleService.getArchives(pageNum, pageSize));
     }
+
+    /**
+     * 搜索文章
+     *
+     * @return {@link ResponseResult}
+     */
+    @SystemLog(businessName = "查询归档")
+    @GetMapping("/search")
+    public ResponseResult searchArticles(@RequestParam String keywords) {
+        return ResponseResult.successPageVO(articleService.searchArticles(keywords));
+    }
 }
