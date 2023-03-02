@@ -1,5 +1,6 @@
 package work.moonzs.base.web.service;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
@@ -49,13 +50,18 @@ public class ITokenService {
      */
     private static final String CACHE_SECRET_KEY = "refrainblog-cn";
 
+    public String createToken(LoginUser loginUser) {
+        return createToken(loginUser, null);
+    }
+
     /**
      * 通过loginuser创建令牌
      *
      * @param loginUser 登录用户
+     * @param params    额外参数
      * @return {@link String}
      */
-    public String createToken(LoginUser loginUser) {
+    public String createToken(LoginUser loginUser, Map<String, Object> params) {
         // 用加密16进制字符串填充loginuser里面的userUid，作为唯一标识
         // String userUid = CryptoUtil.aesEncryptHex(CACHE_SECRET_KEY, loginUser.getUsername());
         String userUid = IdUtil.fastSimpleUUID();
@@ -63,6 +69,12 @@ public class ITokenService {
         refreshToken(loginUser);
         HashMap<String, Object> claims = new HashMap<>();
         claims.put(SystemConstants.LOGIN_USER_KEY, userUid);
+        // 可以额外为 claims 添加参数
+        if (CollUtil.isNotEmpty(params)) {
+            for (String param : params.keySet()) {
+                claims.put(param, params.get(param));
+            }
+        }
         return createToken(claims);
     }
 

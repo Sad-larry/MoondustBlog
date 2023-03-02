@@ -123,3 +123,8 @@ jasypt:
     key-obtention-iterations: 1000
     # 生成器类名，建议使用这个，不然密码数据类型不能成功转换
     iv-generator-classname: org.jasypt.iv.NoIvGenerator
+wxmp:
+  loginUrl: https://api.weixin.qq.com/sns/jscode2session
+  loginAppid: ENC(KKsXTw2WTCOziEQMgZy33N4dULxd5BebMsJmzaSU9k0=)
+  loginSecret: ENC(t/dN9irPzQHYZeYx+8iBPYlUspsbbi8d3tEmi2EvSV+NCeFEztK+1B1wduxDstJa)
+  loginGrantType: authorization_code

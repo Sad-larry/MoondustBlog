@@ -89,14 +89,17 @@ public interface UserService extends IService<User> {
 
     /**
      * 注册用户
-     * 注册方式有几种：1-账号密码,2-码云,3-Github,4-QQ,5-微信
+     * 注册方式有几种：1-账号密码,2-码云,3-Github,4-QQ,5-微信,6-微信小程序
      * 除了第一种方式需要使用邮箱登录，需要邮箱验证码验证
      *
      * @param user 用户
      * @return boolean
      */
     @Transactional
-    boolean registerUser(User user);
+    boolean registerUser1(User user);
+
+    @Transactional
+    boolean registerUser6(String openId);
 
     /**
      * 发送注册邮件验证码
@@ -122,5 +125,13 @@ public interface UserService extends IService<User> {
      * @return {@link String}
      */
     User userLogin(User user);
+
+    /**
+     * 用户使用微信小程序登录
+     *
+     * @param code 临时登录凭证 code
+     * @return {@link String} token
+     */
+    String wxmpLogin(String code);
 }
 

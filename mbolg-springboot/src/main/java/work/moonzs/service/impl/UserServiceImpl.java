@@ -1,9 +1,11 @@
 package work.moonzs.service.impl;
 
+import cn.hutool.core.util.ObjUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.digest.DigestUtil;
 import cn.hutool.http.useragent.UserAgent;
+import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -16,10 +18,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import work.moonzs.base.enums.AppHttpCodeEnum;
 import work.moonzs.base.enums.CacheConstants;
-import work.moonzs.base.utils.IMailUtil;
-import work.moonzs.base.utils.IpUtil;
-import work.moonzs.base.utils.RedisCache;
-import work.moonzs.base.utils.SecurityUtil;
+import work.moonzs.base.enums.StatusConstants;
+import work.moonzs.base.handler.WxmpLoginAuthenticationToken;
+import work.moonzs.base.utils.*;
 import work.moonzs.base.web.common.BusinessAssert;
 import work.moonzs.base.web.service.IOnlineUserService;
 import work.moonzs.base.web.service.ISaveUserService;
@@ -155,14 +156,41 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
-    public boolean registerUser(User user) {
+    public boolean registerUser1(User user) {
         UserAuth userAuth = UserAuth.builder().email(user.getUsername()).nickname(user.getUsername()).avatar(systemConfigService.selectDefaultRegisterAvatar()).intro("介绍下你自己吧").webSite("http://refrainblog.cn").build();
         int insert = userAuthMapper.insert(userAuth);
         if (insert > 0) {
             // 密码加密
             user.setPassword(SecurityUtil.encryptPassword(user.getPassword()));
+            user.setLoginType(StatusConstants.LOGIN_TYPE_EMAIL);
             user.setUserAuthId(userAuth.getId());
             // 默认是用户
+            user.setRoleId(2L);
+            // 初始化基本信息
+            initUserInfo(user);
+            user.setLastLoginTime(new Date());
+            return save(user);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean registerUser6(String openId) {
+        UserAuth userAuth = UserAuth
+                .builder()
+                // 这个应该是用户自己的昵称
+                .nickname("")
+                // 用户自己的头像，无需默认值
+                .avatar(systemConfigService.selectDefaultRegisterAvatar())
+                .intro("介绍下你自己吧")
+                .build();
+        int insert = userAuthMapper.insert(userAuth);
+        if (insert > 0) {
+            User user = new User();
+            user.setUsername(openId);
+            user.setLoginType(StatusConstants.LOGIN_TYPE_WXMP);
+            user.setUserAuthId(userAuth.getId());
+            // 默认是普通用户
             user.setRoleId(2L);
             // 初始化基本信息
             initUserInfo(user);
@@ -237,6 +265,51 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         String token = iTokenService.createToken(loginUser);
         iSaveUserService.saveUserToken(loginUser.getUserUid());
         return loginUser.getUser();
+    }
+
+    @Override
+    public String wxmpLogin(String code) {
+        // 获取用户 openId
+        JSONObject resultJson = WxmpLoginUtil.getResultJson(code);
+        if (!resultJson.isNull("openid")) {
+            // 以 openid 和 sessionKey 生成 token返回
+            String openid = resultJson.getStr("openid");
+            String session_key = resultJson.getStr("session_key");
+
+            // 直接通过微信小程序登录的用户，无需密码，其openId就是用户账号
+            User user = getUserByOpenId(openid);
+            // 查询用户为空，则进行默认注册
+            if (ObjUtil.isNull(user)) {
+                if (!registerUser6(openid)) {
+                    return null;
+                }
+            }
+            // 使用自定义的身份检验器
+            Authentication authenticate = authenticationManager.authenticate(new WxmpLoginAuthenticationToken(openid, null));
+            LoginUser loginUser = (LoginUser) authenticate.getPrincipal();
+            getLoginUserInfo(loginUser);
+            Map<String, Object> params = new HashMap<>();
+            params.put("openid", openid);
+            params.put("session_key", session_key);
+            String token = iTokenService.createToken(loginUser, params);
+            iSaveUserService.saveUserToken(loginUser.getUserUid());
+            return token;
+        }
+        return null;
+    }
+
+    /**
+     * 微信小程序用户登录
+     *
+     * @param openId 用户唯一标识
+     * @return {@link User}
+     */
+    private User getUserByOpenId(String openId) {
+        LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(User::getUsername, openId);
+        // 微信小程序登录，指定登录方式
+        queryWrapper.eq(User::getLoginType, StatusConstants.LOGIN_TYPE_WXMP);
+        return getOne(queryWrapper, false);
     }
 
     /**

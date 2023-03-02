@@ -11,22 +11,22 @@ import org.springframework.context.annotation.Configuration;
  */
 @Data
 @Configuration
-@ConfigurationProperties(prefix = "oss.qiniu")
-public class CustomProperties {
+@ConfigurationProperties(prefix = "wxmp")
+public class CustomPropertiesWxmp {
     /**
-     * 七牛云公有密钥
+     * 请求的网址
      */
-    private String accessKey;
+    private String loginUrl;
     /**
-     * 七牛云私有密钥
+     * 小程序 appId
      */
-    private String secretKey;
+    private String loginAppid;
     /**
-     * 域名地址
+     * 小程序 appSecret
      */
-    private String domain;
+    private String loginSecret;
     /**
-     * 七牛云空间名
+     * 授权类型,固定参数
      */
-    private String bucket;
+    private String loginGrantType;
 }

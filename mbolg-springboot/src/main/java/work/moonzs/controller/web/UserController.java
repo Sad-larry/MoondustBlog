@@ -3,12 +3,10 @@ package work.moonzs.controller.web;
 import cn.hutool.core.util.ObjUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import work.moonzs.base.annotation.SystemLog;
 import work.moonzs.base.enums.AppHttpCodeEnum;
+import work.moonzs.base.enums.SystemConstants;
 import work.moonzs.base.utils.BeanCopyUtil;
 import work.moonzs.domain.ResponseResult;
 import work.moonzs.domain.dto.LoginUserDTO;
@@ -47,7 +45,7 @@ public class UserController {
                 return ResponseResult.result(result);
             }
         }
-        userService.registerUser(BeanCopyUtil.copyBean(registerUserDTO, User.class));
+        userService.registerUser1(BeanCopyUtil.copyBean(registerUserDTO, User.class));
         return ResponseResult.success();
     }
 
@@ -60,5 +58,18 @@ public class UserController {
     @PostMapping("/emailLogin")
     public ResponseResult emailLogin(@Validated @RequestBody LoginUserDTO loginUserDTO) {
         return ResponseResult.success(userService.userLogin(BeanCopyUtil.copyBean(loginUserDTO, User.class)));
+    }
+
+    /**
+     * 微信小程序登录
+     *
+     * @return {@link ResponseResult}
+     */
+    @SystemLog(businessName = "微信小程序登录")
+    @GetMapping("/mwxLogin")
+    public ResponseResult mwxLogin(@RequestParam String code) {
+        String token = userService.wxmpLogin(code);
+        // 登录成功返回令牌
+        return ResponseResult.success().put(SystemConstants.TOKEN, token);
     }
 }

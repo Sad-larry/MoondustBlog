@@ -60,4 +60,29 @@ public class StatusConstants {
      * 下一篇文章
      */
     public static final Integer NEXT_ARTICLE = 1;
+
+    /**
+     * 登录方式-电子邮件
+     */
+    public static final Integer LOGIN_TYPE_EMAIL = 1;
+    /**
+     * 登录方式-码云
+     */
+    public static final Integer LOGIN_TYPE_GITEE = 2;
+    /**
+     * 登录方式-Github
+     */
+    public static final Integer LOGIN_TYPE_GITHUB = 3;
+    /**
+     * 登录方式-QQ
+     */
+    public static final Integer LOGIN_TYPE_QQ = 4;
+    /**
+     * 登录方式-微信
+     */
+    public static final Integer LOGIN_TYPE_WEICHAT = 5;
+    /**
+     * 登录方式-微信小程序
+     */
+    public static final Integer LOGIN_TYPE_WXMP = 6;
 }
