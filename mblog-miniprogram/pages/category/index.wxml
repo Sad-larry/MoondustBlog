@@ -6,7 +6,7 @@
   <!--tabs-->
   <view style='margin-bottom:40px;'>
     <i-tabs fixed current="{{ current_scroll }}" scroll bindchange="handleChangeScroll">
-      <i-tab wx:for="{{cateList}}" key="{{item.id}}" title="{{item.name}}"></i-tab>
+      <i-tab wx:for="{{cateList}}" wx:key="id" title="{{item.name}}"></i-tab>
     </i-tabs>
   </view>
 
@@ -16,7 +16,7 @@
     <view style='color:#999999;font-size:34rpx'>暂无数据</view>
   </view>
   <scroll-view wx:else bindscrolltolower="lower" class="scorll-margin" lowerThreshold="5" scrollIntoView="{{toView}}" scrollTop="{{scrollTop}}" scrollWithAnimation="true" scrollY="true">
-    <view class="zan-panel zan-panel--without-top-border" wx:for="{{articles}}" wx:for-index="idx">
+    <view class="zan-panel zan-panel--without-top-border" wx:for="{{articles}}" wx:key="id" wx:for-index="idx">
       <view class="zan-card" data-id="{{item.objectId}}" bindtap="detail">
         <view class="zan-card__thumb">
           <image binderror="errorloadImage" class="zan-card__img" data-index="{{idx}}" mode="scaleToFill" src="{{item.listPic}}"></image>

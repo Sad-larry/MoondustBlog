@@ -33,6 +33,21 @@ public final class BusinessAssert {
     }
 
     /**
+     * 断言对象为空
+     * 如果对象为空，说明断言成功，不抛出异常信息
+     *
+     * @param object 对象
+     * @param msg    不满足断言的异常信息
+     */
+    public static void isNull(Object object, String msg) {
+        state(object == null, msg);
+    }
+
+    public static void isNull(Object object, AppHttpCodeEnum codeEnum) {
+        state(object == null, codeEnum);
+    }
+
+    /**
      * 断言对象不为空，
      * 如果对象不为空，说明断言成功，对象确实不为空，不抛出异常
      *

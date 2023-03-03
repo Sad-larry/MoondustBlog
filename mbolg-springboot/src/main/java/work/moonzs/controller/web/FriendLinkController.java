@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import work.moonzs.base.annotation.SystemLog;
+import work.moonzs.base.annotation.WebOperationLogger;
 import work.moonzs.base.utils.BeanCopyUtil;
 import work.moonzs.base.validate.VG;
 import work.moonzs.domain.ResponseResult;
@@ -37,6 +38,7 @@ public class FriendLinkController {
      * @return {@link ResponseResult}
      */
     @SystemLog(businessName = "申请友链")
+    @WebOperationLogger(value = "友链模块-申请友链", type = "添加", desc = "客户友链")
     @PostMapping("/add")
     public ResponseResult addWebFriendLink(@Validated(VG.Insert.class) @RequestBody FriendLinkDTO friendLinkDTO) {
         friendlinkService.addWebFriendLink(BeanCopyUtil.copyBean(friendLinkDTO, FriendLink.class));

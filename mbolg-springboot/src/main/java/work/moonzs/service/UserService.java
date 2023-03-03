@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import org.springframework.transaction.annotation.Transactional;
 import work.moonzs.domain.entity.User;
 import work.moonzs.domain.vo.PageVO;
+import work.moonzs.domain.vo.UserInfoVO;
 import work.moonzs.domain.vo.UserListVo;
 import work.moonzs.domain.vo.sys.SysOnlineUserVO;
 import work.moonzs.domain.vo.sys.SysUserBaseVO;
@@ -32,9 +33,9 @@ public interface UserService extends IService<User> {
     String adminLogin(String username, String password, String uuid, String code);
 
     /**
-     * 管理员注销
+     * 用户注销
      */
-    void adminLogout();
+    void userLogout();
 
     /**
      * 用户列表
@@ -133,5 +134,12 @@ public interface UserService extends IService<User> {
      * @return {@link String} token
      */
     String wxmpLogin(String code);
+
+    /**
+     * 微信小程序用户信息
+     *
+     * @return {@link UserInfoVO}
+     */
+    UserInfoVO wxmpUserInfo();
 }
 

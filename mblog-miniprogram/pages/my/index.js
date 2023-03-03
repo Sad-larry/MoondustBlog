@@ -7,17 +7,21 @@ Page({
    * 页面的初始数据
    */
   data: {
+    hasLogin: false,
     userData: {},
     signNum: 0,
     sign: false,
     signTime: '',
     loading: true,
     noReadNewsCount: 0,
+
     avatarUrl: defaultAvatarUrl,
-    nickname: ''
+    nickname: '登录/注册>',
+    intro: '第一次登录则是直接注册哦~'
   },
 
   onLoad: function (options) {
+    console.log("hasLogin", getApp().globalData.hasLogin);
     wx.showLoading({
       title: '加载中'
     })
@@ -32,9 +36,9 @@ Page({
           'userPic': userPic
         }
         wx.setStorageSync('userInfo', userData)
-        that.setData({
-          userData: userData
-        })
+        // that.setData({
+        //   userData: userData
+        // })
         that.spinShow()
       },
       complete: (result) => {
@@ -73,35 +77,7 @@ Page({
   },
   //授权获取用户数据
   bindGetUserInfo() {
-    wx.showLoading({
-      title: '授权中',
-    })
-    var that = this
 
-    wx.login({
-      success: () => {
-        wx.getUserProfile({
-          desc: '获取用户信息',
-          success: (result) => {
-            console.log("授权", result);
-            var nickName = result.userInfo.nickName
-            var userPic = result.userInfo.avatarUrl
-            wx.u.saveUserInfo(userPic, nickName)
-            var userData = {
-              'nickName': nickName,
-              'userPic': userPic
-            }
-            wx.setStorageSync('userInfo', userData)
-            that.setData({
-              userData: userData
-            })
-          },
-          complete: (result) => {
-            wx.hideLoading()
-          }
-        })
-      }
-    })
   },
   onChooseAvatar(e) {
     let avatarUrl = 'data:image/jpeg;base64,' + wx.getFileSystemManager().readFileSync(e.detail.avatarUrl, 'base64')
@@ -115,6 +91,70 @@ Page({
       nickname: e.detail.value
     })
     console.log(this.data.nickname);
+  },
+  // 登录
+  login() {
+    console.log("dataHasLogin:", this.data.hasLogin);
+    if (this.data.hasLogin) {
+      return;
+    }
+    console.log('tap-login');
+    let token = wx.getStorageSync('token');
+    console.log('login-token:', token);
+    // 若存在 token，可以用 token 直接获取用户
+    if (!token) {
+      wx.login({
+        success: res => {
+          if (res.code) {
+            // 第一次登录
+            wx.$api.wxmpLogin(res.code).then(res => {
+              if (res.code == 200) {
+                // 保存 token
+                wx.setStorageSync('token', res.token);
+                this.getUserInfo();
+              }
+            })
+          }
+        }
+      })
+    } else {
+      this.getUserInfo()
+    }
+  },
+  // 获取用户信息
+  getUserInfo() {
+    wx.$api.wxmpUserInfo().then(res => {
+      console.log("res:", res);
+      if (res.code == 200) {
+        console.log('wxmpUserInfo', res);
+        this.setData({
+          hasLogin: true,
+          avatarUrl: res.data.avatar,
+          nickname: res.data.nickname,
+          intro: res.data.intro
+        })
+      } else {
+        this.setData({
+          hasLogin: false,
+          nickname: '出现异常，请重新登录>'
+        })
+        // 登录出现异常，清除token记录
+        wx.removeStorageSync('token')
+      }
+    })
+  },
+  logout() {
+    wx.$api.wxmpLogout().then(res => {
+      console.log('wxmpLogout', res);
+      this.setData({
+        hasLogin: false,
+        avatarUrl: defaultAvatarUrl,
+        nickname: '登录/注册>',
+        intro: '第一次登录则是直接注册哦~'
+      })
+      // 登录出现异常，清除token记录
+      wx.removeStorageSync('token')
+    })
   },
   //签到
   sign() {
@@ -133,17 +173,6 @@ Page({
             signNum: that.data.signNum + 1
           })
         }, 1500)
-      }
-    })
-  },
-  //赞赏
-  praise() {
-    wx.navigateToMiniProgram({
-      appId: 'wx18a2ac992306a5a4',
-      path: 'pages/apps/largess/detail?id=H1DJCmq6QvY%3D',
-      envVersion: 'release',
-      success(res) {
-        // 打开成功
       }
     })
   },

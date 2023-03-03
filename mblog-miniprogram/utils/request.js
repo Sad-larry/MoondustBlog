@@ -4,7 +4,10 @@ const baseURL = 'http://localhost:8080'
 export const request = ({
   url,
   data = {},
-  method = "get"
+  method = "get",
+  header = {
+    'content-type': "application/json",
+  }
 }) => {
   // 2 请求前加载 最后在请求后隐藏
   wx.showLoading({
@@ -16,6 +19,7 @@ export const request = ({
       url: baseURL + url,
       data,
       method,
+      header,
       timeout: 10000,
       success: (res) => {
         // 请求成功返回的数据

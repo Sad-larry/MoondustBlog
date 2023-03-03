@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import work.moonzs.base.annotation.SystemLog;
+import work.moonzs.base.annotation.WebOperationLogger;
 import work.moonzs.base.enums.AppHttpCodeEnum;
 import work.moonzs.base.enums.SystemConstants;
 import work.moonzs.base.utils.BeanCopyUtil;
@@ -31,6 +32,7 @@ public class UserController {
      * @return {@link ResponseResult}
      */
     @SystemLog(businessName = "用户注册")
+    @WebOperationLogger(value = "用户模块-用户注册", type = "添加", desc = "用户注册")
     @PostMapping("/register")
     public ResponseResult addWebUser(@Validated @RequestBody RegisterUserDTO registerUserDTO) {
         // 如果是使用邮件登录的，则需要注册验证码
@@ -55,6 +57,7 @@ public class UserController {
      * @return {@link ResponseResult}
      */
     @SystemLog(businessName = "邮箱登录")
+    @WebOperationLogger(value = "用户模块-邮箱登录", type = "查询", desc = "用户登录")
     @PostMapping("/emailLogin")
     public ResponseResult emailLogin(@Validated @RequestBody LoginUserDTO loginUserDTO) {
         return ResponseResult.success(userService.userLogin(BeanCopyUtil.copyBean(loginUserDTO, User.class)));
@@ -66,10 +69,36 @@ public class UserController {
      * @return {@link ResponseResult}
      */
     @SystemLog(businessName = "微信小程序登录")
-    @GetMapping("/mwxLogin")
-    public ResponseResult mwxLogin(@RequestParam String code) {
+    @WebOperationLogger(value = "用户模块-微信小程序登录", type = "查询", desc = "用户登录")
+    @GetMapping("/wxmpLogin")
+    public ResponseResult wxmpLogin(@RequestParam String code) {
         String token = userService.wxmpLogin(code);
         // 登录成功返回令牌
         return ResponseResult.success().put(SystemConstants.TOKEN, token);
+    }
+
+    /**
+     * 微信小程序用户信息
+     *
+     * @return {@link ResponseResult}
+     */
+    @SystemLog(businessName = "微信小程序用户信息")
+    @WebOperationLogger(value = "用户模块-微信小程序信息", type = "查询", desc = "用户信息")
+    @GetMapping("/wxmpUserInfo")
+    public ResponseResult wxmpUserInfo() {
+        return ResponseResult.success(userService.wxmpUserInfo());
+    }
+
+    /**
+     * 用户退出登录
+     *
+     * @return {@link ResponseResult}<{@link ?}>
+     */
+    @SystemLog(businessName = "用户退出登录")
+    @WebOperationLogger(value = "用户模块-微信小程序注销", type = "删除", desc = "用户注销")
+    @GetMapping("/wxmpLogout")
+    public ResponseResult wxmpLogout() {
+        userService.userLogout();
+        return ResponseResult.success();
     }
 }

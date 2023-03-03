@@ -45,9 +45,10 @@ page {
   font-weight: bold;
 }
 
-.userinfo-sign {
+.userinfo-intro {
   font-size: small;
   margin-top: 10px;
+  color: #a19b9b;
 }
 
 .contain {
@@ -129,7 +130,8 @@ button[type="primary"] {
   color: #09bb07;
 }
 
-[class^="weui-icon-"], [class*=" weui-icon-"] {
+[class^="weui-icon-"],
+[class*=" weui-icon-"] {
   display: inline-block;
   vertical-align: middle;
   font: normal normal normal 14px/1 "weui";
@@ -138,7 +140,8 @@ button[type="primary"] {
   -webkit-font-smoothing: antialiased;
 }
 
-[class^="weui-icon_"]:before, [class*=" weui-icon_"]:before {
+[class^="weui-icon_"]:before,
+[class*=" weui-icon_"]:before {
   margin: 0;
 }
 
@@ -146,7 +149,8 @@ button[type="primary"] {
   content: "\EA06";
 }
 
-[class^="weui-icon-"]:before, [class*=" weui-icon-"]:before {
+[class^="weui-icon-"]:before,
+[class*=" weui-icon-"]:before {
   display: inline-block;
 }
 
@@ -248,9 +252,33 @@ input {
   text-align: center;
   vertical-align: middle;
 }
+
 .adContainer {
   position: relative;
   bottom: 0;
   width: 100%;
 }
 
+/* 退出登录按钮 */
+.logout_v {
+  padding-top: 10px;
+  padding-bottom: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.logout-btn-square {
+  width: 180px;
+  height: 30px;
+  border-radius: 5%;
+  border: 5px solid #eaeaea;
+}
+.square-btn {
+  width: 180px;
+  height: 30px;
+  border-radius: 5%;
+  background-color: #aeeeee;
+  line-height: 30px;
+}

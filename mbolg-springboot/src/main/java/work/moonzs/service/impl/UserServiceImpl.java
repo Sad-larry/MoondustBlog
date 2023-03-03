@@ -30,6 +30,7 @@ import work.moonzs.domain.entity.MailEntity;
 import work.moonzs.domain.entity.User;
 import work.moonzs.domain.entity.UserAuth;
 import work.moonzs.domain.vo.PageVO;
+import work.moonzs.domain.vo.UserInfoVO;
 import work.moonzs.domain.vo.sys.SysOnlineUserVO;
 import work.moonzs.domain.vo.sys.SysUserBaseVO;
 import work.moonzs.domain.vo.sys.SysUserVO;
@@ -108,7 +109,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
-    public void adminLogout() {
+    public void userLogout() {
         LoginUser loginUser = SecurityUtil.getLoginUser();
         // 从redis中删除用户token以及用户login信息
         iTokenService.delLoginUser(loginUser.getUserUid());
@@ -176,14 +177,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Override
     public boolean registerUser6(String openId) {
-        UserAuth userAuth = UserAuth
-                .builder()
+        UserAuth userAuth = UserAuth.builder()
                 // 这个应该是用户自己的昵称
                 .nickname("")
                 // 用户自己的头像，无需默认值
-                .avatar(systemConfigService.selectDefaultRegisterAvatar())
-                .intro("介绍下你自己吧")
-                .build();
+                .avatar(systemConfigService.selectDefaultRegisterAvatar()).intro("介绍下你自己吧").build();
         int insert = userAuthMapper.insert(userAuth);
         if (insert > 0) {
             User user = new User();
@@ -284,13 +282,15 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                     return null;
                 }
             }
-            // 使用自定义的身份检验器
+            // 使用自定义的身份检验器，这里
             Authentication authenticate = authenticationManager.authenticate(new WxmpLoginAuthenticationToken(openid, null));
             LoginUser loginUser = (LoginUser) authenticate.getPrincipal();
             getLoginUserInfo(loginUser);
             Map<String, Object> params = new HashMap<>();
             params.put("openid", openid);
             params.put("session_key", session_key);
+            // 为 loginUser 手动赋值加后的 userUid
+            loginUser.setUserUid(DigestUtil.md5Hex(openid));
             String token = iTokenService.createToken(loginUser, params);
             iSaveUserService.saveUserToken(loginUser.getUserUid());
             return token;
@@ -298,6 +298,15 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         return null;
     }
 
+    @Override
+    public UserInfoVO wxmpUserInfo() {
+        LoginUser loginUser = SecurityUtil.getLoginUser();
+        Long userAuthId = loginUser.getUser().getUserAuthId();
+        UserAuth userAuth = userAuthMapper.selectById(userAuthId);
+        BusinessAssert.notNull(userAuth, "用户信息不完整，请联系管理员");
+        return BeanCopyUtil.copyBean(userAuth, UserInfoVO.class);
+    }
+    
     /**
      * 微信小程序用户登录
      *

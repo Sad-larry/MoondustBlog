@@ -8,13 +8,40 @@ import {
  */
 export const wxmpLogin = (code) => {
   return request({
-    url: '/web/user/mwxLogin',
+    url: '/web/user/wxmpLogin',
     method: 'get',
     data: {
       code
     },
   })
 }
+
+/**
+ * 获取用户信息
+ */
+export const wxmpUserInfo = () => {
+  return request({
+    url: '/web/user/wxmpUserInfo',
+    method: 'get',
+    header: {
+      'Authorization': 'Bearer ' + wx.getStorageSync('token'),
+    }
+  })
+}
+
+/**
+ * 用户退出登录
+ */
+export const wxmpLogout = () => {
+  return request({
+    url: '/web/user/wxmpLogout',
+    method: 'get',
+    header: {
+      'Authorization': 'Bearer ' + wx.getStorageSync('token'),
+    }
+  })
+}
+
 /**
  * 获取文章列表
  * pageSize:数量
@@ -31,6 +58,22 @@ export const getArticleList = (pageSize, pageNum, categoryId) => {
     }
   })
 }
+
+/**
+ * 获取文章详情
+ * id:文章id
+ */
+export const getArticleDetail = (id) => {
+  return request({
+    url: '/web/article/info',
+    method: 'get',
+    data: {
+      id
+    }
+  })
+}
+
+getArticleDetail
 /**
  * 获取分类列表
  */

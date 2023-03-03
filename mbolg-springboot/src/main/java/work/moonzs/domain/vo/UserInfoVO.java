@@ -4,27 +4,21 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
-
 /**
  * @author Moondust月尘
  */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserInfoVo {
-    /**
-     * 昵称
-     */
-    private String nickName;
-    /**
-     * 电话
-     */
-    private String mobile;
+public class UserInfoVO {
     /**
      * 电子邮件
      */
     private String email;
+    /**
+     * 昵称
+     */
+    private String nickname;
     /**
      * 头像
      */
@@ -34,7 +28,7 @@ public class UserInfoVo {
      */
     private String intro;
     /**
-     * 生日
+     * 个人网站
      */
-    private Date birthday;
+    private String webSite;
 }

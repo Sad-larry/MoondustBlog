@@ -113,7 +113,7 @@ public class LoginController {
     @SystemLog(businessName = "管理员注销")
     @PostMapping("/logout")
     public ResponseResult adminLogout() {
-        userService.adminLogout();
+        userService.userLogout();
         return ResponseResult.success();
     }
 

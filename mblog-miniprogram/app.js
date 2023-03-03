@@ -11,17 +11,21 @@ App({
     var logs = wx.getStorageSync('logs') || []
     logs.unshift(Date.now())
     wx.setStorageSync('logs', logs)
+    // console.log("init app, token:", wx.getStorageSync('token'));
 
     // 登录
     wx.login({
       success: res => {
         console.log("login()", res);
         // 发送 res.code 到后台换取 openId, sessionKey, unionId
-        if (res.code) { //当有临时登录凭证code码时，我们请求登录接口
-          //请求登录接口
-          wx.$api.wxmpLogin(res.code).then(res=>{
-            console.log("login:", res);
-          })
+        // 当有临时登录凭证code码时，我们请求登录接口
+        if (res.code) {
+          // 请求登录接口
+          // wx.$api.wxmpLogin(res.code).then(res => {
+          //   console.log("login:", res);
+          //   // 将token进行缓存到'token'字段
+          //   wx.setStorageSync('token', res.token);
+          // })
         }
       }
     })
@@ -42,13 +46,12 @@ App({
               }
             }
           })
-        } else {
-          // 没有授权，需要登录
         }
       }
     })
   },
   globalData: {
-    userInfo: null
+    userInfo: null,
+    hasLogin: false
   }
 })

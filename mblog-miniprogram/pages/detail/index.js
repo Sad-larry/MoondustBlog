@@ -19,66 +19,23 @@ Page({
     commentContent: ''
   },
 
-  onLoad: function(options) {
-
+  onLoad: function (options) {
     var that = this;
     var id = options.id
     var userInfo = wx.getStorageSync('userInfo')
-    wx.u.getArticleDetail(id).then(res => {
-      console.log(res)
-      res.result.createdAt = res.result.createdAt.slice(0, 16)
-      var shareCode = res.result.shareCode
-      if (shareCode == undefined || shareCode == '') {
-        wx.u.getShareCode(id).then(res1 => {
-          this.setData({
-            shareCode: res1.shareCode
-          })
-        })
-      } else {
-        this.setData({
-          shareCode: shareCode
-        })
-      }
-
+    wx.$api.getArticleDetail(id).then(res => {
+      console.log("getArticleDetail():", res)
       this.setData({
-        detail: res.result
+        detail: res.data
       })
-      spinShows: setTimeout(function() {
+      spinShows: setTimeout(function () {
         that.setData({
           loading: !that.data.loading,
           userInfo: userInfo
         });
         console.log("spinShow");
-      }, 2000)
+      }, 1000)
     })
-    wx.u.getIsCollect(id).then(res => {
-      if (res.result > 0) {
-        this.setData({
-          isCollect: true
-        })
-      }
-    })
-    wx.u.getIsLiked(id).then(res => {
-      if (res.result > 0) {
-        this.setData({
-          isLiked: true
-        })
-      }
-    })
-    wx.u.getComment(id).then(res => {
-      res.result.forEach((resEach) => {
-        resEach.createdAt = resEach.createdAt.slice(0, 10)
-        if (resEach.user === undefined) {
-          resEach.user = null;
-        }
-      })
-      console.log(res.result)
-      this.setData({
-        comment_count: res.result.length,
-        comments: res.result
-      })
-    })
-    wx.u.addReadCount(id)
   },
   onShareAppMessage() {
     return {
@@ -87,7 +44,7 @@ Page({
       imageUrl: '/images/blog.png'
     }
   },
-  showHideMenu: function() {
+  showHideMenu: function () {
     console.log('show')
     this.setData({
       isShow: !this.data.isShow,
@@ -97,14 +54,7 @@ Page({
   },
   //打开赞赏
   reward() {
-    wx.navigateToMiniProgram({
-      appId: 'wx18a2ac992306a5a4',
-      path: 'pages/apps/largess/detail?id=H1DJCmq6QvY%3D',
-      envVersion: 'release',
-      success(res) {
-        // 打开成功
-      }
-    })
+
   },
   //生成海报
   createPic() {
@@ -225,12 +175,12 @@ Page({
         var comments = this.data.comments
 
         comments.push.apply(comments, data); //将页面上的数据和最新获取到的数据合并
-        
+
         this.setData({
           comments: comments,
           commentContent: '',
           userId: '',
-          comment_count:parseInt(this.data.comment_count)+1
+          comment_count: parseInt(this.data.comment_count) + 1
         })
         console.log(this.data.comments)
         $Message({
@@ -261,9 +211,9 @@ Page({
             "emphasis_keyword": "keyword2.DATA"
           }
           //使用Bmob-SDK发送模板消息
-          wx.Bmob.sendWeAppMessage(modelData).then(function(response) {
+          wx.Bmob.sendWeAppMessage(modelData).then(function (response) {
             console.log(response);
-          }).catch(function(error) {
+          }).catch(function (error) {
             console.log(error);
           });
         }

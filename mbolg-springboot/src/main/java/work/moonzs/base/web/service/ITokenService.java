@@ -64,8 +64,12 @@ public class ITokenService {
     public String createToken(LoginUser loginUser, Map<String, Object> params) {
         // 用加密16进制字符串填充loginuser里面的userUid，作为唯一标识
         // String userUid = CryptoUtil.aesEncryptHex(CACHE_SECRET_KEY, loginUser.getUsername());
-        String userUid = IdUtil.fastSimpleUUID();
-        loginUser.setUserUid(userUid);
+        String userUid = loginUser.getUserUid();
+        // 若没有手动创建唯一标识的话，则随机赋予
+        if (StrUtil.isBlank(userUid)) {
+            userUid = IdUtil.fastSimpleUUID();
+            loginUser.setUserUid(userUid);
+        }
         refreshToken(loginUser);
         HashMap<String, Object> claims = new HashMap<>();
         claims.put(SystemConstants.LOGIN_USER_KEY, userUid);

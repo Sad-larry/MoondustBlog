@@ -9,7 +9,7 @@
       <view class='feed-item'>
         <view class='title'>{{detail.title}}</view>
         <view class='listPic'>
-          <image mode='widthFix' src="{{detail.listPic}}"></image>
+          <image mode='widthFix' src="{{detail.avatar}}"></image>
         </view>
         <view class='tag-body'>
           <view class="postDate">
@@ -18,23 +18,23 @@
           </view>
           <view class="postDate">
             <i-icon type="browse" color='#738a94' size='18' />
-            <text class='author'>{{detail.read_counts}}</text>
+            <text class='author'>{{detail.quantity}}</text>
           </view>
           <view class="postDate">
             <i-icon type="time" color='#738a94' size='16' />
-            <text class='author'>{{detail.createdAt}}</text>
+            <text class='author'>{{detail.createTime}}</text>
           </view>
         </view>
       </view>
       <view class="wxParse-blockquote">
         <view class="wxParse-p">
-          <view class="WxEmojiView wxParse-inline">{{detail.excerpt}}</view>
+          <view class="WxEmojiView wxParse-inline">{{detail.keywords}}</view>
         </view>
       </view>
       <!--内容-->
       <view class='content'>
         <view>
-          <htmltowxml text="{{detail.mdcontent}}" type="markdown" highlightStyle="darcula" linenums="{{true}}" showLoading="{{false}}" bindWxmlTagATap="wxmlTagATap"></htmltowxml>
+          <htmltowxml text="{{detail.contentMd}}" type="markdown" highlightStyle="darcula" linenums="{{true}}" showLoading="{{false}}" bindWxmlTagATap="wxmlTagATap"></htmltowxml>
         </view>
       </view>
     </view>

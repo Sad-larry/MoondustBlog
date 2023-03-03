@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import work.moonzs.base.enums.AppHttpCodeEnum;
-import work.moonzs.base.exception.SecurityException;
 import work.moonzs.base.exception.ServiceException;
 import work.moonzs.base.exception.ValidateException;
 import work.moonzs.domain.ResponseResult;
@@ -94,10 +93,10 @@ public class RestControllerExceptionHandler {
      * @param e e
      * @return {@link ResponseResult}
      */
-    @ExceptionHandler(SecurityException.class)
-    public ResponseResult handleSecurity(SecurityException e) {
+    @ExceptionHandler(Exception.class)
+    public ResponseResult handleSecurity(Exception e) {
         log.error("失败原因: {}", e.getMessage());
-        return ResponseResult.ofException(e);
+        return ResponseResult.fail();
     }
 
     /**

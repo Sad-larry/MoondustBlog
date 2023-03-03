@@ -5,51 +5,62 @@ Page({
    * 页面的初始数据
    */
   data: {
-    QQ:"462369233",
-    email: "462369233@qq.com",
-    web:"https://www.mambaxin.com",
-    github:"https://github.com/kesixin",
-    name: 'name1'
+
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
-  onLoad: function (options) {
+  onLoad(options) {
+
   },
-  adLoad() {
-    wx.hideLoading();
-    console.log('Banner 广告加载成功')
+
+  /**
+   * 生命周期函数--监听页面初次渲染完成
+   */
+  onReady() {
+
   },
-  adError(err) {
-    wx.hideLoading();
-    console.log('Banner 广告加载失败', err)
+
+  /**
+   * 生命周期函数--监听页面显示
+   */
+  onShow() {
+
   },
-  adClose() {
-    wx.hideLoading();
-    console.log('Banner 广告关闭')
+
+  /**
+   * 生命周期函数--监听页面隐藏
+   */
+  onHide() {
+
   },
-  copyDataTap: function (a) {
-    var t = a.target.dataset.index;
-    wx.setClipboardData({
-      data: t,
-      success: function (a) {
-        wx.getClipboardData({
-          success: function (a) {
-            console.log(a.data);
-          }
-        });
-      }
-    });
+
+  /**
+   * 生命周期函数--监听页面卸载
+   */
+  onUnload() {
+
   },
-  open (){
-    wx.navigateToMiniProgram({
-      appId: 'wx7df186fa6b0094c1',
-      path: 'pages/homepage/index',
-      envVersion: 'release',
-      success(res) {
-        // 打开成功
-      }
-    })
+
+  /**
+   * 页面相关事件处理函数--监听用户下拉动作
+   */
+  onPullDownRefresh() {
+
+  },
+
+  /**
+   * 页面上拉触底事件的处理函数
+   */
+  onReachBottom() {
+
+  },
+
+  /**
+   * 用户点击右上角分享
+   */
+  onShareAppMessage() {
+
   }
 })
