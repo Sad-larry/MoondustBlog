@@ -1,46 +1,37 @@
 <!--pages/my/index.wxml-->
 <view>
-  <!--加载中-->
-  <i-spin fix wx:if="{{loading}}"></i-spin>
-
-  <view class='i-header' bindtap="login">
+  <!--全局提醒-->
+  <i-message id="message" />
+  <view class='i-header'>
     <view class='g-bda-userinfo'>
       <view class="g-bda-userinfo-30">
-        <image class="userinfo-avatar" src="{{avatarUrl}}"></image>
+        <image class="userinfo-avatar" src="{{avatar}}"></image>
       </view>
       <view class="g-bda-userinfo-70">
-        <view class="userinfo-nickname">{{nickname}}</view>
+        <view wx:if="{{!hasLogin}}" class="userinfo-nickname" catchtap="login">{{nickname}}</view>
+        <view wx:else class="userinfo-nickname">{{nickname}}</view>
         <view class="userinfo-intro">{{intro}}</view>
       </view>
     </view>
   </view>
   <view wx:if="{{hasLogin}}" class="contain">
     <i-cell-group>
-      <i-cell title="修改资料" is-link url="/pages/collect/index">
+      <i-cell title="修改资料" is-link url="/pages/modify/index">
         <i-icon type="editor" slot="icon" size="18" color='#ff7f27' />
-      </i-cell>
-      <i-cell wx:if="{{noReadNewsCount>0}}" title="我的消息({{noReadNewsCount}}条未读消息)" is-link url="/pages/new/index">
-        <i-icon slot="icon" type="remind" size="18" color='#d81e06' />
-      </i-cell>
-      <i-cell wx:else title="我的消息" is-link url="/pages/new/index">
-        <i-icon slot="icon" type="remind" size="18" color='#d81e06' />
-      </i-cell>
-      <i-cell title="我的收藏" is-link url="/pages/collect/index">
-        <i-icon type="collection" slot="icon" size="18" color='#ff7f27' />
       </i-cell>
     </i-cell-group>
   </view>
 
   <view class='contain'>
-    <view class="zan-panel" style="border-top:0px;border-bottom:0px;width: 100%">
+    <view class="tool-panel">
       <view>
         <i-cell-group>
-          <button style="border: 0;margin: 0;padding: 0;font-size: 18px;color:#000000;line-height: 1;width: 100%;text-align: left;" open-type="share">
+          <button class="tool-item" open-type="share">
             <i-cell title="分享好友" is-link>
               <i-icon type="share" slot="icon" size="18" color='#2d8cf0' />
             </i-cell>
           </button>
-          <button style="border: 0;margin: 0;padding: 0;font-size: 18px;color:#000000;line-height: 1;width: 100%;text-align: left;" open-type="contact">
+          <button class="tool-item" open-type="contact">
             <i-cell title="反馈意见" is-link>
               <i-icon type="interactive" slot="icon" size="18" />
             </i-cell>

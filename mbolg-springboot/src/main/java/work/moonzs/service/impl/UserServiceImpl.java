@@ -1,5 +1,6 @@
 package work.moonzs.service.impl;
 
+import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.ObjUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
@@ -19,12 +20,13 @@ import org.springframework.stereotype.Service;
 import work.moonzs.base.enums.AppHttpCodeEnum;
 import work.moonzs.base.enums.CacheConstants;
 import work.moonzs.base.enums.StatusConstants;
-import work.moonzs.base.handler.WxmpLoginAuthenticationToken;
+import work.moonzs.base.qiniu.service.QiniuService;
 import work.moonzs.base.utils.*;
 import work.moonzs.base.web.common.BusinessAssert;
 import work.moonzs.base.web.service.IOnlineUserService;
 import work.moonzs.base.web.service.ISaveUserService;
 import work.moonzs.base.web.service.ITokenService;
+import work.moonzs.config.security.authentication.WxmpLoginAuthenticationToken;
 import work.moonzs.domain.entity.LoginUser;
 import work.moonzs.domain.entity.MailEntity;
 import work.moonzs.domain.entity.User;
@@ -73,6 +75,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     private ThreadPoolTaskExecutor threadPoolTaskExecutor;
     @Autowired
     private IMailUtil iMailUtil;
+    @Autowired
+    private QiniuService qiniuService;
 
     @Override
     public String adminLogin(String username, String password, String uuid, String code) {
@@ -179,7 +183,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public boolean registerUser6(String openId) {
         UserAuth userAuth = UserAuth.builder()
                 // 这个应该是用户自己的昵称
-                .nickname("")
+                .nickname("默认昵称")
                 // 用户自己的头像，无需默认值
                 .avatar(systemConfigService.selectDefaultRegisterAvatar()).intro("介绍下你自己吧").build();
         int insert = userAuthMapper.insert(userAuth);
@@ -306,7 +310,32 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         BusinessAssert.notNull(userAuth, "用户信息不完整，请联系管理员");
         return BeanCopyUtil.copyBean(userAuth, UserInfoVO.class);
     }
-    
+
+    @Override
+    public boolean wxmpModify(UserAuth userAuth) {
+        LoginUser loginUser = SecurityUtil.getLoginUser();
+        Long userAuthId = loginUser.getUser().getUserAuthId();
+        String avatar = userAuth.getAvatar();
+        if (Base64Util.checkBase64(avatar)) {
+            String base64Str = Base64Util.data2Base64(avatar);
+            Map<String, String> decode = Base64Util.decode(base64Str);
+            qiniuService.uploadFile(decode.get("filePath"), decode.get("key"));
+            avatar = qiniuService.publicDownload(decode.get("key"));
+            FileUtil.del(decode.get("filePath"));
+        }
+        UserAuth build = UserAuth.builder()
+                .id(userAuthId)
+                .nickname(userAuth.getNickname())
+                // 因为头像可能是上传的base64格式，需要转化一下
+                .avatar(avatar)
+                .intro(userAuth.getIntro())
+                .webSite(userAuth.getWebSite())
+                .email(userAuth.getEmail())
+                .build();
+        int update = userAuthMapper.updateById(build);
+        return update > 0;
+    }
+
     /**
      * 微信小程序用户登录
      *

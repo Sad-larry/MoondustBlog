@@ -2,17 +2,17 @@
 const {
   $Message
 } = require('../../dist/base/index');
+
 Page({
 
   data: {
-    loading: true,
+    hasLogin: false,
     detail: {},
     spinShows: '',
     isShow: !1,
     menuBackgroup: !1,
     isCollect: false,
     isLiked: false,
-    userInfo: {},
     comments: {},
     comment_count: 0,
     userId: '',
@@ -20,29 +20,19 @@ Page({
   },
 
   onLoad: function (options) {
-    var that = this;
+    // 加载时判断是否登录
+    this.setData({
+      hasLogin: wx.getStorageSync('hasLogin')
+    })
     var id = options.id
-    var userInfo = wx.getStorageSync('userInfo')
+    // var id = 1
+    // 获取文章细节
     wx.$api.getArticleDetail(id).then(res => {
       console.log("getArticleDetail():", res)
       this.setData({
         detail: res.data
       })
-      spinShows: setTimeout(function () {
-        that.setData({
-          loading: !that.data.loading,
-          userInfo: userInfo
-        });
-        console.log("spinShow");
-      }, 1000)
     })
-  },
-  onShareAppMessage() {
-    return {
-      title: this.data.detail.title,
-      path: 'pages/detail/index?id=' + this.data.detail.objectId,
-      imageUrl: '/images/blog.png'
-    }
   },
   showHideMenu: function () {
     console.log('show')
@@ -54,7 +44,10 @@ Page({
   },
   //打开赞赏
   reward() {
-
+    $Message({
+      content: '开发中...',
+      type: 'default'
+    });
   },
   //生成海报
   createPic() {
@@ -66,39 +59,13 @@ Page({
       url: '/pages/share/index?id=' + id + '&title=' + title + '&shareCode=' + shareCode + '&listPic=' + listPic,
     })
   },
-  //取消和收藏文章
-  collection(e) {
-    console.log(e)
-    var id = this.data.detail.objectId
-    var action = e.currentTarget.dataset.action
-    if (action == 'noCollect') {
-      wx.u.collectAction(id, 'noCollect').then(res => {
-        if (res.result) {
-          this.setData({
-            isCollect: false
-          })
-          $Message({
-            content: '取消成功',
-            type: 'success'
-          });
-        }
-      })
-    } else {
-      wx.u.collectAction(id, 'collect').then(res => {
-        if (res.result) {
-          this.setData({
-            isCollect: true
-          })
-          $Message({
-            content: '收藏成功',
-            type: 'success'
-          });
-        }
-      })
-    }
-  },
   //取消和点赞文章
   like(e) {
+    $Message({
+      content: '开发中...',
+      type: 'default'
+    });
+    /*
     var id = this.data.detail.objectId
     var action = e.currentTarget.dataset.action
     if (action == 'noLike') {
@@ -126,14 +93,19 @@ Page({
         }
       })
     }
+    */
   },
   formSubmit(e) {
+    $Message({
+      content: '开发中...',
+      type: 'default'
+    });
+    /*
     var userId = this.data.userId;
     var content = e.detail.value.inputComment;
     var form_Id = e.detail.formId
     var id = this.data.detail.objectId
     var user = null;
-
     if (!content) {
       $Message({
         content: '请输入评论内容',
@@ -223,9 +195,7 @@ Page({
           type: 'warning'
         });
       }
-    })
-
-
+    })*/
   },
   replyComment(e) {
     this.setData({
@@ -236,9 +206,16 @@ Page({
       openid: e.currentTarget.dataset.openid
     })
   },
-  goMy() {
+  goLogin() {
     wx.switchTab({
       url: '/pages/my/index',
     })
-  }
+  },
+  onShareAppMessage() {
+    return {
+      title: this.data.detail.title,
+      path: 'pages/detail/index?id=' + this.data.detail.objectId,
+      imageUrl: '/images/blog.png'
+    }
+  },
 })

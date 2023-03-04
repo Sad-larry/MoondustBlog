@@ -48,6 +48,7 @@ public class PathUtil {
     }
 
     /**
+     * 得到res物理路径
      * 得到jar包资源物理路径
      *
      * @return {@link String}
@@ -57,6 +58,9 @@ public class PathUtil {
         File jarFile = home.getSource();
         //项目部署的目录
         if (jarFile != null) {
+            if (!jarFile.getParentFile().exists()) {
+                jarFile.getParentFile().mkdirs();
+            }
             return jarFile.getParentFile().getPath();
         }
         return null;

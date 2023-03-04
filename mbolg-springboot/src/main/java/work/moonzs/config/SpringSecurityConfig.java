@@ -4,10 +4,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -15,17 +18,20 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import work.moonzs.base.filter.JwtAuthenticationTokenFilter;
-import work.moonzs.base.handler.AccessDeniedHandlerImpl;
-import work.moonzs.base.handler.AuthenticationEntryPointImpl;
+import work.moonzs.config.security.authentication.WxmpLoginProvider;
+import work.moonzs.config.security.filter.JwtAuthenticationTokenFilter;
+import work.moonzs.config.security.handler.AccessDeniedHandlerImpl;
+import work.moonzs.config.security.handler.AuthenticationEntryPointImpl;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
  * @author Moondust月尘
  */
 @Configuration
-@EnableMethodSecurity
+// @EnableMethodSecurity
+@EnableWebSecurity
 public class SpringSecurityConfig {
     @Autowired
     private JwtAuthenticationTokenFilter authenticationTokenFilter;
@@ -33,6 +39,8 @@ public class SpringSecurityConfig {
     private AuthenticationEntryPointImpl authenticationEntryPoint;
     @Autowired
     private AccessDeniedHandlerImpl accessDeniedHandler;
+    @Autowired
+    private UserDetailsService userDetailsService;
 
     /**
      * 过滤器链配置
@@ -48,7 +56,14 @@ public class SpringSecurityConfig {
         // 使用了jwt就不通过session获取SecurityContext
         httpSecurity.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         // 登录接口可以匿名访问 其他接口需要认证
-        httpSecurity.authorizeRequests().antMatchers("/system/login", "/system/captchaImage", "/druid/**").anonymous().antMatchers("/web/user/wxmpUserInfo", "/web/user/wxmpLogout").authenticated().antMatchers("/web/**").permitAll().antMatchers("/swagger**/**").permitAll().antMatchers("/webjars/**").permitAll().antMatchers("/v2/**").permitAll().anyRequest().authenticated();
+        httpSecurity.authorizeRequests()
+                .antMatchers("/system/login", "/system/captchaImage", "/druid/**").anonymous()
+                .antMatchers("/web/user/wxmpUserInfo", "/web/user/wxmpLogout", "/web/user/wxmpModify").authenticated()
+                .antMatchers("/web/**").permitAll()
+                .antMatchers("/swagger**/**").permitAll()
+                .antMatchers("/webjars/**").permitAll()
+                .antMatchers("/v2/**").permitAll()
+                .anyRequest().authenticated();
         // 添加过滤器
         httpSecurity.addFilterBefore(authenticationTokenFilter, UsernamePasswordAuthenticationFilter.class);
         httpSecurity.exceptionHandling()
@@ -88,7 +103,33 @@ public class SpringSecurityConfig {
 
     @Bean
     public AuthenticationManager authenticationManagerBean() throws Exception {
-        return authenticationConfiguration().getAuthenticationManager();
+        // 如果有多个身份验证处理器，可以直接添加
+        return new ProviderManager(
+                Arrays.asList(wxmpLoginProvider(), daoAuthenticationProvider())
+        );
+    }
+
+    /**
+     * 自定义身份验证处理器
+     *
+     * @return {@link WxmpLoginProvider}
+     */
+    @Bean
+    public WxmpLoginProvider wxmpLoginProvider() {
+        return new WxmpLoginProvider(userDetailsService);
+    }
+
+    /**
+     * 默认的身份验证处理器，需要手动添加，否则会被自定义的顶替掉
+     *
+     * @return {@link DaoAuthenticationProvider}
+     */
+    @Bean
+    public DaoAuthenticationProvider daoAuthenticationProvider() {
+        DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
+        daoAuthenticationProvider.setUserDetailsService(userDetailsService);
+        daoAuthenticationProvider.setPasswordEncoder(passwordEncoder());
+        return daoAuthenticationProvider;
     }
 
     /**

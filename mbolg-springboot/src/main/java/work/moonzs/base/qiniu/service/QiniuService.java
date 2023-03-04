@@ -12,6 +12,15 @@ import java.util.Map;
  */
 public interface QiniuService {
     /**
+     * 上传本地文件，默认存储空间
+     *
+     * @param key      文件存储路径
+     * @param filename 文件名
+     * @return boolean
+     */
+    boolean uploadFile(String key, String filename);
+
+    /**
      * 上传本地文件
      * 这里的文件名一般是带有全路径的文件的文件名，通常是上传本地文件
      * 一般不用这个方法，一般在浏览器上传文件，服务器截取文件流进行存储
@@ -103,6 +112,14 @@ public interface QiniuService {
      * @param key    关键路径
      */
     void updateFile(String bucket, String key);
+
+    /**
+     * 公共下载，默认域名
+     *
+     * @param key 关键
+     * @return {@link String}
+     */
+    String publicDownload(String key);
 
     /**
      * 公有下载

@@ -28,7 +28,7 @@ label {
 }
 
 .avatar-btn {
-  background-color:transparent;
+  background-color: transparent;
 }
 
 .avatar-btn::after {
@@ -40,4 +40,12 @@ label {
   height: 80px;
   border-radius: 50%;
   border: 2px solid #b5c5c0;
+}
+
+.necessary-info {
+  color: #f30a0a;
+}
+
+.submit-btn {
+  margin-top: 20px;
 }

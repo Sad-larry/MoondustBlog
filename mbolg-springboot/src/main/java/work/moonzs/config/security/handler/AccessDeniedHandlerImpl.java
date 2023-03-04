@@ -1,4 +1,4 @@
-package work.moonzs.base.handler;
+package work.moonzs.config.security.handler;
 
 import cn.hutool.json.JSONUtil;
 import org.springframework.security.access.AccessDeniedException;

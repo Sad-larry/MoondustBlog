@@ -30,6 +30,20 @@ export const wxmpUserInfo = () => {
 }
 
 /**
+ * 修改用户信息
+ */
+export const wxmpModify = (formData) => {
+  return request({
+    url: '/web/user/wxmpModify',
+    method: 'post',
+    header: {
+      'Authorization': 'Bearer ' + wx.getStorageSync('token'),
+    },
+    data: formData
+  })
+}
+
+/**
  * 用户退出登录
  */
 export const wxmpLogout = () => {

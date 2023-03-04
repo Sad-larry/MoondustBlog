@@ -76,14 +76,14 @@
     </view>
     <!--底部框-->
     <view class='comment-fixed'>
-      <form bindsubmit="formSubmit" report-submit='true'>
+      <form bindsubmit="formSubmit">
         <view class="comment-respond">
           <view class="comment-box">
-            <view wx:if="{{userInfo.nickName}}" style='display:flex;width:100%;'>
+            <view wx:if="{{hasLogin}}" style='display:flex;width:100%;'>
               <input bindblur="onReplyBlur" bindconfirm="formSubmit" bindfocus="onRepleyFocus" class="comment-input" confirmType="send" cursorSpacing="10" focus="{{focus}}" maxlength="100" name="inputComment" placeholder="说点什么吧..." type="text" value="{{commentContent}}"></input>
               <button class="comment-button touch-active" form-type="submit">发送</button>
             </view>
-            <view wx:else class="need-login" bindtap='goMy'>点击此处授权，即可评论文章😆</view>
+            <view wx:else class="need-login" bindtap='goLogin'>点击此处登录，即可评论文章~</view>
             <view catchtap="showHideMenu" class="zan-icon zan-icon-add-o zan-font-20 icon-add">
               <image src='../../images/open.png' class='open'></image>
             </view>
@@ -106,15 +106,6 @@
                   </view>
                   <view>
                     <text>海报</text>
-                  </view>
-                </view>
-                <view catchtap="collection" data-action="{{isCollect?'noCollect':'collect'}}" class="icon-type">
-                  <view>
-                    <image class="img-menu" src="../../images/{{isCollect?'collected.png':'collect.png'}}"></image>
-                  </view>
-                  <view>
-                    <text wx:if="{{isCollect}}">已收藏</text>
-                    <text wx:else>收藏</text>
                   </view>
                 </view>
                 <view catchtap="like" data-action="{{isLiked?'noLike':'like'}}" class="icon-type">

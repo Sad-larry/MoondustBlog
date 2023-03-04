@@ -1,0 +1,31 @@
+<!--pages/modify/index.wxml-->
+<view>
+  <!--全局提醒-->
+  <i-message id="message" />
+  <form bindsubmit="formSubmit">
+    <!--头像-->
+    <view class="section">
+      <view class="section-title">头像：<span class="necessary-info">*</span></view>
+      <view class="section-subject">
+        <button class="avatar-btn" open-type="chooseAvatar" bind:chooseavatar="onChooseAvatar">
+          <image class="avatar-wrapper" mode="aspectFill" src="{{avatar}}" />
+        </button>
+      </view>
+    </view>
+    <!--昵称-->
+    <view class="section">
+      <view class="section-title">昵称：<span class="necessary-info">*</span></view>
+      <view class="section-subject">
+        <input type="nickname" name="nickname" class="weui-input" value="{{nickname}}" placeholder="请输入昵称" bindfocus="resetNickname" />
+      </view>
+    </view>
+    <!--个人简介-->
+    <view class="section">
+      <view class="section-title">个人简介：</view>
+      <view class="section-subject">
+        <input type="text" name="intro" value="{{intro}}" placeholder="做个简单的自我介绍吧~" bindfocus="resetIntro" />
+      </view>
+    </view>
+    <button class="submit-btn" form-type="submit" type="primary">保存</button>
+  </form>
+</view>

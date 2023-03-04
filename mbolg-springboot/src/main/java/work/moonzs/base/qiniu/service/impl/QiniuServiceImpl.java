@@ -11,6 +11,7 @@ import com.qiniu.storage.model.BatchStatus;
 import com.qiniu.storage.model.FileInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import work.moonzs.base.enums.AppHttpCodeEnum;
@@ -35,6 +36,10 @@ import java.util.Map;
 @Service("qiniuService")
 @RequiredArgsConstructor
 public class QiniuServiceImpl implements QiniuService {
+    @Value("${oss.qiniu.bucket}")
+    private String BUCKET;
+    @Value("${oss.qiniu.domain}")
+    private String DOMAIN;
     private final QiniuConfig qiniuConfig;
     private final QiniuManager qiniuManager;
 
@@ -53,6 +58,11 @@ public class QiniuServiceImpl implements QiniuService {
      */
     private boolean moveFile(String srcBucket, String fromKey, String destBucket, String toKey) {
         return moveOrCopyFile(srcBucket, fromKey, destBucket, toKey, QiniuManager.FileAction.MOVE);
+    }
+
+    @Override
+    public boolean uploadFile(String key, String filename) {
+        return uploadFile(BUCKET, key, filename);
     }
 
     @Override
@@ -345,6 +355,11 @@ public class QiniuServiceImpl implements QiniuService {
         } catch (QiniuException e) {
             BusinessAssert.fail(AppHttpCodeEnum.FILE_OPERATE_FAIL);
         }
+    }
+
+    @Override
+    public String publicDownload(String key) {
+        return StrUtil.format("https://{}/{}", DOMAIN, key);
     }
 
     @Override

@@ -1,4 +1,4 @@
-package work.moonzs.base.handler;
+package work.moonzs.config.security.authentication;
 
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;

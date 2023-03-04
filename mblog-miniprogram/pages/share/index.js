@@ -11,7 +11,7 @@ Page({
   /**
    * 生命周期函数--监听页面加载
    */
-  onLoad: function(options) {
+  onLoad: function (options) {
     wx.showLoading({
       title: '海报生成中',
     })
@@ -45,7 +45,7 @@ Page({
           },
           {
             type: 'image',
-            url: 'https://bmob-cdn-23301.bmobcloud.com/2019/01/05/606cba5e405d7f7280dce725803eae6d.png',
+            url: 'https://niu.moonzs.work/2023/03/04/47112202560e4276b0777a5d33c05515.jpg',
             css: {
               width: '420rpx',
               height: '167rpx',
@@ -69,7 +69,7 @@ Page({
           },
           {
             type: 'text',
-            text: "Mamba博客 倾情出品",
+            text: "月尘博客 吴灵出品",
             css: {
               left: '300rpx',
               top: '380rpx',
@@ -85,11 +85,10 @@ Page({
   },
   onImgOK(e) {
     this.setData({
-      imagePath:e.detail.path
-    })    
-    setTimeout(function() {
+      imagePath: e.detail.path
+    })
+    setTimeout(function () {
       wx.hideLoading()
-      console.log("spinShow");
     }, 1000)
 
     console.log(e);

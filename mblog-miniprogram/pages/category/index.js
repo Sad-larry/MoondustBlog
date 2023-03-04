@@ -5,7 +5,6 @@ Page({
    * 页面的初始数据
    */
   data: {
-    loading: true,
     cateList: {},
     current: '',
     current_scroll: '',
@@ -15,12 +14,8 @@ Page({
   },
 
   onLoad: function(options) {
-    wx.showLoading({
-      title:'加载中'
-    })
-    var that = this
     wx.$api.getCategoryList().then(res => {
-      console.log("getCategoryList()", res);
+      console.log("getCategoryList()", res.data);
       this.setData({
         cateList: res.data,
         current: res.data[0].id,
@@ -28,7 +23,6 @@ Page({
       })
       this.getArticleList(res.data[0].id);
     })
-
   },
   getArticleList(categoryId) {
     wx.$api.getArticleByCategory(categoryId).then(res => {
@@ -36,7 +30,7 @@ Page({
       let data = [];
       res.data.records.forEach((resEach) => {
         data.push({
-          'objectId': resEach.id,
+          'id': resEach.id,
           'title': resEach.title,
           'read_counts': resEach.id,
           'excerpt': resEach.title,
@@ -57,7 +51,6 @@ Page({
           'nodata': true
         })
       }
-      this.spinShow();
     })
   },
   handleChangeScroll({
@@ -69,15 +62,6 @@ Page({
       current_scroll: detail.key
     });
     this.getArticleList(detail.key)
-  },
-  spinShow: function() {
-    var that = this
-    setTimeout(function() {
-      that.setData({
-        loading: false,
-      });
-      console.log("spinShow");
-    }, 1500)
   },
   detail(e){
     var id = e.currentTarget.dataset.id
@@ -92,5 +76,4 @@ Page({
       imageUrl: '/images/blog.png'
     }
   },
-  
 })

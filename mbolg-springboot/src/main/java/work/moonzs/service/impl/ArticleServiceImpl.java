@@ -10,7 +10,6 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -58,8 +57,6 @@ import java.util.regex.Pattern;
  */
 @Service("articleService")
 public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> implements ArticleService {
-    @Value("${spring.servlet.multipart.location}")
-    private String fileTempPath;
     /**
      * 文件类型为 Markdown 类型
      */
@@ -306,9 +303,6 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         // 临时目录
         String localFilePath = StrUtil.appendIfMissing(PathUtil.getResPhysicalPath(), File.separator);
         File saveFile = new File(localFilePath, fileName);
-        if (!saveFile.getParentFile().exists()) {
-            saveFile.getParentFile().mkdirs();
-        }
         try {
             // 保存至文件
             file.transferTo(saveFile);

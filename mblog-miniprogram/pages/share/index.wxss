@@ -1,12 +1,14 @@
 /* pages/share/index.wxss */
 
 page {
-  height: 100%; /*生效*/
+  height: 100%;
+  /*生效*/
 }
 
 .container {
   width: 100%;
-  height: 100%; /*不生效*/
+  height: 100%;
+  /*不生效*/
   background: #242424;
   text-align: center;
 }

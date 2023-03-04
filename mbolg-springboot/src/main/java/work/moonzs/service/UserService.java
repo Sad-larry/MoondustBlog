@@ -3,6 +3,7 @@ package work.moonzs.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.springframework.transaction.annotation.Transactional;
 import work.moonzs.domain.entity.User;
+import work.moonzs.domain.entity.UserAuth;
 import work.moonzs.domain.vo.PageVO;
 import work.moonzs.domain.vo.UserInfoVO;
 import work.moonzs.domain.vo.UserListVo;
@@ -141,5 +142,13 @@ public interface UserService extends IService<User> {
      * @return {@link UserInfoVO}
      */
     UserInfoVO wxmpUserInfo();
+
+    /**
+     * 修改用户信息
+     *
+     * @return boolean
+     */
+    @Transactional
+    boolean wxmpModify(UserAuth userAuth);
 }
 

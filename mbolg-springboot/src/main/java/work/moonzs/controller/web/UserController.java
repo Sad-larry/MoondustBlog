@@ -12,7 +12,9 @@ import work.moonzs.base.utils.BeanCopyUtil;
 import work.moonzs.domain.ResponseResult;
 import work.moonzs.domain.dto.LoginUserDTO;
 import work.moonzs.domain.dto.RegisterUserDTO;
+import work.moonzs.domain.dto.UserAuthDTO;
 import work.moonzs.domain.entity.User;
+import work.moonzs.domain.entity.UserAuth;
 import work.moonzs.service.UserService;
 
 import java.util.Map;
@@ -99,6 +101,19 @@ public class UserController {
     @GetMapping("/wxmpLogout")
     public ResponseResult wxmpLogout() {
         userService.userLogout();
+        return ResponseResult.success();
+    }
+
+    /**
+     * 修改用户信息
+     *
+     * @return {@link ResponseResult}<{@link ?}>
+     */
+    @SystemLog(businessName = "修改用户信息")
+    @WebOperationLogger(value = "用户模块-微信小程序信息", type = "修改", desc = "修改信息")
+    @PostMapping("/wxmpModify")
+    public ResponseResult wxmpModify(@Validated @RequestBody UserAuthDTO userAuthDTO) {
+        userService.wxmpModify(BeanCopyUtil.copyBean(userAuthDTO, UserAuth.class));
         return ResponseResult.success();
     }
 }

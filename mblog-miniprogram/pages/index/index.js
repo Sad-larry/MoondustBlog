@@ -4,7 +4,6 @@ Page({
    * 页面的初始数据
    */
   data: {
-    loading: true,
     current: '',
     current_scroll: '',
     category: '',
@@ -18,7 +17,6 @@ Page({
   },
 
   onLoad: function (options) {
-    var that = this
     this.getArticleList(this.data.pageSize, this.data.pagination);
   },
   getArticleList(pageSize, pagination) {
@@ -37,9 +35,6 @@ Page({
           'author': resEach.title
         })
       })
-      if (this.data.pagination == 1) {
-        this.spinShow()
-      }
       if (data.length) {
         let articles = this.data.articles;
         let pagination = this.data.pagination;
@@ -68,15 +63,6 @@ Page({
       })
       this.getArticleList(this.data.pageSize, this.data.pagination);
     }
-  },
-  spinShow: function () {
-    var that = this
-    setTimeout(function () {
-      that.setData({
-        loading: !that.data.loading,
-      });
-      console.log("spinShow");
-    }, 1500)
   },
   onShareAppMessage() {
     return {

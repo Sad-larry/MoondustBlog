@@ -1,4 +1,4 @@
-package work.moonzs.base.handler;
+package work.moonzs.config.security.handler;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import lombok.extern.slf4j.Slf4j;

@@ -5,8 +5,7 @@
     "pages/my/index",
     "pages/detail/index",
     "pages/share/index",
-    "pages/collect/index",
-    "pages/new/index"
+    "pages/modify/index"
   ],
   "window": {
     "backgroundTextStyle": "light",
@@ -43,5 +42,6 @@
       "provider": "wxa51b9c855ae38f3c"
     }
   },
-  "sitemapLocation": "sitemap.json"
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents"
 }
