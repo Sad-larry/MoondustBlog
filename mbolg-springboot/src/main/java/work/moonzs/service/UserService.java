@@ -5,12 +5,13 @@ import org.springframework.transaction.annotation.Transactional;
 import work.moonzs.domain.entity.User;
 import work.moonzs.domain.entity.UserAuth;
 import work.moonzs.domain.vo.PageVO;
-import work.moonzs.domain.vo.UserInfoVO;
 import work.moonzs.domain.vo.UserListVo;
 import work.moonzs.domain.vo.sys.SysOnlineUserVO;
 import work.moonzs.domain.vo.sys.SysUserBaseVO;
 import work.moonzs.domain.vo.sys.SysUserVO;
+import work.moonzs.domain.vo.web.UserInfoVO;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -64,6 +65,8 @@ public interface UserService extends IService<User> {
      * @return {@link Object}
      */
     SysUserBaseVO getUserById(Long userId);
+
+    List<UserInfoVO> getWebUserByIds(List<Long> userIds);
 
     /**
      * 删除用户

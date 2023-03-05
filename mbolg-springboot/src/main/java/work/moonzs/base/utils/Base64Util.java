@@ -52,11 +52,11 @@ public class Base64Util {
         // 解码base64转文件
         byte[] b = Base64.getDecoder().decode(replaceEnter(base64Str));
         // 获取随机文件
-        String fileName = PathUtil.generateFilePath("." + getImageBase64Type(b));
-        result.put("key", fileName);
+        String fileKey = PathUtil.generateFilePath("." + getImageBase64Type(b));
+        result.put("key", fileKey);
         // 获取临时地址
         String filePath = PathUtil.getResPhysicalPath();
-        File file = new File(StrUtil.appendIfMissing(filePath, File.separator) + fileName);
+        File file = new File(StrUtil.appendIfMissing(filePath, File.separator) + fileKey);
         if (!file.getParentFile().exists()) {
             file.getParentFile().mkdirs();
         }

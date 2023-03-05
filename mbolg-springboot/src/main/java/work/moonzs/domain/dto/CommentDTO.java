@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 /**
  * @author Moondust月尘
@@ -19,27 +20,29 @@ public class CommentDTO {
     /**
      * 父评论id
      */
-    @ApiModelProperty(name = "parentId", value = "评论父id", dataType = "Integer")
-    private Integer parentId;
+    @ApiModelProperty(name = "parentId", value = "评论父id", dataType = "Long")
+    private Long parentId;
     /**
      * 评论文章id
      */
-    @ApiModelProperty(name = "articleId", value = "文章id", dataType = "Integer")
-    private Integer articleId;
+    @ApiModelProperty(name = "articleId", value = "文章id", required = true, dataType = "Long")
+    @NotNull(message = "{CommentDTO.articleId.NotNull}")
+    private Long articleId;
     /**
-     * 父评论id
+     * 用户id
      */
-    @ApiModelProperty(name = "userId", value = "用户ID", dataType = "Long")
+    @ApiModelProperty(name = "userId", value = "用户ID", required = true, dataType = "Long")
+    @NotNull(message = "{CommentDTO.userId.NotNull}")
     private Long userId;
     /**
      * 回复用户id
      */
-    @ApiModelProperty(name = "replyUserId", value = "回复用户id", dataType = "Integer")
-    private Integer replyUserId;
+    @ApiModelProperty(name = "replyUserId", value = "回复用户id", dataType = "Long")
+    private Long replyUserId;
     /**
      * 评论内容
      */
-    @NotBlank(message = "评论内容不能为空")
-    @ApiModelProperty(name = "commentContent", value = "评论内容", required = true, dataType = "String")
-    private String commentContent;
+    @ApiModelProperty(name = "content", value = "评论内容", required = true, dataType = "String")
+    @NotBlank(message = "{CommentDTO.content.NotBlank}")
+    private String content;
 }

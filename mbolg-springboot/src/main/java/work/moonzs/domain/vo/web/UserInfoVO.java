@@ -1,4 +1,4 @@
-package work.moonzs.domain.vo;
+package work.moonzs.domain.vo.web;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,6 +11,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserInfoVO {
+    /**
+     * 用户ID
+     */
+    private Long id;
     /**
      * 电子邮件
      */

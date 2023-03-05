@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.URL;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Null;
@@ -39,6 +40,7 @@ public class UserAuthDTO {
      */
     @ApiModelProperty(notes = "用户头像")
     @NotBlank(message = "{UserAuthDTO.avatar.NotBlank}")
+    @URL(message = "{c}")
     private String avatar;
     /**
      * 用户简介

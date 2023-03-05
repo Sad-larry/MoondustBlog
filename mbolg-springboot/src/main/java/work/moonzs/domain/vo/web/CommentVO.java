@@ -31,13 +31,9 @@ public class CommentVO {
      */
     private String nickname;
     /**
-     * 评论人网站地址
-     */
-    private String webSite;
-    /**
      * 评论内容
      */
-    private String commentContent;
+    private String content;
     /**
      * 点赞数
      */

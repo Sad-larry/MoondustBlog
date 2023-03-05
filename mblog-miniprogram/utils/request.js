@@ -1,5 +1,5 @@
-// const baseURL = 'http://refrainblog.cn:8080'
-const baseURL = 'http://localhost:8080'
+const baseURL = 'https://refrainblog.cn/prod-api/'
+// const baseURL = 'http://localhost:8080'
 
 // 1 封装公共请求接口方法
 export const request = ({

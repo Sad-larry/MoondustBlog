@@ -43,6 +43,15 @@ public interface CommentService extends IService<Comment> {
      * @param articleId 文章id
      * @return {@link List}<{@link CommentVO}>
      */
-    List<CommentVO> listArticleComment(Long articleId);
+    PageVO<CommentVO> listArticleComment(Long articleId);
+
+
+    /**
+     * 发送文章评论
+     *
+     * @param comment 评论
+     */
+    @Transactional
+    Long sendArticleComment(Comment comment);
 }
 

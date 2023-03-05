@@ -38,4 +38,17 @@
                  LEFT JOIN (SELECT id, avatar, nickname FROM t_user_auth) ua ON u.user_auth_id = ua.id
         WHERE u.id = #{userId}
     </select>
+    <select id="getWebUserByIds" resultType="work.moonzs.domain.vo.web.UserInfoVO">
+        SELECT u.id,
+        ua.nickname,
+        ua.avatar,
+        ua.intro,
+        ua.web_site
+        FROM t_user u
+        LEFT JOIN (SELECT id, nickname, avatar, intro, web_site FROM t_user_auth) ua ON u.user_auth_id = ua.id
+        WHERE u.id in
+        <foreach collection="userIds" item="userId" index="index" open="(" close=")" separator=",">
+            #{userId}
+        </foreach>
+    </select>
 </mapper>

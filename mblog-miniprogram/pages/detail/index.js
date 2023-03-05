@@ -8,34 +8,44 @@ Page({
   data: {
     hasLogin: false,
     detail: {},
-    spinShows: '',
+    userInfo: {},
     isShow: !1,
     menuBackgroup: !1,
-    isCollect: false,
     isLiked: false,
-    comments: {},
+    comments: [],
     comment_count: 0,
     userId: '',
-    commentContent: ''
+    parentId: 0,
+    replyUserId: 0,
+    replyNickname: '',
+    content: '',
+    commentContent: '说点什么吧...',
+    flyLike: {}
   },
 
   onLoad: function (options) {
-    // 加载时判断是否登录
-    this.setData({
-      hasLogin: wx.getStorageSync('hasLogin')
-    })
-    var id = options.id
-    // var id = 1
+    let hasLogin = wx.getStorageSync('hasLogin')
+    let userInfo = wx.getStorageSync('userInfo')
+    let id = options.id
     // 获取文章细节
     wx.$api.getArticleDetail(id).then(res => {
-      console.log("getArticleDetail():", res)
       this.setData({
-        detail: res.data
+        detail: res.data,
+        hasLogin: hasLogin,
+        userInfo: userInfo
       })
+    })
+    // 获取文章评论
+    wx.$api.getArticleComment(id).then(res => {
+      if (res.total) {
+        this.setData({
+          comment_count: res.total,
+          comments: res.records
+        })
+      }
     })
   },
   showHideMenu: function () {
-    console.log('show')
     this.setData({
       isShow: !this.data.isShow,
       isLoad: !1,
@@ -45,67 +55,53 @@ Page({
   //打开赞赏
   reward() {
     $Message({
-      content: '开发中...',
-      type: 'default'
+      content: '谢谢大哥支持，功能正在开发中...',
+      type: 'default',
+      duration: 3
     });
   },
   //生成海报
   createPic() {
-    var id = this.data.detail.objectId
+    var id = this.data.detail.id
     var title = this.data.detail.title
-    var shareCode = this.data.shareCode
-    var listPic = this.data.detail.listPic
+    var shareCode = this.data.categoryId
+    var listPic = this.data.detail.avatar
     wx.navigateTo({
       url: '/pages/share/index?id=' + id + '&title=' + title + '&shareCode=' + shareCode + '&listPic=' + listPic,
     })
   },
   //取消和点赞文章
   like(e) {
-    $Message({
-      content: '开发中...',
-      type: 'default'
+    this.setData({
+      isLiked: true
+    })
+    var animation = wx.createAnimation({
+      duration: 1000,
+      timingFunction: 'ease-out',
+    })
+    this.animation = animation;
+    this.animation.rotateY(180).step();
+    this.setData({
+      flyLike: this.animation.export()
     });
-    /*
-    var id = this.data.detail.objectId
-    var action = e.currentTarget.dataset.action
-    if (action == 'noLike') {
-      wx.u.likeAction(id, 'noLike').then(res => {
-        if (res.result) {
-          this.setData({
-            isLiked: false
-          })
-          $Message({
-            content: '取消成功',
-            type: 'success'
-          });
-        }
+    setTimeout(function () {
+      this.animation.rotateY(360).step();
+      this.setData({
+        flyLike: this.animation.export()
       })
-    } else {
-      wx.u.likeAction(id, 'like').then(res => {
-        if (res.result) {
-          this.setData({
-            isLiked: true
-          })
-          $Message({
-            content: '点赞成功',
-            type: 'success'
-          });
-        }
+    }.bind(this), 1000)
+    setTimeout(function () {
+      this.setData({
+        isLiked: false
       })
-    }
-    */
+    }.bind(this), 2500)
   },
   formSubmit(e) {
-    $Message({
-      content: '开发中...',
-      type: 'default'
-    });
-    /*
-    var userId = this.data.userId;
-    var content = e.detail.value.inputComment;
-    var form_Id = e.detail.formId
-    var id = this.data.detail.objectId
-    var user = null;
+    let articleId = this.data.detail.id;
+    let userId = this.data.userInfo.userId;
+    let replyUserId = this.data.replyUserId;
+    let parentId = this.data.parentId;
+    let content = e.detail.value.inputComment || e.detail.value;
     if (!content) {
       $Message({
         content: '请输入评论内容',
@@ -113,97 +109,69 @@ Page({
       });
       return false;
     }
-    if (userId != '') {
-      content = content.replace('@' + this.data.userName + " ", "");
-      user = {
-        nickName: this.data.userName
-      }
+    let comment = {
+      articleId,
+      userId,
+      content,
     }
-    wx.u.saveComment(id, userId, content, form_Id).then(res => {
-
-      if (res.result) {
-        var openId = wx.getStorageSync('openid')
-        var userData = wx.getStorageSync('userInfo');
-        var objectId = wx.Bmob.User.current().objectId
-        var replyer = {
-          objectId: objectId,
-          userPic: userData.userPic,
-          nickName: userData.nickName,
-          authData: {
-            weapp: {
-              openid: openId
+    if (parentId) {
+      comment['parentId'] = parentId;
+    }
+    if (replyUserId) {
+      comment['replyUserId'] = replyUserId;
+    }
+    wx.$api.sendArticleComment(comment).then(res => {
+      if (res.code == 200) {
+        comment['id'] = res.data;
+        comment['avatar'] = this.data.userInfo.avatar;
+        comment['nickname'] = this.data.userInfo.nickname;
+        comment['createTime'] = '刚刚';
+        var comments = this.data.comments
+        // 将页面上的数据和最新获取到的数据合并
+        // 如果是回复评论，则添加到回复评论中
+        if (parentId) {
+          for (let i = 0; i < comments.length; i++) {
+            if (comments[i].id == parentId) {
+              comment['replyNickname'] = this.data.replyNickname;
+              comments[i].replyCount = comments[i].replyCount + 1;
+              comments[i].replyVOList.unshift(comment);
+              break;
             }
           }
-        };
-
-        var data = [];
-        data.push({
-          replyer: replyer,
-          createdAt: "刚刚",
-          content: content,
-          user: user,
-          formID: form_Id
-        });
-        var comments = this.data.comments
-
-        comments.push.apply(comments, data); //将页面上的数据和最新获取到的数据合并
-
+        } else {
+          // 加到第一个评论上
+          comments.unshift(comment);
+        }
         this.setData({
           comments: comments,
-          commentContent: '',
-          userId: '',
           comment_count: parseInt(this.data.comment_count) + 1
         })
-        console.log(this.data.comments)
         $Message({
           content: '评论成功',
           type: 'success'
         });
-        wx.u.sendNew('own', userData.nickName + "在《" + this.data.detail.title + "》中评论，请查看！", "", this.data.detail.objectId)
-        if (userId != '') {
-          wx.u.sendNew('user', userData.nickName + "在《" + this.data.detail.title + "》中评论，请查看！", userId, this.data.detail.objectId)
-          //发送模板消息通知
-          let modelData = {
-            "touser": this.data.openid,
-            "template_id": "WXM3zHZQX6X6IMqgKux5S6_Z8R3wWCPrQ_oSSH3zBSg", //模板id
-            "page": "pages/detail/index?id=" + this.data.detail.objectId,
-            "form_id": this.data.formID,
-            "data": {
-              "keyword1": {
-                "value": content
-              },
-              "keyword2": {
-                "value": this.data.detail.title
-              },
-              "keyword3": {
-                "value": new Date().toLocaleString()
-              }
-            },
-            //关键字
-            "emphasis_keyword": "keyword2.DATA"
-          }
-          //使用Bmob-SDK发送模板消息
-          wx.Bmob.sendWeAppMessage(modelData).then(function (response) {
-            console.log(response);
-          }).catch(function (error) {
-            console.log(error);
-          });
-        }
       } else {
         $Message({
           content: '评论失败',
           type: 'warning'
         });
       }
-    })*/
+      // 清除变量数据
+      this.setData({
+        parentId: 0,
+        replyUserId: 0,
+        replyNickname: '',
+        content: '',
+        commentContent: '说点什么吧...'
+      })
+    });
   },
   replyComment(e) {
     this.setData({
-      userId: e.currentTarget.dataset.id,
-      userName: e.currentTarget.dataset.nickname,
-      commentContent: '@' + e.currentTarget.dataset.nickname + " ",
-      formID: e.currentTarget.dataset.formid,
-      openid: e.currentTarget.dataset.openid
+      replyNickname: e.currentTarget.dataset.nickname,
+      commentContent: '回复给@' + e.currentTarget.dataset.nickname + " ",
+      parentId: e.currentTarget.dataset.parentid,
+      replyUserId: e.currentTarget.dataset.replyuserid
     })
   },
   goLogin() {

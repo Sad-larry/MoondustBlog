@@ -7,6 +7,7 @@ package work.moonzs.domain.vo.web;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import work.moonzs.domain.vo.PageVO;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -79,7 +80,7 @@ public class ArticleInfoVO {
     /**
      * 评论集合
      */
-    private List<CommentVO> comments = new ArrayList<>();
+    private PageVO<CommentVO> comments = new PageVO<>();
     /**
      * 最新文章
      */

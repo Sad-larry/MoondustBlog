@@ -12,6 +12,7 @@ Page({
   data: {
     hasLogin: false,
     noReadNewsCount: 0,
+    userId: 0,
     avatar: app.globalData.defaultAvatarUrl,
     nickname: '登录/注册>',
     intro: '第一次登录则是直接注册哦~'
@@ -24,6 +25,7 @@ Page({
       let userInfo = wx.getStorageSync('userInfo')
       this.setData({
         hasLogin: true,
+        userId: userInfo.userId,
         avatar: userInfo.avatar,
         nickname: userInfo.nickname,
         intro: userInfo.intro
@@ -33,7 +35,6 @@ Page({
   // 登录
   login() {
     let token = wx.getStorageSync('token');
-    console.log('login-token:', token);
     // 若存在 token，可以用 token 直接获取用户
     if (!token) {
       wx.login({
@@ -57,10 +58,9 @@ Page({
   // 获取用户信息
   getUserInfo() {
     wx.$api.wxmpUserInfo().then(res => {
-      console.log("res:", res);
       if (res.code == 200) {
-        console.log('wxmpUserInfo', res);
         let userInfo = {
+          userId: res.data.id,
           avatar: res.data.avatar,
           nickname: res.data.nickname,
           intro: res.data.intro
@@ -86,9 +86,9 @@ Page({
   // 注销
   logout() {
     wx.$api.wxmpLogout().then(res => {
-      console.log('wxmpLogout', res);
       this.setData({
         hasLogin: false,
+        userId: 0,
         avatar: app.globalData.defaultAvatarUrl,
         nickname: '登录/注册>',
         intro: '第一次登录则是直接注册哦~'

@@ -47,9 +47,9 @@ public class QiniuController {
     @PostMapping(path = "/upload/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseResult uploadFile(@RequestParam("file") MultipartFile file) {
         IFileUtil.isLegalFile(file);
-        String filePath = PathUtil.generateFilePath(file.getOriginalFilename());
-        boolean b = qiniuService.uploadFile(BUCKET, filePath, file);
-        return ResponseResult.success(qiniuService.publicDownload(DOMAIN, filePath));
+        String fileKey = PathUtil.generateFilePath(file.getOriginalFilename());
+        boolean b = qiniuService.uploadFile(BUCKET, fileKey, file);
+        return ResponseResult.success(qiniuService.publicDownload(DOMAIN, fileKey));
     }
 
     /**
@@ -71,12 +71,12 @@ public class QiniuController {
         String filename = file.getOriginalFilename();
         boolean hasKey = redisCache.hHasKey(CacheConstants.NEED_UPLOAD_IMAGE + key, filename);
         if (hasKey) {
-            String filePath = (String) redisCache.hget(CacheConstants.NEED_UPLOAD_IMAGE + key, filename);
-            qiniuService.uploadFile(BUCKET, filePath, file);
+            String fileKey = (String) redisCache.hget(CacheConstants.NEED_UPLOAD_IMAGE + key, filename);
+            qiniuService.uploadFile(BUCKET, fileKey, file);
             redisCache.hdel(CacheConstants.NEED_UPLOAD_IMAGE + key, filename);
             Map<String, String> result = new HashMap<>();
             result.put("filename", filename);
-            result.put("fileLink", qiniuService.publicDownload(DOMAIN, filePath));
+            result.put("fileLink", qiniuService.publicDownload(DOMAIN, fileKey));
             return ResponseResult.success(result);
         }
         return ResponseResult.fail(AppHttpCodeEnum.FILE_UPLOAD_FAIL);

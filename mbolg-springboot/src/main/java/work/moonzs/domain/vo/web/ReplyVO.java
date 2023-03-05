@@ -13,15 +13,15 @@ public class ReplyVO {
     /**
      * 评论id
      */
-    private Integer id;
+    private Long id;
     /**
      * 父评论id
      */
-    private Integer parentId;
+    private Long parentId;
     /**
      * 用户id
      */
-    private Integer userId;
+    private Long userId;
     /**
      * 用户昵称
      */
@@ -31,21 +31,17 @@ public class ReplyVO {
      */
     private String avatar;
     /**
-     * 个人网站
-     */
-    private String webSite;
-    /**
      * 被回复用户id
      */
-    private Integer replyUserId;
+    private Long replyUserId;
+    /**
+     * 被回复用户头像
+     */
+    private String replyAvatar;
     /**
      * 被回复用户昵称
      */
     private String replyNickname;
-    /**
-     * 被回复个人网站
-     */
-    private String replyWebSite;
     /**
      * 评论内容
      */

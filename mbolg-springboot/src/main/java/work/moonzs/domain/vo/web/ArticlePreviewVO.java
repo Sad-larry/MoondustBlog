@@ -20,6 +20,10 @@ public class ArticlePreviewVO {
      */
     private String title;
     /**
+     * 摘要总结
+     */
+    private String summary;
+    /**
      * 文章内容md版
      */
     private String contentMd;
@@ -27,6 +31,10 @@ public class ArticlePreviewVO {
      * 文章封面地址
      */
     private String avatar;
+    /**
+     * 阅读量
+     */
+    private Integer quantity;
     /**
      * 是否置顶(0否,1是)
      */

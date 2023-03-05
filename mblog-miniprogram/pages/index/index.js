@@ -21,18 +21,16 @@ Page({
   },
   getArticleList(pageSize, pagination) {
     wx.$api.getArticleList(pageSize, pagination).then(res => {
-      console.log(res.data);
       let data = [];
       res.data.records.forEach((resEach) => {
         data.push({
-          'objectId': resEach.id,
+          'id': resEach.id,
           'title': resEach.title,
-          'read_counts': resEach.id,
-          'excerpt': resEach.title,
-          'createdAt': resEach.createTime,
-          'category': resEach.categoryName,
-          'listPic': resEach.avatar,
-          'author': resEach.title
+          'quantity': resEach.quantity,
+          'summary': resEach.summary,
+          'createTime': resEach.createTime,
+          'avatar': resEach.avatar,
+          'categoryName': resEach.categoryName
         })
       })
       if (data.length) {

@@ -7,7 +7,8 @@
     <view class="section">
       <view class="section-title">头像：<span class="necessary-info">*</span></view>
       <view class="section-subject">
-        <button class="avatar-btn" open-type="chooseAvatar" bind:chooseavatar="onChooseAvatar">
+        <button class="avatar-btn" open-type="chooseAvatar" 
+        bindchooseavatar="onChooseAvatar">
           <image class="avatar-wrapper" mode="aspectFill" src="{{avatar}}" />
         </button>
       </view>

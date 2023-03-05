@@ -43,34 +43,56 @@
       <view wx:if="{{comment_count == 0}}" class="resp-head">暂无评论</view>
       <view wx:else style='padding-bottom:60px;'>
         <view class="resp-head1">全部评论（{{ comment_count }}）</view>
-        <view class="comment" wx:for="{{comments}}" wx:key="comment">
+        <view class="comment" wx:for="{{comments}}" wx:for-item="item" wx:key="id">
           <view class="comment-info">
             <view class="comment-author">
               <view>
-                <image class="comment-author-icon" src="{{item.replyer.userPic}}"></image>
+                <image class="comment-author-icon" src="{{item.avatar}}"></image>
               </view>
               <view class="comment-author-info">
-                <view>{{ item.replyer.nickName }}</view>
-                <view style="margin-top: 5px;">{{ item.createdAt }}</view>
+                <view>{{ item.nickname }}</view>
+                <view style="margin-top: 5px;">{{ item.createTime }}</view>
               </view>
             </view>
             <view class="comment-author-position">
-              <view bindtap="replyComment" data-id="{{item.replyer.objectId}}" data-nickname="{{item.replyer.nickName}}" data-formid="{{item.formID}}" data-openid="{{item.replyer.authData.weapp.openid}}">
+              <view bindtap="replyComment" data-parentId="{{item.id}}" data-replyUserId="{{item.userId}}" data-nickname="{{item.nickname}}">
                 <image src="/images/comment.png" style="width: 20px;height: 20px;margin-bottom: 7px;"></image>
               </view>
-              <view>{{ index + 1 }}楼</view>
+              <view>{{comments.length - index }}楼</view>
             </view>
           </view>
           <view>
             <view class="h2w h2w-light">
-              <view class="h2w__main">
-                <view class="zan-c-red" wx:if="{{item.user.nickName}}">@{{ item.user.nickName }}</view>
-                <view class="h2w__p" data-alpha="undefined" data-data="undefined" data-ename="undefined" data-href="undefined" data-id="undefined" data-name="undefined" data-src="undefined" data-url="undefined" id="">
-                  {{ item.content }}
+              <view class="h2w__p" data-alpha="undefined" data-data="undefined" data-ename="undefined" data-href="undefined" data-id="undefined" data-name="undefined" data-src="undefined" data-url="undefined" id="">
+                {{ item.content }}
+              </view>
+            </view>
+          </view>
+
+          <view class="reply-comment" wx:if="{{item.replyCount}}">
+            <view class="comment" wx:for="{{item.replyVOList}}" wx:for-item="replyItem" wx:key="idx">
+              <view class="comment-info">
+                <view class="comment-author">
+                  <view>
+                    <image class="comment-author-icon" src="{{replyItem.avatar}}"></image>
+                  </view>
+                  <view class="comment-author-info">
+                    <view>{{ replyItem.nickname }}</view>
+                    <view style="margin-top: 5px;">{{ replyItem.createTime }}</view>
+                  </view>
+                </view>
+              </view>
+              <view>
+                <view class="h2w h2w-light">
+                  <view class="zan-c-red" wx:if="{{replyItem.replyUserId}}">@{{ replyItem.replyNickname }}</view>
+                  <view class="h2w__p" data-alpha="undefined" data-data="undefined" data-ename="undefined" data-href="undefined" data-id="undefined" data-name="undefined" data-src="undefined" data-url="undefined" id="">
+                    {{ replyItem.content }}
+                  </view>
                 </view>
               </view>
             </view>
           </view>
+
         </view>
       </view>
     </view>
@@ -80,7 +102,7 @@
         <view class="comment-respond">
           <view class="comment-box">
             <view wx:if="{{hasLogin}}" style='display:flex;width:100%;'>
-              <input bindblur="onReplyBlur" bindconfirm="formSubmit" bindfocus="onRepleyFocus" class="comment-input" confirmType="send" cursorSpacing="10" focus="{{focus}}" maxlength="100" name="inputComment" placeholder="说点什么吧..." type="text" value="{{commentContent}}"></input>
+              <input bindconfirm="formSubmit" class="comment-input" confirmType="send" cursorSpacing="10" focus="{{replyNickname}}" maxlength="100" name="inputComment" placeholder="{{commentContent}}" type="text" value="{{content}}"></input>
               <button class="comment-button touch-active" form-type="submit">发送</button>
             </view>
             <view wx:else class="need-login" bindtap='goLogin'>点击此处登录，即可评论文章~</view>
@@ -108,13 +130,13 @@
                     <text>海报</text>
                   </view>
                 </view>
-                <view catchtap="like" data-action="{{isLiked?'noLike':'like'}}" class="icon-type">
+                <view bindtap="like" class="icon-type">
                   <view>
-                    <image class="img-menu" src="../../images/{{isLiked?'liked.png':'like.png'}}"></image>
+                    <image animation="{{flyLike}}" wx:if="{{isLiked}}" class="img-menu" src="../../images/liked.png"></image>
+                    <image wx:else class="img-menu" src="../../images/like.png"></image>
                   </view>
                   <view>
-                    <text wx:if="{{isLiked}}">已点赞</text>
-                    <text wx:else>点赞</text>
+                    <text>点赞</text>
                   </view>
                 </view>
                 <view catchtap="reward" class="icon-type">

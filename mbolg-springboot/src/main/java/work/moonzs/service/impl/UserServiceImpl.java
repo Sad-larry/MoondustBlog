@@ -1,6 +1,5 @@
 package work.moonzs.service.impl;
 
-import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.ObjUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
@@ -32,10 +31,10 @@ import work.moonzs.domain.entity.MailEntity;
 import work.moonzs.domain.entity.User;
 import work.moonzs.domain.entity.UserAuth;
 import work.moonzs.domain.vo.PageVO;
-import work.moonzs.domain.vo.UserInfoVO;
 import work.moonzs.domain.vo.sys.SysOnlineUserVO;
 import work.moonzs.domain.vo.sys.SysUserBaseVO;
 import work.moonzs.domain.vo.sys.SysUserVO;
+import work.moonzs.domain.vo.web.UserInfoVO;
 import work.moonzs.mapper.UserAuthMapper;
 import work.moonzs.mapper.UserMapper;
 import work.moonzs.service.SystemConfigService;
@@ -140,6 +139,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Override
     public SysUserBaseVO getUserById(Long userId) {
         return baseMapper.getUserById(userId);
+    }
+
+    @Override
+    public List<UserInfoVO> getWebUserByIds(List<Long> userIds) {
+        return baseMapper.getWebUserByIds(userIds);
     }
 
     @Override
@@ -308,6 +312,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         Long userAuthId = loginUser.getUser().getUserAuthId();
         UserAuth userAuth = userAuthMapper.selectById(userAuthId);
         BusinessAssert.notNull(userAuth, "用户信息不完整，请联系管理员");
+        userAuth.setId(loginUser.getUser().getId());
         return BeanCopyUtil.copyBean(userAuth, UserInfoVO.class);
     }
 
@@ -315,23 +320,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public boolean wxmpModify(UserAuth userAuth) {
         LoginUser loginUser = SecurityUtil.getLoginUser();
         Long userAuthId = loginUser.getUser().getUserAuthId();
-        String avatar = userAuth.getAvatar();
-        if (Base64Util.checkBase64(avatar)) {
-            String base64Str = Base64Util.data2Base64(avatar);
-            Map<String, String> decode = Base64Util.decode(base64Str);
-            qiniuService.uploadFile(decode.get("filePath"), decode.get("key"));
-            avatar = qiniuService.publicDownload(decode.get("key"));
-            FileUtil.del(decode.get("filePath"));
-        }
-        UserAuth build = UserAuth.builder()
-                .id(userAuthId)
-                .nickname(userAuth.getNickname())
+        UserAuth build = UserAuth.builder().id(userAuthId).nickname(userAuth.getNickname())
                 // 因为头像可能是上传的base64格式，需要转化一下
-                .avatar(avatar)
-                .intro(userAuth.getIntro())
-                .webSite(userAuth.getWebSite())
-                .email(userAuth.getEmail())
-                .build();
+                .avatar(userAuth.getAvatar()).intro(userAuth.getIntro()).webSite(userAuth.getWebSite()).email(userAuth.getEmail()).build();
         int update = userAuthMapper.updateById(build);
         return update > 0;
     }

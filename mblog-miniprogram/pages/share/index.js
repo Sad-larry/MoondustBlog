@@ -90,8 +90,6 @@ Page({
     setTimeout(function () {
       wx.hideLoading()
     }, 1000)
-
-    console.log(e);
   },
   saveImage() {
     var that = this

@@ -44,6 +44,23 @@ export const wxmpModify = (formData) => {
 }
 
 /**
+ * 上传用户头像
+ */
+export const wxmpAvatar = (avatarBase64) => {
+  return request({
+    url: '/web/upload/wxmpAvatar',
+    method: 'post',
+    header: {
+      'Authorization': 'Bearer ' + wx.getStorageSync('token'),
+      'Content-Type': 'x-www-form-urlencoded'
+    },
+    data: {
+      avatarBase64
+    }
+  })
+}
+
+/**
  * 用户退出登录
  */
 export const wxmpLogout = () => {
@@ -84,6 +101,33 @@ export const getArticleDetail = (id) => {
     data: {
       id
     }
+  })
+}
+
+/**
+ * 获取文章评论
+ */
+export const getArticleComment = (id) => {
+  return request({
+    url: '/web/comment/list',
+    method: 'get',
+    data: {
+      articleId: id
+    }
+  })
+}
+
+/**
+ * 发表评论
+ */
+export const sendArticleComment = (formData) => {
+  return request({
+    url: '/web/comment/send',
+    method: 'post',
+    header: {
+      'Authorization': 'Bearer ' + wx.getStorageSync('token'),
+    },
+    data: formData,
   })
 }
 

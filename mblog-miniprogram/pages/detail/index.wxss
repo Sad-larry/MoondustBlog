@@ -114,13 +114,17 @@
 
 .h2w__p {
   margin-bottom: 15px;
-  font-size: 14px;
+  font-size: 16px;
 }
 
 .zan-c-red {
-  color: #f44;
+  color: #2a80bd;
   font-size: 12px;
   margin-bottom: 10px;
+}
+
+.reply-comment {
+  margin-left: 25px;
 }
 
 /*底部框*/
@@ -312,17 +316,19 @@
 }
 
 .resp-head {
-  color:#aaa;
-  margin:13px 0 13px 10px;
-  font-size:13px;
-  padding-bottom:60px;
-  text-align:center;
+  color: #aaa;
+  margin: 13px 0 13px 10px;
+  font-size: 13px;
+  padding-bottom: 60px;
+  text-align: center;
 }
+
 .resp-head1 {
-  color:#ff6a6a;
-  margin:13px 0 13px 10px;
-  font-size:13px;
+  color: #ff6a6a;
+  margin: 13px 0 13px 10px;
+  font-size: 13px;
 }
+
 .adContainer {
   position: relative;
   bottom: 0;

@@ -15,7 +15,6 @@ Page({
 
   onLoad: function(options) {
     wx.$api.getCategoryList().then(res => {
-      console.log("getCategoryList()", res.data);
       this.setData({
         cateList: res.data,
         current: res.data[0].id,
@@ -26,7 +25,6 @@ Page({
   },
   getArticleList(categoryId) {
     wx.$api.getArticleByCategory(categoryId).then(res => {
-      console.log("getArticleByCategory()", res)
       let data = [];
       res.data.records.forEach((resEach) => {
         data.push({
@@ -56,7 +54,6 @@ Page({
   handleChangeScroll({
     detail
   }) {
-    console.log("detail", detail)
     this.setData({
       loading:true,
       current_scroll: detail.key

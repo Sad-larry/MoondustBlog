@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Param;
 import work.moonzs.domain.entity.User;
 import work.moonzs.domain.vo.sys.SysUserBaseVO;
 import work.moonzs.domain.vo.sys.SysUserVO;
+import work.moonzs.domain.vo.web.UserInfoVO;
 
 import java.util.List;
 
@@ -34,5 +35,13 @@ public interface UserMapper extends BaseMapper<User> {
      * @return {@link SysUserBaseVO}
      */
     SysUserBaseVO getUserById(Long userId);
+
+    /**
+     * 获取web用户集
+     *
+     * @param userIds 用户id
+     * @return {@link List}<{@link UserInfoVO}>
+     */
+    List<UserInfoVO> getWebUserByIds(@Param("userIds") List<Long> userIds);
 }
 
