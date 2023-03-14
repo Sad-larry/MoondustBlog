@@ -30,11 +30,11 @@ Page({
         data.push({
           'id': resEach.id,
           'title': resEach.title,
-          'read_counts': resEach.id,
-          'excerpt': resEach.title,
-          'createdAt': resEach.createTime,
-          'category': resEach.categoryName,
-          'listPic': resEach.avatar,
+          'quantity': resEach.quantity,
+          'summary': resEach.summary,
+          'createTime': resEach.createTime,
+          'categoryName': resEach.categoryName,
+          'avatar': resEach.avatar,
           'author': resEach.title
         })
       })

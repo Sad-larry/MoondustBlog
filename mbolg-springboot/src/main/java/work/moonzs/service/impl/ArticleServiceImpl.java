@@ -278,7 +278,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     public PageVO<ArticleBaseVO> getArchives(Integer pageNum, Integer pageSize) {
         Page<Article> page = new Page<>(pageNum, pageSize);
         LambdaQueryWrapper<Article> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.select(Article::getId, Article::getTitle, Article::getCreateTime)
+        queryWrapper.select(Article::getId, Article::getTitle, Article::getCreateTime, Article::getSummary)
                 .eq(Article::getIsPublish, StatusConstants.NORMAL)
                 .orderByDesc(Article::getCreateTime);
         page(page, queryWrapper);

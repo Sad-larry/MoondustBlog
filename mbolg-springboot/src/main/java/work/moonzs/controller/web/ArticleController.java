@@ -87,7 +87,7 @@ public class ArticleController {
      *
      * @return {@link ResponseResult}
      */
-    @SystemLog(businessName = "查询归档")
+    @SystemLog(businessName = "搜索文章")
     @GetMapping("/search")
     public ResponseResult searchArticles(@RequestParam String keywords) {
         return ResponseResult.successPageVO(articleService.searchArticles(keywords));

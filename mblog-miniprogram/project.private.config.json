@@ -3,6 +3,6 @@
   "projectname": "mblog-miniprogram",
   "setting": {
     "compileHotReLoad": true,
-    "urlCheck": false
+    "urlCheck": true
   }
 }

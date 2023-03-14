@@ -39,7 +39,7 @@
             <v-divider></v-divider>
             <!-- 文章标签 -->
             <div class="tag-wrapper">
-              <router-link v-for="tag of item.tagDTOList" :key="tag.id" :to="'/tags/' + tag.id" class="tag-btn">
+              <router-link v-for="tag of item.tagVOList" :key="tag.id" :to="'/tags/' + tag.id" class="tag-btn">
                 {{ tag.name }}
               </router-link>
             </div>
@@ -106,7 +106,6 @@ export default {
         } else {
           $state.complete();
         }
-
       });
     }
   },

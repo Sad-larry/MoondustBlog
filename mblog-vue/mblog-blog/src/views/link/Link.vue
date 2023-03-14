@@ -7,8 +7,7 @@
     <!-- 链接列表 -->
     <v-card class="blog-container">
       <div class="link-title mb-1">
-        <v-icon color="blue">mdi-link-variant</v-icon>
-        大佬链接
+        <v-icon color="blue">mdi-link-variant</v-icon>大佬链接
       </div>
       <v-row class="link-container">
         <v-col class="link-wrapper" md="4" cols="12" v-for="item of friendLinkList" :key="item.url">
@@ -25,8 +24,7 @@
       </v-row>
       <!-- 说明 -->
       <div class="link-title mt-4 mb-4">
-        <v-icon color="blue">mdi-dots-horizontal-circle</v-icon>
-        添加友链
+        <v-icon color="blue">mdi-dots-horizontal-circle</v-icon>添加友链
       </div>
       <blockquote>
         <div>网站名称：{{ blogInfo.webSite.name }}</div>
@@ -35,40 +33,40 @@
         <div>网站头像：{{ blogInfo.webSite.logo }}</div>
       </blockquote>
       <div class="mt-5 mb-5">
-        需要交换友链的可点击<a style="color: #409eff" @click="onclick">此处</a>💖<br />
+        需要交换友链的可点击
+        <a style="color: #409eff" @click="onclick">此处</a>💖
+        <br />
         <font style="color: red">注:如果已经申请过友链 再次接入则会进行下架处理 需重新审核</font>
       </div>
 
       <div>
-        <el-dialog width="50%" center title="申请友链" :visible.sync="dialogFormVisible">
-          <el-form ref="dataForm" :rules="rules" :model="link">
-            <el-form-item label="网站名称" prop="name" :label-width="formLabelWidth">
-              <el-input v-model="link.name" autocomplete="off"></el-input>
-            </el-form-item>
-            <el-form-item label="网站头像" prop="avatar" :label-width="formLabelWidth">
-              <el-input v-model="link.avatar" autocomplete="off"></el-input>
-            </el-form-item>
-            <el-form-item label="邮箱地址" prop="email" :label-width="formLabelWidth">
-              <el-input v-model="link.email" autocomplete="off"></el-input>
-            </el-form-item>
-            <el-form-item label="网站简介" prop="info" :label-width="formLabelWidth">
-              <el-input v-model="link.info" autocomplete="off"></el-input>
-            </el-form-item>
-            <el-form-item label="网站地址" prop="url" :label-width="formLabelWidth">
-              <el-input v-model="link.url" autocomplete="off"></el-input>
-            </el-form-item>
-
-          </el-form>
-          <div slot="footer" class="dialog-footer">
-            <el-button @click="dialogFormVisible = false">取 消</el-button>
-            <el-button type="primary" @click="submit">确 定</el-button>
-          </div>
-        </el-dialog>
+        <v-dialog title="申请友链" width="50%" transition="dialog-top-transition" :value.sync="dialogFormVisible">
+          <v-card>
+            <v-card-title>
+              <span class="text-h5">申请友链</span>
+            </v-card-title>
+            <v-card-text>
+              <v-container>
+                <v-form ref="dataForm" lazy-validation>
+                  <v-text-field v-model="link.name" :rules="rules.name" label="网站名称" required clearable></v-text-field>
+                  <v-text-field v-model="link.avatar" :rules="rules.avatar" label="网站头像" required clearable></v-text-field>
+                  <v-text-field v-model="link.info" :rules="rules.info" label="网站简介" required clearable></v-text-field>
+                  <v-text-field v-model="link.url" :rules="rules.url" label="网站地址" required clearable></v-text-field>
+                  <v-text-field v-model="link.email" :rules="rules.email" label="联系邮箱" required clearable></v-text-field>
+                </v-form>
+              </v-container>
+            </v-card-text>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn color="warning" @click="dialogFormVisible = false">取 消</v-btn>
+              <v-btn color="success" @click="submit">确 定</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
       </div>
       <!--      <blockquote class="mb-10">
               友链信息展示需要，你的信息格式要包含：名称、介绍、链接、头像
-            </blockquote>-->
-      <!-- 评论 -->
+      </blockquote>-->
     </v-card>
   </div>
 </template>
@@ -93,21 +91,27 @@ export default {
         name: null,
         avatar: null,
         info: null,
-        email: null
+        email: null,
       },
       rules: {
-        'name': [{ required: true, message: '必填字段', trigger: 'blur' }],
-        'email': [
-          { required: true, message: '必填字段', trigger: 'blur' },
-          { pattern: /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+((.[a-zA-Z0-9_-]{2,3}){1,2})$/, message: '填写正确的邮箱' }
+        name: [(v) => !!v || "必填字段"],
+        email: [
+          (v) => !!v || "必填字段",
+          (v) =>
+            /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+((.[a-zA-Z0-9_-]{2,3}){1,2})$/.test(
+              v
+            ) || "填写正确的邮箱",
         ],
-        'info': [{ required: true, message: '必填字段', trigger: 'blur' }],
-        'url': [
-          { required: true, message: '必填字段', trigger: 'blur' },
-          { pattern: /^((https|http|ftp|rtsp|mms){0,1}(:\/\/){0,1})www\.(([A-Za-z0-9-~]+)\.)+([A-Za-z0-9-~\/])+$/, message: '填写正确的网址' }
+        info: [(v) => !!v || "必填字段"],
+        url: [
+          (v) => !!v || "必填字段",
+          (v) =>
+            /^((https|http|ftp|rtsp|mms){0,1}(:\/\/){0,1})(([A-Za-z0-9-~]+)\.)+([A-Za-z0-9-~\/])+$/.test(
+              v
+            ) || "填写正确的网址",
         ],
-        'avatar': [{ required: true, message: '必填字段', trigger: 'blur' }]
-      }
+        avatar: [(v) => !!v || "必填字段"],
+      },
     };
   },
   computed: {
@@ -116,37 +120,40 @@ export default {
     },
     cover() {
       var cover = "";
-      this.$store.state.blogInfo.pageList.forEach(item => {
+      this.$store.state.blogInfo.pageList.forEach((item) => {
         if (item.pageLabel === "link") {
           cover = item.pageCover;
         }
       });
       return "background: url(" + cover + ") center center / cover no-repeat";
-    }
+    },
   },
   methods: {
     onclick() {
-      this.link = {}
-      this.dialogFormVisible = true
+      this.link = {};
+      this.dialogFormVisible = true;
     },
     listFriendLink() {
-      fetchFriend().then(res => {
+      fetchFriend().then((res) => {
         this.friendLinkList = res.records;
       });
     },
     submit() {
-      this.$refs['dataForm'].validate((valid) => {
-        if (valid) {
-          addLink(this.link).then(res => {
-            this.$toast({ type: "success", message: "申请成功,通过申请将邮件告知!!" });
-            this.dialogFormVisible = false
-          }).catch(err => {
-            this.$toast({ type: "error", message: err.message });
-          })
-        } else {
-          this.$toast({ type: "error", message: "存在必填字段!!!" });
-        }
-      })
+      if (this.$refs["dataForm"].validate()) {
+        addLink(this.link)
+            .then((res) => {
+              this.$toast({
+                type: "success",
+                message: "申请成功,通过申请将邮件告知!!",
+              });
+              this.dialogFormVisible = false;
+            })
+            .catch((err) => {
+              this.$toast({ type: "error", message: err.message });
+            });
+      } else {
+        this.$toast({ type: "error", message: "存在必填字段未填" });
+      }
     },
   },
 };

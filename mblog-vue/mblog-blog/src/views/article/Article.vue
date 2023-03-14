@@ -17,20 +17,14 @@
             <span>
               <i class="iconfont icongengxinshijian" />
               更新于
-              <template v-if="article.lastTime">
-                {{ article.lastTime | date }}
-              </template>
-              <template v-else>
-                {{ article.createTime | date }}
-              </template>
+              <template v-if="article.lastTime">{{ article.lastTime | date }}</template>
+              <template v-else>{{ article.createTime | date }}</template>
             </span>
             <span class="separator">|</span>
             <!-- 文章分类 -->
             <span class="article-category">
               <i class="iconfont iconfenlei1" />
-              <router-link :to="'/categories/' + article.category.id">
-                {{ article.category.name }}
-              </router-link>
+              <router-link :to="'/categories/' + article.category.id">{{ article.category.name }}</router-link>
             </span>
           </div>
           <div class="second-line">
@@ -50,13 +44,14 @@
             <span class="separator">|</span>
             <!-- 阅读量 -->
             <span>
-              <i class="iconfont iconliulan" /> 阅读量: {{ article.quantity }}
+              <i class="iconfont iconliulan" />
+              阅读量: {{ article.quantity }}
             </span>
             <span class="separator">|</span>
             <!-- 评论量 -->
             <span>
               <i class="iconfont iconpinglunzu1" />评论数:
-              <template v-if="count">{{ count }}</template>
+              <template v-if="commentCount">{{ commentCount }}</template>
               <template v-else>0</template>
             </span>
           </div>
@@ -67,8 +62,13 @@
     <v-row class="article-container">
       <v-col md="9" cols="12">
         <v-card class="article-wrapper">
-          <article v-show="!isCheck" id="write" class="article-content markdown-body" v-html="article.content"
-            ref="article" />
+          <article
+            v-show="!isCheck"
+            id="write"
+            class="article-content markdown-body"
+            v-html="article.content"
+            ref="article"
+          />
           <!-- 版权声明 -->
           <div class="aritcle-copyright">
             <div>
@@ -78,32 +78,29 @@
             </div>
             <div v-if="article.isOriginal === 1">
               <span>文章作者：</span>
-              <router-link to="/">
-                {{ blogInfo.webSite.author }}
-              </router-link>
+              <router-link to="/">{{ blogInfo.webSite.author }}</router-link>
             </div>
             <div>
               <span>文章链接：</span>
-              <a :href="articleHref" target="_blank">{{ articleHref }} </a>
+              <a :href="articleHref" target="_blank">{{ articleHref }}</a>
             </div>
             <div v-if="article.isOriginal === 0">
               <span>原文链接：</span>
-              <a :href="article.originalUrl" target="_blank">{{ article.originalUrl }} </a>
+              <a :href="article.originalUrl" target="_blank">{{ article.originalUrl }}</a>
             </div>
             <div>
               <span>版权声明：</span>本博客所有文章除特别声明外，均采用
-              <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">
-                CC BY-NC-SA 4.0
-              </a>
+              <a
+                href="https://creativecommons.org/licenses/by-nc-sa/4.0/"
+                target="_blank"
+              >CC BY-NC-SA 4.0</a>
               许可协议。转载请注明文章出处。
             </div>
           </div>
           <!-- 转发 -->
           <div class="article-operation">
             <div class="tag-container">
-              <router-link v-for="item of article.tagList" :key="item.id" :to="'/tags/' + item.id">
-                {{ item.name }}
-              </router-link>
+              <router-link v-for="item of article.tagList" :key="item.id" :to="'/tags/' + item.id">{{ item.name }}</router-link>
             </div>
             <share style="margin-left:auto" :config="config" />
           </div>
@@ -111,11 +108,12 @@
           <div class="article-reward">
             <!-- 点赞按钮 -->
             <a :class="isLike" @click="like">
-              <v-icon size="14" color="#fff">mdi-thumb-up</v-icon>
-              点赞
-              <span v-show="article.likeCount > 0">{{
-                  article.likeCount
-              }}</span>
+              <v-icon size="14" color="#fff">mdi-thumb-up</v-icon>点赞
+              <span v-show="article.likeCount > 0">
+                {{
+                article.likeCount
+                }}
+              </span>
             </a>
             <a class="reward-btn" v>
               <!-- 打赏按钮 -->
@@ -142,9 +140,7 @@
                 <img class="post-cover" :src="article.lastArticle.avatar" />
                 <div class="post-info">
                   <div class="label">上一篇</div>
-                  <div class="post-title">
-                    {{ article.lastArticle.title }}
-                  </div>
+                  <div class="post-title">{{ article.lastArticle.title }}</div>
                 </div>
               </router-link>
             </div>
@@ -154,9 +150,7 @@
                 <img class="post-cover" :src="article.nextArticle.avatar" />
                 <div class="post-info" style="text-align: right">
                   <div class="label">下一篇</div>
-                  <div class="post-title">
-                    {{ article.nextArticle.title }}
-                  </div>
+                  <div class="post-title">{{ article.nextArticle.title }}</div>
                 </div>
               </router-link>
             </div>
@@ -164,8 +158,7 @@
           <!-- 推荐文章 -->
           <div class="recommend-container" v-if="article.recommendArticleList.length">
             <div class="recommend-title">
-              <v-icon size="20" color="#4c4948">mdi-thumb-up</v-icon>
-              相关推荐
+              <v-icon size="20" color="#4c4948">mdi-thumb-up</v-icon>相关推荐
             </div>
             <div class="recommend-list">
               <div class="recommend-item" v-for="item of article.recommendArticleList" :key="item.id">
@@ -185,7 +178,7 @@
           <!-- 分割线 -->
           <hr />
           <!-- 评论 -->
-          <comment :commentList="commentList" :count="count" @reloadComment="listComment" />
+          <comment :commentList="commentList" :count="commentCount" @reloadComment="listComment" />
         </v-card>
       </v-col>
       <!-- 侧边功能 -->
@@ -212,9 +205,7 @@
                 </router-link>
                 <div class="content">
                   <div class="content-title">
-                    <router-link :to="'/article/' + item.id">
-                      {{ item.title }}
-                    </router-link>
+                    <router-link :to="'/article/' + item.id">{{ item.title }}</router-link>
                   </div>
                   <div class="content-time">{{ item.createTime | date }}</div>
                 </div>
@@ -228,19 +219,19 @@
 </template>
 
 <script>
-import { getArticleInfo, fetchComments, like } from "@/api";
+import { getArticleInfo, listArticleComment, like } from "@/api";
 import Clipboard from "clipboard";
 import Comment from "@/components/Comment";
 import tocbot from "tocbot";
 
 export default {
   components: {
-    Comment
+    Comment,
   },
   data() {
     return {
       config: {
-        sites: ["qzone", "wechat", "weibo", "qq"]
+        sites: ["qzone", "wechat", "weibo", "qq"],
       },
       imgList: [],
       articleId: this.$route.params.articleId,
@@ -249,31 +240,31 @@ export default {
       article: {
         nextArticle: {
           id: 0,
-          articleCover: ""
+          articleCover: "",
         },
         lastArticle: {
           id: 0,
-          articleCover: ""
+          articleCover: "",
         },
         category: {
           id: 0,
-          name: ""
+          name: "",
         },
         recommendArticleList: [],
-        newestArticleList: []
+        newestArticleList: [],
       },
       commentList: [],
-      count: 0,
+      commentCount: 0,
       wordNum: "",
       readTime: "",
       articleHref: window.location.href,
       img: process.env.VUE_APP_IMG_API,
-      clipboard: null
+      clipboard: null,
     };
   },
   created() {
     this.getArticle();
-    // this.listComment();
+    this.listComment();
   },
   computed: {
     blogInfo() {
@@ -296,18 +287,18 @@ export default {
       return function (id) {
         return id ? "post full" : "post";
       };
-    }
+    },
   },
   methods: {
     getArticle() {
       const that = this;
       //查询文章
-      getArticleInfo({ id: this.articleId }).then(res => {
+      getArticleInfo({ id: this.articleId }).then((res) => {
         document.title = res.data.title;
         // if (res.data.keywords != null || res.data.keywords != "") {
         //   document.querySelector('meta[name="keywords"]').setAttribute('content', res.data.keywords)
         // }
-        this.isCheck = res.data.isSecret !== 0
+        this.isCheck = res.data.isSecret !== 0;
         //将markdown转换为Html
         this.markdownToHtml(res.data);
         this.$nextTick(() => {
@@ -338,7 +329,7 @@ export default {
             hasInnerContainers: true,
             onClick(e) {
               e.preventDefault();
-            }
+            },
           });
           // 添加图片预览功能
           const imgList = this.$refs.article.getElementsByTagName("img");
@@ -348,34 +339,24 @@ export default {
               that.previewImg(e.target.currentSrc);
             });
           }
-
         });
       });
     },
     listComment() {
-      fetchComments({ pageNum: 1, pageSize: 10, articleId: this.articleId }).then(res => {
-        this.commentList = res.data != null ? res.data.commentDTOList : [];
-        this.count = res.data != null ? res.data.commentCount : 0;
+      listArticleComment({ articleId: this.articleId }).then((res) => {
+        console.log("res::", res);
+        this.commentList = res.total != 0 ? res.records : [];
+        this.commentCount = res.total != 0 ? res.total : 0;
       });
     },
     like() {
-      // 判断登录
-      if (!this.$store.state.userId) {
-        this.$store.state.loginFlag = true;
-        return false;
+      //判断是否点赞
+      if (this.$store.state.articleLikeSet.indexOf(this.article.id) != -1) {
+        this.$set(this.article, "likeCount", this.article.likeCount - 1);
+      } else {
+        this.$set(this.article, "likeCount", this.article.likeCount + 1);
       }
-      //发送请求
-      like(this.article.id).then(res => {
-        //判断是否点赞
-        if (
-          this.$store.state.articleLikeSet.indexOf(this.article.id) != -1
-        ) {
-          this.$set(this.article, "likeCount", this.article.likeCount - 1);
-        } else {
-          this.$set(this.article, "likeCount", this.article.likeCount + 1);
-        }
-        this.$store.commit("articleLike", this.article.id);
-      });
+      this.$store.commit("articleLike", this.article.id);
     },
     markdownToHtml(article) {
       const MarkdownIt = require("markdown-it");
@@ -405,7 +386,7 @@ export default {
           let html = `<button class="copy-btn iconfont iconfuzhi" type="button" data-clipboard-action="copy" data-clipboard-target="#copy${codeIndex}"></button>`;
           const linesLength = str.split(/\n/).length - 1;
           // 生成行号
-          let linesNum = "<span aria-hidden=\"true\" class=\"line-numbers-rows\">";
+          let linesNum = '<span aria-hidden="true" class="line-numbers-rows">';
           for (let index = 0; index < linesLength; index++) {
             linesNum = linesNum + "<span></span>";
           }
@@ -415,7 +396,7 @@ export default {
             const preCode = hljs.highlight(lang, str, true).value;
             html = html + preCode;
             if (linesLength) {
-              html += "<b class=\"name\">" + lang + "</b>";
+              html += '<b class="name">' + lang + "</b>";
             }
             // 将代码包裹在 textarea 中，由于防止textarea渲染出现问题，这里将 "<" 用 "<" 代替，不影响复制功能
             return `<pre class="hljs"><code>${html}</code>${linesNum}</pre><textarea style="position: absolute;top: -9999px;left: -9999px;z-index: -9999;" id="copy${codeIndex}">${str.replace(
@@ -423,16 +404,18 @@ export default {
               "</textarea>"
             )}</textarea>`;
           }
-        }
+        },
       });
       // 将markdown替换为html标签
-      article.content = md.render(article.contentMd ? article.contentMd : article.content);
+      article.content = md.render(
+        article.contentMd ? article.contentMd : article.content
+      );
       this.article = article;
     },
     previewImg(img) {
       this.$imagePreview({
         images: this.imgList,
-        index: this.imgList.indexOf(img)
+        index: this.imgList.indexOf(img),
       });
     },
     deleteHTMLTag(content) {
@@ -440,7 +423,7 @@ export default {
         .replace(/<\/?[^>]*>/g, "")
         .replace(/[|]*\n/, "")
         .replace(/&npsp;/gi, "");
-    }
+    },
   },
   /* destroyed() {
      this.clipboard.destroy();

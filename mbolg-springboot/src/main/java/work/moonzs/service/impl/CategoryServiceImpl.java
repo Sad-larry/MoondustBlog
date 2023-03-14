@@ -17,6 +17,7 @@ import work.moonzs.mapper.CategoryMapper;
 import work.moonzs.service.CategoryService;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 博客分类表(Category)表服务实现类
@@ -123,8 +124,13 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
 
     @Override
     public List<CategoryVO> listWebCategory() {
-        // 前端博客页面只需 id,name 属性就可
-        return BeanCopyUtil.copyBeanList(baseMapper.listWebCategory(), CategoryVO.class);
+        // 前端博客页面只需 id,name以及文章数量ArticleNum 属性就可
+        List<CategoryVO> categoryVOS = BeanCopyUtil.copyBeanList(baseMapper.listWebCategory(), CategoryVO.class);
+        // 过滤掉文章数量大于0的分类id，并按照文章数量进行排序
+        return categoryVOS.stream()
+                .filter(categoryVO -> categoryVO.getArticleNum() > 0)
+                .sorted((o1, o2) -> Integer.compare(o2.getArticleNum(), o1.getArticleNum()))
+                .collect(Collectors.toList());
     }
 
     @Override

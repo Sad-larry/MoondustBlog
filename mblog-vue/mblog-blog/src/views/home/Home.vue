@@ -56,24 +56,24 @@
             <div style="line-height:1.4">
               <div>
                 <router-link :to="'/article/' + item.id">{{ item.title }}</router-link>
-                <span
-                  v-if="item.quantity >= 0 && item.quantity < 1000"
-                  style="font-size:12px;border-radius:3px;border: 1px solid  #f70;text-align: center"
-                >
-                  <font style="color: #f70;">次阅读</font>
-                </span>
-                <span
-                  v-if="item.quantity >= 1000 && item.quantity < 10000"
-                  style="font-size:12px;border-radius:3px;border: 1px solid  #f70;text-align: center"
-                >
-                  <font style="color: #f70;">千次阅读</font>
-                </span>
-                <span
-                  v-if="item.quantity >= 10000"
-                  style="font-size:12px;border-radius:3px;border: 1px solid  #f70;text-align: center"
-                >
-                  <font style="color: #f70;">万次阅读</font>
-                </span>
+                  <span
+                    v-if="item.quantity >= 0 && item.quantity < 1000"
+                    style="font-size:12px;border-radius:3px;border: 1px solid  #f70;text-align: center;margin-left: 15px;"
+                  >
+                    <font style="color: #f70;"> {{item.quantity}} 次阅读</font>
+                  </span>
+                  <span
+                    v-if="item.quantity >= 1000 && item.quantity < 10000"
+                    style="font-size:12px;border-radius:3px;border: 1px solid  #f70;text-align: center;margin-left: 15px;"
+                  >
+                    <font style="color: #f70;"> {{item.quantity}} 千次阅读</font>
+                  </span>
+                  <span
+                    v-if="item.quantity >= 10000"
+                    style="font-size:12px;border-radius:3px;border: 1px solid  #f70;text-align: center;margin-left: 15px;"
+                  >
+                    <font style="color: #f70;"> {{item.quantity}} 万次阅读</font>
+                  </span>
               </div>
             </div>
             <div class="article-info">
@@ -322,7 +322,7 @@ export default {
       });
     },
     runTime() {
-      var timeold = new Date().getTime() - new Date(1627747200000).getTime();
+      var timeold = new Date().getTime() - new Date(1675094400000).getTime();
       var msPerDay = 24 * 60 * 60 * 1000;
       var daysold = Math.floor(timeold / msPerDay);
       var str = "";

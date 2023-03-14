@@ -46,15 +46,7 @@ export function searchArticle(keywords) {
     })
 }
 
-export function like(id) {
-    return request({
-        url: '/web/article/articleLike',
-        method: 'get',
-        params: { articleId: id }
-    })
-}
-
-// 归档接口
+// 查询归档接口
 export function getArchives(params) {
     return request({
         url: '/web/article/archive',
@@ -104,6 +96,7 @@ export function addLink(data) {
         data
     })
 }
+
 // 友链列表
 export function fetchFriend() {
     return request({
@@ -121,78 +114,21 @@ export function addComment(data) {
         data
     })
 }
+
 //评论列表
-export function fetchComments(params) {
+export function listArticleComment(params) {
     return request({
-        url: '/web/comment/comments',
-        method: 'get',
-        params: params
-    })
-}
-//查询回复评论
-export function repliesByComId(params) {
-    return request({
-        url: '/web/comment/repliesByComId',
+        url: '/web/comment/list',
         method: 'get',
         params: params
     })
 }
 
-//qq登录
-export function qqLogin(data) {
-    return request({
-        url: '/user/login',
-        method: 'post',
-        data
-    })
-}
-//qq退出
-export function logout() {
-    return request({
-        url: '/logout',
-        method: 'get',
-    })
-}
-//gitee登录
-export function gitEELogin(code) {
-    return request({
-        url: '/user/gitEELogin',
-        method: 'get',
-        params: {
-            code: code
-        }
-    })
-}
-//微博登录
-export function weiboLogin(code) {
-    return request({
-        url: '/user/weiboLogin',
-        method: 'get',
-        params: {
-            code: code
-        }
-    })
-}
 // 添加访客信息
 export function visitTheWebsite() {
     return request({
         url: '/web/home/welcome',
         method: 'get',
-    })
-}
-//相册接口
-export function getAlbum() {
-    return request({
-        url: '/web/album/list',
-        method: 'get',
-        params: {}
-    })
-}
-export function getPhotos(params) {
-    return request({
-        url: '/web/album/listPhotos',
-        method: 'get',
-        params: params
     })
 }
 
@@ -204,68 +140,3 @@ export function addFeedback(data) {
         data
     })
 }
-
-// 用户注册
-export function userRegister(data) {
-    return request({
-        url: '/web/user/register',
-        method: 'post',
-        data
-    })
-}
-export function sendEmailCode(email) {
-    return request({
-        url: '/user/sendEmailCode',
-        method: 'get',
-        params: {
-            email: email
-        }
-    })
-}
-
-export function bindEmail(data) {
-    return request({
-        url: '/user/bindEmail',
-        method: 'post',
-        data
-    })
-}
-export function emailRegister(data) {
-    return request({
-        url: '/user/emailRegister',
-        method: 'post',
-        data
-    })
-}
-
-// 用户使用邮箱登录
-export function emailLogin(data) {
-    return request({
-        url: '/web/user/emailLogin',
-        method: 'post',
-        data
-    })
-}
-export function updatePassword(data) {
-    return request({
-        url: '/user/updatePassword',
-        method: 'post',
-        data
-    })
-}
-export function upload(data) {
-    return request({
-        url: '/file/upload',
-        method: 'POST',
-        headers: { 'Content-Type': 'multipart/articles-data' },
-        data
-    })
-}
-export function updateUser(data) {
-    return request({
-        url: '/user/updateUser',
-        method: 'post',
-        data
-    })
-}
-
