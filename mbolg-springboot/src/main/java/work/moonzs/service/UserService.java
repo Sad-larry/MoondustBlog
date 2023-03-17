@@ -5,7 +5,6 @@ import org.springframework.transaction.annotation.Transactional;
 import work.moonzs.domain.entity.User;
 import work.moonzs.domain.entity.UserAuth;
 import work.moonzs.domain.vo.PageVO;
-import work.moonzs.domain.vo.UserListVo;
 import work.moonzs.domain.vo.sys.SysOnlineUserVO;
 import work.moonzs.domain.vo.sys.SysUserBaseVO;
 import work.moonzs.domain.vo.sys.SysUserVO;
@@ -46,7 +45,7 @@ public interface UserService extends IService<User> {
      * @param pageSize  页面大小
      * @param username  用户名
      * @param loginType 登录类型
-     * @return {@link PageVO}<{@link UserListVo}>
+     * @return {@link PageVO}<{@link SysUserVO}>
      */
     PageVO<SysUserVO> listUser(Integer pageNum, Integer pageSize, String username, Integer loginType);
 
@@ -114,6 +113,21 @@ public interface UserService extends IService<User> {
      * @param mailCode 邮件验证码
      */
     Map<String, Object> sendRegisterMailCode(String username, String mailUuid, String mailCode);
+
+    /**
+     * 简单的发送注册邮件验证码
+     *
+     * @param username 邮箱地址
+     */
+    void sendRegisterMailCode(String username);
+
+    /**
+     * 验证邮箱验证码
+     *
+     * @param username 用户名
+     * @param mailCode 邮箱验证码
+     */
+    void validateMailCode(String username, String mailCode);
 
     /**
      * 判断用户是否已经注册

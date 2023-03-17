@@ -13,9 +13,9 @@ import work.moonzs.base.utils.BeanCopyUtil;
 import work.moonzs.base.utils.SecurityUtil;
 import work.moonzs.base.web.common.BusinessAssert;
 import work.moonzs.domain.entity.Menu;
-import work.moonzs.domain.vo.MenuVo;
-import work.moonzs.domain.vo.router.MetaVo;
-import work.moonzs.domain.vo.router.RouterVo;
+import work.moonzs.domain.vo.router.MetaVO;
+import work.moonzs.domain.vo.router.RouterVO;
+import work.moonzs.domain.vo.sys.SysMenuVO;
 import work.moonzs.mapper.MenuMapper;
 import work.moonzs.service.MenuService;
 
@@ -34,9 +34,9 @@ import java.util.stream.Collectors;
 public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements MenuService {
 
     @Override
-    public List<MenuVo> listMenu() {
+    public List<SysMenuVO> listMenu() {
         List<Menu> childPerms = getChildPerms(selectMenuTreeAll(), 0L);
-        return BeanCopyUtil.copyBeanList(childPerms, MenuVo.class);
+        return BeanCopyUtil.copyBeanList(childPerms, SysMenuVO.class);
     }
 
     @Override
@@ -115,27 +115,27 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
 
 
     @Override
-    public List<RouterVo> buildMenus(List<Menu> menus) {
+    public List<RouterVO> buildMenus(List<Menu> menus) {
         // 为什么用链表集合，为了能按顺序输出，其实也没啥影响
-        List<RouterVo> routerVoList = new LinkedList<>();
+        List<RouterVO> routerVOList = new LinkedList<>();
         menus.forEach(menu -> {
-            RouterVo router = new RouterVo();
+            RouterVO router = new RouterVO();
             router.setName(getRouterName(menu));
             router.setPath(getRouterPath(menu));
             router.setComponent(menu.getComponent());
             router.setHidden(getRouterHidden(menu));
             router.setSortNo(menu.getSortNo());
             router.setRedirect(menu.getRedirect());
-            router.setMeta(new MetaVo(menu.getTitle(), menu.getIcon(), StatusConstants.NORMAL.equals(menu.getIsCache())));
+            router.setMeta(new MetaVO(menu.getTitle(), menu.getIcon(), StatusConstants.NORMAL.equals(menu.getIsCache())));
             List<Menu> children = menu.getChildren();
             if (CollUtil.isNotEmpty(children) && StatusConstants.TYPE_DIR.equals(menu.getType())) {
                 router.setAlwaysShow(true);
                 // router.setRedirect("noRedirect");
                 router.setChildren(buildMenus(children));
             }
-            routerVoList.add(router);
+            routerVOList.add(router);
         });
-        return routerVoList;
+        return routerVOList;
     }
 
     @Override

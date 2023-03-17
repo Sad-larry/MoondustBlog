@@ -107,7 +107,7 @@ service.interceptors.response.use(res => {
       title: code,
       message: msg
     })
-    if (code === 45017 || code === 45013) {
+    if (code === 45017 || code === 45013 || code == 45015) {
       // 删除token
       store.dispatch('FedLogOut').then(() => {
         location.href = '/admin/login';

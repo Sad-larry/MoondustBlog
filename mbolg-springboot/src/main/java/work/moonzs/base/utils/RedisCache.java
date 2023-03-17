@@ -2,7 +2,7 @@ package work.moonzs.base.utils;
 
 import cn.hutool.core.collection.CollUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.*;
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
@@ -16,6 +16,16 @@ public final class RedisCache {
 
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
+    @Autowired
+    private ValueOperations<String, Object> valueOperations;
+    @Autowired
+    private ListOperations<String, Object> listOperations;
+    @Autowired
+    private SetOperations<String, Object> setOperations;
+    @Autowired
+    private ZSetOperations<String, Object> zSetOperations;
+    @Autowired
+    private HashOperations<String, String, Object> hashOperations;
 
     // =============================common============================
 
@@ -117,7 +127,7 @@ public final class RedisCache {
      * @return 值
      */
     public Object get(String key) {
-        return key == null ? null : redisTemplate.opsForValue().get(key);
+        return key == null ? null : valueOperations.get(key);
     }
 
     /**
@@ -130,7 +140,7 @@ public final class RedisCache {
 
     public boolean set(String key, Object value) {
         try {
-            redisTemplate.opsForValue().set(key, value);
+            valueOperations.set(key, value);
             return true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -150,7 +160,7 @@ public final class RedisCache {
     public boolean set(String key, Object value, long time) {
         try {
             if (time > 0) {
-                redisTemplate.opsForValue().set(key, value, time, TimeUnit.SECONDS);
+                valueOperations.set(key, value, time, TimeUnit.SECONDS);
             } else {
                 set(key, value);
             }
@@ -171,7 +181,7 @@ public final class RedisCache {
         if (delta < 0) {
             throw new RuntimeException("递增因子必须大于0");
         }
-        return redisTemplate.opsForValue().increment(key, delta);
+        return valueOperations.increment(key, delta);
     }
 
     /**
@@ -184,7 +194,7 @@ public final class RedisCache {
         if (delta < 0) {
             throw new RuntimeException("递减因子必须大于0");
         }
-        return redisTemplate.opsForValue().increment(key, -delta);
+        return valueOperations.increment(key, -delta);
     }
 
 
@@ -197,7 +207,7 @@ public final class RedisCache {
      * @param item 项 不能为null
      */
     public Object hget(String key, String item) {
-        return redisTemplate.opsForHash().get(key, item);
+        return hashOperations.get(key, item);
     }
 
     /**
@@ -206,8 +216,8 @@ public final class RedisCache {
      * @param key 键
      * @return 对应的多个键值
      */
-    public Map<Object, Object> hmget(String key) {
-        return redisTemplate.opsForHash().entries(key);
+    public Map<String, Object> hmget(String key) {
+        return hashOperations.entries(key);
     }
 
     /**
@@ -218,7 +228,7 @@ public final class RedisCache {
      */
     public boolean hmset(String key, Map<String, Object> map) {
         try {
-            redisTemplate.opsForHash().putAll(key, map);
+            hashOperations.putAll(key, map);
             return true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -236,7 +246,7 @@ public final class RedisCache {
      */
     public boolean hmset(String key, Map<String, Object> map, long time) {
         try {
-            redisTemplate.opsForHash().putAll(key, map);
+            hashOperations.putAll(key, map);
             if (time > 0) {
                 expire(key, time);
             }
@@ -257,7 +267,7 @@ public final class RedisCache {
      */
     public boolean hset(String key, String item, Object value) {
         try {
-            redisTemplate.opsForHash().put(key, item, value);
+            hashOperations.put(key, item, value);
             return true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -276,7 +286,7 @@ public final class RedisCache {
      */
     public boolean hset(String key, String item, Object value, long time) {
         try {
-            redisTemplate.opsForHash().put(key, item, value);
+            hashOperations.put(key, item, value);
             if (time > 0) {
                 expire(key, time);
             }
@@ -294,7 +304,17 @@ public final class RedisCache {
      * @param item 项 可以使多个 不能为null
      */
     public void hdel(String key, Object... item) {
-        redisTemplate.opsForHash().delete(key, item);
+        hashOperations.delete(key, item);
+    }
+
+    /**
+     * 获取该 key 对应的所有的 hashKey
+     *
+     * @param key 键
+     * @return 该 key 对应的所有的 hashKey
+     */
+    public Set<String> hKeys(String key) {
+        return hashOperations.keys(key);
     }
 
     /**
@@ -305,7 +325,7 @@ public final class RedisCache {
      * @return true 存在 false不存在
      */
     public boolean hHasKey(String key, String item) {
-        return redisTemplate.opsForHash().hasKey(key, item);
+        return hashOperations.hasKey(key, item);
     }
 
     /**
@@ -316,7 +336,7 @@ public final class RedisCache {
      * @param by   要增加几(大于0)
      */
     public double hincr(String key, String item, double by) {
-        return redisTemplate.opsForHash().increment(key, item, by);
+        return hashOperations.increment(key, item, by);
     }
 
     /**
@@ -327,7 +347,7 @@ public final class RedisCache {
      * @param by   要减少记(小于0)
      */
     public double hdecr(String key, String item, double by) {
-        return redisTemplate.opsForHash().increment(key, item, -by);
+        return hashOperations.increment(key, item, -by);
     }
 
 
@@ -340,7 +360,7 @@ public final class RedisCache {
      */
     public Set<Object> sGet(String key) {
         try {
-            return redisTemplate.opsForSet().members(key);
+            return setOperations.members(key);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -356,7 +376,7 @@ public final class RedisCache {
      */
     public boolean sHasKey(String key, Object value) {
         try {
-            return redisTemplate.opsForSet().isMember(key, value);
+            return setOperations.isMember(key, value);
         } catch (Exception e) {
             e.printStackTrace();
             return false;
@@ -372,7 +392,7 @@ public final class RedisCache {
      */
     public long sSet(String key, Object... values) {
         try {
-            return redisTemplate.opsForSet().add(key, values);
+            return setOperations.add(key, values);
         } catch (Exception e) {
             e.printStackTrace();
             return 0;
@@ -389,7 +409,7 @@ public final class RedisCache {
      */
     public long sSetAndTime(String key, long time, Object... values) {
         try {
-            Long count = redisTemplate.opsForSet().add(key, values);
+            Long count = setOperations.add(key, values);
             if (time > 0) {
                 expire(key, time);
             }
@@ -407,7 +427,7 @@ public final class RedisCache {
      */
     public long sGetSetSize(String key) {
         try {
-            return redisTemplate.opsForSet().size(key);
+            return setOperations.size(key);
         } catch (Exception e) {
             e.printStackTrace();
             return 0;
@@ -423,7 +443,7 @@ public final class RedisCache {
      */
     public long setRemove(String key, Object... values) {
         try {
-            return redisTemplate.opsForSet().remove(key, values);
+            return setOperations.remove(key, values);
         } catch (Exception e) {
             e.printStackTrace();
             return 0;
@@ -439,7 +459,7 @@ public final class RedisCache {
      */
     public List<Object> sGetRandomMembers(String key, long count) {
         try {
-            return redisTemplate.opsForSet().randomMembers(key, count);
+            return setOperations.randomMembers(key, count);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -455,7 +475,7 @@ public final class RedisCache {
      */
     public Boolean sIsMember(String key, Object value) {
         try {
-            return redisTemplate.opsForSet().isMember(key, value);
+            return setOperations.isMember(key, value);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -473,7 +493,7 @@ public final class RedisCache {
      */
     public List<Object> lGet(String key, long start, long end) {
         try {
-            return redisTemplate.opsForList().range(key, start, end);
+            return listOperations.range(key, start, end);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -487,7 +507,7 @@ public final class RedisCache {
      */
     public long lGetListSize(String key) {
         try {
-            return redisTemplate.opsForList().size(key);
+            return listOperations.size(key);
         } catch (Exception e) {
             e.printStackTrace();
             return 0;
@@ -502,7 +522,7 @@ public final class RedisCache {
      */
     public Object lGetIndex(String key, long index) {
         try {
-            return redisTemplate.opsForList().index(key, index);
+            return listOperations.index(key, index);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -517,7 +537,7 @@ public final class RedisCache {
      */
     public boolean lSet(String key, Object value) {
         try {
-            redisTemplate.opsForList().rightPush(key, value);
+            listOperations.rightPush(key, value);
             return true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -534,7 +554,7 @@ public final class RedisCache {
      */
     public boolean lSet(String key, Object value, long time) {
         try {
-            redisTemplate.opsForList().rightPush(key, value);
+            listOperations.rightPush(key, value);
             if (time > 0) {
                 expire(key, time);
             }
@@ -553,7 +573,7 @@ public final class RedisCache {
      */
     public boolean lSet(String key, List<Object> value) {
         try {
-            redisTemplate.opsForList().rightPushAll(key, value);
+            listOperations.rightPushAll(key, value);
             return true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -570,7 +590,7 @@ public final class RedisCache {
      */
     public boolean lSet(String key, List<Object> value, long time) {
         try {
-            redisTemplate.opsForList().rightPushAll(key, value);
+            listOperations.rightPushAll(key, value);
             if (time > 0) {
                 expire(key, time);
             }
@@ -590,7 +610,7 @@ public final class RedisCache {
      */
     public boolean lUpdateIndex(String key, long index, Object value) {
         try {
-            redisTemplate.opsForList().set(key, index, value);
+            listOperations.set(key, index, value);
             return true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -608,7 +628,7 @@ public final class RedisCache {
      */
     public long lRemove(String key, long count, Object value) {
         try {
-            return redisTemplate.opsForList().remove(key, count, value);
+            return listOperations.remove(key, count, value);
         } catch (Exception e) {
             e.printStackTrace();
             return 0;
@@ -626,7 +646,7 @@ public final class RedisCache {
      */
     public Set<Object> zsetGet(String key, long start, long end) {
         try {
-            return redisTemplate.opsForZSet().range(key, start, end);
+            return zSetOperations.range(key, start, end);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -643,7 +663,7 @@ public final class RedisCache {
      */
     public Boolean zsetSet(String key, Object value, long score) {
         try {
-            return redisTemplate.opsForZSet().add(key, value, score);
+            return zSetOperations.add(key, value, score);
         } catch (Exception e) {
             e.printStackTrace();
             return false;
@@ -658,7 +678,7 @@ public final class RedisCache {
      */
     public Long zsetCount(String key) {
         try {
-            return redisTemplate.opsForZSet().size(key);
+            return zSetOperations.size(key);
         } catch (Exception e) {
             e.printStackTrace();
             return 0L;
@@ -675,7 +695,7 @@ public final class RedisCache {
      */
     public Long zsetRemove(String key, Long minScore, Long maxScore) {
         try {
-            return redisTemplate.opsForZSet().removeRangeByScore(key, minScore, maxScore);
+            return zSetOperations.removeRangeByScore(key, minScore, maxScore);
         } catch (Exception e) {
             e.printStackTrace();
             return 0L;
@@ -691,7 +711,7 @@ public final class RedisCache {
      */
     public Long zsetRemove(String key, Object... values) {
         try {
-            return redisTemplate.opsForZSet().remove(key, values);
+            return zSetOperations.remove(key, values);
         } catch (Exception e) {
             e.printStackTrace();
             return 0L;
@@ -707,7 +727,7 @@ public final class RedisCache {
      */
     public Set<Object> zsetGetByScore(String key, Long minScore, Long maxScore) {
         try {
-            return redisTemplate.opsForZSet().rangeByScore(key, minScore, maxScore);
+            return zSetOperations.rangeByScore(key, minScore, maxScore);
         } catch (Exception e) {
             e.printStackTrace();
             return null;

@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class MetaVo {
+public class MetaVO {
     /**
      * 设置该路由在侧边栏和面包屑中展示的名字
      */

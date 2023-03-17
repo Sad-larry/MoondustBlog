@@ -7,7 +7,7 @@ import work.moonzs.base.enums.CacheConstants;
 import work.moonzs.base.utils.RedisCache;
 import work.moonzs.domain.entity.LoginUser;
 
-import java.util.List;
+import java.util.Collection;
 
 /**
  * 利用缓存记录发放token的用户uid
@@ -48,18 +48,21 @@ public class ISaveUserService {
      * 随机删除用户令牌
      */
     public void randomRemoveUserToken() {
-        long removeCount = 10;
+        long removeCount = 64;
         long setSize = redisCache.sGetSetSize(CacheConstants.SAVE_LOGIN_USER_KEY);
+        Collection<Object> keys;
         // redis缓存最多保存多少位
-        if (setSize > 64) {
-            removeCount = setSize / 4;
+        if (setSize > removeCount) {
+            keys = redisCache.sGetRandomMembers(CacheConstants.SAVE_LOGIN_USER_KEY, removeCount);
+        } else {
+            keys = redisCache.sGet(CacheConstants.SAVE_LOGIN_USER_KEY);
         }
-        List<Object> keys = redisCache.sGetRandomMembers(CacheConstants.SAVE_LOGIN_USER_KEY, removeCount);
+        Long currentTime = System.currentTimeMillis();
         keys.forEach(key -> {
             if (redisCache.hasKey(CacheConstants.LOGIN_USER_KEY + key)) {
                 LoginUser loginUser = (LoginUser) redisCache.get(CacheConstants.LOGIN_USER_KEY + key);
                 // 若用户的过期时间小于当前时间，则进行删除操作
-                if (loginUser.getExpireTime() < System.currentTimeMillis()) {
+                if (loginUser.getExpireTime() < currentTime) {
                     removeUserToken(key.toString());
                     // log.info("remove expire token key : {}", key);
                 }

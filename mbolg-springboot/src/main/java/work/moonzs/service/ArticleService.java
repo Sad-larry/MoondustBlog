@@ -5,13 +5,13 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import work.moonzs.domain.dto.ArticleDTO;
 import work.moonzs.domain.entity.Article;
-import work.moonzs.domain.vo.ArticleVo;
 import work.moonzs.domain.vo.PageVO;
 import work.moonzs.domain.vo.sys.SysArticleReadVO;
 import work.moonzs.domain.vo.sys.SysUploadArticleVO;
 import work.moonzs.domain.vo.web.ArticleBaseVO;
 import work.moonzs.domain.vo.web.ArticleInfoVO;
 import work.moonzs.domain.vo.web.ArticlePreviewVO;
+import work.moonzs.domain.vo.web.ArticleVO;
 
 import java.util.List;
 import java.util.Map;
@@ -40,18 +40,18 @@ public interface ArticleService extends IService<Article> {
      * @param pageNum    页面num
      * @param pageSize   页面大小
      * @param fuzzyField 模糊领域
-     * @return {@link PageVO}<{@link ArticleVo}>
+     * @return {@link PageVO}<{@link ArticleVO}>
      */
     @Transactional(readOnly = true)
-    PageVO<ArticleVo> listArticle(Integer pageNum, Integer pageSize, String fuzzyField);
+    PageVO<ArticleVO> listArticle(Integer pageNum, Integer pageSize, String fuzzyField);
 
     /**
      * 通过id获取文章
      *
      * @param articleId 文章id
-     * @return {@link ArticleVo}
+     * @return {@link ArticleVO}
      */
-    ArticleVo getArticleById(Long articleId);
+    ArticleVO getArticleById(Long articleId);
 
     @Transactional
     boolean updateArticle(ArticleDTO articleDTO);

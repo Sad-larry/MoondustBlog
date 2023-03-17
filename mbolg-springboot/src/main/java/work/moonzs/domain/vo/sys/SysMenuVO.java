@@ -1,4 +1,4 @@
-package work.moonzs.domain.vo;
+package work.moonzs.domain.vo.sys;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,7 +15,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class MenuVo {
+public class SysMenuVO {
     /**
      * id
      */

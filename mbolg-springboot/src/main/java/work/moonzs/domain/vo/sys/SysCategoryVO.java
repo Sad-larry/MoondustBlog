@@ -1,11 +1,10 @@
-package work.moonzs.domain.vo;
+package work.moonzs.domain.vo.sys;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
-import java.util.List;
 
 /**
  * @author Moondust月尘
@@ -13,31 +12,23 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class RoleVo {
+public class SysCategoryVO {
     /**
      * id
      */
     private Long id;
     /**
-     * 角色名
+     * 分类名
      */
-    private String roleName;
+    private String name;
     /**
-     * 描述
+     * 分类点击量
      */
-    private String description;
+    private Integer clickVolume;
     /**
-     * 状态
+     * 排序
      */
-    private String status;
-    /**
-     * 菜单id
-     */
-    private List<Long> menuIds;
-    /**
-     * 资源id
-     */
-    private List<Long> resourceIds;
+    private Integer sort;
     /**
      * 创建时间
      */

@@ -3,7 +3,7 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="work.moonzs.mapper.ArticleMapper">
-    <select id="listArticle" resultType="work.moonzs.domain.vo.ArticleVo">
+    <select id="listArticle" resultType="work.moonzs.domain.vo.web.ArticleVO">
         SELECT a.*, c.NAME AS categoryName, group_concat( t.NAME SEPARATOR ',' ) AS tagNames
         FROM t_article a
         JOIN t_category c ON a.category_id = c.id
@@ -16,7 +16,7 @@
         </where>
         GROUP BY a.id order by a.is_stick desc ,a.create_time desc
     </select>
-    <select id="getArticleById" resultType="work.moonzs.domain.vo.ArticleVo">
+    <select id="getArticleById" resultType="work.moonzs.domain.vo.web.ArticleVO">
         select a.id,
                a.title,
                a.avatar,

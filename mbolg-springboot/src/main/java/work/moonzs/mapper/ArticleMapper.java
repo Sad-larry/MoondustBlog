@@ -5,9 +5,9 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.MapKey;
 import org.apache.ibatis.annotations.Param;
 import work.moonzs.domain.entity.Article;
-import work.moonzs.domain.vo.ArticleVo;
 import work.moonzs.domain.vo.web.ArticleBaseVO;
 import work.moonzs.domain.vo.web.ArticlePreviewVO;
+import work.moonzs.domain.vo.web.ArticleVO;
 
 import java.util.List;
 import java.util.Map;
@@ -25,17 +25,17 @@ public interface ArticleMapper extends BaseMapper<Article> {
      *
      * @param page       页面
      * @param fuzzyField 模糊领域
-     * @return {@link List}<{@link ArticleVo}>
+     * @return {@link List}<{@link ArticleVO}>
      */
-    List<ArticleVo> listArticle(@Param("page") Page<Object> page, @Param("fuzzyField") String fuzzyField);
+    List<ArticleVO> listArticle(@Param("page") Page<Object> page, @Param("fuzzyField") String fuzzyField);
 
     /**
      * 通过id获取文章
      *
      * @param articleId 文章id
-     * @return {@link ArticleVo}
+     * @return {@link ArticleVO}
      */
-    ArticleVo getArticleById(Long articleId);
+    ArticleVO getArticleById(Long articleId);
 
     /**
      * 文章预览列表页面

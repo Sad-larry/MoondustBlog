@@ -11,7 +11,7 @@ import work.moonzs.base.utils.BeanCopyUtil;
 import work.moonzs.base.web.common.BusinessAssert;
 import work.moonzs.domain.entity.Tag;
 import work.moonzs.domain.vo.PageVO;
-import work.moonzs.domain.vo.TagVo;
+import work.moonzs.domain.vo.sys.SysTagVO;
 import work.moonzs.domain.vo.web.TagVO;
 import work.moonzs.mapper.TagMapper;
 import work.moonzs.service.TagService;
@@ -57,19 +57,19 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, Tag> implements TagSe
     }
 
     @Override
-    public PageVO<TagVo> listTag(Integer pageNum, Integer pageSize, String fuzzyField) {
+    public PageVO<SysTagVO> listTag(Integer pageNum, Integer pageSize, String fuzzyField) {
         Page<Tag> page = new Page<>(pageNum, pageSize);
         LambdaQueryWrapper<Tag> queryWrapper = new LambdaQueryWrapper<>();
         // 模糊字段为空则不匹配
         queryWrapper.like(StrUtil.isNotBlank(fuzzyField), Tag::getName, fuzzyField);
         page(page, queryWrapper);
-        return new PageVO<>(BeanCopyUtil.copyBeanList(page.getRecords(), TagVo.class), page.getTotal());
+        return new PageVO<>(BeanCopyUtil.copyBeanList(page.getRecords(), SysTagVO.class), page.getTotal());
     }
 
     @Override
-    public TagVo getTagById(Long tagId) {
+    public SysTagVO getTagById(Long tagId) {
         Tag byId = getById(tagId);
-        return ObjUtil.isNotNull(byId) ? BeanCopyUtil.copyBean(byId, TagVo.class) : null;
+        return ObjUtil.isNotNull(byId) ? BeanCopyUtil.copyBean(byId, SysTagVO.class) : null;
     }
 
     @Override

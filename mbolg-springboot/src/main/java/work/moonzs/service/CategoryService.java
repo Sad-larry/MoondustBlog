@@ -3,8 +3,8 @@ package work.moonzs.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.springframework.transaction.annotation.Transactional;
 import work.moonzs.domain.entity.Category;
-import work.moonzs.domain.vo.CategoryVo;
 import work.moonzs.domain.vo.PageVO;
+import work.moonzs.domain.vo.sys.SysCategoryVO;
 import work.moonzs.domain.vo.web.CategoryVO;
 
 import java.util.List;
@@ -39,18 +39,18 @@ public interface CategoryService extends IService<Category> {
      * @param pageNum    页面num
      * @param pageSize   页面大小
      * @param fuzzyField 模糊领域
-     * @return {@link PageVO}<{@link CategoryVo}>
+     * @return {@link PageVO}<{@link SysCategoryVO}>
      */
-    PageVO<CategoryVo> listCategory(Integer pageNum, Integer pageSize, String fuzzyField);
+    PageVO<SysCategoryVO> listCategory(Integer pageNum, Integer pageSize, String fuzzyField);
 
 
     /**
      * 通过id查询分类详细信息
      *
      * @param categoryId 分类id
-     * @return {@link CategoryVo}
+     * @return {@link SysCategoryVO}
      */
-    CategoryVo getCategoryById(Long categoryId);
+    SysCategoryVO getCategoryById(Long categoryId);
 
     /**
      * 插入分类
@@ -90,7 +90,7 @@ public interface CategoryService extends IService<Category> {
     /**
      * 前端博客分类列表
      *
-     * @return {@link List}<{@link CategoryVo}>
+     * @return {@link List}<{@link SysCategoryVO}>
      */
     List<CategoryVO> listWebCategory();
 

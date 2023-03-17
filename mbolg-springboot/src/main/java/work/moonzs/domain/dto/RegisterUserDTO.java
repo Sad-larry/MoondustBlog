@@ -7,10 +7,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 
 /**
  * 用户注册时，只能有特定的几个字段
+ * 但是用户注册只有用邮箱注册，所以登录方式不需要设置
  *
  * @author Moondust月尘
  */
@@ -23,29 +23,18 @@ public class RegisterUserDTO {
      * 账号
      */
     @ApiModelProperty(notes = "账号")
-    @NotBlank(message = "账号不能为空")
+    @NotBlank(message = "{RegisterUserDTO.username.NotBlank}")
     private String username;
     /**
      * 登录密码
      */
     @ApiModelProperty(notes = "登录密码")
-    @NotBlank(message = "登录密码不能为空")
+    @NotBlank(message = "{RegisterUserDTO.password.NotBlank}")
     private String password;
-    /**
-     * 登录方式
-     */
-    @ApiModelProperty(notes = "登录方式")
-    @NotNull(message = "登录方式不能为空")
-    private Integer loginType;
-    /**
-     * 邮件uuid
-     * 验证缓存中的邮件验证码的key
-     */
-    @ApiModelProperty(notes = "邮件uuid")
-    private String mailUuid;
     /**
      * 邮件注册验证码
      */
     @ApiModelProperty(notes = "邮件注册验证码")
+    @NotBlank(message = "{RegisterUserDTO.mailCode.NotBlank}")
     private String mailCode;
 }

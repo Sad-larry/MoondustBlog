@@ -6,16 +6,21 @@ import cn.hutool.core.util.IdUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import work.moonzs.base.annotation.EmailValid;
 import work.moonzs.base.annotation.SystemLog;
+import work.moonzs.base.enums.AppHttpCodeEnum;
 import work.moonzs.base.enums.CacheConstants;
 import work.moonzs.base.enums.SystemConstants;
+import work.moonzs.base.utils.BeanCopyUtil;
 import work.moonzs.base.utils.RedisCache;
 import work.moonzs.base.utils.SecurityUtil;
 import work.moonzs.domain.ResponseResult;
 import work.moonzs.domain.dto.LoginUserDTO;
+import work.moonzs.domain.dto.RegisterUserDTO;
 import work.moonzs.domain.entity.LoginUser;
 import work.moonzs.domain.entity.Menu;
-import work.moonzs.domain.vo.CaptchaVo;
+import work.moonzs.domain.entity.User;
+import work.moonzs.domain.vo.sys.SysCaptchaVO;
 import work.moonzs.service.MenuService;
 import work.moonzs.service.SystemConfigService;
 import work.moonzs.service.UserService;
@@ -27,6 +32,7 @@ import java.util.List;
  */
 @RestController("SystemLoginC")
 @RequestMapping("/system")
+@Validated
 public class LoginController {
     @Autowired
     private UserService userService;
@@ -46,13 +52,13 @@ public class LoginController {
      */
     @GetMapping("/captchaImage")
     public ResponseResult captchaImage() {
-        CaptchaVo captchaVo = new CaptchaVo();
+        SysCaptchaVO sysCaptchaVO = new SysCaptchaVO();
         // 是否开启验证
-        captchaVo.setCaptchaEnabled(false);
+        sysCaptchaVO.setCaptchaEnabled(false);
         boolean enabledCheck = systemConfigService.selectCaptchaEnabled();
         if (!enabledCheck) {
             // 如果不需要验证，则直接返回 false
-            return ResponseResult.success(captchaVo);
+            return ResponseResult.success(sysCaptchaVO);
         }
         //定义图形验证码的长、宽、验证码字符数、干扰线宽度
         ShearCaptcha captcha = CaptchaUtil.createShearCaptcha(200, 100, 1, 1);
@@ -60,11 +66,11 @@ public class LoginController {
         String uuid = IdUtil.fastSimpleUUID();
         // 将验证码结构存入redis,设置唯一标识，用户用这个唯一标识去redis中查找验证码进行验证，一个验证码10分钟有效时间
         redisCache.set(CacheConstants.CAPTCHA_CODE_KEY + uuid, code, 10 * 60L);
-        captchaVo.setCaptchaEnabled(true);
-        captchaVo.setUuid(uuid);
-        captchaVo.setImg(captcha.getImageBase64());
+        sysCaptchaVO.setCaptchaEnabled(true);
+        sysCaptchaVO.setUuid(uuid);
+        sysCaptchaVO.setImg(captcha.getImageBase64());
         // 不用verify进行验证码验证，从redis读取存入的验证码以用户输入的验证码进行判断
-        return ResponseResult.success(captchaVo);
+        return ResponseResult.success(sysCaptchaVO);
     }
 
     /**
@@ -102,7 +108,11 @@ public class LoginController {
     public ResponseResult getRouters() {
         Long userId = SecurityUtil.getUserId();
         List<Menu> menus = menuService.selectMenuTreeByUserId(userId);
-        return ResponseResult.success(menuService.buildMenus(menus));
+        if (!menus.isEmpty()) {
+            return ResponseResult.success(menuService.buildMenus(menus));
+        }
+        // 无权限，权限不足
+        return ResponseResult.fail(AppHttpCodeEnum.NO_OPERATOR_AUTH);
     }
 
     /**
@@ -117,4 +127,32 @@ public class LoginController {
         return ResponseResult.success();
     }
 
+    /**
+     * 发送邮箱验证码
+     *
+     * @return {@link ResponseResult}
+     */
+    @SystemLog(businessName = "发送邮箱验证码")
+    @GetMapping("/mailCode")
+    public ResponseResult sendMailCode(@RequestParam @EmailValid String username) {
+        // 用户是否已经注册
+        if (userService.alreadyRegister(username)) {
+            return ResponseResult.fail(AppHttpCodeEnum.USER_ALREADY_REGISTER);
+        }
+        userService.sendRegisterMailCode(username);
+        return ResponseResult.success();
+    }
+
+    /**
+     * 用户注册
+     *
+     * @return {@link ResponseResult}
+     */
+    @SystemLog(businessName = "用户注册")
+    @PostMapping("/register")
+    public ResponseResult addWebUser(@Validated @RequestBody RegisterUserDTO registerUserDTO) {
+        userService.validateMailCode(registerUserDTO.getUsername(), registerUserDTO.getMailCode());
+        userService.registerUser1(BeanCopyUtil.copyBean(registerUserDTO, User.class));
+        return ResponseResult.success();
+    }
 }

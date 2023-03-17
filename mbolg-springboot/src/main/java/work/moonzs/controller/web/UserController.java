@@ -35,19 +35,17 @@ public class UserController {
      */
     @SystemLog(businessName = "用户注册")
     @WebOperationLogger(value = "用户模块-用户注册", type = "添加", desc = "用户注册")
-    @PostMapping("/register")
+    // @PostMapping("/register")
     public ResponseResult addWebUser(@Validated @RequestBody RegisterUserDTO registerUserDTO) {
         // 如果是使用邮件登录的，则需要注册验证码
-        if (registerUserDTO.getLoginType().equals(1)) {
-            // 用户是否已经注册
-            if (userService.alreadyRegister(registerUserDTO.getUsername())) {
-                return ResponseResult.fail(AppHttpCodeEnum.USER_ALREADY_REGISTER);
-            }
-            Map<String, Object> result = userService.sendRegisterMailCode(registerUserDTO.getUsername(), registerUserDTO.getMailUuid(), registerUserDTO.getMailCode());
-            // 如果结果集为空，说明验证码验证没问题
-            if (!ObjUtil.isNull(result)) {
-                return ResponseResult.result(result);
-            }
+        // 用户是否已经注册
+        if (userService.alreadyRegister(registerUserDTO.getUsername())) {
+            return ResponseResult.fail(AppHttpCodeEnum.USER_ALREADY_REGISTER);
+        }
+        Map<String, Object> result = userService.sendRegisterMailCode(registerUserDTO.getUsername(), null, registerUserDTO.getMailCode());
+        // 如果结果集为空，说明验证码验证没问题
+        if (!ObjUtil.isNull(result)) {
+            return ResponseResult.result(result);
         }
         userService.registerUser1(BeanCopyUtil.copyBean(registerUserDTO, User.class));
         return ResponseResult.success();

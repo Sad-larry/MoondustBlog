@@ -3,7 +3,6 @@ package work.moonzs.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.springframework.transaction.annotation.Transactional;
 import work.moonzs.domain.entity.Comment;
-import work.moonzs.domain.vo.CommentVo;
 import work.moonzs.domain.vo.PageVO;
 import work.moonzs.domain.vo.sys.SysCommentVO;
 import work.moonzs.domain.vo.web.CommentVO;
@@ -23,7 +22,7 @@ public interface CommentService extends IService<Comment> {
      *
      * @param pageNum  页面num
      * @param pageSize 页面大小
-     * @return {@link PageVO}<{@link CommentVo}>
+     * @return {@link PageVO}<{@link SysCommentVO}>
      */
     PageVO<SysCommentVO> listComment(Integer pageNum, Integer pageSize);
 

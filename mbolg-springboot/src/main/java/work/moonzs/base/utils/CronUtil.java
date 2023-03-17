@@ -1,4 +1,4 @@
-package work.moonzs.base.quartz;
+package work.moonzs.base.utils;
 
 import org.quartz.CronExpression;
 

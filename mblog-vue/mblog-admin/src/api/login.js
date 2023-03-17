@@ -57,3 +57,15 @@ export function getCodeImg() {
     timeout: 20000
   })
 }
+
+// 发送邮箱验证码
+export function sendMailCode(username) {
+  return request({
+    url: '/system/mailCode',
+    headers: {
+      isToken: false
+    },
+    method: 'get',
+    params: { username: username }
+  })
+}

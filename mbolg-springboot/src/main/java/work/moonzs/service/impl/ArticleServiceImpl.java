@@ -24,13 +24,13 @@ import work.moonzs.base.web.common.BusinessAssert;
 import work.moonzs.domain.dto.ArticleDTO;
 import work.moonzs.domain.entity.Article;
 import work.moonzs.domain.entity.Tag;
-import work.moonzs.domain.vo.ArticleVo;
 import work.moonzs.domain.vo.PageVO;
 import work.moonzs.domain.vo.sys.SysArticleReadVO;
 import work.moonzs.domain.vo.sys.SysUploadArticleVO;
 import work.moonzs.domain.vo.web.ArticleBaseVO;
 import work.moonzs.domain.vo.web.ArticleInfoVO;
 import work.moonzs.domain.vo.web.ArticlePreviewVO;
+import work.moonzs.domain.vo.web.ArticleVO;
 import work.moonzs.mapper.ArticleMapper;
 import work.moonzs.mapper.TagMapper;
 import work.moonzs.service.ArticleService;
@@ -113,15 +113,15 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     }
 
     @Override
-    public PageVO<ArticleVo> listArticle(Integer pageNum, Integer pageSize, String fuzzyField) {
+    public PageVO<ArticleVO> listArticle(Integer pageNum, Integer pageSize, String fuzzyField) {
         Page<Object> page = new Page<>(pageNum, pageSize);
-        List<ArticleVo> articleVos = getBaseMapper().listArticle(page, fuzzyField);
-        return new PageVO<>(articleVos, page.getTotal());
+        List<ArticleVO> articleVOS = getBaseMapper().listArticle(page, fuzzyField);
+        return new PageVO<>(articleVOS, page.getTotal());
     }
 
     @Override
-    public ArticleVo getArticleById(Long articleId) {
-        ArticleVo articleVo = getBaseMapper().getArticleById(articleId);
+    public ArticleVO getArticleById(Long articleId) {
+        ArticleVO articleVo = getBaseMapper().getArticleById(articleId);
         BusinessAssert.notNull(articleVo, AppHttpCodeEnum.BLOG_NOT_EXIST);
         articleVo.setTagNames(tagMapper.getTagsByArticleId(articleId));
         return articleVo;

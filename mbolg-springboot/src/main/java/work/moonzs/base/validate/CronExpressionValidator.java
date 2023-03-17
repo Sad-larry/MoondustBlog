@@ -1,7 +1,7 @@
 package work.moonzs.base.validate;
 
 import work.moonzs.base.annotation.CronExpressionValid;
-import work.moonzs.base.quartz.CronUtil;
+import work.moonzs.base.utils.CronUtil;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;

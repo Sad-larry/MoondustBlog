@@ -10,8 +10,8 @@ import work.moonzs.base.enums.AppHttpCodeEnum;
 import work.moonzs.base.utils.BeanCopyUtil;
 import work.moonzs.base.web.common.BusinessAssert;
 import work.moonzs.domain.entity.Category;
-import work.moonzs.domain.vo.CategoryVo;
 import work.moonzs.domain.vo.PageVO;
+import work.moonzs.domain.vo.sys.SysCategoryVO;
 import work.moonzs.domain.vo.web.CategoryVO;
 import work.moonzs.mapper.CategoryMapper;
 import work.moonzs.service.CategoryService;
@@ -70,19 +70,19 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
     }
 
     @Override
-    public PageVO<CategoryVo> listCategory(Integer pageNum, Integer pageSize, String fuzzyField) {
+    public PageVO<SysCategoryVO> listCategory(Integer pageNum, Integer pageSize, String fuzzyField) {
         Page<Category> page = new Page<>(pageNum, pageSize);
         // 对名字进行模糊查询，当模糊字段为空时则不匹配
         LambdaQueryWrapper<Category> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.like(StrUtil.isNotBlank(fuzzyField), Category::getName, fuzzyField);
         page(page, queryWrapper);
-        return new PageVO<>(BeanCopyUtil.copyBeanList(page.getRecords(), CategoryVo.class), page.getTotal());
+        return new PageVO<>(BeanCopyUtil.copyBeanList(page.getRecords(), SysCategoryVO.class), page.getTotal());
     }
 
     @Override
-    public CategoryVo getCategoryById(Long categoryId) {
+    public SysCategoryVO getCategoryById(Long categoryId) {
         Category byId = getById(categoryId);
-        return ObjUtil.isNotNull(byId) ? BeanCopyUtil.copyBean(byId, CategoryVo.class) : null;
+        return ObjUtil.isNotNull(byId) ? BeanCopyUtil.copyBean(byId, SysCategoryVO.class) : null;
     }
 
     @Override

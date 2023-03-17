@@ -12,14 +12,6 @@ import java.util.List;
  * @since 2022-10-30 10:33:21
  */
 public interface MenuMapper extends BaseMapper<Menu> {
-    /**
-     * 通过用户id查询该用户的角色信息，
-     * 再根据角色查询角色的菜单信息
-     *
-     * @param userId 用户id
-     * @return {@link List}<{@link Menu}>
-     */
-    List<Menu> selectUserMenus(Long userId);
 
     /**
      * 通过用户id查询指定的菜单

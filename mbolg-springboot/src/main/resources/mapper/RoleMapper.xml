@@ -4,8 +4,7 @@
     <select id="selectUserRole" resultType="java.lang.String">
         SELECT r.`code`
         FROM t_role r
-                 LEFT JOIN t_user_role ur ON ur.`role_id` = r.`id`
-                 LEFT JOIN (SELECT id, status FROM t_user) u ON u.`id` = ur.`user_id`
+                 LEFT JOIN (SELECT id, status, role_id FROM t_user) u ON u.`role_id` = r.`id`
         WHERE u.`status` = 1
           AND u.`id` = #{userId};
     </select>

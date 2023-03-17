@@ -85,5 +85,4 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     private List<String> getPermsByUserId(Long userId) {
         return menuMapper.selectUserPerms(userId);
     }
-
 }

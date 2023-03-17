@@ -1,4 +1,4 @@
-package work.moonzs.domain.vo;
+package work.moonzs.domain.vo.web;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,7 +12,7 @@ import java.util.Date;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ArticleVo {
+public class ArticleVO {
     /**
      * id
      */

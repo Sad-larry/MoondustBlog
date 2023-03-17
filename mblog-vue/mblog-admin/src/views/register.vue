@@ -3,7 +3,12 @@
     <el-form ref="registerForm" :model="registerForm" :rules="registerRules" class="register-form">
       <h3 class="title">月尘博客后台管理系统</h3>
       <el-form-item prop="username">
-        <el-input v-model="registerForm.username" type="text" auto-complete="off" placeholder="账号">
+        <el-input 
+        v-model="registerForm.username"
+         type="text" 
+         auto-complete="off" 
+         placeholder="邮箱账号"
+         clearable>
           <svg-icon slot="prefix" icon-class="user" class="el-input__icon input-icon" />
         </el-input>
       </el-form-item>
@@ -14,6 +19,7 @@
           auto-complete="off"
           placeholder="密码"
           @keyup.enter.native="handleRegister"
+          clearable
         >
           <svg-icon slot="prefix" icon-class="password" class="el-input__icon input-icon" />
         </el-input>
@@ -25,22 +31,30 @@
           auto-complete="off"
           placeholder="确认密码"
           @keyup.enter.native="handleRegister"
+          clearable
         >
           <svg-icon slot="prefix" icon-class="password" class="el-input__icon input-icon" />
         </el-input>
       </el-form-item>
-      <el-form-item prop="code" v-if="captchaEnabled">
+      <el-form-item prop="code">
         <el-input
-          v-model="registerForm.code"
+          v-model="registerForm.mailCode"
           auto-complete="off"
-          placeholder="验证码"
+          placeholder="邮箱验证码"
           style="width: 63%"
           @keyup.enter.native="handleRegister"
+          clearable
         >
           <svg-icon slot="prefix" icon-class="validCode" class="el-input__icon input-icon" />
         </el-input>
-        <div class="register-code">
-          <img :src="codeUrl" @click="getCode" class="register-code-img"/>
+        <div class="send-code">
+          <el-button
+            @click="sendCode"
+            :type="isSendCode ? 'info' : 'success'"
+            class="send-code-btn"
+            :disabled="isSendCode"
+            :plain="isSendCode"
+          >{{sendMsg}}</el-button>
         </div>
       </el-form-item>
       <el-form-item style="width:100%;">
@@ -61,13 +75,16 @@
     </el-form>
     <!--  底部  -->
     <div class="el-register-footer">
-      <span>Copyright © 2018-2022 ruoyi.vip All Rights Reserved.</span>
+      <span>
+        Copyright © 2023
+        <a href="https://refrainblog.cn" target="_blank">refrainblog.cn</a> All Rights Reserved.
+      </span>
     </div>
   </div>
 </template>
 
 <script>
-import { getCodeImg, register } from "@/api/login";
+import { sendMailCode, register } from "@/api/login";
 
 export default {
   name: "Register",
@@ -80,68 +97,107 @@ export default {
       }
     };
     return {
-      codeUrl: "",
+      isSendCode: false,
+      sendMsg: "发送验证码",
+      time: 60,
       registerForm: {
         username: "",
         password: "",
         confirmPassword: "",
-        code: "",
-        uuid: ""
+        mailCode: "",
       },
       registerRules: {
         username: [
-          { required: true, trigger: "blur", message: "请输入您的账号" },
-          { min: 2, max: 20, message: '用户账号长度必须介于 2 和 20 之间', trigger: 'blur' }
+          { required: true, trigger: "blur", message: "请输入您的邮箱账号" },
+          {
+            type: "email",
+            message: "请输入正确的邮箱地址",
+            trigger: ["blur", "change"],
+          },
         ],
         password: [
           { required: true, trigger: "blur", message: "请输入您的密码" },
-          { min: 5, max: 20, message: '用户密码长度必须介于 5 和 20 之间', trigger: 'blur' }
+          {
+            min: 6,
+            max: 20,
+            message: "用户密码长度必须介于 6 和 20 之间",
+            trigger: "blur",
+          },
         ],
         confirmPassword: [
           { required: true, trigger: "blur", message: "请再次输入您的密码" },
-          { required: true, validator: equalToPassword, trigger: "blur" }
+          { required: true, validator: equalToPassword, trigger: "blur" },
         ],
-        code: [{ required: true, trigger: "change", message: "请输入验证码" }]
+        mailCode: [
+          { required: true, trigger: "change", message: "请输入验证码" },
+          {
+            min: 6,
+            max: 6,
+            message: "验证码必须为6位",
+            trigger: "blur",
+          },
+        ],
       },
       loading: false,
-      captchaEnabled: true
     };
   },
-  created() {
-    this.getCode();
-  },
   methods: {
-    getCode() {
-      getCodeImg().then(res => {
-        this.captchaEnabled = res.captchaEnabled === undefined ? true : res.captchaEnabled;
-        if (this.captchaEnabled) {
-          this.codeUrl = "data:image/gif;base64," + res.img;
-          this.registerForm.uuid = res.uuid;
+    /*发送邮件*/
+    sendCode() {
+      this.$refs.registerForm.validateField("username", (errorMessage) => {
+        // 若没有错误信息，则验证成功
+        if (!errorMessage) {
+          this.countDown();
+          sendMailCode( this.registerForm.username ).then((res) => {
+            if (res === 200) {
+              this.$modal.msgSuccess("邮件发送成功，请注意查收");
+            }
+          });
         }
       });
     },
+    countDown() {
+      this.isSendCode = true;
+      this.timer = setInterval(() => {
+        this.time--;
+        this.sendMsg = this.time + "s";
+        if (this.time <= 0) {
+          clearInterval(this.timer);
+          this.sendMsg = "发送验证码";
+          this.time = 60;
+          this.isSendCode = false;
+        }
+      }, 1000);
+    },
     handleRegister() {
-      this.$refs.registerForm.validate(valid => {
+      this.$refs.registerForm.validate((valid) => {
         if (valid) {
           this.loading = true;
-          register(this.registerForm).then(res => {
-            const username = this.registerForm.username;
-            this.$alert("<font color='red'>恭喜你，您的账号 " + username + " 注册成功！</font>", '系统提示', {
-              dangerouslyUseHTMLString: true,
-              type: 'success'
-            }).then(() => {
-              this.$router.push("/login");
-            }).catch(() => {});
-          }).catch(() => {
-            this.loading = false;
-            if (this.captchaEnabled) {
-              this.getCode();
-            }
-          })
+          register(this.registerForm)
+            .then((res) => {
+              const username = this.registerForm.username;
+              this.$alert(
+                "<font color='red'>恭喜你，您的账号 " +
+                  username +
+                  " 注册成功！</font>",
+                "系统提示",
+                {
+                  dangerouslyUseHTMLString: true,
+                  type: "success",
+                }
+              )
+                .then(() => {
+                  this.$router.push("/login");
+                })
+                .catch(() => {});
+            })
+            .catch(() => {
+              this.loading = false;
+            });
         }
       });
-    }
-  }
+    },
+  },
 };
 </script>
 
@@ -182,14 +238,12 @@ export default {
   text-align: center;
   color: #bfbfbf;
 }
-.register-code {
-  width: 33%;
-  height: 38px;
+.send-code {
   float: right;
-  img {
-    cursor: pointer;
-    vertical-align: middle;
-  }
+}
+.send-code-btn {
+  width: 115px;
+  height: 38px;
 }
 .el-register-footer {
   height: 40px;
@@ -202,8 +256,5 @@ export default {
   font-family: Arial;
   font-size: 12px;
   letter-spacing: 1px;
-}
-.register-code-img {
-  height: 38px;
 }
 </style>

@@ -56,9 +56,7 @@ public class IFileUtil {
         if (file.getSize() > SystemConstants.FILE_SIZE) {
             BusinessAssert.fail(AppHttpCodeEnum.FILE_SIZE_OVERFLOW);
         }
-        InputStream inputStream = null;
-        try {
-            inputStream = file.getInputStream();
+        try (InputStream inputStream = file.getInputStream()) {
             String fileType = FileTypeUtil.getType(inputStream);
             // 判断文件类型jpeg、jpg、gif、png
             if (!IFileUtil.isLegalFileType(fileType)) {

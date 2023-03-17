@@ -33,12 +33,13 @@ public class BlogQuartz {
     public void updateReadQuantity() {
         threadPoolTaskExecutor.execute(() -> {
             // 获取 redis 缓存中的文章浏览量数据
-            Map<Object, Object> viewsQuantity = redisCache.hmget(CacheConstants.BLOG_VIEWS_QUANTITY);
+            Map<String, Object> viewsQuantity = redisCache.hmget(CacheConstants.BLOG_VIEWS_QUANTITY);
             ArrayList<Article> articles = new ArrayList<>();
             viewsQuantity.forEach((k, v) -> {
                 Article article = new Article();
                 // 就。。无语，除了hmget，其他hash表操作返回的都是HashMap<String, Object>，就你特殊，泛型都是Object，一定得改好
-                article.setId(Long.parseLong((String) k));
+                // 已解决，注入手动配置的 hash 类型的数据操作
+                article.setId(Long.parseLong(k));
                 article.setQuantity((Integer) v);
                 articles.add(article);
             });
@@ -59,16 +60,14 @@ public class BlogQuartz {
      * 方法参数一定得使用包装类，否则反射找不到该方法
      */
     public void clearOfflineUser(Integer minute) {
-        threadPoolTaskExecutor.execute(() -> {
-            Long cleanUserCount = iOnlineUserService.userOfflineClean(minute);
-            // log.info("清除已过期用户数量: {} 位", cleanUserCount);
-        });
+        Long cleanUserCount = iOnlineUserService.userOfflineClean(minute < 0 ? 0 : minute);
+        // log.info("清除已过期用户数量: {} 位", cleanUserCount);
     }
 
     /**
      * 清除过期的 token 数据
      */
     public void clearExpireToken() {
-        threadPoolTaskExecutor.execute(iSaveUserService::randomRemoveUserToken);
+        iSaveUserService.randomRemoveUserToken();
     }
 }

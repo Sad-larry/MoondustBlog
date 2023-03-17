@@ -1,4 +1,4 @@
-package work.moonzs.domain.vo;
+package work.moonzs.domain.vo.sys;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CaptchaVo {
+public class SysCaptchaVO {
     /**
      * 是否开启验证码功能
      */

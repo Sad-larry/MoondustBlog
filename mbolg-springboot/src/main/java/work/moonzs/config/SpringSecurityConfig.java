@@ -57,7 +57,7 @@ public class SpringSecurityConfig {
         httpSecurity.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         // 登录接口可以匿名访问 其他接口需要认证
         httpSecurity.authorizeRequests()
-                .antMatchers("/system/login", "/system/captchaImage", "/druid/**").anonymous()
+                .antMatchers("/system/login", "/system/captchaImage", "/druid/**", "/system/mailCode", "/system/register").anonymous()
                 .antMatchers("/web/user/wxmpUserInfo", "/web/user/wxmpLogout", "/web/user/wxmpModify").authenticated()
                 .antMatchers("/web/**").permitAll()
                 .antMatchers("/swagger**/**").permitAll()

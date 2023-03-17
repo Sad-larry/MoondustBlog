@@ -44,12 +44,22 @@ public class QiniuConfig {
 
     /**
      * 上传配置
+     * 配置临时文件存储路径
      *
      * @return {@link MultipartConfigElement}
      */
     @Bean
     @ConditionalOnMissingBean
     public MultipartConfigElement multipartConfigElement() {
+        // 判断是在windows操作系统下，还是linux操作系统下
+        String property = System.getProperties().getProperty("os.name");
+        if (property.contains("Windows")) {
+            // Windows下
+            this.multipartProperties.setLocation("D:/Java-workspace/temp");
+        } else {
+            // Linux系统
+            this.multipartProperties.setLocation("/usr/local/tomcat/temp");
+        }
         return this.multipartProperties.createMultipartConfig();
     }
 

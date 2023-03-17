@@ -3,8 +3,8 @@ package work.moonzs.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.springframework.transaction.annotation.Transactional;
 import work.moonzs.domain.entity.Menu;
-import work.moonzs.domain.vo.MenuVo;
-import work.moonzs.domain.vo.router.RouterVo;
+import work.moonzs.domain.vo.router.RouterVO;
+import work.moonzs.domain.vo.sys.SysMenuVO;
 
 import java.util.List;
 
@@ -19,9 +19,9 @@ public interface MenuService extends IService<Menu> {
     /**
      * 菜单列表
      *
-     * @return {@link List}<{@link MenuVo}>
+     * @return {@link List}<{@link SysMenuVO}>
      */
-    List<MenuVo> listMenu();
+    List<SysMenuVO> listMenu();
 
     /**
      * 通过id查询menu是否存在
@@ -53,9 +53,9 @@ public interface MenuService extends IService<Menu> {
      * 根据菜单建立路由菜单
      *
      * @param menus 菜单
-     * @return {@link List}<{@link RouterVo}>
+     * @return {@link List}<{@link RouterVO}>
      */
-    List<RouterVo> buildMenus(List<Menu> menus);
+    List<RouterVO> buildMenus(List<Menu> menus);
 
     /**
      * 插入菜单

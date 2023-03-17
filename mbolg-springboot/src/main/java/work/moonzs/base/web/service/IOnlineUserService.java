@@ -91,6 +91,6 @@ public class IOnlineUserService {
             }
             return onlineUser;
         }).collect(Collectors.toList());
-        return new PageVO<>(result, redisCache.zsetCount(CacheConstants.ONLINE_USER_KEY));
+        return new PageVO<>(result, Integer.toUnsignedLong(keys.size()));
     }
 }

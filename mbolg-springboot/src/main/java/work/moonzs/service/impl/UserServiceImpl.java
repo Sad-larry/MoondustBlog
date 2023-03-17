@@ -175,6 +175,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             user.setUserAuthId(userAuth.getId());
             // 默认是用户
             user.setRoleId(2L);
+
             // 初始化基本信息
             initUserInfo(user);
             user.setLastLoginTime(new Date());
@@ -208,8 +209,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Override
     public Map<String, Object> sendRegisterMailCode(String username, String mailUuid, String mailCode) {
-        // 验证邮箱格式是否正确
-        BusinessAssert.isTure(iMailUtil.verifyMail(username), "邮箱格式不正确");
+        // 验证邮箱格式是否正确(参数已经校验过)
+        // BusinessAssert.isTure(iMailUtil.verifyMail(username), "邮箱格式不正确");
         HashMap<String, Object> result = new HashMap<>();
         // mailUuid = 用邮箱生成的随机ID，若重复生成则之前的失效
         // mailCode = random.IntNumber(6)随机6位数字
@@ -250,6 +251,46 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         result.put("countdown", 60L);
         result.put("mailUuid", uuid);
         return result;
+    }
+
+    @Override
+    public void sendRegisterMailCode(String username) {
+        String uuid = DigestUtil.md5Hex(username.getBytes());
+        if (redisCache.hasKey(getMailCodeKey(uuid))) {
+            long expireTime = redisCache.getExpire(getMailCodeKey(uuid));
+            // 若有效时间大于240，则60s内不能重复发送邮件
+            if (expireTime > 240L) {
+                // 重复发送邮件，过段时间再操作
+                BusinessAssert.fail("邮件发送繁忙，请稍后再试");
+            }
+            // 否则重新发送验证码
+        }
+        // 若没有发邮件则需要发送邮件
+        // 随机验证码
+        String code = RandomUtil.randomNumbers(6);
+        int timeout = 5;
+        MailEntity mailEntity = MailEntity.builder()
+                .sendTo(username)
+                .subject("注册验证码")
+                .text(iMailUtil.getRegisterMailCode(username, code, timeout))
+                .build();
+        iMailUtil.sendHtmlEMail(mailEntity);
+        // 缓存中记录邮件数据，默认时间 5 分钟
+        redisCache.set(getMailCodeKey(uuid), code, 60 * timeout);
+    }
+
+    @Override
+    public void validateMailCode(String username, String mailCode) {
+        String uuid = DigestUtil.md5Hex(username.getBytes());
+        if (!redisCache.hasKey(getMailCodeKey(uuid))) {
+            // 重复发送邮件，过段时间再操作
+            BusinessAssert.fail("注册失败，请重新发送验证码");
+        }
+        String verifyCode = (String) redisCache.get(getMailCodeKey(uuid));
+        // 如果验证码错误则返回错误
+        BusinessAssert.isFalse(!mailCode.equals(verifyCode), "验证码错误，请重新输入");
+        // 验证成功则删除缓存数据
+        redisCache.del(getMailCodeKey(uuid));
     }
 
     @Override
