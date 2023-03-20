@@ -7,6 +7,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import work.moonzs.base.utils.SecurityUtil;
 import work.moonzs.domain.entity.LoginUser;
 import work.moonzs.domain.entity.User;
 import work.moonzs.mapper.MenuMapper;
@@ -14,6 +15,7 @@ import work.moonzs.mapper.RoleMapper;
 import work.moonzs.mapper.UserMapper;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author Moondust月尘
@@ -43,13 +45,14 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             return null;
         }
         // 获取用户权限信息
-        // List<String> perms = this.getPermsByUserId(user.getId());
+        Set<String> perms = this.getPermsByUserId(user.getId());
         String role = this.getRoleByUserId(user.getId());
         // 返回登录用户
         LoginUser loginUser = new LoginUser();
         loginUser.setUserId(user.getId());
         loginUser.setUser(user);
         loginUser.setRole(role);
+        loginUser.setPermissions(perms);
         return loginUser;
     }
 
@@ -73,7 +76,11 @@ public class UserDetailsServiceImpl implements UserDetailsService {
      * @return {@link String}
      */
     public String getRoleByUserId(Long userId) {
-        return roleMapper.selectUserRole(userId);
+        if (SecurityUtil.isAdmin(userId)) {
+            return "ROLE_admin";
+        } else {
+            return roleMapper.selectUserRole(userId);
+        }
     }
 
     /**
@@ -82,7 +89,11 @@ public class UserDetailsServiceImpl implements UserDetailsService {
      * @param userId 用户id
      * @return {@link List}<{@link String}>
      */
-    private List<String> getPermsByUserId(Long userId) {
-        return menuMapper.selectUserPerms(userId);
+    private Set<String> getPermsByUserId(Long userId) {
+        if (SecurityUtil.isAdmin(userId)) {
+            return Set.of("*:*:*");
+        } else {
+            return menuMapper.selectUserPerms(userId);
+        }
     }
 }

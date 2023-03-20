@@ -42,6 +42,8 @@ public class Menu {
     private String icon;
     //菜单类型(M菜单,F按钮)
     private String type;
+    //权限标识
+    private String perms;
     //重定向地址
     private String redirect;
     //跳转地址

@@ -93,11 +93,11 @@ public class RestControllerExceptionHandler {
      * @param e e
      * @return {@link ResponseResult}
      */
-    @ExceptionHandler(Exception.class)
-    public ResponseResult handleSecurity(Exception e) {
-        log.error("失败原因: {}", e.getMessage());
-        return ResponseResult.fail();
-    }
+    // @ExceptionHandler(Exception.class)
+    // public ResponseResult handleSecurity(Exception e) {
+    //     log.error("失败原因: {}", e.getMessage());
+    //     return ResponseResult.fail();
+    // }
 
     /**
      * 处理"Required request body is missing

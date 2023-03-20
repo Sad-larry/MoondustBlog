@@ -181,10 +181,20 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
 
     @Override
     public boolean topArticle(Long articleId, Integer isStick) {
-        LambdaUpdateWrapper<Article> queryWrapper = new LambdaUpdateWrapper<>();
-        queryWrapper.set(Article::getIsStick, isStick);
-        queryWrapper.eq(Article::getId, articleId);
-        return update(queryWrapper);
+        BusinessAssert.notNull(isStick, "是否置顶'状态'不能为空");
+        LambdaUpdateWrapper<Article> updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper.set(Article::getIsStick, isStick);
+        updateWrapper.eq(Article::getId, articleId);
+        return update(updateWrapper);
+    }
+
+    @Override
+    public boolean pubOrShelfArticle(Long articleId, Integer isPublish) {
+        BusinessAssert.notNull(isPublish, "是否发布'状态'不能为空");
+        LambdaUpdateWrapper<Article> updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper.set(Article::getIsPublish, isPublish);
+        updateWrapper.eq(Article::getId, articleId);
+        return update(updateWrapper);
     }
 
     // ----- 前端接口部分 -----

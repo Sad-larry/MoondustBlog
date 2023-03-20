@@ -66,8 +66,8 @@ public class ArticleDTO {
      * 是否是私密文章
      */
     @ApiModelProperty(notes = "是否是私密文章")
-    @Min(value = 0, message = "状态设置只有0、1", groups = {VG.Insert.class, VG.Update.class})
-    @Max(value = 1, message = "状态设置只有0、1", groups = {VG.Insert.class, VG.Update.class})
+    @Min(value = 0, message = "状态设置只有0、1", groups = {VG.Insert.class, VG.Update.class, Default.class})
+    @Max(value = 1, message = "状态设置只有0、1", groups = {VG.Insert.class, VG.Update.class, Default.class})
     private Integer isSecret;
     /**
      * 是否置顶
@@ -80,15 +80,15 @@ public class ArticleDTO {
      * 是否发布
      */
     @ApiModelProperty(notes = "是否发布")
-    @Min(value = 0, message = "状态设置只有0、1", groups = {VG.Insert.class, VG.Update.class})
-    @Max(value = 1, message = "状态设置只有0、1", groups = {VG.Insert.class, VG.Update.class})
+    @Min(value = 0, message = "状态设置只有0、1", groups = {VG.Insert.class, VG.Update.class, Default.class})
+    @Max(value = 1, message = "状态设置只有0、1", groups = {VG.Insert.class, VG.Update.class, Default.class})
     private Integer isPublish;
     /**
      * 是否原创
      */
     @ApiModelProperty(notes = "是否原创")
-    @Min(value = 0, message = "状态设置只有0、1", groups = {VG.Insert.class, VG.Update.class})
-    @Max(value = 1, message = "状态设置只有0、1", groups = {VG.Insert.class, VG.Update.class})
+    @Min(value = 0, message = "状态设置只有0、1", groups = {VG.Insert.class, VG.Update.class, Default.class})
+    @Max(value = 1, message = "状态设置只有0、1", groups = {VG.Insert.class, VG.Update.class, Default.class})
     private Integer isOriginal;
     /**
      * 原创url

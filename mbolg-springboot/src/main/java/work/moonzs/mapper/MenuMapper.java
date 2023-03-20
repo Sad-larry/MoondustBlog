@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import work.moonzs.domain.entity.Menu;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * 权限资源表 (Menu)表数据库访问层
@@ -23,10 +24,11 @@ public interface MenuMapper extends BaseMapper<Menu> {
 
     /**
      * 通过用户id查询用户权限
+     * 权限标识不能为NULL，否则返回结果不能json格式化
      *
      * @param userId 用户id
-     * @return {@link List}<{@link String}>
+     * @return {@link Set}<{@link String}>
      */
-    List<String> selectUserPerms(Long userId);
+    Set<String> selectUserPerms(Long userId);
 }
 

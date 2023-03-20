@@ -5,25 +5,28 @@
         <el-link :underline="false" @click="onClick(scope.row)">{{ scope.row.title }}</el-link>
       </template>
     </el-table-column>
-    <el-table-column prop="quantity" label="浏览量">
-    </el-table-column>
+    <el-table-column prop="quantity" label="浏览量"></el-table-column>
   </el-table>
 </template>
 
 <script>
-
 export default {
+  data() {
+    return {
+      BLOG_WEB_URL: process.env.VUE_APP_BLOG_WEB_URL,
+    };
+  },
   props: {
     chartData: {
       type: Array,
       required: true,
-      default: []
-    }
+      default: [],
+    },
   },
   methods: {
     onClick(row) {
-      window.open("http://refrainblog.cn/article/" + row.id);
-    }
-  }
-}
+      window.open(this.BLOG_WEB_URL + "article/" + row.id);
+    },
+  },
+};
 </script>

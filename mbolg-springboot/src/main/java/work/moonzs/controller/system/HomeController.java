@@ -18,18 +18,7 @@ public class HomeController {
     private final HomeService homeService;
 
     /**
-     * 后台首页图表数据
-     *
-     * @return {@link ResponseResult}
-     */
-    @SystemLog(businessName = "后台首页图表数据")
-    @GetMapping("/lineCount")
-    public ResponseResult lineCount() {
-        return ResponseResult.success(homeService.lineCount());
-    }
-
-    /**
-     * 初始化首页图表数据
+     * 初始化后台首页图表数据
      *
      * @return {@link ResponseResult}
      */

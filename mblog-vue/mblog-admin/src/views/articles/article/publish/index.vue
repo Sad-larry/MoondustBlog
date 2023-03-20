@@ -11,9 +11,24 @@
           @clear="clearTitle"
           ref="titleRef"
         />
-        <el-button type="danger" size="medium" @click="openModel" style="margin-left: 10px">发布文章</el-button>
+        <!-- 发布文章 -->
+        <el-button
+          type="danger"
+          size="medium"
+          @click="openModel"
+          style="margin-left: 10px"
+          v-hasPermi="['system:category:publish']"
+        >发布文章</el-button>
         <!-- 用于本地上传文章 -->
-        <el-button type="primary" size="medium" @click="uploadArticleDialog = true" style="margin-left: 10px">上传文章</el-button>
+        <el-button
+          type="primary"
+          size="medium"
+          @click="uploadArticleDialog = true"
+          style="margin-left: 10px"
+          v-hasPermi="['system:category:upload']"
+        >上传文章</el-button>
+        <!-- 上传本地文章后需要上传的图片 -->
+        <!-- TODO 上传图片权限 -->
         <el-button
           v-if="imagesUploadFiles.length"
           type="warning"
@@ -112,19 +127,19 @@
               <el-option v-for="item in typeList" :key="item.type" :label="item.desc" :value="item.type" />
             </el-select>
           </el-form-item>
-          <!-- 文章类型 -->
           <el-form-item label="原文地址" v-if="article.isOriginal != 1">
             <el-input v-model="article.originalUrl" placeholder="请填写原文链接" />
           </el-form-item>
           <el-form-item label="上传封面">
             <file-upload
-              v-if="!article.avatar"
               :limit="uploadAvatarOption.limit"
               :file-size="uploadAvatarOption.fileSize"
               :file-type="uploadAvatarOption.fileType"
               @return-data="returnAvatarUpload"
-            />
-            <img v-else :src="article.avatar" height="180px" />
+            ></file-upload>
+          </el-form-item>
+          <el-form-item label="封面预览" v-if="article.avatar">
+            <image-preview :src="article.avatar" :width="180" :height="180" style="margin-top: 10px;" />
           </el-form-item>
           <el-form-item label="置顶">
             <el-switch
@@ -151,7 +166,7 @@
             </el-radio-group>
           </el-form-item>
           <el-form-item label="文章简介">
-            <el-input v-model="article.summary" placeholder="为你的文章写个文章简介再发布吧" />
+            <el-input v-model="article.summary" type="textarea" placeholder="为你的文章写个文章简介再发布吧" />
           </el-form-item>
         </el-form>
         <div slot="footer">
@@ -161,7 +176,7 @@
       </el-dialog>
 
       <!-- md文件上传 -->
-      <el-dialog center :visible.sync="uploadArticleDialog" append-to-body>
+      <el-dialog width="400px" center :visible.sync="uploadArticleDialog" append-to-body>
         <div>
           <file-upload
             :limit="uploadArticleOption.limit"
@@ -176,7 +191,7 @@
       </el-dialog>
 
       <!-- 图片上传 -->
-      <el-dialog width="400px" :visible.sync="uploadImagesDialog" append-to-body>
+      <el-dialog center :visible.sync="uploadImagesDialog" append-to-body>
         <div>
           <file-upload
             :params="uploadImagesOption.params"
@@ -196,7 +211,7 @@
             <el-row :gutter="20" v-for="(item,index) in imagesUploadFiles" :key="index">
               <el-col :offset="1">待上传：{{item}}</el-col>
             </el-row>
-            <div>
+            <div style="margin-top: 10px;">
               <!-- 已经上传成功的图片 -->
               <el-row :gutter="20" v-for="(item,index) in imagesUploadSuccess" :key="index">
                 <el-col>
@@ -228,8 +243,10 @@ export default {
     return {
       addOrEdit: false,
       autoSave: true,
+      // 搜索框中的搜索的分类以及标签名称
       categoryName: "",
       tagName: "",
+      // 分类以及标签列表
       categorys: [],
       tagList: [],
       typeList: [
@@ -373,7 +390,7 @@ export default {
         return false;
       }
       if (this.article.id === null) {
-        addArticle(this.article).then((response) => {
+        addArticle(this.article).then((res) => {
           sessionStorage.removeItem("article");
           this.$router.push({ path: "/article" });
           this.$notify.success({
@@ -383,7 +400,7 @@ export default {
           this.addOrEdit = false;
         });
       } else {
-        updateArticle(this.article).then((response) => {
+        updateArticle(this.article).then((res) => {
           sessionStorage.removeItem("article");
           this.$router.push({ path: "/article" });
           this.$notify.success({
@@ -409,13 +426,13 @@ export default {
     },
     handleSelectCategories(item) {
       this.addCategory({
-        categoryName: item.name,
+        name: item.name,
       });
     },
     saveCategory() {
       if (this.categoryName.trim() != "") {
         this.addCategory({
-          categoryName: this.categoryName,
+          name: this.categoryName,
         });
         this.categoryName = "";
       }
@@ -433,13 +450,13 @@ export default {
     },
     handleSelectTag(item) {
       this.addTag({
-        tagName: item.name,
+        name: item.name,
       });
     },
     saveTag() {
       if (this.tagName.trim() != "") {
         this.addTag({
-          tagName: this.tagName,
+          name: this.tagName,
         });
         this.tagName = "";
       }

@@ -9,7 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import work.moonzs.base.enums.StatusConstants;
 
 import java.util.Collection;
-import java.util.List;
+import java.util.Set;
 
 /**
  * 登录用户实体类
@@ -49,7 +49,7 @@ public class LoginUser implements UserDetails {
     /**
      * 用户权限
      */
-    private List<String> permissions;
+    private Set<String> permissions;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

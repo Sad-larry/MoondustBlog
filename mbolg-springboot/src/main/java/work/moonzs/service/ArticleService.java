@@ -96,6 +96,14 @@ public interface ArticleService extends IService<Article> {
     boolean topArticle(Long articleId, Integer isStick);
 
     /**
+     * 发布下或架文章
+     *
+     * @param articleId 文章id
+     */
+    @Transactional
+    boolean pubOrShelfArticle(Long articleId, Integer isPublish);
+
+    /**
      * 文章篇数
      *
      * @return {@link Long}

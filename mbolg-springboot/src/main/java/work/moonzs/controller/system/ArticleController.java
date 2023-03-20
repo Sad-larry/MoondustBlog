@@ -4,6 +4,7 @@ import cn.hutool.core.util.ObjUtil;
 import cn.hutool.json.JSONUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -53,10 +54,8 @@ public class ArticleController {
      */
     @SystemLog(businessName = "获取文章列表")
     @GetMapping("/list")
-    public ResponseResult listArticle(
-            @RequestParam(defaultValue = "1", required = false) Integer pageNum,
-            @RequestParam(defaultValue = "10", required = false) Integer pageSize,
-            @RequestParam(defaultValue = "", required = false) String fuzzyField) {
+    @PreAuthorize("@ss.hasPermi('system:article:list')")
+    public ResponseResult listArticle(@RequestParam(defaultValue = "1", required = false) Integer pageNum, @RequestParam(defaultValue = "10", required = false) Integer pageSize, @RequestParam(defaultValue = "", required = false) String fuzzyField) {
         return ResponseResult.success(articleService.listArticle(pageNum, pageSize, fuzzyField));
     }
 
@@ -68,6 +67,7 @@ public class ArticleController {
      */
     @SystemLog(businessName = "获取文章详情")
     @GetMapping("/{id}")
+    @PreAuthorize("@ss.hasPermi('system:article:info')")
     public ResponseResult getArticleById(@PathVariable("id") Long articleId) {
         return ResponseResult.success(articleService.getArticleById(articleId));
     }
@@ -81,6 +81,7 @@ public class ArticleController {
     @SystemLog(businessName = "更新文章")
     @AdminOperationLogger(value = "更新文章")
     @PutMapping
+    @PreAuthorize("@ss.hasPermi('system:article:update')")
     public ResponseResult updateArticle(@Validated(value = {VG.Update.class}) @RequestBody ArticleDTO articleDTO) {
         articleService.updateArticle(articleDTO);
         return ResponseResult.success();
@@ -95,6 +96,7 @@ public class ArticleController {
     @SystemLog(businessName = "更新文章分类")
     @AdminOperationLogger(value = "更新文章分类")
     @PostMapping("/updateCategory")
+    @PreAuthorize("@ss.hasPermi('system:article:updateCategory')")
     public ResponseResult updateArticleCategory(@RequestBody Map<String, Object> map) {
         Object mapId = map.get("id");
         Object mapCategoryName = map.get("categoryName");
@@ -117,6 +119,7 @@ public class ArticleController {
     @SystemLog(businessName = "更新标签列表")
     @AdminOperationLogger(value = "更新标签列表")
     @PostMapping("/updateTags")
+    @PreAuthorize("@ss.hasPermi('system:article:updateTags')")
     public ResponseResult updateArticleTags(@RequestBody Map<String, Object> map) {
         Object mapId = map.get("id");
         Object mapTags = map.get("tags");
@@ -138,6 +141,7 @@ public class ArticleController {
     @SystemLog(businessName = "删除文章")
     @AdminOperationLogger(value = "删除文章")
     @DeleteMapping("/{ids}")
+    @PreAuthorize("@ss.hasPermi('system:article:delete')")
     public ResponseResult deleteArticle(@PathVariable(value = "ids") Long[] articleId) {
         // article_tag表数据也要删除
         articleService.deleteArticle(articleId);
@@ -152,6 +156,7 @@ public class ArticleController {
     @SystemLog(businessName = "文章置顶")
     @AdminOperationLogger(value = "文章置顶")
     @PostMapping("/top")
+    @PreAuthorize("@ss.hasPermi('system:article:top')")
     public ResponseResult topArticle(@Validated @RequestBody ArticleDTO articleDTO) {
         Long articleId = articleDTO.getId();
         Integer isStick = articleDTO.getIsStick();
@@ -167,8 +172,25 @@ public class ArticleController {
      */
     @SystemLog(businessName = "上传Md文章")
     @AdminOperationLogger(value = "上传本地文章")
+    @PreAuthorize("@ss.hasPermi('system:article:upload')")
     @PostMapping(path = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseResult uploadArticle(MultipartFile file) {
         return ResponseResult.success(articleService.uploadArticle(file));
+    }
+
+    /**
+     * 发布/下架博客
+     *
+     * @return {@link ResponseResult}
+     */
+    @SystemLog(businessName = "发布/下架博客")
+    @AdminOperationLogger(value = "发布/下架博客")
+    @PostMapping("/pubOrShelf")
+    @PreAuthorize("@ss.hasPermi('system:article:pubOrShelf')")
+    public ResponseResult pubOrShelfArticle(@Validated @RequestBody ArticleDTO articleDTO) {
+        Long articleId = articleDTO.getId();
+        Integer isPublish = articleDTO.getIsPublish();
+        articleService.pubOrShelfArticle(articleId, isPublish);
+        return ResponseResult.success();
     }
 }

@@ -1,6 +1,7 @@
 package work.moonzs.controller.system;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import work.moonzs.base.annotation.AdminOperationLogger;
@@ -31,6 +32,7 @@ public class TagController {
      */
     @SystemLog(businessName = "获取标签列表")
     @GetMapping("/list")
+    @PreAuthorize("@ss.hasPermi('system:tags:list')")
     public ResponseResult listTag(@RequestParam(defaultValue = "1", required = false) Integer pageNum, @RequestParam(defaultValue = "10", required = false) Integer pageSize, @RequestParam(defaultValue = "", required = false) String fuzzyField) {
         return ResponseResult.success(tagService.listTag(pageNum, pageSize, fuzzyField));
     }
@@ -43,6 +45,7 @@ public class TagController {
      */
     @SystemLog(businessName = "通过id查询标签详细信息")
     @GetMapping("/{id}")
+    @PreAuthorize("@ss.hasPermi('system:tags:info')")
     public ResponseResult getTagById(@PathVariable(value = "id") Long tagId) {
         return ResponseResult.success(tagService.getTagById(tagId));
     }
@@ -56,6 +59,7 @@ public class TagController {
     @SystemLog(businessName = "添加标签")
     @AdminOperationLogger(value = "添加标签")
     @PostMapping
+    @PreAuthorize("@ss.hasPermi('system:tags:add')")
     public ResponseResult addTag(@Validated(VG.Insert.class) @RequestBody TagDTO tagDTO) {
         tagService.insertTag(BeanCopyUtil.copyBean(tagDTO, Tag.class));
         return ResponseResult.success();
@@ -70,6 +74,7 @@ public class TagController {
     @SystemLog(businessName = "更新标签")
     @AdminOperationLogger(value = "更新标签")
     @PutMapping
+    @PreAuthorize("@ss.hasPermi('system:tags:update')")
     public ResponseResult updateTag(@Validated(VG.Update.class) @RequestBody TagDTO tagDTO) {
         tagService.updateTag(BeanCopyUtil.copyBean(tagDTO, Tag.class));
         return ResponseResult.success();
@@ -84,6 +89,7 @@ public class TagController {
     @SystemLog(businessName = "根据标签id进行批量删除操作")
     @AdminOperationLogger(value = "删除标签")
     @DeleteMapping("/{ids}")
+    @PreAuthorize("@ss.hasPermi('system:tags:delete')")
     public ResponseResult deleteTag(@PathVariable(value = "ids") Long[] tagIds) {
         tagService.deleteTag(tagIds);
         return ResponseResult.success();

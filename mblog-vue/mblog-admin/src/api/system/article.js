@@ -70,6 +70,15 @@ export function topArticle(data) {
   })
 }
 
+// 发布文章，下架文章
+export function pubOrShelfArticle(data) {
+  return request({
+    url: '/system/article/pubOrShelf',
+    method: 'post',
+    data: data
+  })
+}
+
 // 上传文章
 export function uploadArticle(data) {
   return request({
