@@ -14,9 +14,11 @@ import work.moonzs.base.enums.SystemConstants;
 import work.moonzs.base.utils.BeanCopyUtil;
 import work.moonzs.base.utils.RedisCache;
 import work.moonzs.base.utils.SecurityUtil;
+import work.moonzs.base.validate.VG;
 import work.moonzs.domain.ResponseResult;
 import work.moonzs.domain.dto.LoginUserDTO;
 import work.moonzs.domain.dto.RegisterUserDTO;
+import work.moonzs.domain.dto.user.UpdateUserPasswordDTO;
 import work.moonzs.domain.entity.LoginUser;
 import work.moonzs.domain.entity.Menu;
 import work.moonzs.domain.entity.User;
@@ -101,6 +103,8 @@ public class LoginController {
     }
 
     /**
+     * 获取路由器信息
+     *
      * @return {@link ResponseResult}<{@link ?}>
      */
     @SystemLog(businessName = "获取路由器信息")
@@ -153,6 +157,32 @@ public class LoginController {
     public ResponseResult addWebUser(@Validated @RequestBody RegisterUserDTO registerUserDTO) {
         userService.validateMailCode(registerUserDTO.getUsername(), registerUserDTO.getMailCode());
         userService.registerUser1(BeanCopyUtil.copyBean(registerUserDTO, User.class));
+        return ResponseResult.success();
+    }
+
+    /**
+     * 修改密码（不需要登录）
+     * 通过邮箱修改密码
+     *
+     * @return {@link ResponseResult}
+     */
+    @SystemLog(businessName = "通过邮箱修改密码")
+    @GetMapping("/password/email")
+    public ResponseResult updatePasswordBySendEmail(@EmailValid String email) {
+        userService.updatePasswordBySendEmail(email);
+        return ResponseResult.success();
+    }
+
+    /**
+     * 修改密码（不需要登录）
+     *
+     * @return {@link ResponseResult}
+     */
+    @SystemLog(businessName = "修改密码")
+    @PostMapping("/password/update")
+    public ResponseResult updateUserPassword(@RequestBody @Validated(VG.Select.class) UpdateUserPasswordDTO updateUserPasswordDTO) {
+        userService.validatePasswordMailCode(updateUserPasswordDTO.getUsername(), updateUserPasswordDTO.getMailCode());
+        userService.updateUserPassword(updateUserPasswordDTO.getUsername(), updateUserPasswordDTO.getNewPassword());
         return ResponseResult.success();
     }
 }

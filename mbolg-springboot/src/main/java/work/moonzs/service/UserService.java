@@ -67,6 +67,16 @@ public interface UserService extends IService<User> {
 
     List<UserInfoVO> getWebUserByIds(List<Long> userIds);
 
+
+    /**
+     * 更新用户
+     *
+     * @param user 用户
+     * @return boolean
+     */
+    @Transactional
+    boolean updateUser(User user);
+
     /**
      * 删除用户
      *
@@ -75,6 +85,33 @@ public interface UserService extends IService<User> {
      */
     @Transactional
     boolean deleteUser(Long[] userIds);
+
+    /**
+     * 发送电子邮件更新用户密码
+     *
+     * @param email 电子邮件
+     */
+    @Transactional
+    void updatePasswordBySendEmail(String email);
+
+    /**
+     * 更新用户密码
+     *
+     * @param username    用户名
+     * @param newPassword 新密码
+     * @return boolean
+     */
+    @Transactional
+    boolean updateUserPassword(String username, String newPassword);
+
+    /**
+     * 检查旧密码
+     * 确定新旧密码是否一致
+     *
+     * @param oldPassword 旧密码
+     * @param username    用户名
+     */
+    void checkOldPassword(String username, String oldPassword);
 
     /**
      * 在线用户列表
@@ -128,6 +165,14 @@ public interface UserService extends IService<User> {
      * @param mailCode 邮箱验证码
      */
     void validateMailCode(String username, String mailCode);
+
+    /**
+     * 验证密码邮件代码
+     *
+     * @param username 用户名
+     * @param mailCode 邮件代码
+     */
+    void validatePasswordMailCode(String username, String mailCode);
 
     /**
      * 判断用户是否已经注册

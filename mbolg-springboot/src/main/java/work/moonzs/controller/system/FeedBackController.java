@@ -1,10 +1,15 @@
 package work.moonzs.controller.system;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import work.moonzs.base.annotation.AdminOperationLogger;
 import work.moonzs.base.annotation.SystemLog;
+import work.moonzs.base.utils.BeanCopyUtil;
+import work.moonzs.base.validate.VG;
 import work.moonzs.domain.ResponseResult;
+import work.moonzs.domain.dto.FeedBackDTO;
+import work.moonzs.domain.entity.FeedBack;
 import work.moonzs.service.FeedBackService;
 
 /**
@@ -39,6 +44,22 @@ public class FeedBackController {
     @DeleteMapping("/{ids}")
     public ResponseResult deleteFeedBack(@PathVariable("ids") Long[] feedBackIds) {
         feedBackService.deleteFeedBack(feedBackIds);
+        return ResponseResult.success();
+    }
+
+    /**
+     * 回复反馈
+     *
+     * @param feedBackDTO 回复反馈dto
+     * @return {@link ResponseResult}
+     */
+    @SystemLog(businessName = "回复反馈")
+    @AdminOperationLogger(value = "回复反馈")
+    @PostMapping("/reply")
+    public ResponseResult replyFeedBack(@Validated(value = {VG.Update.class}) @RequestBody FeedBackDTO feedBackDTO) {
+        FeedBack feedBack = BeanCopyUtil.copyBean(feedBackDTO, FeedBack.class);
+        String replyContent = feedBackDTO.getReplyContent();
+        feedBackService.replyFeedBack(feedBack, replyContent);
         return ResponseResult.success();
     }
 }

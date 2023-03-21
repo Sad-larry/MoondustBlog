@@ -18,6 +18,7 @@ import work.moonzs.base.exception.ServiceException;
 import work.moonzs.base.exception.ValidateException;
 import work.moonzs.domain.ResponseResult;
 
+import javax.validation.ConstraintViolationException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -62,6 +63,12 @@ public class RestControllerExceptionHandler {
     public ResponseResult handleValidate(ValidateException e) {
         log.error("失败原因: {}", e.getMessage());
         return ResponseResult.ofException(e);
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseResult handleConstraintViolation(ConstraintViolationException e) {
+        log.error("失败原因: {}", e.getMessage());
+        return ResponseResult.fail(AppHttpCodeEnum.BAD_REQUEST);
     }
 
     /**

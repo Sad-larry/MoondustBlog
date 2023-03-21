@@ -16,3 +16,12 @@ export function delBack(ids) {
     method: 'delete'
   })
 }
+
+// 回复用户反馈
+export function replyBack(data) {
+  return request({
+    url: '/system/feedback/reply',
+    method: 'post',
+    data: data
+  })
+}

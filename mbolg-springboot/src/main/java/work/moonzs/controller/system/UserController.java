@@ -1,10 +1,17 @@
 package work.moonzs.controller.system;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import work.moonzs.base.annotation.AdminOperationLogger;
 import work.moonzs.base.annotation.SystemLog;
+import work.moonzs.base.utils.BeanCopyUtil;
+import work.moonzs.base.utils.SecurityUtil;
+import work.moonzs.base.validate.VG;
 import work.moonzs.domain.ResponseResult;
+import work.moonzs.domain.dto.user.UpdateUserPasswordDTO;
+import work.moonzs.domain.dto.user.UpdateUserStatusDTO;
+import work.moonzs.domain.entity.User;
 import work.moonzs.service.UserService;
 
 /**
@@ -12,6 +19,7 @@ import work.moonzs.service.UserService;
  */
 @RestController("SystemUserC")
 @RequestMapping("/system/user")
+@Validated
 public class UserController {
     @Autowired
     private UserService userService;
@@ -48,6 +56,20 @@ public class UserController {
     }
 
     /**
+     * 更新用户
+     *
+     * @param updateUserStatusDTO 用户状态修改dto
+     * @return {@link ResponseResult}
+     */
+    @SystemLog(businessName = "更新用户")
+    @AdminOperationLogger(value = "更新用户")
+    @PutMapping
+    public ResponseResult updateUser(@Validated @RequestBody UpdateUserStatusDTO updateUserStatusDTO) {
+        userService.updateUser(BeanCopyUtil.copyBean(updateUserStatusDTO, User.class));
+        return ResponseResult.success();
+    }
+
+    /**
      * 删除用户
      *
      * @param userIds 用户id
@@ -61,6 +83,23 @@ public class UserController {
         return ResponseResult.success();
     }
 
+    /**
+     * 更新用户密码（需要登录）
+     *
+     * @param updateUserPasswordDTO 更新用户密码dto
+     * @return {@link ResponseResult}
+     */
+    @SystemLog(businessName = "修改密码")
+    @AdminOperationLogger(value = "修改密码")
+    @PostMapping("/updatePassword")
+    public ResponseResult updateLoginUserPassword(@RequestBody @Validated(VG.Update.class) UpdateUserPasswordDTO updateUserPasswordDTO) {
+        // 防止使用自己的Token改别人的密码
+        String username = SecurityUtil.getLoginUser().getUser().getUsername();
+        // 新旧密码不一致
+        userService.checkOldPassword(username, updateUserPasswordDTO.getOldPassword());
+        userService.updateUserPassword(username, updateUserPasswordDTO.getNewPassword());
+        return ResponseResult.success();
+    }
 
     /**
      * 在线用户列表

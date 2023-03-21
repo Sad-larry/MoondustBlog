@@ -58,5 +58,8 @@ public class CacheConstants {
      * 注册邮件
      */
     public static final String REGISTER_MAIL = "mblog:registerMail:";
-
+    /**
+     * 修改密码邮件
+     */
+    public static final String MODIFY_PASSWORD_MAIL = "mblog:modyfyPasswordMail:";
 }

@@ -100,6 +100,42 @@ public class IMailUtil {
     }
 
     /**
+     * 发送回复用户反馈邮件模板
+     *
+     * @param email        电子邮件
+     * @param type         类型
+     * @param replyContent 回复内容
+     * @param feedback     反馈
+     * @return {@link String}
+     */
+    public String getReplyFeedBack(String email, String type, String replyContent, String feedback) {
+        Context context = new Context();
+        //设置模板所需的参数
+        context.setVariable("title", "反馈答复");
+        context.setVariable("email", email);
+        context.setVariable("type", type);
+        context.setVariable("replyContent", replyContent);
+        context.setVariable("feedback", feedback);
+        return templateEngine.process("/ReplyFeedBack", context);
+    }
+
+    /**
+     * 发送修改密码邮件模板
+     *
+     * @return {@link String}
+     */
+    public String getUpdatePassword(String email, String code, int timeout) {
+        Context context = new Context();
+        //设置模板所需的参数
+        context.setVariable("title", "修改密码");
+        context.setVariable("email", email);
+        context.setVariable("code", code);
+        context.setVariable("timeout", timeout);
+        context.setVariable("date", DateUtils.format(new Date(), "yyyy-MM-dd hh:mm:ss", Locale.CHINESE));
+        return templateEngine.process("/UpdatePassword", context);
+    }
+
+    /**
      * 验证是否为可用邮箱地址
      *
      * @param email 电子邮件

@@ -1,14 +1,32 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px"
-      @submit.native.prevent>
+    <el-form
+      :model="queryParams"
+      ref="queryForm"
+      size="small"
+      :inline="true"
+      v-show="showSearch"
+      label-width="68px"
+      @submit.native.prevent
+    >
       <el-form-item label="用户名称" prop="username">
-        <el-input v-model="queryParams.username" placeholder="请输入用户名称" clearable @clear="resetQuery"
-          @keyup.enter.native="handleQuery" />
+        <el-input
+          v-model="queryParams.username"
+          placeholder="请输入用户名称"
+          clearable
+          @clear="resetQuery"
+          @keyup.enter.native="handleQuery"
+        />
       </el-form-item>
       <el-form-item label="登录方式" prop="loginType">
-        <el-select v-model="queryParams.loginType" filterable clearable reserve-keyword @change='handleQuery'
-          placeholder="请选择登录方式">
+        <el-select
+          v-model="queryParams.loginType"
+          filterable
+          clearable
+          reserve-keyword
+          @change="handleQuery"
+          placeholder="请选择登录方式"
+        >
           <el-option v-for="item in dictLoginTypeList" :key="item.value" :label="item.label" :value="item.value" />
         </el-select>
       </el-form-item>
@@ -20,8 +38,7 @@
 
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
-        <el-button type="danger" plain icon="el-icon-delete" size="mini" :disabled="multiple" @click="handleDelete">删除
-        </el-button>
+        <el-button type="danger" plain icon="el-icon-delete" size="mini" :disabled="multiple" @click="handleDelete">删除</el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
@@ -37,18 +54,14 @@
       <el-table-column prop="loginType" align="center" label="登录方式">
         <template slot-scope="scope">
           <span v-for="(item, index) in dictLoginTypeList" :key="index">
-            <el-tag v-if="scope.row.loginType === parseInt(item.value)" :type="item.style">
-              {{ item.label }}
-            </el-tag>
+            <el-tag v-if="scope.row.loginType === parseInt(item.value)" :type="item.style">{{ item.label }}</el-tag>
           </span>
         </template>
       </el-table-column>
       <el-table-column align="center" label="用户角色">
         <template slot-scope="scope">
           <span v-for="(item, index) in roleList" :key="index">
-            <el-tag v-if="scope.row.roleId === item.id">
-              {{ item.name }}
-            </el-tag>
+            <el-tag v-if="scope.row.roleId === item.id" :type="scope.row.roleId === 1 ? 'warning':''">{{ item.name }}</el-tag>
           </span>
         </template>
       </el-table-column>
@@ -66,7 +79,7 @@
       </el-table-column>
       <el-table-column align="center" label="状态">
         <template slot-scope="scope">
-          <el-tag>{{ statusOptions[scope.row.status] }}</el-tag>
+          <el-tag :type="statusOptionsType[scope.row.status]">{{ statusOptions[scope.row.status] }}</el-tag>
         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="120">
@@ -77,27 +90,40 @@
       </el-table-column>
     </el-table>
 
-    <pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize"
-      @pagination="getList" />
+    <pagination
+      v-show="total > 0"
+      :total="total"
+      :page.sync="queryParams.pageNum"
+      :limit.sync="queryParams.pageSize"
+      @pagination="getList"
+    />
 
     <el-dialog center :title="title" :visible.sync="open">
-      <el-form :rules="rules" ref="dataForm" :model="form">
+      <el-form ref="dataForm" :model="form">
         <el-form-item prop="nickName" label="昵称">
           <el-input disabled v-model="form.nickname" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item prop="status" label="状态">
           <div>
-            <el-radio v-for="(item, index) in statusOptions" v-model="form.status" :label="index" border :key="index">
-              {{ item }}</el-radio>
+            <el-radio
+              v-for="(item, index) in statusOptions"
+              v-model="form.status"
+              :label="index"
+              border
+              :key="index"
+            >{{ item }}</el-radio>
           </div>
         </el-form-item>
         <el-form-item prop="roleId" label="角色">
-          <div>
-            <el-radio v-for="(item, index) in roleList" v-model="form.roleId" :label="item.id" border :key="index">{{
-                item.name
-            }}
-            </el-radio>
-          </div>
+          <!-- 不能赋予管理员角色 -->
+          <el-radio
+            v-for="(item, index) in roleList"
+            :disabled="item.id === 1"
+            v-model="form.roleId"
+            :label="item.id"
+            border
+            :key="index"
+          >{{ item.name }}</el-radio>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -109,7 +135,7 @@
 </template>
 
 <script>
-import { listUser, getUser, delUser, addUser, updateUser } from "@/api/system/user";
+import { listUser, getUser, delUser, updateUser } from "@/api/system/user";
 import { listRole } from "@/api/system/role";
 import { getDataByDictType } from "@/api/system/dictData";
 
@@ -125,7 +151,8 @@ export default {
       single: true,
       // 非多个禁用
       multiple: true,
-      statusOptions: ['禁用', '正常'],
+      statusOptions: ["禁用", "正常"],
+      statusOptionsType: ["info", "success"],
       dictLoginTypeList: [],
       // 显示搜索条件
       showSearch: true,
@@ -143,30 +170,10 @@ export default {
         pageNum: 1,
         pageSize: 10,
         username: null,
-        loginType: null
+        loginType: null,
       },
       // 表单参数
       form: {},
-      // 表单校验
-      rules: {
-        username: [
-          { required: true, message: '请输入账号', trigger: 'blur' },
-          { min: 1, max: 20, message: '长度在1到20个字符' },
-        ],
-        nickname: [
-          { required: true, message: '请输入昵称', trigger: 'blur' },
-          { min: 1, max: 20, message: '长度在1到20个字符' },
-        ],
-        password: [
-          { required: true, message: '请输入密码', trigger: 'blur' },
-        ],
-        status: [
-          { required: true, message: '请选择状态', trigger: 'change' },
-        ],
-        roleId: [
-          { required: true, message: '请选择角色', trigger: 'change' },
-        ]
-      }
     };
   },
   created() {
@@ -175,27 +182,29 @@ export default {
     this.getList();
   },
   methods: {
-    /** TODO 查询登录方式字典数据 */
+    /** 查询登录方式字典数据 */
     getDictList() {
-      let params = ['sys_login_method'];
-      getDataByDictType(params).then(response => {
-        let dictMap = response.data
-        this.dictLoginTypeList = dictMap.sys_login_method.list
-        this.loginTypeDefaultValue = dictMap.sys_login_method.defaultValue
-      }).catch(err => {
-        console.error(err)
-      })
+      let params = ["sys_login_method"];
+      getDataByDictType(params)
+        .then((response) => {
+          let dictMap = response.data;
+          this.dictLoginTypeList = dictMap.sys_login_method.list;
+          this.loginTypeDefaultValue = dictMap.sys_login_method.defaultValue;
+        })
+        .catch((err) => {
+          console.error(err);
+        });
     },
-    /** TODO 查询角色列表 */
+    /** 查询角色列表 */
     getRoleList() {
-      listRole().then(response => {
+      listRole().then((response) => {
         this.roleList = response.data.records;
-      })
+      });
     },
     /** 查询【请填写功能名称】列表 */
     getList() {
       this.loading = true;
-      listUser(this.queryParams).then(response => {
+      listUser(this.queryParams).then((response) => {
         this.userList = response.data.records;
         this.total = response.data.total;
         this.loading = false;
@@ -211,18 +220,12 @@ export default {
       this.form = {
         id: null,
         userName: null,
-        nickName: null,
-        password: null,
-        mobile: null,
-        email: null,
+        nickname: null,
         avatar: null,
-        intro: null,
-        birthday: null,
+        roleId: null,
         status: 0,
-        createTime: null,
-        updateTime: null
       };
-      this.resetForm("form");
+      this.resetForm("dataForm");
     },
     /** 搜索按钮操作 */
     handleQuery() {
@@ -236,21 +239,15 @@ export default {
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
-      this.ids = selection.map(item => item.id)
-      this.single = selection.length !== 1
-      this.multiple = !selection.length
-    },
-    /** 新增按钮操作 */
-    handleAdd() {
-      this.reset();
-      this.open = true;
-      this.title = "添加【请填写功能名称】";
+      this.ids = selection.map((item) => item.id);
+      this.single = selection.length !== 1;
+      this.multiple = !selection.length;
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset();
-      const id = row.id || this.ids
-      getUser(id).then(response => {
+      const id = row.id || this.ids;
+      getUser(id).then((response) => {
         this.form = response.data;
         this.open = true;
         this.title = "修改【请填写功能名称】";
@@ -258,17 +255,11 @@ export default {
     },
     /** 提交按钮 */
     submitForm() {
-      this.$refs["dataForm"].validate(valid => {
+      this.$refs["dataForm"].validate((valid) => {
         if (valid) {
           if (this.form.id != null) {
-            updateUser(this.form).then(response => {
+            updateUser(this.form).then((res) => {
               this.$modal.msgSuccess("修改成功");
-              this.open = false;
-              this.getList();
-            });
-          } else {
-            addUser(this.form).then(response => {
-              this.$modal.msgSuccess("新增成功");
               this.open = false;
               this.getList();
             });
@@ -279,13 +270,17 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const ids = row.id || this.ids;
-      this.$modal.confirm('是否确认删除【请填写功能名称】编号为"' + ids + '"的数据项？').then(function () {
-        return delUser(ids);
-      }).then(() => {
-        this.getList();
-        this.$modal.msgSuccess("删除成功");
-      }).catch(() => { });
+      this.$modal
+        .confirm('是否确认删除【请填写功能名称】编号为"' + ids + '"的数据项？')
+        .then(function () {
+          return delUser(ids);
+        })
+        .then(() => {
+          this.getList();
+          this.$modal.msgSuccess("删除成功");
+        })
+        .catch(() => {});
     },
-  }
+  },
 };
 </script>

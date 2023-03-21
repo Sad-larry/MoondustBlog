@@ -1,4 +1,4 @@
-package work.moonzs.domain.dto;
+package work.moonzs.domain.dto.user;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;

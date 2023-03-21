@@ -38,5 +38,13 @@ public interface FeedBackService extends IService<FeedBack> {
      */
     @Transactional
     Long addWebFeedback(FeedBack feedBack);
+
+    /**
+     * 回复反馈
+     *
+     * @param feedBack     反馈
+     * @param replyContent 回复内容
+     */
+    void replyFeedBack(FeedBack feedBack, String replyContent);
 }
 

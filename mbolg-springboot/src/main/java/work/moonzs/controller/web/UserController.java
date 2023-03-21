@@ -12,7 +12,7 @@ import work.moonzs.base.utils.BeanCopyUtil;
 import work.moonzs.domain.ResponseResult;
 import work.moonzs.domain.dto.LoginUserDTO;
 import work.moonzs.domain.dto.RegisterUserDTO;
-import work.moonzs.domain.dto.UserAuthDTO;
+import work.moonzs.domain.dto.user.UserAuthDTO;
 import work.moonzs.domain.entity.User;
 import work.moonzs.domain.entity.UserAuth;
 import work.moonzs.service.UserService;

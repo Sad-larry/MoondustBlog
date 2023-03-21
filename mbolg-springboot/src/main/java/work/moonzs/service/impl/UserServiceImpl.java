@@ -37,14 +37,12 @@ import work.moonzs.domain.vo.sys.SysUserVO;
 import work.moonzs.domain.vo.web.UserInfoVO;
 import work.moonzs.mapper.UserAuthMapper;
 import work.moonzs.mapper.UserMapper;
+import work.moonzs.service.RoleService;
 import work.moonzs.service.SystemConfigService;
 import work.moonzs.service.UserService;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 用户基础信息表(User)表服务实现类
@@ -76,6 +74,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     private IMailUtil iMailUtil;
     @Autowired
     private QiniuService qiniuService;
+    @Autowired
+    private RoleService roleService;
 
     @Override
     public String adminLogin(String username, String password, String uuid, String code) {
@@ -147,9 +147,65 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
+    public boolean updateUser(User user) {
+        BusinessAssert.isFalse(SecurityUtil.isAdmin(user.getId()), "不能修改管理员信息");
+        BusinessAssert.isFalse(SecurityUtil.isAdminRole(user.getRoleId()), "不能修改成管理员");
+        BusinessAssert.isTure(roleService.isExistRoleById(user.getRoleId()), "角色信息不存在");
+        return updateById(user);
+    }
+
+    @Override
     public boolean deleteUser(Long[] userIds) {
-        userAuthMapper.deleteByUserIds(userIds);
-        return removeBatchByIds(List.of(userIds));
+        List<Long> ids = Arrays.stream(userIds).filter(userId -> !SecurityUtil.isAdmin(userId)).toList();
+        if (ids.isEmpty()) {
+            BusinessAssert.fail("管理员不能被删除");
+        }
+        userAuthMapper.deleteByUserIds(ids.toArray(Long[]::new));
+        return removeBatchByIds(ids);
+    }
+
+    @Override
+    public void updatePasswordBySendEmail(String email) {
+        // 首先查询用账号密码登录的用户表里是否有该邮箱注册的用户
+        LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(User::getUsername, email);
+        queryWrapper.eq(User::getLoginType, StatusConstants.LOGIN_TYPE_EMAIL);
+        User one = getOne(queryWrapper);
+        BusinessAssert.notNull(one, "用户没有注册，请直接注册");
+        // 若有则判断是否被禁用了
+        // 若禁用则不能修改密码，建议用别的邮箱注册
+        BusinessAssert.isFalse(StatusConstants.DISABLE.equals(one.getStatus()), "该账号已被封禁，请联系管理员解封");
+        // 否则直接发送邮件验证码修改密码
+        String code = RandomUtil.randomNumbers(6);
+        int timeout = 5;
+        MailEntity mailEntity = MailEntity
+                .builder()
+                .sendTo(email)
+                .subject("修改用户密码")
+                .text(iMailUtil.getUpdatePassword(email, code, timeout))
+                .build();
+        iMailUtil.sendHtmlEMail(mailEntity);
+        // 一般都是用邮件注册账号的，除了小程序等其他渠道
+        String uuid = DigestUtil.md5Hex(email.getBytes());
+        redisCache.set(getPasswordMailCodeKey(uuid), code, timeout * 60L);
+    }
+
+    @Override
+    public boolean updateUserPassword(String username, String newPassword) {
+        LambdaUpdateWrapper<User> updateWrapper = new LambdaUpdateWrapper<>();
+        // 密码加密
+        updateWrapper.set(User::getPassword, SecurityUtil.encryptPassword(newPassword));
+        updateWrapper.eq(User::getUsername, username);
+        return update(updateWrapper);
+    }
+
+    @Override
+    public void checkOldPassword(String username, String oldPassword) {
+        // 根据用户名查询用户信息
+        LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(User::getUsername, username);
+        queryWrapper.eq(User::getPassword, SecurityUtil.encryptPassword(oldPassword));
+        BusinessAssert.isTure(count(queryWrapper) > 0, "用户密码错误");
     }
 
     @Override
@@ -244,7 +300,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         }
         // 若过了 60s 倒计时或没有发邮件则需要发送邮件
         String code = RandomUtil.randomNumbers(6);
-        MailEntity mailEntity = MailEntity.builder().sendTo(username).subject("注册验证码").text(iMailUtil.getRegisterMailCode(username, code, 5)).build();
+        MailEntity mailEntity = MailEntity
+                .builder()
+                .sendTo(username)
+                .subject("注册验证码")
+                .text(iMailUtil.getRegisterMailCode(username, code, 5))
+                .build();
         iMailUtil.sendHtmlEMail(mailEntity);
         // 缓存中记录邮件数据
         redisCache.set(getMailCodeKey(uuid), code, 300L);
@@ -269,7 +330,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         // 随机验证码
         String code = RandomUtil.randomNumbers(6);
         int timeout = 5;
-        MailEntity mailEntity = MailEntity.builder()
+        MailEntity mailEntity = MailEntity
+                .builder()
                 .sendTo(username)
                 .subject("注册验证码")
                 .text(iMailUtil.getRegisterMailCode(username, code, timeout))
@@ -291,6 +353,20 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         BusinessAssert.isFalse(!mailCode.equals(verifyCode), "验证码错误，请重新输入");
         // 验证成功则删除缓存数据
         redisCache.del(getMailCodeKey(uuid));
+    }
+
+    @Override
+    public void validatePasswordMailCode(String username, String mailCode) {
+        String uuid = DigestUtil.md5Hex(username.getBytes());
+        if (!redisCache.hasKey(getPasswordMailCodeKey(uuid))) {
+            // 重复发送邮件，过段时间再操作
+            BusinessAssert.fail("操作失败，请重新发送验证码");
+        }
+        String verifyCode = (String) redisCache.get(getPasswordMailCodeKey(uuid));
+        // 如果验证码错误则返回错误
+        BusinessAssert.isFalse(!mailCode.equals(verifyCode), "验证码错误，请重新输入");
+        // 验证成功则删除缓存数据
+        redisCache.del(getPasswordMailCodeKey(uuid));
     }
 
     @Override
@@ -390,6 +466,16 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
      */
     private String getMailCodeKey(String key) {
         return CacheConstants.REGISTER_MAIL + key;
+    }
+
+    /**
+     * 得到邮件代码关键key
+     *
+     * @param key 关键
+     * @return {@link String}
+     */
+    private String getPasswordMailCodeKey(String key) {
+        return CacheConstants.MODIFY_PASSWORD_MAIL + key;
     }
 
     /**
