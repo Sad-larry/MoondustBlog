@@ -8,4 +8,10 @@
         <foreach collection="userIds" item="userId" open="(" separator="," close=")">#{userId}</foreach>
         )
     </delete>
+    <select id="getByUserId" resultType="work.moonzs.domain.entity.UserAuth">
+        SELECT id, email, nickname, avatar, intro, create_time
+        FROM t_user_auth
+        WHERE id = #{userId}
+          AND is_disable = 0
+    </select>
 </mapper>

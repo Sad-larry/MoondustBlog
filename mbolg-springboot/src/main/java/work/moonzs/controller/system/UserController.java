@@ -1,17 +1,21 @@
 package work.moonzs.controller.system;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import work.moonzs.base.annotation.AdminOperationLogger;
 import work.moonzs.base.annotation.SystemLog;
 import work.moonzs.base.utils.BeanCopyUtil;
 import work.moonzs.base.utils.SecurityUtil;
 import work.moonzs.base.validate.VG;
 import work.moonzs.domain.ResponseResult;
+import work.moonzs.domain.dto.user.UpdateUserAuthDTO;
 import work.moonzs.domain.dto.user.UpdateUserPasswordDTO;
 import work.moonzs.domain.dto.user.UpdateUserStatusDTO;
 import work.moonzs.domain.entity.User;
+import work.moonzs.domain.entity.UserAuth;
 import work.moonzs.service.UserService;
 
 /**
@@ -56,16 +60,54 @@ public class UserController {
     }
 
     /**
-     * 更新用户
+     * 获取用户详细信息
+     *
+     * @return {@link ResponseResult}
+     */
+    @SystemLog(businessName = "获取用户详细信息")
+    @GetMapping("/profile")
+    public ResponseResult getUserProfile() {
+        return ResponseResult.result(userService.getUserProfile());
+    }
+
+    /**
+     * 更新用户信息
+     *
+     * @param updateUserAuthDTO 更新用户身份dto
+     * @return {@link ResponseResult}
+     */
+    @SystemLog(businessName = "更新用户信息")
+    @AdminOperationLogger(value = "更新用户信息")
+    @PutMapping("/profile")
+    public ResponseResult updateUserProfile(@Validated @RequestBody UpdateUserAuthDTO updateUserAuthDTO) {
+        userService.updateUserProfile(BeanCopyUtil.copyBean(updateUserAuthDTO, UserAuth.class));
+        return ResponseResult.success();
+    }
+
+    /**
+     * 更新用户头像
+     *
+     * @param file 文件
+     * @return {@link ResponseResult}
+     */
+    @SystemLog(businessName = "更新用户头像")
+    @AdminOperationLogger(value = "更新用户头像")
+    @PostMapping(path = "/profile/avatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseResult updateUserAvatar(@RequestParam("file") MultipartFile file) {
+        return ResponseResult.success(userService.updateUserAvatar(file));
+    }
+
+    /**
+     * 更新用户状态
      *
      * @param updateUserStatusDTO 用户状态修改dto
      * @return {@link ResponseResult}
      */
-    @SystemLog(businessName = "更新用户")
-    @AdminOperationLogger(value = "更新用户")
+    @SystemLog(businessName = "更新用户状态")
+    @AdminOperationLogger(value = "更新用户状态")
     @PutMapping
-    public ResponseResult updateUser(@Validated @RequestBody UpdateUserStatusDTO updateUserStatusDTO) {
-        userService.updateUser(BeanCopyUtil.copyBean(updateUserStatusDTO, User.class));
+    public ResponseResult updateUserStatus(@Validated @RequestBody UpdateUserStatusDTO updateUserStatusDTO) {
+        userService.updateUserStatus(BeanCopyUtil.copyBean(updateUserStatusDTO, User.class));
         return ResponseResult.success();
     }
 
@@ -97,7 +139,7 @@ public class UserController {
         String username = SecurityUtil.getLoginUser().getUser().getUsername();
         // 新旧密码不一致
         userService.checkOldPassword(username, updateUserPasswordDTO.getOldPassword());
-        userService.updateUserPassword(username, updateUserPasswordDTO.getNewPassword());
+        userService.updateUserPassword(username, updateUserPasswordDTO.getNewPassword(), true);
         return ResponseResult.success();
     }
 

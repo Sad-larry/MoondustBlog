@@ -12,24 +12,24 @@
             </div>
             <ul class="list-group list-group-striped">
               <li class="list-group-item">
-                <svg-icon icon-class="user" />用户名称
-                <div class="pull-right">{{ user.userName }}</div>
-              </li>
-              <li class="list-group-item">
-                <svg-icon icon-class="phone" />手机号码
-                <div class="pull-right">{{ user.phonenumber }}</div>
+                <svg-icon icon-class="user" />用户昵称
+                <div class="pull-right">{{ user.nickname }}</div>
               </li>
               <li class="list-group-item">
                 <svg-icon icon-class="email" />用户邮箱
                 <div class="pull-right">{{ user.email }}</div>
               </li>
               <li class="list-group-item">
-                <svg-icon icon-class="tree" />所属部门
-                <div class="pull-right" v-if="user.dept">{{ user.dept.deptName }} / {{ postGroup }}</div>
+                <svg-icon icon-class="job" />个人介绍
+                <div class="pull-right">{{ user.intro }}</div>
+              </li>
+              <li class="list-group-item">
+                <svg-icon icon-class="logininfor" />登录方式
+                <div class="pull-right">{{ loginTypes[loginType - 1] }}</div>
               </li>
               <li class="list-group-item">
                 <svg-icon icon-class="peoples" />所属角色
-                <div class="pull-right">{{ roleGroup }}</div>
+                <div class="pull-right">{{ role }}</div>
               </li>
               <li class="list-group-item">
                 <svg-icon icon-class="date" />创建日期
@@ -70,9 +70,10 @@ export default {
   data() {
     return {
       user: {},
-      roleGroup: {},
-      postGroup: {},
-      activeTab: "userinfo"
+      role: "",
+      loginType: undefined,
+      activeTab: "userinfo",
+      loginTypes: ["电子邮件", "码云", "Github", "QQ", "微信", "微信小程序"],
     };
   },
   created() {
@@ -80,12 +81,12 @@ export default {
   },
   methods: {
     getUser() {
-      getUserProfile().then(response => {
-        this.user = response.data;
-        this.roleGroup = response.roleGroup;
-        this.postGroup = response.postGroup;
+      getUserProfile().then((res) => {
+        this.user = res.user;
+        this.role = res.role;
+        this.loginType = res.loginType;
       });
-    }
-  }
+    },
+  },
 };
 </script>

@@ -37,7 +37,7 @@ public class RoleController {
     }
 
     /**
-     * TODO 通过id查询角色详细信息
+     * 通过id查询角色详细信息
      *
      * @param roleId 角色id
      * @return {@link ResponseResult}
@@ -51,6 +51,7 @@ public class RoleController {
 
     /**
      * 添加角色
+     * TODO 需要分配权限
      *
      * @param roleDTO 角色dto
      * @return {@link ResponseResult}
@@ -89,5 +90,29 @@ public class RoleController {
     public ResponseResult deleteRole(@PathVariable(value = "ids") Long[] roleIds) {
         roleService.deleteRole(roleIds);
         return ResponseResult.success();
+    }
+
+    /**
+     * 获取用户权限
+     *
+     * @return {@link ResponseResult}
+     */
+    @SystemLog(businessName = "获取用户权限")
+    @AdminOperationLogger(value = "获取用户权限")
+    @GetMapping("/userPerms")
+    public ResponseResult getUserPermissions() {
+        return ResponseResult.success(roleService.getUserPermissions());
+    }
+
+    /**
+     * 获取所有权限
+     *
+     * @return {@link ResponseResult}
+     */
+    @SystemLog(businessName = "获取角色权限")
+    @AdminOperationLogger(value = "获取角色权限")
+    @GetMapping("/rolePerms")
+    public ResponseResult getRolePermissions() {
+        return ResponseResult.success(roleService.getAllPermissions());
     }
 }

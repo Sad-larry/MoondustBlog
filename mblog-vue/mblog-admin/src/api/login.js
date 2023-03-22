@@ -69,3 +69,29 @@ export function sendMailCode(username) {
     params: { username: username }
   })
 }
+
+// 用户密码重置
+export function resetPwdBySendEmail(email) {
+  return request({
+    url: '/system/password/email',
+    headers: {
+      isToken: false
+    },
+    method: 'get',
+    params: {
+      email
+    }
+  })
+}
+
+// 用户密码重置
+export function resetUserPwd(data) {
+  return request({
+    url: '/system/password/update',
+    headers: {
+      isToken: false
+    },
+    method: 'post',
+    data: data
+  })
+}

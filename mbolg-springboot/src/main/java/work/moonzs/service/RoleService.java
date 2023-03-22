@@ -4,7 +4,10 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import org.springframework.transaction.annotation.Transactional;
 import work.moonzs.domain.entity.Role;
 import work.moonzs.domain.vo.PageVO;
+import work.moonzs.domain.vo.sys.SysPermissionVO;
 import work.moonzs.domain.vo.sys.SysRoleVO;
+
+import java.util.List;
 
 /**
  * 角色表(Role)表服务接口
@@ -82,5 +85,17 @@ public interface RoleService extends IService<Role> {
      */
     @Transactional
     boolean deleteRole(Long[] roleIds);
+
+    /**
+     * 获取角色权限
+     *
+     * @return {@link List}<{@link SysPermissionVO}>
+     */
+    List<SysPermissionVO> getUserPermissions();
+
+    /**
+     * 获取所有权限
+     */
+    List<SysPermissionVO> getAllPermissions();
 }
 

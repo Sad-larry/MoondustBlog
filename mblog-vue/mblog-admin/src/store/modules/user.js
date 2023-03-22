@@ -50,11 +50,11 @@ const user = {
     GetInfo({ commit, state }) {
       return new Promise((resolve, reject) => {
         getInfo().then(res => {
-          const user = res.data.user
-          const avatar = (user.avatar == "" || user.avatar == null) ? require("@/assets/images/profile.jpg") : user.avatar;
+          console.log(res);
+          const avatar = (res.data.avatar == "" || res.data.avatar == null) ? require("@/assets/images/profile.jpg") : res.data.avatar;
           commit('SET_ROLE', res.data.role)
           commit('SET_PERMISSIONS', res.data.permissions)
-          commit('SET_NAME', user.username)
+          commit('SET_NAME', res.data.username)
           commit('SET_AVATAR', avatar)
           resolve(res)
         }).catch(error => {

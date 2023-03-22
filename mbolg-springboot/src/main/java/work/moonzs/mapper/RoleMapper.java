@@ -2,6 +2,9 @@ package work.moonzs.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import work.moonzs.domain.entity.Role;
+import work.moonzs.domain.vo.sys.SysPermissionVO;
+
+import java.util.List;
 
 /**
  * 角色表(Role)表数据库访问层
@@ -17,5 +20,13 @@ public interface RoleMapper extends BaseMapper<Role> {
      * @return {@link String}
      */
     String selectUserRole(Long userId);
+
+    /**
+     * 通过角色id查询权限
+     *
+     * @param roleId 角色id
+     * @return {@link List}<{@link SysPermissionVO}>
+     */
+    List<SysPermissionVO> queryByRoleId(Long roleId);
 }
 

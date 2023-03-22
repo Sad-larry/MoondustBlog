@@ -1,10 +1,10 @@
 <template>
-  <div class="register">
-    <el-form ref="registerForm" :model="registerForm" :rules="registerRules" class="register-form">
+  <div class="modify-password">
+    <el-form ref="user" :model="user" :rules="updateRules" class="modify-password-form">
       <h3 class="title">月尘博客后台管理系统</h3>
       <el-form-item prop="username">
         <el-input 
-        v-model="registerForm.username"
+        v-model="user.username"
          type="text" 
          auto-complete="off" 
          placeholder="邮箱账号"
@@ -12,13 +12,13 @@
           <svg-icon slot="prefix" icon-class="user" class="el-input__icon input-icon" />
         </el-input>
       </el-form-item>
-      <el-form-item prop="password">
+      <el-form-item prop="newPassword">
         <el-input
-          v-model="registerForm.password"
+          v-model="user.newPassword"
           type="password"
           auto-complete="off"
-          placeholder="密码"
-          @keyup.enter.native="handleRegister"
+          placeholder="新密码"
+          @keyup.enter.native="handleUpdate"
           clearable
         >
           <svg-icon slot="prefix" icon-class="password" class="el-input__icon input-icon" />
@@ -26,11 +26,11 @@
       </el-form-item>
       <el-form-item prop="confirmPassword">
         <el-input
-          v-model="registerForm.confirmPassword"
+          v-model="user.confirmPassword"
           type="password"
           auto-complete="off"
           placeholder="确认密码"
-          @keyup.enter.native="handleRegister"
+          @keyup.enter.native="handleUpdate"
           clearable
         >
           <svg-icon slot="prefix" icon-class="password" class="el-input__icon input-icon" />
@@ -38,11 +38,11 @@
       </el-form-item>
       <el-form-item prop="code">
         <el-input
-          v-model="registerForm.mailCode"
+          v-model="user.mailCode"
           auto-complete="off"
           placeholder="邮箱验证码"
           style="width: 63%"
-          @keyup.enter.native="handleRegister"
+          @keyup.enter.native="handleUpdate"
           clearable
         >
           <svg-icon slot="prefix" icon-class="validCode" class="el-input__icon input-icon" />
@@ -63,10 +63,10 @@
           size="medium"
           type="primary"
           style="width:100%;"
-          @click.native.prevent="handleRegister"
+          @click.native.prevent="handleUpdate"
         >
-          <span v-if="!loading">注 册</span>
-          <span v-else>注 册 中...</span>
+          <span v-if="!loading">确 定</span>
+          <span v-else>发 送 邮 件 中...</span>
         </el-button>
         <div style="float: right;">
           <router-link class="link-type" :to="'/login'">使用已有账户登录</router-link>
@@ -74,7 +74,7 @@
       </el-form-item>
     </el-form>
     <!--  底部  -->
-    <div class="el-register-footer">
+    <div class="el-modify-password-footer">
       <span>
         Copyright © 2023
         <a href="https://refrainblog.cn" target="_blank">refrainblog.cn</a> All Rights Reserved.
@@ -84,13 +84,13 @@
 </template>
 
 <script>
-import { sendMailCode, register } from "@/api/login";
+import { resetPwdBySendEmail, resetUserPwd } from "@/api/login";
 
 export default {
-  name: "Register",
+  name: "ModifyPassword",
   data() {
     const equalToPassword = (rule, value, callback) => {
-      if (this.registerForm.password !== value) {
+      if (this.user.newPassword !== value) {
         callback(new Error("两次输入的密码不一致"));
       } else {
         callback();
@@ -100,13 +100,13 @@ export default {
       isSendCode: false,
       sendMsg: "发送验证码",
       time: 60,
-      registerForm: {
+      user: {
         username: "",
-        password: "",
-        confirmPassword: "",
+        newPassword: undefined,
+        confirmPassword: undefined,
         mailCode: "",
       },
-      registerRules: {
+      updateRules: {
         username: [
           { required: true, trigger: "blur", message: "请输入您的邮箱账号" },
           {
@@ -115,8 +115,8 @@ export default {
             trigger: ["blur", "change"],
           },
         ],
-        password: [
-          { required: true, trigger: "blur", message: "请输入您的密码" },
+        newPassword: [
+          { required: true, trigger: "blur", message: "请输入您的新密码" },
           {
             min: 6,
             max: 20,
@@ -144,11 +144,11 @@ export default {
   methods: {
     /*发送邮件*/
     sendCode() {
-      this.$refs.registerForm.validateField("username", (errorMessage) => {
+      this.$refs.user.validateField("username", (errorMessage) => {
         // 若没有错误信息，则验证成功
         if (!errorMessage) {
           this.countDown();
-          sendMailCode( this.registerForm.username ).then((res) => {
+          resetPwdBySendEmail( this.user.username ).then((res) => {
             if (res.code === 200) {
               this.$modal.msgSuccess("邮件发送成功，请注意查收");
             }
@@ -169,17 +169,17 @@ export default {
         }
       }, 1000);
     },
-    handleRegister() {
-      this.$refs.registerForm.validate((valid) => {
+    handleUpdate() {
+      this.$refs.user.validate((valid) => {
         if (valid) {
           this.loading = true;
-          register(this.registerForm)
+          resetUserPwd(this.user)
             .then((res) => {
-              const username = this.registerForm.username;
+              const username = this.user.username;
               this.$alert(
                 "<font color='red'>恭喜你，您的账号 " +
                   username +
-                  " 注册成功！</font>",
+                  " 已成功修改密码！</font>",
                 "系统提示",
                 {
                   dangerouslyUseHTMLString: true,
@@ -202,7 +202,7 @@ export default {
 </script>
 
 <style rel="stylesheet/scss" lang="scss">
-.register {
+.modify-password {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -216,7 +216,7 @@ export default {
   color: #707070;
 }
 
-.register-form {
+.modify-password-form {
   border-radius: 6px;
   background: #ffffff;
   width: 400px;
@@ -233,7 +233,7 @@ export default {
     margin-left: 2px;
   }
 }
-.register-tip {
+.modify-password-tip {
   font-size: 13px;
   text-align: center;
   color: #bfbfbf;
@@ -245,7 +245,7 @@ export default {
   width: 115px;
   height: 38px;
 }
-.el-register-footer {
+.el-modify-password-footer {
   height: 40px;
   line-height: 40px;
   position: fixed;

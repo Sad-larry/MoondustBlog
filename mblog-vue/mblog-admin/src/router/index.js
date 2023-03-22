@@ -52,6 +52,11 @@ export const constantRoutes = [
     hidden: true
   },
   {
+    path: '/modifyPassword',
+    component: () => import('@/views/ModifyPassword'),
+    hidden: true
+  },
+  {
     path: '/404',
     component: () => import('@/views/error/404'),
     hidden: true
@@ -73,7 +78,7 @@ export const constantRoutes = [
     }]
   },
   {
-    path: '/userInfo',
+    path: '/user',
     component: Layout,
     hidden: true,
     redirect: 'noredirect',

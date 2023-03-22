@@ -2,6 +2,7 @@ package work.moonzs.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import work.moonzs.domain.entity.User;
 import work.moonzs.domain.entity.UserAuth;
 import work.moonzs.domain.vo.PageVO;
@@ -69,13 +70,36 @@ public interface UserService extends IService<User> {
 
 
     /**
-     * 更新用户
+     * 得到用户配置文件
+     *
+     * @return {@link Map}<{@link String}, {@link Object}>
+     */
+    Map<String, Object> getUserProfile();
+
+    /**
+     * 更新用户信息
+     *
+     * @return boolean
+     */
+    @Transactional
+    boolean updateUserProfile(UserAuth userAuth);
+
+    /**
+     * 更新用户头像
+     *
+     * @param file 文件
+     * @return {@link String} 用户头像地址
+     */
+    String updateUserAvatar(MultipartFile file);
+
+    /**
+     * 更新用户状态
      *
      * @param user 用户
      * @return boolean
      */
     @Transactional
-    boolean updateUser(User user);
+    boolean updateUserStatus(User user);
 
     /**
      * 删除用户
@@ -99,10 +123,10 @@ public interface UserService extends IService<User> {
      *
      * @param username    用户名
      * @param newPassword 新密码
-     * @return boolean
+     * @param online      是否在线
      */
     @Transactional
-    boolean updateUserPassword(String username, String newPassword);
+    void updateUserPassword(String username, String newPassword, boolean online);
 
     /**
      * 检查旧密码
@@ -191,6 +215,13 @@ public interface UserService extends IService<User> {
     User userLogin(User user);
 
     /**
+     * 获取登录用户信息
+     *
+     * @return {@link Map}<{@link String}, {@link Object}>
+     */
+    Map<String, Object> getLoginUserInfo();
+
+    /**
      * 用户使用微信小程序登录
      *
      * @param code 临时登录凭证 code
@@ -212,5 +243,7 @@ public interface UserService extends IService<User> {
      */
     @Transactional
     boolean wxmpModify(UserAuth userAuth);
+
+
 }
 

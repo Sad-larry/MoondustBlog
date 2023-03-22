@@ -19,7 +19,6 @@ import work.moonzs.domain.ResponseResult;
 import work.moonzs.domain.dto.LoginUserDTO;
 import work.moonzs.domain.dto.RegisterUserDTO;
 import work.moonzs.domain.dto.user.UpdateUserPasswordDTO;
-import work.moonzs.domain.entity.LoginUser;
 import work.moonzs.domain.entity.Menu;
 import work.moonzs.domain.entity.User;
 import work.moonzs.domain.vo.sys.SysCaptchaVO;
@@ -97,9 +96,7 @@ public class LoginController {
      */
     @GetMapping("/getInfo")
     public ResponseResult getInfo() {
-        LoginUser loginUser = SecurityUtil.getLoginUser();
-        // TODO 这里应该是获取具体的用户信息
-        return ResponseResult.success(loginUser);
+        return ResponseResult.success(userService.getLoginUserInfo());
     }
 
     /**
@@ -168,7 +165,7 @@ public class LoginController {
      */
     @SystemLog(businessName = "通过邮箱修改密码")
     @GetMapping("/password/email")
-    public ResponseResult updatePasswordBySendEmail(@EmailValid String email) {
+    public ResponseResult updatePasswordBySendEmail(@RequestParam @EmailValid String email) {
         userService.updatePasswordBySendEmail(email);
         return ResponseResult.success();
     }
@@ -182,7 +179,7 @@ public class LoginController {
     @PostMapping("/password/update")
     public ResponseResult updateUserPassword(@RequestBody @Validated(VG.Select.class) UpdateUserPasswordDTO updateUserPasswordDTO) {
         userService.validatePasswordMailCode(updateUserPasswordDTO.getUsername(), updateUserPasswordDTO.getMailCode());
-        userService.updateUserPassword(updateUserPasswordDTO.getUsername(), updateUserPasswordDTO.getNewPassword());
+        userService.updateUserPassword(updateUserPasswordDTO.getUsername(), updateUserPasswordDTO.getNewPassword(), false);
         return ResponseResult.success();
     }
 }

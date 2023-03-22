@@ -19,5 +19,13 @@ public interface UserAuthMapper extends BaseMapper<UserAuth> {
      * @return boolean
      */
     boolean deleteByUserIds(@Param("userIds") Long[] userIds);
+
+    /**
+     * 按用户id查找
+     *
+     * @param userId 用户id
+     * @return boolean
+     */
+    UserAuth getByUserId(Long userId);
 }
 

@@ -110,9 +110,9 @@ export function updateUserPwd(oldPassword, newPassword) {
     newPassword
   }
   return request({
-    url: '/system/user/profile/updatePwd',
-    method: 'put',
-    params: data
+    url: '/system/user/updatePassword',
+    method: 'post',
+    data: data
   })
 }
 
@@ -121,7 +121,10 @@ export function uploadAvatar(data) {
   return request({
     url: '/system/user/profile/avatar',
     method: 'post',
-    data: data
+    data: data,
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
   })
 }
 // 查询授权角色

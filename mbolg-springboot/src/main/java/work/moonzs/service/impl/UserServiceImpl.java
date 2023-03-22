@@ -16,6 +16,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import work.moonzs.base.enums.AppHttpCodeEnum;
 import work.moonzs.base.enums.CacheConstants;
 import work.moonzs.base.enums.StatusConstants;
@@ -32,6 +33,7 @@ import work.moonzs.domain.entity.User;
 import work.moonzs.domain.entity.UserAuth;
 import work.moonzs.domain.vo.PageVO;
 import work.moonzs.domain.vo.sys.SysOnlineUserVO;
+import work.moonzs.domain.vo.sys.SysRoleVO;
 import work.moonzs.domain.vo.sys.SysUserBaseVO;
 import work.moonzs.domain.vo.sys.SysUserVO;
 import work.moonzs.domain.vo.web.UserInfoVO;
@@ -147,7 +149,29 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
-    public boolean updateUser(User user) {
+    public boolean updateUserProfile(UserAuth userAuth) {
+        int update = userAuthMapper.updateById(userAuth);
+        return update > 0;
+    }
+
+    @Override
+    public String updateUserAvatar(MultipartFile file) {
+        // 检查是否符合
+        IFileUtil.isLegalFile(file);
+        String name = file.getName();
+        String fileKey = PathUtil.generateFilePath(file.getOriginalFilename());
+        qiniuService.uploadFile(fileKey, file);
+        String avatar = qiniuService.publicDownload(fileKey);
+        Long userAuthId = SecurityUtil.getLoginUser().getUser().getUserAuthId();
+        UserAuth userAuth = new UserAuth();
+        userAuth.setId(userAuthId);
+        userAuth.setAvatar(avatar);
+        userAuthMapper.updateById(userAuth);
+        return avatar;
+    }
+
+    @Override
+    public boolean updateUserStatus(User user) {
         BusinessAssert.isFalse(SecurityUtil.isAdmin(user.getId()), "不能修改管理员信息");
         BusinessAssert.isFalse(SecurityUtil.isAdminRole(user.getRoleId()), "不能修改成管理员");
         BusinessAssert.isTure(roleService.isExistRoleById(user.getRoleId()), "角色信息不存在");
@@ -178,12 +202,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         // 否则直接发送邮件验证码修改密码
         String code = RandomUtil.randomNumbers(6);
         int timeout = 5;
-        MailEntity mailEntity = MailEntity
-                .builder()
-                .sendTo(email)
-                .subject("修改用户密码")
-                .text(iMailUtil.getUpdatePassword(email, code, timeout))
-                .build();
+        MailEntity mailEntity = MailEntity.builder().sendTo(email).subject("修改用户密码").text(iMailUtil.getUpdatePassword(email, code, timeout)).build();
         iMailUtil.sendHtmlEMail(mailEntity);
         // 一般都是用邮件注册账号的，除了小程序等其他渠道
         String uuid = DigestUtil.md5Hex(email.getBytes());
@@ -191,21 +210,33 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
-    public boolean updateUserPassword(String username, String newPassword) {
+    public void updateUserPassword(String username, String newPassword, boolean online) {
         LambdaUpdateWrapper<User> updateWrapper = new LambdaUpdateWrapper<>();
         // 密码加密
         updateWrapper.set(User::getPassword, SecurityUtil.encryptPassword(newPassword));
         updateWrapper.eq(User::getUsername, username);
-        return update(updateWrapper);
+        if (update(updateWrapper)) {
+            // 如果在线则需要重新登录
+            if (online) {
+                // 清除用户数据，踢人下线
+                String userUid = SecurityUtil.getLoginUser().getUserUid();
+                kick(userUid);
+            }
+        }
     }
 
     @Override
     public void checkOldPassword(String username, String oldPassword) {
         // 根据用户名查询用户信息
         LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.select(User::getPassword);
         queryWrapper.eq(User::getUsername, username);
-        queryWrapper.eq(User::getPassword, SecurityUtil.encryptPassword(oldPassword));
-        BusinessAssert.isTure(count(queryWrapper) > 0, "用户密码错误");
+        User user = getOne(queryWrapper);
+        if (null == user) {
+            BusinessAssert.fail("用户不存在");
+        }
+        String password = user.getPassword();
+        BusinessAssert.isTure(SecurityUtil.matchesPassword(oldPassword, password), "用户密码错误");
     }
 
     @Override
@@ -300,12 +331,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         }
         // 若过了 60s 倒计时或没有发邮件则需要发送邮件
         String code = RandomUtil.randomNumbers(6);
-        MailEntity mailEntity = MailEntity
-                .builder()
-                .sendTo(username)
-                .subject("注册验证码")
-                .text(iMailUtil.getRegisterMailCode(username, code, 5))
-                .build();
+        MailEntity mailEntity = MailEntity.builder().sendTo(username).subject("注册验证码").text(iMailUtil.getRegisterMailCode(username, code, 5)).build();
         iMailUtil.sendHtmlEMail(mailEntity);
         // 缓存中记录邮件数据
         redisCache.set(getMailCodeKey(uuid), code, 300L);
@@ -330,12 +356,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         // 随机验证码
         String code = RandomUtil.randomNumbers(6);
         int timeout = 5;
-        MailEntity mailEntity = MailEntity
-                .builder()
-                .sendTo(username)
-                .subject("注册验证码")
-                .text(iMailUtil.getRegisterMailCode(username, code, timeout))
-                .build();
+        MailEntity mailEntity = MailEntity.builder().sendTo(username).subject("注册验证码").text(iMailUtil.getRegisterMailCode(username, code, timeout)).build();
         iMailUtil.sendHtmlEMail(mailEntity);
         // 缓存中记录邮件数据，默认时间 5 分钟
         redisCache.set(getMailCodeKey(uuid), code, 60 * timeout);
@@ -391,6 +412,26 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
+    public Map<String, Object> getLoginUserInfo() {
+        HashMap<String, Object> result = new HashMap<>();
+        LoginUser loginUser = SecurityUtil.getLoginUser();
+        // 用户角色信息
+        String role = loginUser.getRole();
+        result.put("role", role);
+        // 用户权限信息
+        Set<String> permissions = loginUser.getPermissions();
+        result.put("permissions", permissions);
+        // 用户名
+        String username = loginUser.getUsername();
+        result.put("username", username);
+        // 用户头像
+        Long userAuthId = loginUser.getUser().getUserAuthId();
+        UserAuth userAuth = userAuthMapper.getByUserId(userAuthId);
+        result.put("avatar", userAuth.getAvatar());
+        return result;
+    }
+
+    @Override
     public String wxmpLogin(String code) {
         // 获取用户 openId
         JSONObject resultJson = WxmpLoginUtil.getResultJson(code);
@@ -442,6 +483,23 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                 .avatar(userAuth.getAvatar()).intro(userAuth.getIntro()).webSite(userAuth.getWebSite()).email(userAuth.getEmail()).build();
         int update = userAuthMapper.updateById(build);
         return update > 0;
+    }
+
+    @Override
+    public Map<String, Object> getUserProfile() {
+        HashMap<String, Object> result = new HashMap<>();
+        LoginUser loginUser = SecurityUtil.getLoginUser();
+        // 用户登录方式
+        result.put("loginType", loginUser.getUser().getLoginType());
+        // 用户详细信息
+        Long userAuthId = loginUser.getUser().getUserAuthId();
+        UserAuth userAuth = userAuthMapper.getByUserId(userAuthId);
+        result.put("user", userAuth);
+        // 用户角色信息
+        Long roleId = loginUser.getUser().getRoleId();
+        SysRoleVO roleById = roleService.getRoleById(roleId);
+        result.put("role", roleById.getName());
+        return result;
     }
 
     /**

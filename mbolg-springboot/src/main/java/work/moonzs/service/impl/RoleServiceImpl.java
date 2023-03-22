@@ -8,9 +8,11 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 import work.moonzs.base.enums.AppHttpCodeEnum;
 import work.moonzs.base.utils.BeanCopyUtil;
+import work.moonzs.base.utils.SecurityUtil;
 import work.moonzs.base.web.common.BusinessAssert;
 import work.moonzs.domain.entity.Role;
 import work.moonzs.domain.vo.PageVO;
+import work.moonzs.domain.vo.sys.SysPermissionVO;
 import work.moonzs.domain.vo.sys.SysRoleVO;
 import work.moonzs.mapper.RoleMapper;
 import work.moonzs.service.RoleService;
@@ -75,6 +77,19 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
     @Override
     public boolean deleteRole(Long[] roleIds) {
         return removeBatchByIds(List.of(roleIds));
+    }
+
+    @Override
+    public List<SysPermissionVO> getUserPermissions() {
+        Long roleId = SecurityUtil.getLoginUser().getUser().getRoleId();
+        // 通过角色Id获取菜单栏所有权限
+        return baseMapper.queryByRoleId(roleId);
+    }
+
+    @Override
+    public List<SysPermissionVO> getAllPermissions() {
+        // 获取所有权限
+        return baseMapper.queryByRoleId(null);
     }
 }
 

@@ -28,7 +28,7 @@ service.interceptors.request.use(config => {
   const isRepeatSubmit = (config.headers || {}).repeatSubmit === false
   if (getToken() && !isToken) {
     // 让每个请求携带自定义token 请根据实际情况自行修改
-    config.headers['Authorization'] = 'Bearer ' + getToken() 
+    config.headers['Authorization'] = 'Bearer ' + getToken()
     // config.headers['token'] = getToken()
   }
   // get请求映射params参数
@@ -108,9 +108,15 @@ service.interceptors.response.use(res => {
       message: msg
     })
     if (code === 45017 || code === 45013 || code == 45015) {
-      // 删除token
-      store.dispatch('FedLogOut').then(() => {
-        location.href = '/admin/login';
+      MessageBox.alert(msg, '系统提示', {
+        confirmButtonText: '确定',
+        type: 'warning'
+      }
+      ).then(() => {
+        // 删除token
+        store.dispatch('FedLogOut').then(() => {
+          location.href = '/admin/login';
+        });
       });
       return Promise.reject('error')
     }

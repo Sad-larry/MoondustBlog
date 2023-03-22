@@ -20,6 +20,8 @@ public interface QiniuService {
      */
     boolean uploadFile(String key, String filename);
 
+    boolean uploadFile(String key, MultipartFile file);
+
     /**
      * 上传本地文件
      * 这里的文件名一般是带有全路径的文件的文件名，通常是上传本地文件

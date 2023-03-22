@@ -66,6 +66,11 @@ public class QiniuServiceImpl implements QiniuService {
     }
 
     @Override
+    public boolean uploadFile(String key, MultipartFile file) {
+        return uploadFile(BUCKET, key, file);
+    }
+
+    @Override
     public boolean uploadFile(String bucket, String key, String filename) {
         boolean result = false;
         String upToken = qiniuConfig.auth().uploadToken(bucket, key);

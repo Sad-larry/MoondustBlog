@@ -34,7 +34,12 @@ public class PathUtil {
         String uuid = simpleRandomUUID();
         // 后缀和文件名一样
         int index = fileName.lastIndexOf(".");
-        String fileType = fileName.substring(index);
+        String fileType;
+        if (index > 0) {
+            fileType = fileName.substring(index);
+        } else {
+            fileType = ".file";
+        }
         return datePath + uuid + fileType;
     }
 
