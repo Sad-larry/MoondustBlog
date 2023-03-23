@@ -53,6 +53,7 @@ public class FriendLinkServiceImpl extends ServiceImpl<FriendLinkMapper, FriendL
         LambdaQueryWrapper<FriendLink> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.like(StrUtil.isNotBlank(name), FriendLink::getName, name)
                 .eq(ObjUtil.isNotNull(status), FriendLink::getStatus, status)
+                .orderByAsc(FriendLink::getStatus)
                 .orderByAsc(FriendLink::getSort);
         Page<FriendLink> page = new Page<>(pageNum, pageSize);
         page(page, queryWrapper);

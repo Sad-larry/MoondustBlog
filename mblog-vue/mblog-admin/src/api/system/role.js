@@ -42,3 +42,32 @@ export function delRole(ids) {
     method: 'delete'
   })
 }
+
+// 获取角色权限列表
+export function getRolePerms(id) {
+  return request({
+    url: '/system/role/rolePerms',
+    method: 'get',
+    params: { roleId: id }
+  })
+}
+
+// 获取所有权限列表
+export function getAllPerms() {
+  return request({
+    url: '/system/role/allPerms',
+    method: 'get',
+  })
+}
+
+// 更新角色权限列表
+export function updateRolePerms(id, perms) {
+  return request({
+    url: '/system/role/updatePerms',
+    method: 'post',
+    data: {
+      id: id,
+      perms: perms
+    },
+  })
+}

@@ -89,13 +89,35 @@ public interface RoleService extends IService<Role> {
     /**
      * 获取角色权限
      *
-     * @return {@link List}<{@link SysPermissionVO}>
+     * @param roleId 角色id
+     * @return {@link List}<{@link Long}>
      */
-    List<SysPermissionVO> getUserPermissions();
+    List<Long> getRolePermissionIds(Long roleId);
 
     /**
      * 获取所有权限
+     *
+     * @param buildTree 是否构建树
+     * @return {@link List}<{@link SysPermissionVO}>
      */
-    List<SysPermissionVO> getAllPermissions();
+    List<SysPermissionVO> getAllPermissions(boolean buildTree);
+
+    /**
+     * 建立权限树
+     *
+     * @param permissions 权限列表
+     * @return {@link List}<{@link SysPermissionVO}>
+     */
+    List<SysPermissionVO> buildPermissionsTree(List<SysPermissionVO> permissions);
+
+    /**
+     * 更新角色权限
+     *
+     * @param roleId 角色id
+     * @param perms  权限
+     * @return boolean
+     */
+    @Transactional
+    boolean updateRolePermissions(Long roleId, Long[] perms);
 }
 

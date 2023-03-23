@@ -66,18 +66,18 @@
       <el-table-column label="标签名称" align="center" prop="name" />
       <el-table-column label="标签点击量" align="center" prop="clickVolume" />
       <el-table-column label="排序" align="center" prop="sort" />
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center">
         <template slot-scope="scope">
           <el-button
             size="mini"
-            type="text"
+            type="warning"
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['system:tags:update']"
           >修改</el-button>
           <el-button
             size="mini"
-            type="text"
+            type="danger"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
             v-hasPermi="['system:tags:delete']"

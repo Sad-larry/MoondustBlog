@@ -28,5 +28,14 @@ public interface RoleMapper extends BaseMapper<Role> {
      * @return {@link List}<{@link SysPermissionVO}>
      */
     List<SysPermissionVO> queryByRoleId(Long roleId);
+
+    /**
+     * 通过角色id查询权限
+     * 非菜单
+     *
+     * @param roleId 角色id
+     * @return {@link List}<{@link Long}>
+     */
+    List<Long> queryIdByRoleId(Long roleId);
 }
 

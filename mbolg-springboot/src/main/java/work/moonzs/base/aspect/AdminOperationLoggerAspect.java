@@ -37,7 +37,6 @@ import java.util.HashMap;
 public class AdminOperationLoggerAspect {
     private final ExceptionLogMapper exceptionLogMapper;
     private final AdminLogMapper adminLogMapper;
-    private StopWatch operateTime;
 
     @Pointcut("@annotation(adminOperationLogger)")
     public void pt(AdminOperationLogger adminOperationLogger) {
@@ -46,12 +45,12 @@ public class AdminOperationLoggerAspect {
 
     @Around(value = "pt(adminOperationLogger)", argNames = "joinPoint,adminOperationLogger")
     public Object operationMethod(ProceedingJoinPoint joinPoint, AdminOperationLogger adminOperationLogger) throws Throwable {
-        operateTime = new StopWatch();
+        StopWatch operateTime = new StopWatch();
         operateTime.start();
         // 业务处理
         Object result = joinPoint.proceed();
         // 日志收集
-        handle(joinPoint);
+        handle(joinPoint, operateTime);
         return result;
     }
 
@@ -94,7 +93,7 @@ public class AdminOperationLoggerAspect {
      *
      * @param joinPoint 切入点
      */
-    private void handle(ProceedingJoinPoint joinPoint) throws NoSuchMethodException {
+    private void handle(ProceedingJoinPoint joinPoint, StopWatch operateTime) throws NoSuchMethodException {
         // 获取被注解的方法
         Method method = AspectUtil.INSTANCE.getMethod(joinPoint);
         // 获取方法上的注解

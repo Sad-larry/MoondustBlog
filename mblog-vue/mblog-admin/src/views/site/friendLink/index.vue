@@ -69,17 +69,17 @@
           <span>{{ parseTime(scope.row.createTime) }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="操作" width="230" class-name="small-padding fixed-width">
+      <el-table-column align="center" label="操作" width="300">
         <template slot-scope="scope">
-          <el-button v-if="scope.row.status === 0" size="mini" type="text" icon="el-icon-finished"
+          <el-button v-if="scope.row.status === 0" size="mini" type="success" icon="el-icon-finished"
             @click="handlePass(scope.row)">审核通过
           </el-button>
-          <el-button v-else-if="scope.row.status === 1" size="mini" type="text" icon="el-icon-top"
+          <el-button v-else-if="scope.row.status === 1" size="mini" type="primary" icon="el-icon-top"
             @click="handleTop(scope.row)">置顶
           </el-button>
-          <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)">修改
+          <el-button size="mini" type="warning" icon="el-icon-edit" @click="handleUpdate(scope.row)">修改
           </el-button>
-          <el-button size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)">删除
+          <el-button size="mini" type="danger" icon="el-icon-delete" @click="handleDelete(scope.row)">删除
           </el-button>
         </template>
       </el-table-column>

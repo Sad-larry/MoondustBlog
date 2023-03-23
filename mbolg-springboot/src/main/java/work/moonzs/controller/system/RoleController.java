@@ -7,11 +7,16 @@ import org.springframework.web.bind.annotation.*;
 import work.moonzs.base.annotation.AdminOperationLogger;
 import work.moonzs.base.annotation.SystemLog;
 import work.moonzs.base.utils.BeanCopyUtil;
+import work.moonzs.base.utils.SecurityUtil;
 import work.moonzs.base.validate.VG;
 import work.moonzs.domain.ResponseResult;
 import work.moonzs.domain.dto.RoleDTO;
+import work.moonzs.domain.dto.RolePermsDTO;
 import work.moonzs.domain.entity.Role;
+import work.moonzs.domain.vo.sys.SysPermissionVO;
 import work.moonzs.service.RoleService;
+
+import java.util.List;
 
 /**
  * @author Moondust月尘
@@ -51,7 +56,6 @@ public class RoleController {
 
     /**
      * 添加角色
-     * TODO 需要分配权限
      *
      * @param roleDTO 角色dto
      * @return {@link ResponseResult}
@@ -60,8 +64,7 @@ public class RoleController {
     @AdminOperationLogger(value = "添加角色")
     @PostMapping
     public ResponseResult addRole(@Validated(VG.Insert.class) @RequestBody RoleDTO roleDTO) {
-        roleService.insertRole(BeanCopyUtil.copyBean(roleDTO, Role.class));
-        return ResponseResult.success();
+        return ResponseResult.success(roleService.insertRole(BeanCopyUtil.copyBean(roleDTO, Role.class)));
     }
 
     /**
@@ -93,15 +96,20 @@ public class RoleController {
     }
 
     /**
-     * 获取用户权限
+     * 获取角色权限
      *
      * @return {@link ResponseResult}
      */
-    @SystemLog(businessName = "获取用户权限")
-    @AdminOperationLogger(value = "获取用户权限")
-    @GetMapping("/userPerms")
-    public ResponseResult getUserPermissions() {
-        return ResponseResult.success(roleService.getUserPermissions());
+    @SystemLog(businessName = "获取角色权限")
+    @AdminOperationLogger(value = "获取角色权限")
+    @GetMapping("/rolePerms")
+    public ResponseResult getRolePermissions(@RequestParam Long roleId) {
+        if (SecurityUtil.isAdminRole(roleId)) {
+            return ResponseResult.success();
+        }
+        List<Long> rolePermsIds = roleService.getRolePermissionIds(roleId);
+        List<SysPermissionVO> allPerms = roleService.getAllPermissions(true);
+        return ResponseResult.success().put("allPerms", allPerms).put("rolePermsIds", rolePermsIds);
     }
 
     /**
@@ -109,10 +117,23 @@ public class RoleController {
      *
      * @return {@link ResponseResult}
      */
-    @SystemLog(businessName = "获取角色权限")
-    @AdminOperationLogger(value = "获取角色权限")
-    @GetMapping("/rolePerms")
-    public ResponseResult getRolePermissions() {
-        return ResponseResult.success(roleService.getAllPermissions());
+    @SystemLog(businessName = "获取所有权限")
+    @AdminOperationLogger(value = "获取所有权限")
+    @GetMapping("/allPerms")
+    public ResponseResult getAllPermissions() {
+        return ResponseResult.success(roleService.getAllPermissions(true));
+    }
+
+    /**
+     * 更新角色权限
+     *
+     * @return {@link ResponseResult}
+     */
+    @SystemLog(businessName = "更新角色权限")
+    @AdminOperationLogger(value = "更新角色权限")
+    @PostMapping("/updatePerms")
+    public ResponseResult updateRolePerms(@RequestBody @Validated RolePermsDTO rolePermsDTO) {
+        roleService.updateRolePermissions(rolePermsDTO.getId(), rolePermsDTO.getPerms());
+        return ResponseResult.success();
     }
 }

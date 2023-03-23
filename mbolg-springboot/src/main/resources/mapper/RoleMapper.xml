@@ -9,14 +9,23 @@
           AND u.`id` = #{userId};
     </select>
     <select id="queryByRoleId" resultType="work.moonzs.domain.vo.sys.SysPermissionVO">
-        SELECT m.`id`, m.`parent_id`, m.`title`, m.`url`, m.`perms`, m.`create_time`
+        SELECT DISTINCT m.`id`, m.`parent_id`, m.`title`, m.`url`, m.`perms`, m.`create_time`
         FROM t_menu m
         LEFT JOIN t_role_menu rm ON rm.menu_id = m.id
         LEFT JOIN t_role r ON r.id = rm.role_id
-        WHERE m.perms IS NOT NULL
+        WHERE m.`type` IN ('M', 'F')
         <if test="roleId != null">
             AND r.`id` = #{roleId}
         </if>
-        ORDER BY m.`id`
+        ORDER BY m.`id`, m.`parent_id`
+    </select>
+    <select id="queryIdByRoleId" resultType="java.lang.Long">
+        SELECT DISTINCT rm.`menu_id`
+        FROM t_role_menu rm
+                 LEFT JOIN t_role r ON r.id = rm.role_id
+                 LEFT JOIN (SELECT id, type FROM t_menu) m ON m.`id` = rm.`menu_id`
+        WHERE r.`id` = #{roleId}
+          AND m.`type` IN ('F')
+        ORDER BY rm.`menu_id`
     </select>
 </mapper>

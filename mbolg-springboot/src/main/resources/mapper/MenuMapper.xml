@@ -23,7 +23,7 @@
           and m.`type` in ('M')
         order by m.`parent_id`, m.`sort_no`
     </select>
-    <!-- TODO 查询用户权限，通过角色查询权限-->
+    <!-- 查询用户权限，通过角色查询权限-->
     <select id="selectUserPerms" resultType="java.lang.String">
         SELECT DISTINCT m.`perms`
         FROM t_menu m
@@ -31,7 +31,7 @@
                  LEFT JOIN t_user u ON u.`role_id` = rm.`role_id`
         WHERE u.`id` = #{userId}
           AND u.`status` = 1
-          AND m.`type` IN ('M', 'F')
+          AND m.`type` IN ('F')
           AND m.`perms` IS NOT NULL
         ORDER BY m.`parent_id`, m.`sort_no`
     </select>

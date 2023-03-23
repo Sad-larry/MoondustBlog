@@ -71,7 +71,7 @@
                             <el-form-item label="登录方式">
                                 <el-checkbox-group v-model="loginTypeLists">
                                     <el-checkbox border v-for="item in loginDictList" :label="item.value"
-                                        :key="item.label" style="margin-left: 10px">
+                                        :key="item.label" style="margin-left: 0px">
                                         {{ item.label }}
                                     </el-checkbox>
                                 </el-checkbox-group>
@@ -130,7 +130,7 @@
 
                 <el-form style="margin-left: 20px;" label-position="left" :model="form" label-width="90px" ref="from">
                     <el-row :gutter="24">
-                        <el-col :span="4">
+                        <el-col :span="5">
                             <el-form-item label="支付宝">
                                 <el-upload class="avatar-uploader1" action ref="upload" :show-file-list="false"
                                     :before-upload="uploadBefore" :http-request="aliPayMethod">
@@ -140,7 +140,7 @@
                                 </el-upload>
                             </el-form-item>
                         </el-col>
-                        <el-col :span="4">
+                        <el-col :span="5">
                             <el-form-item label="微信">
                                 <el-upload class="avatar-uploader1" action ref="upload" :show-file-list="false"
                                     :before-upload="uploadBefore" :http-request="weiXinPayMethod">

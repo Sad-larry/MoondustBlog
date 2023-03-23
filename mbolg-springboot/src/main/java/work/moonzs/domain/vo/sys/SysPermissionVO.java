@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author Moondust月尘
@@ -37,4 +38,8 @@ public class SysPermissionVO {
      * 创建时间
      */
     private Date createTime;
+    /**
+     * 子权限
+     */
+    private List<SysPermissionVO> children;
 }

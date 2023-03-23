@@ -35,8 +35,8 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
 
     @Override
     public List<SysMenuVO> listMenu() {
-        List<Menu> childPerms = getChildPerms(selectMenuTreeAll(), 0L);
-        return BeanCopyUtil.copyBeanList(childPerms, SysMenuVO.class);
+        List<Menu> childMenus = getChildMenus(selectMenuTreeAll(), 0L);
+        return BeanCopyUtil.copyBeanList(childMenus, SysMenuVO.class);
     }
 
     @Override
@@ -76,7 +76,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
         } else {
             menus = getBaseMapper().selectMenuTreeByUserId(userId);
         }
-        return getChildPerms(menus, 0L);
+        return getChildMenus(menus, 0L);
     }
 
     /**
@@ -86,13 +86,13 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
      * @param pid   pid
      * @return {@link List}<{@link Menu}>
      */
-    private List<Menu> getChildPerms(List<Menu> menus, Long pid) {
+    private List<Menu> getChildMenus(List<Menu> menus, Long pid) {
         List<Menu> childList = getChildList(menus, pid);
         // 如果有子菜单，则进行递归
         if (!CollUtil.isEmpty(childList)) {
             childList = childList.stream().peek(menu -> {
-                List<Menu> childPerms = getChildPerms(menus, menu.getId());
-                menu.setChildren(childPerms);
+                List<Menu> childMenus = getChildMenus(menus, menu.getId());
+                menu.setChildren(childMenus);
             }).collect(Collectors.toList());
         }
         return childList;
