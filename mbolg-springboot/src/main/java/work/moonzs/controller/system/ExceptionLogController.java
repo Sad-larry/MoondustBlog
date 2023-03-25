@@ -1,6 +1,7 @@
 package work.moonzs.controller.system;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import work.moonzs.base.annotation.AdminOperationLogger;
 import work.moonzs.base.annotation.SystemLog;
@@ -25,6 +26,7 @@ public class ExceptionLogController {
      */
     @SystemLog(businessName = "异常日志列表")
     @GetMapping("/list")
+    @PreAuthorize("@ss.hasPermi('system:exceptionLog:list')")
     public ResponseResult listExceptionLog(@RequestParam(defaultValue = "1", required = false) Integer pageNum, @RequestParam(defaultValue = "10", required = false) Integer pageSize) {
         return ResponseResult.success(exceptionLogService.listExceptionLog(pageNum, pageSize));
     }
@@ -38,6 +40,7 @@ public class ExceptionLogController {
     @SystemLog(businessName = "根据异常日志id进行批量删除异常")
     @AdminOperationLogger(value = "删除异常日志")
     @DeleteMapping("/{ids}")
+    @PreAuthorize("@ss.hasPermi('system:exceptionLog:delete')")
     public ResponseResult deleteExceptionLog(@PathVariable(value = "ids") Long[] exceptionLogIds) {
         exceptionLogService.deleteExceptionLog(exceptionLogIds);
         return ResponseResult.success();

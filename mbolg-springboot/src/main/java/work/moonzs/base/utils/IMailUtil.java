@@ -96,7 +96,7 @@ public class IMailUtil {
         context.setVariable("timeout", timeout);
         context.setVariable("date", DateUtils.format(new Date(), "yyyy-MM-dd hh:mm:ss", Locale.CHINESE));
         //通过模板类将动态参数传入HTML模板,并返回模板内容 参数一:模板名字，参数二：动态参数Web文本
-        return templateEngine.process("/RegisterMailCode", context);
+        return templateEngine.process("RegisterMailCode", context);
     }
 
     /**
@@ -116,7 +116,7 @@ public class IMailUtil {
         context.setVariable("type", type);
         context.setVariable("replyContent", replyContent);
         context.setVariable("feedback", feedback);
-        return templateEngine.process("/ReplyFeedBack", context);
+        return templateEngine.process("ReplyFeedBack", context);
     }
 
     /**
@@ -132,7 +132,7 @@ public class IMailUtil {
         context.setVariable("code", code);
         context.setVariable("timeout", timeout);
         context.setVariable("date", DateUtils.format(new Date(), "yyyy-MM-dd hh:mm:ss", Locale.CHINESE));
-        return templateEngine.process("/UpdatePassword", context);
+        return templateEngine.process("UpdatePassword", context);
     }
 
     /**

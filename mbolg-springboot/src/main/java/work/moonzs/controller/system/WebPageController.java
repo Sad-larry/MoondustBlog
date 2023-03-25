@@ -1,6 +1,7 @@
 package work.moonzs.controller.system;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import work.moonzs.base.annotation.AdminOperationLogger;
@@ -28,6 +29,7 @@ public class WebPageController {
      */
     @SystemLog(businessName = "获取页面列表")
     @GetMapping("/list")
+    @PreAuthorize("@ss.hasPermi('system:webPage:list')")
     public ResponseResult listWebPage() {
         return ResponseResult.success(webPageService.listWebPage());
     }
@@ -41,6 +43,7 @@ public class WebPageController {
     @SystemLog(businessName = "添加页面")
     @AdminOperationLogger(value = "添加页面")
     @PostMapping
+    @PreAuthorize("@ss.hasPermi('system:webPage:add')")
     public ResponseResult addWebPage(@Validated(VG.Insert.class) @RequestBody WebPageDTO webPageDTO) {
         return ResponseResult.success(webPageService.insertWebPage(BeanCopyUtil.copyBean(webPageDTO, WebPage.class)));
     }
@@ -55,6 +58,7 @@ public class WebPageController {
     @SystemLog(businessName = "更新页面")
     @AdminOperationLogger(value = "更新页面")
     @PutMapping
+    @PreAuthorize("@ss.hasPermi('system:webPage:update')")
     public ResponseResult updateWebPage(@Validated(VG.Update.class) @RequestBody WebPageDTO webPageDTO) {
         webPageService.updateWebPage(BeanCopyUtil.copyBean(webPageDTO, WebPage.class));
         return ResponseResult.success();
@@ -69,6 +73,7 @@ public class WebPageController {
     @SystemLog(businessName = "删除指定ID页面")
     @AdminOperationLogger(value = "删除页面")
     @DeleteMapping("/{id}")
+    @PreAuthorize("@ss.hasPermi('system:webPage:delete')")
     public ResponseResult deleteWebPage(@PathVariable(value = "id") Long webPageId) {
         webPageService.deleteWebPage(webPageId);
         return ResponseResult.success();

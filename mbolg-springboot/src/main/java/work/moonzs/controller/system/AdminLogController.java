@@ -1,6 +1,7 @@
 package work.moonzs.controller.system;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import work.moonzs.base.annotation.AdminOperationLogger;
 import work.moonzs.base.annotation.SystemLog;
@@ -25,6 +26,7 @@ public class AdminLogController {
      */
     @SystemLog(businessName = "操作日志列表")
     @GetMapping("/list")
+    @PreAuthorize("@ss.hasPermi('system:adminLog:list')")
     public ResponseResult listAdminLog(@RequestParam(defaultValue = "1", required = false) Integer pageNum, @RequestParam(defaultValue = "10", required = false) Integer pageSize) {
         return ResponseResult.success(adminLogService.listAdminLog(pageNum, pageSize));
     }
@@ -38,6 +40,7 @@ public class AdminLogController {
     @SystemLog(businessName = "根据操作日志id进行批量删除操作")
     @AdminOperationLogger(value = "删除操作日志")
     @DeleteMapping("/{ids}")
+    @PreAuthorize("@ss.hasPermi('system:adminLog:delete')")
     public ResponseResult deleteAdminLog(@PathVariable(value = "ids") Long[] adminLogIds) {
         adminLogService.deleteAdminLog(adminLogIds);
         return ResponseResult.success();

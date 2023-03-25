@@ -28,7 +28,7 @@
           <span v-html="scope.row.content" class="comment-content" />
         </template>
       </el-table-column>
-      <el-table-column prop="createTime" width="150" align="center" label="评论时间">
+      <el-table-column prop="createTime" width="160" align="center" label="评论时间">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.createTime) }}</span>
         </template>

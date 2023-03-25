@@ -59,10 +59,7 @@ public class SpringSecurityConfig {
         httpSecurity.authorizeRequests()
                 .antMatchers("/system/login", "/system/captchaImage", "/druid/**", "/system/mailCode", "/system/register", "/system/password/**").anonymous()
                 .antMatchers("/web/user/wxmpUserInfo", "/web/user/wxmpLogout", "/web/user/wxmpModify").authenticated()
-                .antMatchers("/web/**").permitAll()
-                .antMatchers("/swagger**/**").permitAll()
-                .antMatchers("/webjars/**").permitAll()
-                .antMatchers("/v2/**").permitAll()
+                .antMatchers("/web/**", "/swagger**/**", "/webjars/**", "/v2/**").permitAll()
                 .anyRequest().authenticated();
         // 添加过滤器
         httpSecurity.addFilterBefore(authenticationTokenFilter, UsernamePasswordAuthenticationFilter.class);
@@ -104,9 +101,7 @@ public class SpringSecurityConfig {
     @Bean
     public AuthenticationManager authenticationManagerBean() throws Exception {
         // 如果有多个身份验证处理器，可以直接添加
-        return new ProviderManager(
-                Arrays.asList(wxmpLoginProvider(), daoAuthenticationProvider())
-        );
+        return new ProviderManager(Arrays.asList(wxmpLoginProvider(), daoAuthenticationProvider()));
     }
 
     /**

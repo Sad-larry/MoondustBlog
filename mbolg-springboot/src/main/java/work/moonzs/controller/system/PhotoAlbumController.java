@@ -1,6 +1,7 @@
 package work.moonzs.controller.system;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import work.moonzs.base.annotation.AdminOperationLogger;
@@ -31,6 +32,7 @@ public class PhotoAlbumController {
      */
     @SystemLog(businessName = "获取相册列表")
     @GetMapping("/list")
+    @PreAuthorize("@ss.hasPermi('system:album:list')")
     public ResponseResult listPhotoAlbum(@RequestParam(defaultValue = "1", required = false) Integer pageNum, @RequestParam(defaultValue = "10", required = false) Integer pageSize, @RequestParam(defaultValue = "", required = false) String name) {
         return ResponseResult.successPageVO(photoAlbumService.listPhotoAlbum(pageNum, pageSize, name));
     }
@@ -43,6 +45,7 @@ public class PhotoAlbumController {
      */
     @SystemLog(businessName = "通过id查询相册详细信息")
     @GetMapping("/{id}")
+    @PreAuthorize("@ss.hasPermi('system:album:info')")
     public ResponseResult getPhotoAlbumById(@PathVariable(value = "id") Long photoAlbumId) {
         return ResponseResult.success(photoAlbumService.getPhotoAlbumById(photoAlbumId));
     }
@@ -56,6 +59,7 @@ public class PhotoAlbumController {
     @SystemLog(businessName = "添加相册")
     @AdminOperationLogger(value = "添加相册")
     @PostMapping
+    @PreAuthorize("@ss.hasPermi('system:album:add')")
     public ResponseResult addPhotoAlbum(@Validated(VG.Insert.class) @RequestBody PhotoAlbumDTO photoAlbumDTO) {
         photoAlbumService.insertPhotoAlbum(BeanCopyUtil.copyBean(photoAlbumDTO, PhotoAlbum.class));
         return ResponseResult.success();
@@ -71,6 +75,7 @@ public class PhotoAlbumController {
     @SystemLog(businessName = "更新相册")
     @AdminOperationLogger(value = "更新相册")
     @PutMapping
+    @PreAuthorize("@ss.hasPermi('system:album:update')")
     public ResponseResult updatePhotoAlbum(@Validated(VG.Update.class) @RequestBody PhotoAlbumDTO photoAlbumDTO) {
         photoAlbumService.updatePhotoAlbum(BeanCopyUtil.copyBean(photoAlbumDTO, PhotoAlbum.class));
         return ResponseResult.success();
@@ -85,6 +90,7 @@ public class PhotoAlbumController {
     @SystemLog(businessName = "根据相册id进行批量删除操作")
     @AdminOperationLogger(value = "删除相册")
     @DeleteMapping("/{id}")
+    @PreAuthorize("@ss.hasPermi('system:album:delete')")
     public ResponseResult deletePhotoAlbum(@PathVariable(value = "id") Long photoAlbumId) {
         photoAlbumService.deletePhotoAlbum(photoAlbumId);
         return ResponseResult.success();

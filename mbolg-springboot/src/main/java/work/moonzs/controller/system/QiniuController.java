@@ -5,6 +5,7 @@ import cn.hutool.json.JSONUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import work.moonzs.base.annotation.SystemLog;
@@ -45,6 +46,7 @@ public class QiniuController {
      * @return {@link ResponseResult}
      */
     @PostMapping(path = "/upload/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("@ss.hasPermi('system:upload:image')")
     public ResponseResult uploadFile(@RequestParam("file") MultipartFile file) {
         IFileUtil.isLegalFile(file);
         String fileKey = PathUtil.generateFilePath(file.getOriginalFilename());

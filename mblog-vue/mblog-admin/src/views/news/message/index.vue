@@ -1,7 +1,14 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px"
-      @submit.native.prevent>
+    <el-form
+      :model="queryParams"
+      ref="queryForm"
+      size="small"
+      :inline="true"
+      v-show="showSearch"
+      label-width="68px"
+      @submit.native.prevent
+    >
       <el-form-item label="用户昵称" prop="fuzzyField">
         <el-input v-model="queryParams.fuzzyField" placeholder="请输入用户昵称" clearable @keyup.enter.native="handleQuery" />
       </el-form-item>
@@ -13,20 +20,22 @@
 
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
-        <el-button type="success" plain icon="el-icon-edit" size="mini" :disabled="multiple" @click="handlePass">审核通过
-        </el-button>
+        <el-button type="success" plain icon="el-icon-edit" size="mini" :disabled="multiple" @click="handlePass">审核通过</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button type="danger" plain icon="el-icon-delete" size="mini" :disabled="multiple" @click="handleDelete">删除
-        </el-button>
+        <el-button type="danger" plain icon="el-icon-delete" size="mini" :disabled="multiple" @click="handleDelete">删除</el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <el-table border v-loading="loading" :data="messageList" style="width: 100%"
-      @selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="40" align="center">
-      </el-table-column>
+    <el-table
+      border
+      v-loading="loading"
+      :data="messageList"
+      style="width: 100%"
+      @selection-change="handleSelectionChange"
+    >
+      <el-table-column type="selection" width="40" align="center"></el-table-column>
       <el-table-column prop="avatar" align="center" width="80" label="头像">
         <template slot-scope="scope">
           <el-avatar shape="square" :size="50" :src="scope.row.avatar"></el-avatar>
@@ -49,16 +58,25 @@
       </el-table-column>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
-          <el-button v-if="!scope.row.status" size="mini" type="text" icon="el-icon-edit"
-            @click="handlePass(scope.row)">
-            通过</el-button>
+          <el-button
+            v-if="!scope.row.status"
+            size="mini"
+            type="text"
+            icon="el-icon-edit"
+            @click="handlePass(scope.row)"
+          >通过</el-button>
           <el-button size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
 
-    <pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize"
-      @pagination="getList" />
+    <pagination
+      v-show="total > 0"
+      :total="total"
+      :page.sync="queryParams.pageNum"
+      :limit.sync="queryParams.pageSize"
+      @pagination="getList"
+    />
   </div>
 </template>
 
@@ -87,7 +105,7 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        fuzzyField: ''
+        fuzzyField: "",
       },
     };
   },
@@ -98,7 +116,7 @@ export default {
     /** 查询留言板列表 */
     getList() {
       this.loading = true;
-      listMessage(this.queryParams).then(response => {
+      listMessage(this.queryParams).then((response) => {
         this.messageList = response.data.records;
         this.total = response.data.total;
         this.loading = false;
@@ -116,17 +134,23 @@ export default {
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
-      this.ids = selection.map(item => item.id)
-      this.multiple = !selection.length
+      this.ids = selection.map((item) => item.id);
+      this.multiple = !selection.length;
     },
     /** 审核通过操作 */
     handlePass(row) {
-      if (this.ids != null) {
+      if (!row.id && this.ids != null) {
         // 全部审核通过时，只提交被选取并且是待审核的数据
-        this.ids = this.messageList.filter(x => x.status === 0 && this.ids.includes(x.id)).map(x => x.id)
+        this.ids = this.messageList
+          .filter((x) => x.status === 0 && this.ids.includes(x.id))
+          .map((x) => x.id);
+        if (this.ids.length === 0) {
+          this.$modal.msgWarning("审核已通过，无需再审核");
+          return;
+        }
       }
-      const id = row.id || this.ids
-      passMessage(id).then(res => {
+      const id = row.id || this.ids;
+      passMessage(id).then((res) => {
         this.$modal.msgSuccess("审核通过");
         this.getList();
       });
@@ -134,13 +158,17 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const ids = row.id || this.ids;
-      this.$modal.confirm('是否确认删除留言板编号为"' + ids + '"的数据项？').then(function () {
-        return delMessage(ids);
-      }).then(() => {
-        this.getList();
-        this.$modal.msgSuccess("删除成功");
-      }).catch(() => { });
+      this.$modal
+        .confirm('是否确认删除留言板编号为"' + ids + '"的数据项？')
+        .then(function () {
+          return delMessage(ids);
+        })
+        .then(() => {
+          this.getList();
+          this.$modal.msgSuccess("删除成功");
+        })
+        .catch(() => {});
     },
-  }
+  },
 };
 </script>

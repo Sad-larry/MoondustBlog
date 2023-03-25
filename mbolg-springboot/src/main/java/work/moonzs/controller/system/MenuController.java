@@ -1,6 +1,7 @@
 package work.moonzs.controller.system;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import work.moonzs.base.annotation.AdminOperationLogger;
@@ -30,6 +31,7 @@ public class MenuController {
      */
     @SystemLog(businessName = "获取菜单列表")
     @GetMapping("/list")
+    @PreAuthorize("@ss.hasPermi('system:menu:list')")
     public ResponseResult listMenu(@RequestParam(defaultValue = "1", required = false) Integer pageNum, @RequestParam(defaultValue = "10", required = false) Integer pageSize) {
         return ResponseResult.success(menuService.listMenu());
     }
@@ -43,6 +45,7 @@ public class MenuController {
     @SystemLog(businessName = "添加菜单")
     @AdminOperationLogger(value = "添加菜单")
     @PostMapping
+    @PreAuthorize("@ss.hasPermi('system:menu:add')")
     public ResponseResult addMenu(@Validated(VG.Insert.class) @RequestBody MenuDTO menuDTO) {
         menuService.insertMenu(BeanCopyUtil.copyBean(menuDTO, Menu.class));
         return ResponseResult.success();
@@ -58,6 +61,7 @@ public class MenuController {
     @SystemLog(businessName = "更新菜单")
     @AdminOperationLogger(value = "更新菜单")
     @PutMapping
+    @PreAuthorize("@ss.hasPermi('system:menu:update')")
     public ResponseResult updateMenu(@Validated(VG.Update.class) @RequestBody MenuDTO menuDTO) {
         menuService.updateMenu(BeanCopyUtil.copyBean(menuDTO, Menu.class));
         return ResponseResult.success();
@@ -72,6 +76,7 @@ public class MenuController {
     @SystemLog(businessName = "删除指定ID菜单")
     @AdminOperationLogger(value = "删除菜单")
     @DeleteMapping("/{id}")
+    @PreAuthorize("@ss.hasPermi('system:menu:delete')")
     public ResponseResult deleteMenu(@PathVariable(value = "id") Long menuId) {
         menuService.deleteMenu(menuId);
         return ResponseResult.success();

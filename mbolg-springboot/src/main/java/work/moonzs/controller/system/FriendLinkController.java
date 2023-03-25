@@ -1,6 +1,7 @@
 package work.moonzs.controller.system;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import work.moonzs.base.annotation.AdminOperationLogger;
@@ -32,6 +33,7 @@ public class FriendLinkController {
      */
     @SystemLog(businessName = "友链列表")
     @GetMapping("/list")
+    @PreAuthorize("@ss.hasPermi('system:friendlink:list')")
     public ResponseResult listFriendLink(@RequestParam(defaultValue = "1", required = false) Integer pageNum, @RequestParam(defaultValue = "10", required = false) Integer pageSize, @RequestParam(required = false) String name, @RequestParam(required = false) Integer status) {
         return ResponseResult.successPageVO(friendLinkService.listFriendLink(pageNum, pageSize, name, status));
     }
@@ -45,6 +47,7 @@ public class FriendLinkController {
     @SystemLog(businessName = "添加友链")
     @AdminOperationLogger(value = "添加友链")
     @PostMapping
+    @PreAuthorize("@ss.hasPermi('system:friendlink:add')")
     public ResponseResult addFriendLink(@Validated(VG.Insert.class) @RequestBody FriendLinkDTO friendLinkDTO) {
         friendLinkService.insertFriendLink(BeanCopyUtil.copyBean(friendLinkDTO, FriendLink.class));
         return ResponseResult.success();
@@ -59,6 +62,7 @@ public class FriendLinkController {
     @SystemLog(businessName = "更新友链")
     @AdminOperationLogger(value = "更新友链")
     @PutMapping
+    @PreAuthorize("@ss.hasPermi('system:friendlink:update')")
     public ResponseResult updateFriendLink(@Validated(VG.Update.class) @RequestBody FriendLinkDTO friendLinkDTO) {
         friendLinkService.updateFriendLink(BeanCopyUtil.copyBean(friendLinkDTO, FriendLink.class));
         return ResponseResult.success();
@@ -73,6 +77,7 @@ public class FriendLinkController {
     @SystemLog(businessName = "根据友链id进行批量删除操作")
     @AdminOperationLogger(value = "删除友链")
     @DeleteMapping("/{ids}")
+    @PreAuthorize("@ss.hasPermi('system:friendlink:delete')")
     public ResponseResult deleteFriendLink(@PathVariable(value = "ids") Long[] friendLinkIds) {
         friendLinkService.deleteFriendLink(friendLinkIds);
         return ResponseResult.success();
@@ -86,6 +91,7 @@ public class FriendLinkController {
     @SystemLog(businessName = "友链置顶")
     @AdminOperationLogger(value = "友链置顶")
     @PostMapping("/top")
+    @PreAuthorize("@ss.hasPermi('system:friendlink:top')")
     public ResponseResult topFriendLink(@Validated @RequestBody FriendLinkDTO friendLinkDTO) {
         Long friendLinkId = friendLinkDTO.getId();
         friendLinkService.topFriendLink(friendLinkId);
@@ -101,6 +107,7 @@ public class FriendLinkController {
     @SystemLog(businessName = "审核通过友链")
     @AdminOperationLogger(value = "审核通过友链")
     @GetMapping("/pass/{ids}")
+    @PreAuthorize("@ss.hasPermi('system:friendlink:pass')")
     public ResponseResult passFriendLink(@PathVariable("ids") Long[] friendLinkIds) {
         friendLinkService.passFriendLink(friendLinkIds);
         return ResponseResult.success();

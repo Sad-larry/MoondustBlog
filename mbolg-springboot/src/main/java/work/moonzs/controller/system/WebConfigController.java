@@ -1,6 +1,7 @@
 package work.moonzs.controller.system;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import work.moonzs.base.annotation.AdminOperationLogger;
@@ -27,6 +28,7 @@ public class WebConfigController {
      */
     @SystemLog(businessName = "获取网络配置")
     @GetMapping
+    @PreAuthorize("@ss.hasPermi('system:webConfig:info')")
     public ResponseResult getWebConfig() {
         return ResponseResult.success(webConfigService.getWebConfig());
     }
@@ -40,6 +42,7 @@ public class WebConfigController {
     @SystemLog(businessName = "更新网站配置")
     @AdminOperationLogger(value = "更新网站配置")
     @PutMapping
+    @PreAuthorize("@ss.hasPermi('system:webConfig:update')")
     public ResponseResult updateWebConfig(@Validated @RequestBody WebConfigDTO webConfigDTO) {
         webConfigService.updateWebConfig(BeanCopyUtil.copyBean(webConfigDTO, WebConfig.class));
         return ResponseResult.success();

@@ -90,16 +90,6 @@ public class LoginController {
     }
 
     /**
-     * 获取用户信息
-     *
-     * @return 用户信息
-     */
-    @GetMapping("/getInfo")
-    public ResponseResult getInfo() {
-        return ResponseResult.success(userService.getLoginUserInfo());
-    }
-
-    /**
      * 获取路由器信息
      *
      * @return {@link ResponseResult}<{@link ?}>

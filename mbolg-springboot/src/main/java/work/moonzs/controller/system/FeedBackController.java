@@ -1,6 +1,7 @@
 package work.moonzs.controller.system;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import work.moonzs.base.annotation.AdminOperationLogger;
@@ -29,6 +30,7 @@ public class FeedBackController {
      */
     @SystemLog(businessName = "反馈列表")
     @GetMapping("/list")
+    @PreAuthorize("@ss.hasPermi('system:feedback:list')")
     public ResponseResult listFeedBack(@RequestParam(defaultValue = "", required = false) Integer type) {
         return ResponseResult.success(feedBackService.listFeedBack(type));
     }
@@ -42,6 +44,7 @@ public class FeedBackController {
     @SystemLog(businessName = "根据反馈id进行批量删除操作")
     @AdminOperationLogger(value = "删除反馈")
     @DeleteMapping("/{ids}")
+    @PreAuthorize("@ss.hasPermi('system:feedback:delete')")
     public ResponseResult deleteFeedBack(@PathVariable("ids") Long[] feedBackIds) {
         feedBackService.deleteFeedBack(feedBackIds);
         return ResponseResult.success();
@@ -56,6 +59,7 @@ public class FeedBackController {
     @SystemLog(businessName = "回复反馈")
     @AdminOperationLogger(value = "回复反馈")
     @PostMapping("/reply")
+    @PreAuthorize("@ss.hasPermi('system:feedback:reply')")
     public ResponseResult replyFeedBack(@Validated(value = {VG.Update.class}) @RequestBody FeedBackDTO feedBackDTO) {
         FeedBack feedBack = BeanCopyUtil.copyBean(feedBackDTO, FeedBack.class);
         String replyContent = feedBackDTO.getReplyContent();

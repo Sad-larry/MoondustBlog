@@ -1,6 +1,7 @@
 package work.moonzs.controller.system;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import work.moonzs.base.annotation.AdminOperationLogger;
 import work.moonzs.base.annotation.SystemLog;
@@ -29,6 +30,7 @@ public class JobLogController {
      */
     @SystemLog(businessName = "获取定时任务日志列表")
     @GetMapping(value = "/list")
+    @PreAuthorize("@ss.hasPermi('system:jobLog:list')")
     public ResponseResult listJobLog(@RequestParam(defaultValue = "1", required = false) Integer pageNum, @RequestParam(defaultValue = "10", required = false) Integer pageSize, JobLogDTO jobLogDTO) {
         return ResponseResult.successPageVO(jobLogService.listJobLog(pageNum, pageSize, BeanCopyUtil.copyBean(jobLogDTO, JobLog.class)));
     }
@@ -42,6 +44,7 @@ public class JobLogController {
     @SystemLog(businessName = "删除定时任务日志")
     @AdminOperationLogger(value = "删除定时任务日志")
     @DeleteMapping("/{ids}")
+    @PreAuthorize("@ss.hasPermi('system:jobLog:delete')")
     public ResponseResult deleteJobLog(@PathVariable(value = "ids") Long[] ids) {
         jobLogService.deleteJobLog(ids);
         return ResponseResult.success();
@@ -55,6 +58,7 @@ public class JobLogController {
     @SystemLog(businessName = "清空日志列表")
     @AdminOperationLogger(value = "清空日志列表")
     @GetMapping(value = "/clean")
+    @PreAuthorize("@ss.hasPermi('system:jobLog:clean')")
     public ResponseResult cleanJobLog() {
         jobLogService.cleanJobLog();
         return ResponseResult.success();

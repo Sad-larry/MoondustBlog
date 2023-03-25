@@ -39,6 +39,7 @@ public class ArticleController {
     @SystemLog(businessName = "发表文章")
     @AdminOperationLogger(value = "发表文章")
     @PostMapping
+    @PreAuthorize("@ss.hasPermi('system:article:publish')")
     public ResponseResult publishArticle(@Validated(value = VG.Insert.class) @RequestBody ArticleDTO articleDTO) {
         articleService.publishArticle(articleDTO);
         return ResponseResult.success();

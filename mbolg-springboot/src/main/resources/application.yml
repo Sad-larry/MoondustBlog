@@ -70,27 +70,34 @@ spring:
   mail:
     # 发件服务器地址,不同邮件平台地址不同
     host: smtp.qq.com
+    # 协议 默认就是smtp
+    protocol: smtp
     # 常用邮件端口25、109、110、143、465、995、993、994 如果开启了SSL安全则使用对应的端口号，25为非加密端口号
-    # port: 25
+    # smtp的指定端口 使用465要将protocol改为smtps
+    port: 587
     # 发送邮件的账号
     username: 1872780430@qq.com
     # 发送邮件账号的授权码
     password: ENC(ttV+WM30LjoVvPuYTshzcWY9raP516Bjj5Ysw9Lnu0s=)
     # 设置编码
     default-encoding: utf-8
-    # 设置邮件超时时间防止服务器阻塞
+    # 设置邮件超时时间防止服务器阻塞 设置开启ssl
     properties:
-      timeout: 5000
-      connection-timeout: 5000
-      write-timeout: 5000
+      timeout: 10000
+      connection-timeout: 10000
+      write-timeout: 10000
+      mail:
+        stmp:
+          ssl:
+            enable: true
   thymeleaf:
     # 默认不缓存
     cache: false
-    #类型
+    # 类型
     mode: HTML
-    #模板存放的位置
+    # 模板存放的位置
     prefix: classpath:/templates/
-    #模板的后缀
+    # 模板的后缀
     suffix: .html
 mybatis-plus:
   #  configuration:

@@ -1,6 +1,7 @@
 package work.moonzs.controller.system;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import work.moonzs.base.annotation.AdminOperationLogger;
 import work.moonzs.base.annotation.SystemLog;
@@ -25,6 +26,7 @@ public class CommentController {
      */
     @SystemLog(businessName = "评论列表")
     @GetMapping("/list")
+    @PreAuthorize("@ss.hasPermi('system:comment:list')")
     public ResponseResult listComment(@RequestParam(defaultValue = "1", required = false) Integer pageNum, @RequestParam(defaultValue = "10", required = false) Integer pageSize) {
         return ResponseResult.success(commentService.listComment(pageNum, pageSize));
     }
@@ -38,6 +40,7 @@ public class CommentController {
     @SystemLog(businessName = "根据评论id进行批量删除操作")
     @AdminOperationLogger(value = "删除评论")
     @DeleteMapping("/{ids}")
+    @PreAuthorize("@ss.hasPermi('system:comment:delete')")
     public ResponseResult deleteComment(@PathVariable(value = "ids") Long[] commentIds) {
         commentService.deleteComment(commentIds);
         return ResponseResult.success();

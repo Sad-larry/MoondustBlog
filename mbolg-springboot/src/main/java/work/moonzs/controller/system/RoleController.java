@@ -2,6 +2,7 @@ package work.moonzs.controller.system;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import work.moonzs.base.annotation.AdminOperationLogger;
@@ -37,6 +38,7 @@ public class RoleController {
      */
     @SystemLog(businessName = "角色列表")
     @GetMapping("/list")
+    @PreAuthorize("@ss.hasPermi('system:role:list')")
     public ResponseResult listRole(@RequestParam(defaultValue = "1", required = false) Integer pageNum, @RequestParam(defaultValue = "10", required = false) Integer pageSize, @RequestParam(defaultValue = "", required = false) String name) {
         return ResponseResult.success(roleService.listRole(pageNum, pageSize, name));
     }
@@ -49,6 +51,7 @@ public class RoleController {
      */
     @SystemLog(businessName = "通过id查询角色详细信息")
     @GetMapping("/{id}")
+    @PreAuthorize("@ss.hasPermi('system:role:info')")
     public ResponseResult getRoleById(@PathVariable(value = "id") Long roleId) {
         return ResponseResult.success(roleService.getRoleById(roleId));
     }
@@ -63,6 +66,7 @@ public class RoleController {
     @SystemLog(businessName = "添加角色")
     @AdminOperationLogger(value = "添加角色")
     @PostMapping
+    @PreAuthorize("@ss.hasPermi('system:role:add')")
     public ResponseResult addRole(@Validated(VG.Insert.class) @RequestBody RoleDTO roleDTO) {
         return ResponseResult.success(roleService.insertRole(BeanCopyUtil.copyBean(roleDTO, Role.class)));
     }
@@ -76,6 +80,7 @@ public class RoleController {
     @SystemLog(businessName = "更新角色")
     @AdminOperationLogger(value = "更新角色")
     @PutMapping
+    @PreAuthorize("@ss.hasPermi('system:role:update')")
     public ResponseResult updateRole(@Validated(VG.Update.class) @RequestBody RoleDTO roleDTO) {
         roleService.updateRole(BeanCopyUtil.copyBean(roleDTO, Role.class));
         return ResponseResult.success();
@@ -90,6 +95,7 @@ public class RoleController {
     @SystemLog(businessName = "根据角色id进行批量删除操作")
     @AdminOperationLogger(value = "删除角色")
     @DeleteMapping("/{ids}")
+    @PreAuthorize("@ss.hasPermi('system:role:delete')")
     public ResponseResult deleteRole(@PathVariable(value = "ids") Long[] roleIds) {
         roleService.deleteRole(roleIds);
         return ResponseResult.success();
@@ -103,6 +109,7 @@ public class RoleController {
     @SystemLog(businessName = "获取角色权限")
     @AdminOperationLogger(value = "获取角色权限")
     @GetMapping("/rolePerms")
+    @PreAuthorize("@ss.hasPermi('system:role:rolePerms')")
     public ResponseResult getRolePermissions(@RequestParam Long roleId) {
         if (SecurityUtil.isAdminRole(roleId)) {
             return ResponseResult.success();
@@ -120,6 +127,7 @@ public class RoleController {
     @SystemLog(businessName = "获取所有权限")
     @AdminOperationLogger(value = "获取所有权限")
     @GetMapping("/allPerms")
+    @PreAuthorize("@ss.hasPermi('system:role:allPerms')")
     public ResponseResult getAllPermissions() {
         return ResponseResult.success(roleService.getAllPermissions(true));
     }
@@ -132,6 +140,7 @@ public class RoleController {
     @SystemLog(businessName = "更新角色权限")
     @AdminOperationLogger(value = "更新角色权限")
     @PostMapping("/updatePerms")
+    @PreAuthorize("@ss.hasPermi('system:role:updatePerms')")
     public ResponseResult updateRolePerms(@RequestBody @Validated RolePermsDTO rolePermsDTO) {
         roleService.updateRolePermissions(rolePermsDTO.getId(), rolePermsDTO.getPerms());
         return ResponseResult.success();

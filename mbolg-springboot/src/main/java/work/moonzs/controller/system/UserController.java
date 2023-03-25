@@ -2,6 +2,7 @@ package work.moonzs.controller.system;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -39,6 +40,7 @@ public class UserController {
      */
     @SystemLog(businessName = "用户列表")
     @GetMapping("/list")
+    @PreAuthorize("@ss.hasPermi('system:user:list')")
     public ResponseResult listUser(
             @RequestParam(defaultValue = "1", required = false) Integer pageNum,
             @RequestParam(defaultValue = "10", required = false) Integer pageSize,
@@ -55,46 +57,20 @@ public class UserController {
      */
     @SystemLog(businessName = "获取用户基本信息")
     @GetMapping("/{id}")
+    @PreAuthorize("@ss.hasPermi('system:user:info')")
     public ResponseResult getUserById(@PathVariable("id") Long userId) {
         return ResponseResult.success(userService.getUserById(userId));
     }
 
     /**
-     * 获取用户详细信息
+     * 获取用户登录信息
      *
-     * @return {@link ResponseResult}
+     * @return 用户信息
      */
-    @SystemLog(businessName = "获取用户详细信息")
-    @GetMapping("/profile")
-    public ResponseResult getUserProfile() {
-        return ResponseResult.result(userService.getUserProfile());
-    }
-
-    /**
-     * 更新用户信息
-     *
-     * @param updateUserAuthDTO 更新用户身份dto
-     * @return {@link ResponseResult}
-     */
-    @SystemLog(businessName = "更新用户信息")
-    @AdminOperationLogger(value = "更新用户信息")
-    @PutMapping("/profile")
-    public ResponseResult updateUserProfile(@Validated @RequestBody UpdateUserAuthDTO updateUserAuthDTO) {
-        userService.updateUserProfile(BeanCopyUtil.copyBean(updateUserAuthDTO, UserAuth.class));
-        return ResponseResult.success();
-    }
-
-    /**
-     * 更新用户头像
-     *
-     * @param file 文件
-     * @return {@link ResponseResult}
-     */
-    @SystemLog(businessName = "更新用户头像")
-    @AdminOperationLogger(value = "更新用户头像")
-    @PostMapping(path = "/profile/avatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseResult updateUserAvatar(@RequestParam("file") MultipartFile file) {
-        return ResponseResult.success(userService.updateUserAvatar(file));
+    @GetMapping("/getInfo")
+    @PreAuthorize("@ss.hasPermi('system:user:getInfo')")
+    public ResponseResult getInfo() {
+        return ResponseResult.success(userService.getLoginUserInfo());
     }
 
     /**
@@ -106,6 +82,7 @@ public class UserController {
     @SystemLog(businessName = "更新用户状态")
     @AdminOperationLogger(value = "更新用户状态")
     @PutMapping
+    @PreAuthorize("@ss.hasPermi('system:user:updateStatus')")
     public ResponseResult updateUserStatus(@Validated @RequestBody UpdateUserStatusDTO updateUserStatusDTO) {
         userService.updateUserStatus(BeanCopyUtil.copyBean(updateUserStatusDTO, User.class));
         return ResponseResult.success();
@@ -120,6 +97,7 @@ public class UserController {
     @SystemLog(businessName = "删除用户")
     @AdminOperationLogger(value = "删除用户")
     @DeleteMapping("/{ids}")
+    @PreAuthorize("@ss.hasPermi('system:user:delete')")
     public ResponseResult deleteUser(@PathVariable(value = "ids") Long[] userIds) {
         userService.deleteUser(userIds);
         return ResponseResult.success();
@@ -134,6 +112,7 @@ public class UserController {
     @SystemLog(businessName = "修改密码")
     @AdminOperationLogger(value = "修改密码")
     @PostMapping("/updatePassword")
+    @PreAuthorize("@ss.hasPermi('system:user:updatePassword')")
     public ResponseResult updateLoginUserPassword(@RequestBody @Validated(VG.Update.class) UpdateUserPasswordDTO updateUserPasswordDTO) {
         // 防止使用自己的Token改别人的密码
         String username = SecurityUtil.getLoginUser().getUser().getUsername();
@@ -150,6 +129,7 @@ public class UserController {
      */
     @SystemLog(businessName = "查看在线用户")
     @GetMapping(value = "/online")
+    @PreAuthorize("@ss.hasPermi('system:user:online')")
     public ResponseResult listOnlineUsers() {
         return ResponseResult.successPageVO(userService.listOnlineUsers());
     }
@@ -163,8 +143,50 @@ public class UserController {
     @SystemLog(businessName = "强制用户下线")
     @AdminOperationLogger(value = "强制用户下线")
     @GetMapping(value = "/kick")
+    @PreAuthorize("@ss.hasPermi('system:user:kick')")
     public ResponseResult kick(@RequestParam String userUid) {
         userService.kick(userUid);
         return ResponseResult.success();
+    }
+
+    /**
+     * 获取用户详细信息
+     *
+     * @return {@link ResponseResult}
+     */
+    @SystemLog(businessName = "获取用户详细信息")
+    @GetMapping("/profile")
+    @PreAuthorize("@ss.hasPermi('system:userProfile:info')")
+    public ResponseResult getUserProfile() {
+        return ResponseResult.result(userService.getUserProfile());
+    }
+
+    /**
+     * 更新用户信息
+     *
+     * @param updateUserAuthDTO 更新用户身份dto
+     * @return {@link ResponseResult}
+     */
+    @SystemLog(businessName = "更新用户信息")
+    @AdminOperationLogger(value = "更新用户信息")
+    @PutMapping("/profile")
+    @PreAuthorize("@ss.hasPermi('system:userProfile:update')")
+    public ResponseResult updateUserProfile(@Validated @RequestBody UpdateUserAuthDTO updateUserAuthDTO) {
+        userService.updateUserProfile(BeanCopyUtil.copyBean(updateUserAuthDTO, UserAuth.class));
+        return ResponseResult.success();
+    }
+
+    /**
+     * 更新用户头像
+     *
+     * @param file 文件
+     * @return {@link ResponseResult}
+     */
+    @SystemLog(businessName = "更新用户头像")
+    @AdminOperationLogger(value = "更新用户头像")
+    @PostMapping(path = "/profile/avatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("@ss.hasPermi('system:userProfile:updateAvatar')")
+    public ResponseResult updateUserAvatar(@RequestParam("file") MultipartFile file) {
+        return ResponseResult.success(userService.updateUserAvatar(file));
     }
 }

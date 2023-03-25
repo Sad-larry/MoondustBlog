@@ -1,6 +1,7 @@
 package work.moonzs.controller.system;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,6 +25,7 @@ public class HomeController {
      */
     @SystemLog(businessName = "初始化首页图表数据")
     @GetMapping("/init")
+    @PreAuthorize("@ss.hasPermi('system:home:init')")
     public ResponseResult initChart() {
         return ResponseResult.success(homeService.initChart());
     }
