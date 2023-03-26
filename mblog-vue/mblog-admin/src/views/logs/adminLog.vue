@@ -2,18 +2,29 @@
   <div class="app-container">
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
-        <el-button type="danger" plain icon="el-icon-delete" size="mini" :disabled="multiple" @click="handleDelete">批量删除
-        </el-button>
+        <el-button
+          type="danger"
+          plain
+          icon="el-icon-delete"
+          size="mini"
+          @click="handleDelete"
+          v-hasPermi="['system:adminLog:delete']"
+        >删除</el-button>
       </el-col>
-      <el-col :span="1.5" :offset="20">
+      <el-col :span="1.5" :offset="21">
         <el-tooltip class="item" effect="dark" content="刷新" placement="top">
           <el-button size="mini" circle icon="el-icon-refresh" @click="refresh()" />
         </el-tooltip>
       </el-col>
     </el-row>
 
-    <el-table border v-loading="loading" :data="adminLogList" @selection-change="handleSelectionChange"
-      style="width: 100%;">
+    <el-table
+      border
+      v-loading="loading"
+      :data="adminLogList"
+      @selection-change="handleSelectionChange"
+      style="width: 100%;"
+    >
       <el-table-column type="expand">
         <template slot-scope="scope">
           <el-form label-position="left" inline class="demo-table-expand">
@@ -46,7 +57,9 @@
       <el-table-column prop="source" align="center" width="200" label="IP来源" />
       <el-table-column prop="spendTime" align="center" label="请求耗时">
         <template slot-scope="scope">
-          <span><el-tag type="info">{{ scope.row.spendTime }} ms</el-tag></span>
+          <span>
+            <el-tag type="info">{{ scope.row.spendTime }} ms</el-tag>
+          </span>
         </template>
       </el-table-column>
       <el-table-column prop="createTime" align="center" width="200" label="创建时间">
@@ -56,8 +69,13 @@
       </el-table-column>
     </el-table>
 
-    <pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize"
-      @pagination="getList" />
+    <pagination
+      v-show="total > 0"
+      :total="total"
+      :page.sync="queryParams.pageNum"
+      :limit.sync="queryParams.pageSize"
+      @pagination="getList"
+    />
   </div>
 </template>
 <script>
@@ -71,8 +89,6 @@ export default {
       loading: true,
       // 选中数组
       ids: [],
-      // 非多个禁用
-      multiple: true,
       // 总条数
       total: 0,
       // 操作日志表格数据
@@ -80,9 +96,9 @@ export default {
       // 查询参数
       queryParams: {
         pageNum: 1,
-        pageSize: 10
+        pageSize: 10,
       },
-    }
+    };
   },
   created() {
     this.getList();
@@ -91,13 +107,15 @@ export default {
     /** 查询操作日志列表 */
     getList() {
       this.loading = true;
-      listAdminLog(this.queryParams).then(response => {
-        this.adminLogList = response.data.records;
-        this.total = response.data.total;
-        this.loading = false;
-      }).catch(err => {
-        this.loading = false;
-      });
+      listAdminLog(this.queryParams)
+        .then((response) => {
+          this.adminLogList = response.data.records;
+          this.total = response.data.total;
+          this.loading = false;
+        })
+        .catch((err) => {
+          this.loading = false;
+        });
     },
     /** 刷新操作日志列表 */
     refresh() {
@@ -105,20 +123,23 @@ export default {
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
-      this.ids = selection.map(item => item.id)
-      this.multiple = !selection.length
+      this.ids = selection.map((item) => item.id);
     },
     /** 删除按钮操作 */
     handleDelete(row) {
       const ids = row.id || this.ids;
-      this.$modal.confirm('是否确认删除操作日志编号为"' + ids + '"的数据项？').then(function () {
-        return delAdminLog(ids);
-      }).then(() => {
-        this.getList();
-        this.$modal.msgSuccess("删除成功");
-      }).catch(() => { });
+      this.$modal
+        .confirm('是否确认删除操作日志编号为"' + ids + '"的数据项？')
+        .then(function () {
+          return delAdminLog(ids);
+        })
+        .then(() => {
+          this.getList();
+          this.$modal.msgSuccess("删除成功");
+        })
+        .catch(() => {});
     },
-  }
-}
+  },
+};
 </script>
   

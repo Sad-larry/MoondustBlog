@@ -99,5 +99,12 @@ public interface TagService extends IService<Tag> {
      * @return {@link List}<{@link TagVO}>
      */
     List<TagVO> getBlogTagsByArticleId(Long id);
+
+    /**
+     * 增加标签点击量
+     *
+     * @param tagId 标签id
+     */
+    void incrTagClickVolume(Long tagId);
 }
 

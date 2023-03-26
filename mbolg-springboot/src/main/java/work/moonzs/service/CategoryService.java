@@ -102,5 +102,12 @@ public interface CategoryService extends IService<Category> {
      * @return {@link CategoryVO}
      */
     CategoryVO getBlogCategoryById(Long articleId);
+
+    /**
+     * 增加分类点击量
+     *
+     * @param categoryId 分类id
+     */
+    void incrCategoryClickVolume(Long categoryId);
 }
 

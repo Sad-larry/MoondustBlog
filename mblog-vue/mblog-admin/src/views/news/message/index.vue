@@ -20,10 +20,24 @@
 
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
-        <el-button type="success" plain icon="el-icon-edit" size="mini" :disabled="multiple" @click="handlePass">审核通过</el-button>
+        <el-button
+          type="success"
+          plain
+          icon="el-icon-edit"
+          size="mini"
+          @click="handlePass"
+          v-hasPermi="['system:message:pass']"
+        >审核通过</el-button>
       </el-col>
       <el-col :span="1.5">
-        <el-button type="danger" plain icon="el-icon-delete" size="mini" :disabled="multiple" @click="handleDelete">删除</el-button>
+        <el-button
+          type="danger"
+          plain
+          icon="el-icon-delete"
+          size="mini"
+          @click="handleDelete"
+          v-hasPermi="['system:message:delete']"
+        >删除</el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
@@ -56,16 +70,23 @@
           <span>{{ parseTime(scope.row.createTime) }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+      <el-table-column label="操作" width="180" align="center">
         <template slot-scope="scope">
           <el-button
             v-if="!scope.row.status"
             size="mini"
-            type="text"
+            type="success"
             icon="el-icon-edit"
             @click="handlePass(scope.row)"
+            v-hasPermi="['system:message:pass']"
           >通过</el-button>
-          <el-button size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)">删除</el-button>
+          <el-button
+            size="mini"
+            type="danger"
+            icon="el-icon-delete"
+            @click="handleDelete(scope.row)"
+            v-hasPermi="['system:message:delete']"
+          >删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -91,8 +112,6 @@ export default {
       loading: true,
       // 选中数组
       ids: [],
-      // 非多个禁用
-      multiple: true,
       // 显示搜索条件
       showSearch: true,
       // 总条数
@@ -135,7 +154,6 @@ export default {
     // 多选框选中数据
     handleSelectionChange(selection) {
       this.ids = selection.map((item) => item.id);
-      this.multiple = !selection.length;
     },
     /** 审核通过操作 */
     handlePass(row) {

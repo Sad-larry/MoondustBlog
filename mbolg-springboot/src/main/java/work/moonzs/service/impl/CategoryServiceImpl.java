@@ -3,6 +3,7 @@ package work.moonzs.service.impl;
 import cn.hutool.core.util.ObjUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
@@ -137,6 +138,14 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
     public CategoryVO getBlogCategoryById(Long articleId) {
         Category category = getOne(new LambdaQueryWrapper<Category>().select(Category::getId, Category::getName).eq(Category::getId, articleId));
         return BeanCopyUtil.copyBean(category, CategoryVO.class);
+    }
+
+    @Override
+    public void incrCategoryClickVolume(Long categoryId) {
+        LambdaUpdateWrapper<Category> updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper.setSql("click_volume = click_volume + 1");
+        updateWrapper.eq(Category::getId, categoryId);
+        update(updateWrapper);
     }
 }
 

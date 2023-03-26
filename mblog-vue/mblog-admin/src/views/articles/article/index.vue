@@ -38,17 +38,6 @@
       </el-col>
       <el-col :span="1.5">
         <el-button
-          type="success"
-          plain
-          icon="el-icon-edit"
-          size="mini"
-          :disabled="single"
-          @click="handleUpdate"
-          v-hasPermi="['system:article:update']"
-        >修改</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
           type="danger"
           plain
           icon="el-icon-delete"
@@ -147,7 +136,7 @@
             size="mini"
             type="danger"
             icon="el-icon-delete"
-            @click="handleUpdate(scope.row)"
+            @click="handleDelete(scope.row)"
             v-hasPermi="['system:article:delete']"
           >删除</el-button>
         </template>
@@ -181,10 +170,6 @@ export default {
       loading: true,
       // 选中数组
       ids: [],
-      // 非单个禁用
-      single: true,
-      // 非多个禁用
-      multiple: true,
       // 显示搜索条件
       showSearch: true,
       // 总条数
@@ -250,7 +235,6 @@ export default {
     // 多选框选中数据
     handleSelectionChange(selection) {
       this.ids = selection.map((item) => item.id);
-      this.single = selection.length !== 1;
     },
     /** 新增按钮操作 */
     handleAdd() {

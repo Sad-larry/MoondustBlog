@@ -27,10 +27,7 @@ import work.moonzs.domain.entity.Tag;
 import work.moonzs.domain.vo.PageVO;
 import work.moonzs.domain.vo.sys.SysArticleReadVO;
 import work.moonzs.domain.vo.sys.SysUploadArticleVO;
-import work.moonzs.domain.vo.web.ArticleBaseVO;
-import work.moonzs.domain.vo.web.ArticleInfoVO;
-import work.moonzs.domain.vo.web.ArticlePreviewVO;
-import work.moonzs.domain.vo.web.ArticleVO;
+import work.moonzs.domain.vo.web.*;
 import work.moonzs.mapper.ArticleMapper;
 import work.moonzs.mapper.TagMapper;
 import work.moonzs.service.ArticleService;
@@ -228,7 +225,8 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         // 设置分类
         blogArticle.setCategory(categoryService.getBlogCategoryById(blogArticle.getCategoryId()));
         // 设置标签
-        blogArticle.setTagList(tagService.getBlogTagsByArticleId(blogArticle.getId()));
+        List<TagVO> tags = tagService.getBlogTagsByArticleId(blogArticle.getId());
+        blogArticle.setTagList(tags);
         // 评论
         blogArticle.setComments(commentService.listArticleComment(blogArticle.getId()));
         // 最新文章
@@ -240,8 +238,14 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         blogArticle.setRecommendArticleList(listRecommendArticle(blogArticle.getId()));
         // 增加文章点赞量
         // threadPoolTaskExecutor.execute(() -> incr(blogArticle.getId(), CacheConstants.BLOG_LIKE_QUANTITY));
-        // 异步 增加文章阅读量
-        threadPoolTaskExecutor.execute(() -> incr(blogArticle.getId(), CacheConstants.BLOG_VIEWS_QUANTITY));
+        threadPoolTaskExecutor.execute(() -> {
+            // 异步 增加文章阅读量
+            incr(blogArticle.getId(), CacheConstants.BLOG_VIEWS_QUANTITY);
+            // 增加标签点击量
+            tags.forEach(tag -> tagService.incrTagClickVolume(tag.getId()));
+            // 增加分类点击量
+            categoryService.incrCategoryClickVolume(blogArticle.getCategoryId());
+        });
         return blogArticle;
     }
 

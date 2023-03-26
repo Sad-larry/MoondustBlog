@@ -41,11 +41,7 @@ public class UserController {
     @SystemLog(businessName = "用户列表")
     @GetMapping("/list")
     @PreAuthorize("@ss.hasPermi('system:user:list')")
-    public ResponseResult listUser(
-            @RequestParam(defaultValue = "1", required = false) Integer pageNum,
-            @RequestParam(defaultValue = "10", required = false) Integer pageSize,
-            @RequestParam(defaultValue = "", required = false) String username,
-            @RequestParam(defaultValue = "", required = false) Integer loginType) {
+    public ResponseResult listUser(@RequestParam(defaultValue = "1", required = false) Integer pageNum, @RequestParam(defaultValue = "10", required = false) Integer pageSize, @RequestParam(defaultValue = "", required = false) String username, @RequestParam(defaultValue = "", required = false) Integer loginType) {
         return ResponseResult.success(userService.listUser(pageNum, pageSize, username, loginType));
     }
 
@@ -105,12 +101,12 @@ public class UserController {
 
     /**
      * 更新用户密码（需要登录）
+     * 禁用 @AdminOperationLogger(value = "修改密码")，因为数据传输没有加密，演示账号可在日志中查看请求中的新密码
      *
      * @param updateUserPasswordDTO 更新用户密码dto
      * @return {@link ResponseResult}
      */
     @SystemLog(businessName = "修改密码")
-    @AdminOperationLogger(value = "修改密码")
     @PostMapping("/updatePassword")
     @PreAuthorize("@ss.hasPermi('system:user:updatePassword')")
     public ResponseResult updateLoginUserPassword(@RequestBody @Validated(VG.Update.class) UpdateUserPasswordDTO updateUserPasswordDTO) {

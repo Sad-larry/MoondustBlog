@@ -72,17 +72,19 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
                 CommentVO commentVO = BeanCopyUtil.copyBean(comments.get(i), CommentVO.class);
                 // 为评论设置用户信息
                 Long userId = commentVO.getUserId();
-                UserInfoVO userInfoVO = userMap.get(userId);
-                commentVO.setAvatar(userInfoVO.getAvatar());
-                commentVO.setNickname(userInfoVO.getNickname());
-                // 设置回复评论
-                commentVO.setReplyVOList(new LinkedList<>());
-                // 添加一级评论
-                commentMap.put(comments.get(i).getId(), commentVO);
-                // 添加成功后删除集合中的当前元素
+                if (userMap.containsKey(userId)) {
+                    UserInfoVO userInfoVO = userMap.get(userId);
+                    commentVO.setAvatar(userInfoVO.getAvatar());
+                    commentVO.setNickname(userInfoVO.getNickname());
+                    // 设置回复评论
+                    commentVO.setReplyVOList(new LinkedList<>());
+                    // 添加一级评论
+                    commentMap.put(comments.get(i).getId(), commentVO);
+                    // 评论数+1
+                    commentCount.getAndSet(commentCount.get() + 1);
+                }
+                // 添加成功后删除集合中的当前元素，用户被注销，该评论不存在也可以删除
                 comments.remove(i);
-                // 评论数+1
-                commentCount.getAndSet(commentCount.get() + 1);
             }
         }
         // 将二级评论添加到一级评论中
@@ -93,24 +95,28 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
                 LinkedList<ReplyVO> replyVOList = (LinkedList<ReplyVO>) commentVO.getReplyVOList();
                 // 回复一级评论的评论
                 ReplyVO replyVO = BeanCopyUtil.copyBean(comment, ReplyVO.class);
-                // 为评论设置用户信息
+                // 评论用户id
                 Long userId = replyVO.getUserId();
-                UserInfoVO userInfoVO = userMap.get(userId);
-                replyVO.setAvatar(userInfoVO.getAvatar());
-                replyVO.setNickname(userInfoVO.getNickname());
-                // 设置被回复的用户信息
+                // 回复用户Id
                 Long replyUserId = replyVO.getReplyUserId();
-                UserInfoVO replyUserInfoVO = userMap.get(replyUserId);
-                replyVO.setReplyAvatar(replyUserInfoVO.getAvatar());
-                replyVO.setReplyNickname(replyUserInfoVO.getNickname());
-                // 回复列表添加元素
-                replyVOList.addFirst(replyVO);
-                commentVO.setReplyCount(replyVOList.size());
-                commentVO.setReplyVOList(replyVOList);
-                // 重新写覆盖入评论图
-                commentMap.put(comment.getParentId(), commentVO);
-                // 评论数+1
-                commentCount.getAndSet(commentCount.get() + 1);
+                if (userMap.containsKey(userId) && userMap.containsKey(replyUserId)) {
+                    // 为评论设置用户信息
+                    UserInfoVO userInfoVO = userMap.get(userId);
+                    replyVO.setAvatar(userInfoVO.getAvatar());
+                    replyVO.setNickname(userInfoVO.getNickname());
+                    // 设置被回复的用户信息
+                    UserInfoVO replyUserInfoVO = userMap.get(replyUserId);
+                    replyVO.setReplyAvatar(replyUserInfoVO.getAvatar());
+                    replyVO.setReplyNickname(replyUserInfoVO.getNickname());
+                    // 回复列表添加元素
+                    replyVOList.addFirst(replyVO);
+                    commentVO.setReplyCount(replyVOList.size());
+                    commentVO.setReplyVOList(replyVOList);
+                    // 重新写覆盖入评论图
+                    commentMap.put(comment.getParentId(), commentVO);
+                    // 评论数+1
+                    commentCount.getAndSet(commentCount.get() + 1);
+                }
             }
         });
         // 返回时也按照时间倒序返回

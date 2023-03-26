@@ -31,7 +31,14 @@
 
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
-        <el-button type="danger" plain icon="el-icon-delete" size="mini" :disabled="multiple" @click="handleDelete">删除</el-button>
+        <el-button
+          type="danger"
+          plain
+          icon="el-icon-delete"
+          size="mini"
+          @click="handleDelete"
+          v-hasPermi="['system:feedback:delete']"
+        >删除</el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
@@ -66,10 +73,23 @@
           <span>{{ parseTime(scope.row.createTime) }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="操作" class-name="small-padding" width="140">
+      <el-table-column align="center" label="操作" width="180">
         <template slot-scope="scope">
-          <el-button size="mini" type="text" icon="el-icon-edit" @click="reply(scope.row)">回复</el-button>
-          <el-button size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)">删除</el-button>
+          <el-button
+            v-if="scope.row.status === 0"
+            size="mini"
+            type="primary"
+            icon="el-icon-edit"
+            @click="reply(scope.row)"
+            v-hasPermi="['system:feedback:reply']"
+          >回复</el-button>
+          <el-button
+            size="mini"
+            type="danger"
+            icon="el-icon-delete"
+            @click="handleDelete(scope.row)"
+            v-hasPermi="['system:feedback:delete']"
+          >删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -126,8 +146,6 @@ export default {
       loading: true,
       // 选中数组
       ids: [],
-      // 非多个禁用
-      multiple: true,
       // 显示搜索条件
       showSearch: true,
       // 总条数
@@ -183,7 +201,6 @@ export default {
     // 多选框选中数据
     handleSelectionChange(selection) {
       this.ids = selection.map((item) => item.id);
-      this.multiple = !selection.length;
     },
     /** 删除按钮操作 */
     handleDelete(row) {

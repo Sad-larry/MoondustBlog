@@ -2,23 +2,30 @@
   <div>
     <div class="app-container">
       <!-- 查询和其他操作 -->
-      <el-row>
+      <el-row :gutter="10" class="mb8">
         <el-col :span="1.5">
-          <el-button size="small" type="primary" icon="el-icon-plus" @click="handleCreate(0)">添加 </el-button>
+          <el-button
+            size="mini"
+            type="primary"
+            plain
+            icon="el-icon-plus"
+            @click="handleCreate(0)"
+            v-hasPermi="['system:menu:add']"
+          >添加</el-button>
         </el-col>
         <el-col :span="1.5" :offset="21">
           <el-tooltip class="item" effect="dark" content="刷新" placement="top">
-            <el-button size="mini" circle icon="el-icon-refresh" @click="refresh()" />
+            <el-button size="mini" circle icon="el-icon-refresh" @click="getList" />
           </el-tooltip>
         </el-col>
       </el-row>
-      <el-table :data="menuList" style="width: 100%">
+      <el-table v-loading="loading" :data="menuList" style="width: 100%">
         <el-table-column type="expand" width="50">
           <template slot-scope="scope">
             <el-form label-position="left" inline class="demo-table-expand">
               <el-table :data="scope.row.children" :show-header="showHeader" style="width: 100%" :indent="0">
                 <!-- 占位，箭头，不然，很丑 -->
-                <el-table-column label width="50" align="center"/>
+                <el-table-column label width="50" align="center" />
 
                 <el-table-column label width="50" align="center">
                   <template slot-scope="scope_child">
@@ -34,9 +41,7 @@
 
                 <el-table-column label width="100" align="center">
                   <template slot-scope="scope_child">
-                    <el-tag :type="menuLevelType[scope_child.row.level]">
-                      {{ menuLevelOptions[scope_child.row.level] }}
-                    </el-tag>
+                    <el-tag :type="menuLevelType[scope_child.row.level]">{{ menuLevelOptions[scope_child.row.level] }}</el-tag>
                   </template>
                 </el-table-column>
 
@@ -57,9 +62,7 @@
 
                 <el-table-column width="80" align="center">
                   <template slot-scope="scope_child">
-                    <el-tag :type="hiddenTypes[scope_child.row.hidden]">
-                      {{ hiddenOptions[scope_child.row.hidden] }}
-                    </el-tag>
+                    <el-tag :type="hiddenTypes[scope_child.row.hidden]">{{ hiddenOptions[scope_child.row.hidden] }}</el-tag>
                   </template>
                 </el-table-column>
 
@@ -71,8 +74,18 @@
 
                 <el-table-column align="center" min-width="230">
                   <template slot-scope="scope_child">
-                    <el-button type="primary" size="mini" @click="handleUpdate(scope_child.row)">编辑</el-button>
-                    <el-button size="mini" type="danger" @click="handleDelete(scope_child)">删除</el-button>
+                    <el-button
+                      type="primary"
+                      size="mini"
+                      @click="handleUpdate(scope_child.row)"
+                      v-hasPermi="['system:menu:update']"
+                    >编辑</el-button>
+                    <el-button
+                      size="mini"
+                      type="danger"
+                      @click="handleDelete(scope_child)"
+                      v-hasPermi="['system:menu:delete']"
+                    >删除</el-button>
                   </template>
                 </el-table-column>
               </el-table>
@@ -94,9 +107,7 @@
 
         <el-table-column label="菜单级别" width="100" align="center">
           <template slot-scope="scope">
-            <el-tag :type="menuLevelType[scope.row.level]">
-              {{ menuLevelOptions[scope.row.level] }}
-            </el-tag>
+            <el-tag :type="menuLevelType[scope.row.level]">{{ menuLevelOptions[scope.row.level] }}</el-tag>
           </template>
         </el-table-column>
 
@@ -117,9 +128,7 @@
 
         <el-table-column label="是否隐藏" width="80" align="center">
           <template slot-scope="scope">
-            <el-tag :type="hiddenTypes[scope.row.hidden]">
-              {{ hiddenOptions[scope.row.hidden] }}
-            </el-tag>
+            <el-tag :type="hiddenTypes[scope.row.hidden]">{{ hiddenOptions[scope.row.hidden] }}</el-tag>
           </template>
         </el-table-column>
 
@@ -132,14 +141,12 @@
         <el-table-column label="操作" align="center" min-width="270" fixed="right">
           <template slot-scope="scope">
             <el-button type="primary" size="mini" @click="handleUpdate(scope.row)">编辑</el-button>
-            <el-button type="warning" size="mini" v-if="scope.row.level === 0" @click="handleCreate(scope.row.id)">添加下级
-            </el-button>
+            <el-button type="warning" size="mini" v-if="scope.row.level === 0" @click="handleCreate(scope.row.id)">添加下级</el-button>
             <el-button size="mini" type="danger" @click="handleDelete(scope)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
     </div>
-
 
     <!-- 添加或修改系统菜单对话框 -->
     <el-dialog center :title="title" :visible.sync="open">
@@ -163,15 +170,12 @@
         </el-form-item>
         <el-form-item label="菜单图标" label-width="120px" prop="icon">
           <el-input v-model="form.icon" placeholder="请输入前图标名称">
-            <el-button slot="append" icon="el-icon-setting" @click="openIconsDialog('prefix-icon')">
-              选择
-            </el-button>
+            <el-button slot="append" icon="el-icon-setting" @click="openIconsDialog('prefix-icon')">选择</el-button>
           </el-input>
         </el-form-item>
         <el-form-item label="菜单级别" label-width="120px" prop="level">
           <el-select v-model="form.level" placeholder="请选择">
-            <el-option v-for="(item, index) in menuLevelOptions" :key="index" :label="item" :value="index">
-            </el-option>
+            <el-option v-for="(item, index) in menuLevelOptions" :key="index" :label="item" :value="index"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="排序" prop="sortNo" label-width="120px">
@@ -202,24 +206,20 @@ import IconsDialog from "../../../components/IconsDialog";
 export default {
   name: "Menu",
   components: {
-    IconsDialog
+    IconsDialog,
   },
   data() {
     return {
       // 表单选项
-      hiddenTypes: ['warning', 'success'],
-      hiddenOptions: ['否', '是'],
-      menuLevelType: ['success', 'danger', 'warning'],
-      menuLevelOptions: ['一级菜单', '二级菜单'],
+      hiddenTypes: ["warning", "success"],
+      hiddenOptions: ["否", "是"],
+      menuLevelType: ["success", "danger", "warning"],
+      menuLevelOptions: ["一级菜单", "二级菜单"],
       isEditForm: 0,
       // 遮罩层
-      loading: [],
+      loading: true,
       // 是否显示表头
       showHeader: false,
-      // 非单个禁用
-      single: true,
-      // 非多个禁用
-      multiple: true,
       // 显示搜索条件
       showSearch: true,
       // 权限资源 表格数据
@@ -233,53 +233,48 @@ export default {
       // 查询参数
       queryParams: {
         pageNum: 1,
-        pageSize: 10
+        pageSize: 10,
       },
       // 表单参数
       form: {},
       // 表单校验
       rules: {
-        "id": [
-          { required: true, message: '请输入菜单ID', trigger: 'change' },
-          { pattern: /^[0-9]\d*$/, message: 'ID字段只能为自然数' },
+        id: [
+          { required: true, message: "请输入菜单ID", trigger: "change" },
+          { pattern: /^[0-9]\d*$/, message: "ID字段只能为自然数" },
         ],
-        "title": [
-          { required: true, message: '请输入菜单名称', trigger: 'change' },
-          { min: 1, max: 6, message: '长度在1到6个字符' },
+        title: [
+          { required: true, message: "请输入菜单名称", trigger: "change" },
+          { min: 1, max: 6, message: "长度在1到6个字符" },
         ],
-        "url": [
-          { required: true, message: '请输入url', trigger: 'change' }
+        url: [{ required: true, message: "请输入url", trigger: "change" }],
+        component: [
+          { required: true, message: "请输入路由地址", trigger: "change" },
         ],
-        "component": [
-          { required: true, message: '请输入路由地址', trigger: 'change' }
+        icon: [{ required: true, message: "请选择图标", trigger: "blur" }],
+        level: [
+          { required: true, message: "请选择菜单级别", trigger: "change" },
         ],
-        "icon": [
-          { required: true, message: '请选择图标', trigger: 'blur' }
+        sortNo: [
+          { required: true, message: "请输入排序", trigger: "change" },
+          { pattern: /^[0-9]\d*$/, message: "排序字段只能为自然数" },
         ],
-        "level": [
-          { required: true, message: '请选择菜单级别', trigger: 'change' }
-        ],
-        "sortNo": [
-          { required: true, message: '请输入排序', trigger: 'change' },
-          { pattern: /^[0-9]\d*$/, message: '排序字段只能为自然数' },
-        ]
-      }
+      },
     };
   },
   created() {
-    this.openLoading()
     this.getList();
   },
   methods: {
     refresh() {
-      this.openLoading()
       this.getList();
     },
     /** 查询权限资源 列表 */
     getList() {
-      listMenu(this.queryParams).then(response => {
+      this.loading = true;
+      listMenu(this.queryParams).then((response) => {
         this.menuList = response.data;
-        this.loading.close();
+        this.loading = false;
       });
     },
     // 取消按钮
@@ -305,7 +300,7 @@ export default {
         isCache: null,
         remark: null,
         createTime: null,
-        updateTime: null
+        updateTime: null,
       };
       this.resetForm("form");
     },
@@ -327,59 +322,59 @@ export default {
     },
     /** 添加菜单 */
     handleCreate(id) {
-      this.form = this.getFormObject(id)
-      let title = '添加下级'
+      this.form = this.getFormObject(id);
+      let title = "添加下级";
       if (!id) {
-        this.form.component = 'Layout'
-        title = '添加菜单'
+        this.form.component = "Layout";
+        title = "添加菜单";
       }
-      this.beforeShow(0, title)
+      this.beforeShow(0, title);
       this.$nextTick(() => {
-        this.$refs['dataForm'].clearValidate()
-      })
+        this.$refs["dataForm"].clearValidate();
+      });
     },
     /** 获取表单对象 */
     getFormObject(id) {
       return {
-        id: '',
+        id: "",
         parentId: id,
-        url: '',
+        url: "",
         component: null,
-        type: 'M',
-        title: '',
+        type: "M",
+        title: "",
         level: id ? 1 : 0,
         sortNo: 0,
         hidden: 0,
-        remarks: ''
-      }
+        remarks: "",
+      };
     },
     /** 判断是否可以修改并设置标题 */
     beforeShow(isEditForm, title) {
-      this.isEditForm = isEditForm
-      this.title = title
-      this.open = true
+      this.isEditForm = isEditForm;
+      this.title = title;
+      this.open = true;
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
-      this.form = row
-      this.beforeShow(1, '修改菜单')
+      this.form = row;
+      this.beforeShow(1, "修改菜单");
     },
     /** 选择图标 */
     setIcon(val) {
-      this.form.icon = val
+      this.form.icon = val;
     },
     /** 提交按钮 */
     submitForm() {
-      this.$refs["dataForm"].validate(valid => {
+      this.$refs["dataForm"].validate((valid) => {
         if (valid) {
           if (this.isEditForm) {
-            updateMenu(this.form).then(response => {
+            updateMenu(this.form).then((response) => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
               this.getList();
             });
           } else {
-            addMenu(this.form).then(response => {
+            addMenu(this.form).then((response) => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;
               this.getList();
@@ -390,30 +385,25 @@ export default {
     },
     /** 删除按钮操作 */
     handleDelete(row) {
-      console.log(row)
+      console.log(row);
       const id = row.row.id;
-      this.$modal.confirm('是否确认删除权限资源 编号为"' + id + '"的数据项？').then(function () {
-        return delMenu(id);
-      }).then(() => {
-        // TODO 删除菜单刷新页面重新获取路由，使得菜单栏也重新刷新
-        this.getList()
-        this.$modal.msgSuccess("删除成功");
-      }).catch(() => { });
+      this.$modal
+        .confirm('是否确认删除权限资源 编号为"' + id + '"的数据项？')
+        .then(function () {
+          return delMenu(id);
+        })
+        .then(() => {
+          // TODO 删除菜单刷新页面重新获取路由，使得菜单栏也重新刷新
+          this.getList();
+          this.$modal.msgSuccess("删除成功");
+        })
+        .catch(() => {});
     },
     /** 打开ICON图标选择器 */
     openIconsDialog(model) {
-      this.iconsVisible = true
-      this.currentIconModel = model
+      this.iconsVisible = true;
+      this.currentIconModel = model;
     },
-    /** 打开加载层 */
-    openLoading() {
-      this.loading = this.$loading({
-        lock: true,
-        text: "正在加载中~",
-        spinner: "el-icon-loading",
-        background: "rgba(0, 0, 0, 0.7)"
-      });
-    },
-  }
+  },
 };
 </script>

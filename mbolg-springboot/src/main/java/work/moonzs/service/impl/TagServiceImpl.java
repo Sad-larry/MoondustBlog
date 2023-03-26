@@ -3,6 +3,7 @@ package work.moonzs.service.impl;
 import cn.hutool.core.util.ObjUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
@@ -108,6 +109,14 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, Tag> implements TagSe
     @Override
     public List<TagVO> getBlogTagsByArticleId(Long id) {
         return baseMapper.selectByArticleId(id);
+    }
+
+    @Override
+    public void incrTagClickVolume(Long tagId) {
+        LambdaUpdateWrapper<Tag> updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper.setSql("click_volume = click_volume + 1");
+        updateWrapper.eq(Tag::getId, tagId);
+        update(updateWrapper);
     }
 }
 
