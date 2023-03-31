@@ -58,11 +58,16 @@
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="文章封面" align="center" prop="avatar" width="120" fixed>
         <template slot-scope="scope">
-          <el-image class="article-cover" :src="scope.row.avatar" />
+          <el-image
+            class="article-cover"
+            :src="scope.row.avatar"
+            fit="scale-down"
+            :preview-src-list="[scope.row.avatar]"
+          />
           <i id="imgIcon" :class="scope.row.isSecret === 0 ? 'el-icon-view' : 'el-icon-lock'" />
         </template>
       </el-table-column>
-      <el-table-column label="文章标题" align="center" width="120" fixed>
+      <el-table-column label="文章标题" align="center" width="180" fixed>
         <template slot-scope="scope">
           <el-link :underline="false" @click="onClick(scope.row)">{{ scope.row.title }}</el-link>
         </template>
@@ -101,7 +106,7 @@
           ></el-switch>
         </template>
       </el-table-column>
-      <el-table-column label="浏览量" align="center" prop="quantity" sortable width="90"/>
+      <el-table-column label="浏览量" align="center" prop="quantity" sortable width="90" />
       <el-table-column label="添加时间" align="center" prop="createTime" sortable width="200">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.createTime) }}</span>
@@ -323,6 +328,10 @@ export default {
 </script>
 <style>
 .el-table .unpublished-row {
-  background: #faf5f5;
+  background: #f6f6f6;
+}
+.article-cover {
+  width: 100px;
+  height: 100px;
 }
 </style>

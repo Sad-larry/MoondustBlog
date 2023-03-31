@@ -42,7 +42,7 @@
         </template>
       </el-table-column>
       <el-table-column align="center" type="selection" width="55" />
-      <el-table-column prop="username" align="center" width="100" label="操作人" />
+      <el-table-column prop="username" align="center" width="180" label="操作人" />
       <el-table-column prop="requestUrl" align="center" width="200" label="请求接口" />
       <el-table-column prop="type" align="center" label="请求方式">
         <template slot-scope="scope">

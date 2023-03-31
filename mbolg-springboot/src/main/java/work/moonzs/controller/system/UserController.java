@@ -9,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 import work.moonzs.base.annotation.AdminOperationLogger;
 import work.moonzs.base.annotation.SystemLog;
 import work.moonzs.base.utils.BeanCopyUtil;
+import work.moonzs.base.utils.CryptoUtil;
 import work.moonzs.base.utils.SecurityUtil;
 import work.moonzs.base.validate.VG;
 import work.moonzs.domain.ResponseResult;
@@ -112,9 +113,11 @@ public class UserController {
     public ResponseResult updateLoginUserPassword(@RequestBody @Validated(VG.Update.class) UpdateUserPasswordDTO updateUserPasswordDTO) {
         // 防止使用自己的Token改别人的密码
         String username = SecurityUtil.getLoginUser().getUser().getUsername();
+        String oldPassword = CryptoUtil.decrypt(updateUserPasswordDTO.getOldPassword());
+        String newPassword = CryptoUtil.decrypt(updateUserPasswordDTO.getNewPassword());
         // 新旧密码不一致
-        userService.checkOldPassword(username, updateUserPasswordDTO.getOldPassword());
-        userService.updateUserPassword(username, updateUserPasswordDTO.getNewPassword(), true);
+        userService.checkOldPassword(username, oldPassword);
+        userService.updateUserPassword(username, newPassword, true);
         return ResponseResult.success();
     }
 

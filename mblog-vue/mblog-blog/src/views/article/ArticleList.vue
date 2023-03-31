@@ -61,7 +61,6 @@ export default {
   data() {
     return {
       current: 1,
-      img: process.env.VUE_APP_IMG_API,
       size: 6,
       articleList: [],
       name: "",

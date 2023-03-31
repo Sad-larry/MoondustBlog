@@ -62,6 +62,8 @@
     <v-row class="article-container">
       <v-col md="9" cols="12">
         <v-card class="article-wrapper">
+          <!-- 阅读进度条 -->
+          <vue-read-progress color="#32AAEA" opacity="0.8" height="6px" :shadow="true"></vue-read-progress>
           <article
             v-show="!isCheck"
             id="write"
@@ -102,7 +104,6 @@
             <div class="tag-container">
               <router-link v-for="item of article.tagList" :key="item.id" :to="'/tags/' + item.id">{{ item.name }}</router-link>
             </div>
-            <share style="margin-left:auto" :config="config" />
           </div>
           <!-- 点赞打赏等 -->
           <div class="article-reward">
@@ -219,20 +220,19 @@
 </template>
 
 <script>
-import { getArticleInfo, listArticleComment, like } from "@/api";
+import { getArticleInfo, listArticleComment } from "@/api";
 import Clipboard from "clipboard";
 import Comment from "@/components/Comment";
 import tocbot from "tocbot";
+import VueReadProgress from "vue-read-progress";
 
 export default {
   components: {
     Comment,
+    VueReadProgress,
   },
   data() {
     return {
-      config: {
-        sites: ["qzone", "wechat", "weibo", "qq"],
-      },
       imgList: [],
       articleId: this.$route.params.articleId,
       code: null,
@@ -258,7 +258,6 @@ export default {
       wordNum: "",
       readTime: "",
       articleHref: window.location.href,
-      img: process.env.VUE_APP_IMG_API,
       clipboard: null,
     };
   },
@@ -289,62 +288,72 @@ export default {
       };
     },
   },
+  filters: {
+    // 字数统计
+    num(value) {
+      if (value >= 1000) {
+        return (value / 1000).toFixed(1) + "k";
+      }
+      return value;
+    },
+  },
   methods: {
     getArticle() {
       const that = this;
       //查询文章
-      getArticleInfo({ id: this.articleId }).then((res) => {
-        document.title = res.data.title;
-        // if (res.data.keywords != null || res.data.keywords != "") {
-        //   document.querySelector('meta[name="keywords"]').setAttribute('content', res.data.keywords)
-        // }
-        this.isCheck = res.data.isSecret !== 0;
-        //将markdown转换为Html
-        this.markdownToHtml(res.data);
-        this.$nextTick(() => {
-          // 统计文章字数
-          this.wordNum = this.deleteHTMLTag(this.article.content).length;
-          // 计算阅读时间
-          this.readTime = Math.round(this.wordNum / 400) + "分钟";
-          // 添加代码复制功能
-          this.clipboard = new Clipboard(".copy-btn");
-          this.clipboard.on("success", () => {
-            this.$toast({ type: "success", message: "复制成功" });
-          });
-          // 添加文章生成目录功能
-          let nodes = this.$refs.article.children;
-          if (nodes.length) {
-            for (let i = 0; i < nodes.length; i++) {
-              let node = nodes[i];
-              let reg = /^H[1-4]{1}$/;
-              if (reg.exec(node.tagName)) {
-                node.id = i;
+      getArticleInfo({ id: this.articleId })
+        .then((res) => {
+          document.title = res.data.title;
+          this.isCheck = res.data.isSecret !== 0;
+          //将markdown转换为Html
+          this.markdownToHtml(res.data);
+          this.$nextTick(() => {
+            // 统计文章字数
+            this.wordNum = this.deleteHTMLTag(this.article.content).length;
+            // 计算阅读时间
+            this.readTime = Math.round(this.wordNum / 400) + "分钟";
+            // 添加代码复制功能
+            this.clipboard = new Clipboard(".copy-btn");
+            this.clipboard.on("success", () => {
+              this.$toast({ type: "success", message: "复制成功" });
+            });
+            // 添加文章生成目录功能
+            let nodes = this.$refs.article.children;
+            if (nodes.length) {
+              for (let i = 0; i < nodes.length; i++) {
+                let node = nodes[i];
+                let reg = /^H[1-4]{1}$/;
+                if (reg.exec(node.tagName)) {
+                  node.id = i;
+                }
               }
             }
-          }
-          tocbot.init({
-            tocSelector: "#toc", //要把目录添加元素位置，支持选择器
-            contentSelector: ".article-content", //获取html的元素
-            headingSelector: "h1, h2, h3,h4", //要显示的id的目录
-            hasInnerContainers: true,
-            onClick(e) {
-              e.preventDefault();
-            },
-          });
-          // 添加图片预览功能
-          const imgList = this.$refs.article.getElementsByTagName("img");
-          for (var i = 0; i < imgList.length; i++) {
-            this.imgList.push(imgList[i].src);
-            imgList[i].addEventListener("click", function (e) {
-              that.previewImg(e.target.currentSrc);
+            tocbot.init({
+              tocSelector: "#toc", //要把目录添加元素位置，支持选择器
+              contentSelector: ".article-content", //获取html的元素
+              headingSelector: "h1, h2, h3,h4", //要显示的id的目录
+              hasInnerContainers: true,
+              onClick(e) {
+                e.preventDefault();
+              },
             });
-          }
+            // 添加图片预览功能
+            const imgList = this.$refs.article.getElementsByTagName("img");
+            for (var i = 0; i < imgList.length; i++) {
+              this.imgList.push(imgList[i].src);
+              imgList[i].addEventListener("click", function (e) {
+                that.previewImg(e.target.currentSrc);
+              });
+            }
+          });
+        })
+        .catch((err) => {
+          // 若没有文章，则跳转到首页
+          this.$router.push("/");
         });
-      });
     },
     listComment() {
       listArticleComment({ articleId: this.articleId }).then((res) => {
-        console.log("res::", res);
         this.commentList = res.total != 0 ? res.records : [];
         this.commentCount = res.total != 0 ? res.total : 0;
       });
@@ -416,6 +425,22 @@ export default {
       this.$imagePreview({
         images: this.imgList,
         index: this.imgList.indexOf(img),
+        defaultOpt: {
+          // 点击上层图层关闭预览
+          tapToClose: true,
+          // 关闭右上角的全屏图标
+          fullscreenEl: false,
+          // 关闭右上角的X图标
+          closeEl: false,
+          // 上下一张图片的箭头图标
+          arrowEl: true,
+          // 预加载
+          preloaderEl: true,
+          // 背景透明度
+          bgOpacity: 0.85,
+          // 展示隐藏透明度
+          showHideOpacity: true,
+        },
       });
     },
     deleteHTMLTag(content) {
@@ -425,10 +450,10 @@ export default {
         .replace(/&npsp;/gi, "");
     },
   },
-  /* destroyed() {
-     this.clipboard.destroy();
-     tocbot.destroy();
-   },*/
+  destroyed() {
+    this.clipboard.destroy();
+    tocbot.destroy();
+  },
 };
 </script>
 

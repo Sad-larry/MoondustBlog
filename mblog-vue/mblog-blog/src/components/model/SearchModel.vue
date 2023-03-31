@@ -19,8 +19,8 @@
           <li class="search-reslut" v-for="item of articleList" :key="item.id">
             <!-- 文章标题 -->
             <a @click="goTo(item.id)" v-html="item.title" />
-            <!-- 文章内容 -->
-            <p class="search-reslut-content text-justify" v-html="item.contentMd" />
+            <!-- 文章简介 -->
+            <p class="search-reslut-content text-justify" v-html="item.summary" />
           </li>
         </ul>
         <!-- 搜索结果不存在提示 -->

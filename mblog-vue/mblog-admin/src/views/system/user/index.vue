@@ -57,7 +57,7 @@
           <img :src="scope.row.avatar" width="60" height="60" />
         </template>
       </el-table-column>
-      <el-table-column prop="nickname" width="120" align="center" label="昵称" />
+      <el-table-column prop="nickname" width="180" align="center" label="昵称" />
       <el-table-column prop="loginType" align="center" label="登录方式">
         <template slot-scope="scope">
           <span v-for="(item, index) in dictLoginTypeList" :key="index">

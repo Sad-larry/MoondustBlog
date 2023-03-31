@@ -24,7 +24,6 @@ export default {
   data() {
     return {
       aboutContent: "",
-      img: process.env.VUE_APP_IMG_API,
       clipboard: null,
       imgList: []
     };

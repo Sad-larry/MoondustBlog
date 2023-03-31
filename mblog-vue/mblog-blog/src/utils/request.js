@@ -1,6 +1,5 @@
 import axios from 'axios'
-import { Notification, Message } from 'element-ui'
-import { getToken } from '@/utils/auth'
+import { Notification } from 'element-ui'
 
 axios.defaults.headers['Content-Type'] = 'application/json;charset=utf-8'
 // 创建axios实例
@@ -13,11 +12,6 @@ const service = axios.create({
 
 // request拦截器
 service.interceptors.request.use(config => {
-    // 是否需要设置 token,默认不需要token
-    const isToken = (config.headers || {}).isToken === true
-    if (getToken() && isToken) {
-        config.headers['Authorization'] = 'Bearer ' + getToken()
-    }
     return config
 }, error => {
     console.log("request error : ", error)
@@ -42,11 +36,6 @@ service.interceptors.response.use(res => {
 },
     error => {
         console.log('response error : ' + error)
-        Message({
-            message: error,
-            type: 'error',
-            duration: 5 * 1000
-        })
         return Promise.reject(error)
     }
 )

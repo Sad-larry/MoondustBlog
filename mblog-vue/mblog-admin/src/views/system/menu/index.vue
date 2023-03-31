@@ -25,7 +25,7 @@
             <el-form label-position="left" inline class="demo-table-expand">
               <el-table :data="scope.row.children" :show-header="showHeader" style="width: 100%" :indent="0">
                 <!-- 占位，箭头，不然，很丑 -->
-                <el-table-column label width="50" align="center" />
+                <el-table-column label width="62" align="center" />
 
                 <el-table-column label width="50" align="center">
                   <template slot-scope="scope_child">
@@ -93,7 +93,7 @@
           </template>
         </el-table-column>
 
-        <el-table-column label="菜单ID" width="50" align="center">
+        <el-table-column label="菜单ID" width="60" align="center">
           <template slot-scope="scope">
             <span>{{ scope.row.id }}</span>
           </template>

@@ -47,7 +47,7 @@
               <!-- 信息 -->
               <div class="comment-info">
                 <!-- 发表时间 -->
-                <span style="margin-right:10px">{{ reply.createTime | date }}</span>
+                <span style="margin-right:10px">{{ reply.createTime | date}}</span>
                 <!-- 喜欢数 -->
                 <span v-show="reply.likeCount > 0">{{ reply.likeCount }}</span>
               </div>

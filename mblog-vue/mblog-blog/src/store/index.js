@@ -11,21 +11,11 @@ export default new Vuex.Store({
   },
   state: {
     searchFlag: false,
-    loginFlag: false,
-    registerFlag: false,
-    forgetFlag: false,
     drawer: false,
-    loginUrl: "",
-    userId: null,
     avatar: null,
     nickname: null,
-    intro: null,
-    webSite: null,
-    loginType: null,
-    token: null,
     dialogFormVisible: false,
     articleLikeSet: [],
-    commentLikeSet: []
   },
   mutations: {
     articleLike(state, articleId) {

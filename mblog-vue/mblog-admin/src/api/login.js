@@ -18,6 +18,14 @@ export function login(username, password, code, uuid) {
   })
 }
 
+// 获取路由
+export const getRouters = () => {
+  return request({
+    url: '/system/getRouters',
+    method: 'get'
+  })
+}
+
 // 注册方法
 export function register(data) {
   return request({

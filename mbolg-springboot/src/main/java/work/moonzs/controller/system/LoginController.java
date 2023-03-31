@@ -12,6 +12,7 @@ import work.moonzs.base.enums.AppHttpCodeEnum;
 import work.moonzs.base.enums.CacheConstants;
 import work.moonzs.base.enums.SystemConstants;
 import work.moonzs.base.utils.BeanCopyUtil;
+import work.moonzs.base.utils.CryptoUtil;
 import work.moonzs.base.utils.RedisCache;
 import work.moonzs.base.utils.SecurityUtil;
 import work.moonzs.base.validate.VG;
@@ -169,7 +170,9 @@ public class LoginController {
     @PostMapping("/password/update")
     public ResponseResult updateUserPassword(@RequestBody @Validated(VG.Select.class) UpdateUserPasswordDTO updateUserPasswordDTO) {
         userService.validatePasswordMailCode(updateUserPasswordDTO.getUsername(), updateUserPasswordDTO.getMailCode());
-        userService.updateUserPassword(updateUserPasswordDTO.getUsername(), updateUserPasswordDTO.getNewPassword(), false);
+        // 解密字符串
+        String newPassword = CryptoUtil.decrypt(updateUserPasswordDTO.getNewPassword());
+        userService.updateUserPassword(updateUserPasswordDTO.getUsername(), newPassword, false);
         return ResponseResult.success();
     }
 }

@@ -61,7 +61,7 @@
         <if test="keywords != null and keywords != ''">
             AND(a.title LIKE concat('%',#{keywords},'%') OR a.summary LIKE concat('%',#{keywords},'%'))
         </if>
-        ORDER BY a.is_stick DESC, a.create_time desc
+        ORDER BY a.is_stick DESC, a.create_time DESC
     </select>
     <select id="listRecommendArticle" resultType="work.moonzs.domain.vo.web.ArticleBaseVO">
         SELECT id, title, avatar, create_time

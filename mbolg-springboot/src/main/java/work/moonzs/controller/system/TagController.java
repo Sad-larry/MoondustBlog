@@ -82,6 +82,7 @@ public class TagController {
 
     /**
      * 删除标签
+     * TODO 删除标签时，查询是否有文章引用，如果有，则不能删除，或者统一修改文章为别的标签
      *
      * @param tagIds 标签id
      * @return {@link ResponseResult}

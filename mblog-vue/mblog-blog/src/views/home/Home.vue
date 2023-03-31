@@ -3,32 +3,12 @@
     <!-- banner -->
     <div class="home-banner" :style="cover">
       <div class="banner-container">
-        <!-- 联系方式 -->
+        <!-- 主题 -->
         <h1 class="blog-title animated zoomIn">{{ blogInfo.webSite.name }}</h1>
         <!-- 介绍 -->
         <div class="blog-intro">
           {{ blogInfo.webSite.summary }}
           <span class="typed-cursor">|</span>
-        </div>
-        <!-- 联系方式 -->
-        <div class="blog-contact">
-          <a
-            v-if="isShowSocial(2)"
-            class="mr-5 iconfont iconqq"
-            target="_blank"
-            :href="
-            'http://wpa.qq.com/msgrd?v=3&uin=' +
-            blogInfo.webSite.qqNumber +
-            '&site=qq&menu=yes'
-          "
-          />
-          <a v-if="isShowSocial(3)" target="_blank" :href="blogInfo.webSite.github" class="mr-5 iconfont icongithub" />
-          <a
-            v-if="isShowSocial(4)"
-            target="_blank"
-            :href="blogInfo.webSite.gitee"
-            class="iconfont icongitee-fill-round"
-          />
         </div>
       </div>
       <!-- 向下滚动 -->
@@ -56,24 +36,24 @@
             <div style="line-height:1.4">
               <div>
                 <router-link :to="'/article/' + item.id">{{ item.title }}</router-link>
-                  <span
-                    v-if="item.quantity >= 0 && item.quantity < 1000"
-                    style="font-size:12px;border-radius:3px;border: 1px solid  #f70;text-align: center;margin-left: 15px;"
-                  >
-                    <font style="color: #f70;"> {{item.quantity}} 次阅读</font>
-                  </span>
-                  <span
-                    v-if="item.quantity >= 1000 && item.quantity < 10000"
-                    style="font-size:12px;border-radius:3px;border: 1px solid  #f70;text-align: center;margin-left: 15px;"
-                  >
-                    <font style="color: #f70;"> {{item.quantity}} 千次阅读</font>
-                  </span>
-                  <span
-                    v-if="item.quantity >= 10000"
-                    style="font-size:12px;border-radius:3px;border: 1px solid  #f70;text-align: center;margin-left: 15px;"
-                  >
-                    <font style="color: #f70;"> {{item.quantity}} 万次阅读</font>
-                  </span>
+                <span
+                  v-if="item.quantity >= 0 && item.quantity < 1000"
+                  style="font-size:12px;border-radius:3px;border: 1px solid  #f70;text-align: center;margin-left: 15px;"
+                >
+                  <font style="color: #f70;">{{item.quantity}} 次阅读</font>
+                </span>
+                <span
+                  v-if="item.quantity >= 1000 && item.quantity < 10000"
+                  style="font-size:12px;border-radius:3px;border: 1px solid  #f70;text-align: center;margin-left: 15px;"
+                >
+                  <font style="color: #f70;">{{item.quantity}} 千次阅读</font>
+                </span>
+                <span
+                  v-if="item.quantity >= 10000"
+                  style="font-size:12px;border-radius:3px;border: 1px solid  #f70;text-align: center;margin-left: 15px;"
+                >
+                  <font style="color: #f70;">{{item.quantity}} 万次阅读</font>
+                </span>
               </div>
             </div>
             <div class="article-info">
@@ -204,16 +184,12 @@
             </div>
             <div class="web-info">
               <div style="padding:4px 0 0">
-                运行时间:
+                苟活时长:
                 <span class="float-right">{{ time }}</span>
               </div>
               <div style="padding:4px 0 0">
                 总访问量:
                 <span class="float-right">{{ blogInfo.count.viewsCount }}</span>
-              </div>
-              <div style="padding:4px 0 0">
-                当前在线人数:
-                <span class="float-right">{{ onlineCount }}</span>
               </div>
             </div>
           </v-card>
@@ -226,26 +202,13 @@
 </template>
 
 <script>
-import EasyTyper from "easy-typer-js";
 import { fetchList } from "@/api";
 export default {
   data() {
     return {
-      // 后期可以通过socket实时监控在线人数
-      onlineCount: 1,
       webSite: {},
       tip: false,
       time: "",
-      obj: {
-        output: "",
-        isEnd: false,
-        speed: 300,
-        singleBack: false,
-        sleep: 0,
-        type: "rollback",
-        backSpeed: 40,
-        sentencePause: true,
-      },
       articleList: [],
       params: {
         pageNum: 1,
@@ -254,7 +217,7 @@ export default {
     };
   },
   created() {
-    this.init();
+    document.title = "月尘博客";
     this.timer = setInterval(this.runTime, 1000);
   },
   computed: {
@@ -295,26 +258,6 @@ export default {
     },
   },
   methods: {
-    screenshot() {
-      this.$toast({ type: "error", message: "敬请期待!" });
-    },
-    // 初始化
-    init() {
-      document.title = "月尘博客";
-      // 一言Api进行打字机循环输出效果
-      /*  fetch("https://v1.hitokoto.cn?c=i")
-          .then(res => {
-            return res.json();
-          })
-          .then(({ hitokoto }) => {
-            this.initTyped(hitokoto);
-          });*/
-    },
-    initTyped(input, fn, hooks) {
-      const obj = this.obj;
-      // eslint-disable-next-line no-unused-vars
-      const typed = new EasyTyper(obj, input, fn, hooks);
-    },
     scrollDown() {
       window.scrollTo({
         behavior: "smooth",
@@ -399,10 +342,6 @@ export default {
   color: #2f3640;
 }
 
-.blog-contact a {
-  color: #fff !important;
-}
-
 .card-info-social {
   line-height: 40px;
   text-align: center;
@@ -434,10 +373,6 @@ export default {
 
   .blog-intro {
     font-size: 1.5rem;
-  }
-
-  .blog-contact {
-    display: none;
   }
 
   .home-container {
@@ -482,11 +417,6 @@ export default {
 @media (max-width: 759px) {
   .blog-title {
     font-size: 26px;
-  }
-
-  .blog-contact {
-    font-size: 1.25rem;
-    line-height: 2;
   }
 
   .home-container {

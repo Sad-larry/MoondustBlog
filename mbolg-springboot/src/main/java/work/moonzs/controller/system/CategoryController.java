@@ -83,6 +83,7 @@ public class CategoryController {
 
     /**
      * 删除分类
+     * TODO 删除分类时，查询是否有文章引用，如果有，则不能删除，或者统一修改文章为别的分类
      *
      * @param categoryIds 分类id
      * @return {@link ResponseResult}

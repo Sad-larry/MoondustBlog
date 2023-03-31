@@ -9,13 +9,6 @@
     </el-row>
 
     <el-table border v-loading="loading" :data="onlineUserList" style="width: 100%;">
-      <el-table-column align="center" prop="avatar" label="头像" width="180">
-        <template slot-scope="scope">
-          <div class="block">
-            <el-avatar :size="50" :src="scope.row.avatar"></el-avatar>
-          </div>
-        </template>
-      </el-table-column>
       <el-table-column align="center" prop="nickname" label="昵称" width="180" />
       <el-table-column align="center" prop="ipAddress" label="IP地址" />
       <el-table-column align="center" prop="ipSource" label="登录地址" />

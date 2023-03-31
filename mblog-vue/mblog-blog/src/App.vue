@@ -41,11 +41,6 @@ export default {
     // 上传访客信息
     visitTheWebsite();
   },
-  computed: {
-    blogInfo() {
-      return this.$store.state.blogInfo;
-    },
-  },
   methods: {
     /** 初始化网页信息 */
     getBlogInfo() {

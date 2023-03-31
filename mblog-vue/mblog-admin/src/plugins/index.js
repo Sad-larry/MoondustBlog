@@ -2,7 +2,6 @@ import tab from './tab'
 import auth from './auth'
 import cache from './cache'
 import modal from './modal'
-import download from './download'
 
 export default {
   install(Vue) {
@@ -14,7 +13,5 @@ export default {
     Vue.prototype.$cache = cache
     // 模态框对象
     Vue.prototype.$modal = modal
-    // 下载文件
-    Vue.prototype.$download = download
   }
 }

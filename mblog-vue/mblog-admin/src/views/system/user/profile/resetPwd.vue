@@ -18,6 +18,7 @@
 
 <script>
 import { updateUserPwd } from "@/api/system/user";
+import { encrypt } from "@/utils/jsencrypt";
 
 export default {
   data() {
@@ -59,19 +60,19 @@ export default {
     submit() {
       this.$refs["form"].validate((valid) => {
         if (valid) {
-          updateUserPwd(this.user.oldPassword, this.user.newPassword).then(
-            (res) => {
-              this.$store.dispatch("FedLogOut").then(() => {
-                this.$alert("修改成功，请重新登录!", "系统提示", {
-                  confirmButtonText: "确定",
-                  type: "success",
-                  callback: () => {
-                    this.$router.push("/admin/login");
-                  },
-                });
+          let oldPassword = encrypt(this.user.oldPassword);
+          let newPassword = encrypt(this.user.newPassword);
+          updateUserPwd(oldPassword, newPassword).then((res) => {
+            this.$store.dispatch("FedLogOut").then(() => {
+              this.$alert("修改成功，请重新登录!", "系统提示", {
+                confirmButtonText: "确定",
+                type: "success",
+                callback: () => {
+                  this.$router.push("/admin/login");
+                },
               });
-            }
-          );
+            });
+          });
         }
       });
     },

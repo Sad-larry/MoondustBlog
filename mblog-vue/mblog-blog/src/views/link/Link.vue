@@ -82,7 +82,6 @@ export default {
     return {
       friendLinkList: [],
       formLabelWidth: "120px",
-      img: process.env.VUE_APP_IMG_API,
       commentList: [],
       dialogFormVisible: false,
       count: 0,

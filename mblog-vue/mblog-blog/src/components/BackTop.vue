@@ -6,9 +6,14 @@
     <div class="setting-container" @click="show">
       <i class="iconfont iconshezhi setting" />
     </div>
-    <div @click="openFeedback" class="rightside-icon">
-      <i class="iconfont iconqita" />
-    </div>
+    <v-tooltip left color="primary">
+      <template v-slot:activator="{ on, attrs }">
+        <div @click="openFeedback" class="rightside-icon" v-bind="attrs" v-on="on">
+          <i class="iconfont iconqita" />
+        </div>
+      </template>
+      <span>这里可以提交反馈!</span>
+    </v-tooltip>
     <i @click="backTop" class="iconfont rightside-icon iconziyuanldpi" />
   </div>
 </template>

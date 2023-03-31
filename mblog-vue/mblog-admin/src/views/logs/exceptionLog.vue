@@ -30,7 +30,7 @@
       <el-table-column prop="operation" align="center" width="200" label="接口名" />
       <el-table-column prop="ip" align="center" width="130" label="IP" />
       <el-table-column prop="ipSource" align="center" width="200" label="IP来源" />
-      <el-table-column prop="username" align="center" width="130" label="操作人" />
+      <el-table-column prop="username" align="center" width="180" label="操作人" />
       <el-table-column prop="createTime" align="center" width="200" label="创建时间">
         <template slot-scope="scope">
           <span>{{ scope.row.createTime }}</span>

@@ -47,12 +47,12 @@
           <el-row :gutter="24">
             <el-col :span="10">
               <el-form-item label="网站名称" prop="name">
-                <el-input v-model="form.name" style="width: 400px"></el-input>
+                <el-input v-model="form.name" style="width: 300px"></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="10">
               <el-form-item label="网站地址" prop="webUrl">
-                <el-input v-model="form.webUrl" style="width: 400px"></el-input>
+                <el-input v-model="form.webUrl" style="width: 300px"></el-input>
               </el-form-item>
             </el-col>
           </el-row>
@@ -60,24 +60,24 @@
           <el-row :gutter="24">
             <el-col :span="10">
               <el-form-item label="关键字" prop="newPwd2">
-                <el-input v-model="form.keyword" style="width: 400px"></el-input>
+                <el-input v-model="form.keyword" style="width: 300px"></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="10">
               <el-form-item label="描述" prop="newPwd1">
-                <el-input v-model="form.summary" style="width: 400px"></el-input>
+                <el-input v-model="form.summary" style="width: 300px"></el-input>
               </el-form-item>
             </el-col>
           </el-row>
           <el-row :gutter="24">
             <el-col :span="10">
               <el-form-item label="公告" prop="newPwd1">
-                <el-input v-model="form.bulletin" style="width: 400px"></el-input>
+                <el-input v-model="form.bulletin" style="width: 300px"></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="10">
               <el-form-item label="备案号" prop="newPwd2">
-                <el-input v-model="form.recordNum" style="width: 400px"></el-input>
+                <el-input v-model="form.recordNum" style="width: 300px"></el-input>
               </el-form-item>
             </el-col>
           </el-row>

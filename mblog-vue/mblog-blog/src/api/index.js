@@ -106,15 +106,6 @@ export function fetchFriend() {
     })
 }
 
-//添加评论
-export function addComment(data) {
-    return request({
-        url: '/web/comment/addComment',
-        method: 'post',
-        data
-    })
-}
-
 //评论列表
 export function listArticleComment(params) {
     return request({

@@ -208,6 +208,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         Page<Article> page = new Page<>(pageNum, pageSize);
         List<ArticlePreviewVO> articlePreviews = baseMapper.listPreviewPage(page, categoryId, tagId, null);
         articlePreviews.forEach(item -> {
+            item.setQuantity(getArticleQuantity(item.getId()));
             item.setTagVOList(tagService.getBlogTagsByArticleId(item.getId()));
         });
         return new PageVO<>(articlePreviews, page.getTotal());
@@ -216,7 +217,10 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     @Override
     public ArticleInfoVO getArticleInfo(Long articleId) {
         // 根据 ID 查询文章
-        Article byId = getById(articleId);
+        LambdaQueryWrapper<Article> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Article::getId, articleId);
+        queryWrapper.eq(Article::getIsPublish, StatusConstants.NORMAL);
+        Article byId = getOne(queryWrapper);
         if (byId == null) {
             BusinessAssert.fail(AppHttpCodeEnum.DATA_NOT_EXIST);
         }
@@ -229,6 +233,8 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         blogArticle.setTagList(tags);
         // 评论
         blogArticle.setComments(commentService.listArticleComment(blogArticle.getId()));
+        // 设置最新阅读量
+        blogArticle.setQuantity(getArticleQuantity(blogArticle.getId()) + 1);
         // 最新文章
         blogArticle.setNewestArticleList(getNewestArticles(blogArticle.getId()));
         // 查询上一篇下一篇文章
@@ -531,6 +537,16 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     public void incr(Long id, String key) {
         // 如果 hash key 存在就直接加一，否则创建一个
         redisCache.hincr(key, id.toString(), 1);
+    }
+
+    /**
+     * 获得文章阅读量
+     *
+     * @param articleId 文章id
+     * @return {@link Integer}
+     */
+    private Integer getArticleQuantity(Long articleId) {
+        return (Integer) redisCache.hget(CacheConstants.BLOG_VIEWS_QUANTITY, String.valueOf(articleId));
     }
 }
 

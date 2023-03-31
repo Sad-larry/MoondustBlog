@@ -3,11 +3,9 @@ import { Notification, MessageBox, Message, Loading } from 'element-ui'
 import store from '@/store'
 import { getToken } from '@/utils/auth'
 import errorCode from '@/utils/errorCode'
-import { tansParams, blobValidate } from "@/utils/ruoyi";
+import { tansParams } from "@/utils/ruoyi";
 import cache from '@/plugins/cache'
-import { saveAs } from 'file-saver'
 
-let downloadLoadingInstance;
 // 是否显示重新登录
 export let isRelogin = { show: false };
 
@@ -29,7 +27,6 @@ service.interceptors.request.use(config => {
   if (getToken() && !isToken) {
     // 让每个请求携带自定义token 请根据实际情况自行修改
     config.headers['Authorization'] = 'Bearer ' + getToken()
-    // config.headers['token'] = getToken()
   }
   // get请求映射params参数
   if (config.method === 'get' && config.params) {
@@ -103,10 +100,6 @@ service.interceptors.response.use(res => {
     })
     return Promise.reject(new Error(msg))
   } else if (code !== 200) {
-    Notification.error({
-      title: code,
-      message: msg
-    })
     if (code === 45017 || code === 45013 || code == 45015) {
       MessageBox.alert(msg, '系统提示', {
         confirmButtonText: '确定',
@@ -119,8 +112,12 @@ service.interceptors.response.use(res => {
         });
       });
       return Promise.reject('error')
+    } else {
+      Notification.error({
+        title: code,
+        message: msg
+      })
     }
-    // store.commit('SET_TOKEN', '')
     return Promise.reject('error')
   } else {
     return res.data
@@ -146,32 +143,5 @@ service.interceptors.response.use(res => {
     return Promise.reject(error)
   }
 )
-
-// 通用下载方法
-export function download(url, params, filename, config) {
-  downloadLoadingInstance = Loading.service({ text: "正在下载数据，请稍候", spinner: "el-icon-loading", background: "rgba(0, 0, 0, 0.7)", })
-  return service.post(url, params, {
-    transformRequest: [(params) => { return tansParams(params) }],
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    responseType: 'blob',
-    ...config
-  }).then(async (data) => {
-    const isLogin = await blobValidate(data);
-    if (isLogin) {
-      const blob = new Blob([data])
-      saveAs(blob, filename)
-    } else {
-      const resText = await data.text();
-      const rspObj = JSON.parse(resText);
-      const errMsg = errorCode[rspObj.code] || rspObj.msg || errorCode['default']
-      Message.error(errMsg);
-    }
-    downloadLoadingInstance.close();
-  }).catch((r) => {
-    console.error(r)
-    Message.error('下载文件出现错误，请联系管理员！')
-    downloadLoadingInstance.close();
-  })
-}
 
 export default service

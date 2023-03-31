@@ -28,11 +28,11 @@
       <el-table-column align="center" type="selection" width="55" />
       <el-table-column prop="ip" align="center" width="130" label="IP" />
       <el-table-column prop="address" align="center" width="200" label="IP来源" />
-      <el-table-column prop="accessOs" align="center" label="平台" />
-      <el-table-column prop="browser" align="center" label="浏览器" />
+      <el-table-column prop="accessOs" align="center" width="150" label="平台" />
+      <el-table-column prop="browser" align="center" width="130" label="浏览器" />
       <el-table-column prop="type" align="center" label="操作类型" />
       <el-table-column prop="description" align="center" label="操作日志" />
-      <el-table-column prop="model" align="center" label="操作模块" />
+      <el-table-column prop="model" align="center" width="200" label="操作模块" />
       <el-table-column prop="result" align="center" label="操作结果" />
       <el-table-column prop="createTime" align="center" width="200" sortable label="操作时间" />
     </el-table>

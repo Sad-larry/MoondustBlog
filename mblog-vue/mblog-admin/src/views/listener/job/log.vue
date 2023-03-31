@@ -221,7 +221,7 @@ export default {
     },
     // 返回按钮
     handleClose() {
-      this.$router.push({ path: "/quartz" });
+      this.$router.push({ path: "/job" });
     },
     /** 搜索按钮操作 */
     handleFind() {

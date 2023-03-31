@@ -57,8 +57,8 @@
       </el-table-column>
       <el-table-column prop="nickname" align="center" width="100" label="昵称" />
       <el-table-column prop="content" align="center" width="240" label="内容" />
-      <el-table-column prop="ipAddress" align="center" width="100" label="ip地址" />
-      <el-table-column prop="ipSource" align="center" width="120" label="ip来源" />
+      <el-table-column prop="ipAddress" align="center" width="150" label="ip地址" />
+      <el-table-column prop="ipSource" align="center" width="180" label="ip来源" />
       <el-table-column prop="status" align="center" width="80" label="状态">
         <template slot-scope="scope">
           <el-tag type="success" v-if="scope.row.status === 1">正常</el-tag>

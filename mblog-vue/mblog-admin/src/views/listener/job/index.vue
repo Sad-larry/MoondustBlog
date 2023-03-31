@@ -60,7 +60,7 @@
 
     <el-table v-loading="loading" :data="jobList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="任务名称" width="150" align="center" prop="jobName" :show-overflow-tooltip="true" />
+      <el-table-column label="任务名称" width="200" align="center" prop="jobName" />
       <el-table-column label="任务组名" align="center" prop="jobGroup">
         <template slot-scope="scope">
           <template v-for="(dict, index) in jobDictList">
@@ -68,8 +68,8 @@
           </template>
         </template>
       </el-table-column>
-      <el-table-column label="调用目标字符串" align="center" prop="invokeTarget" :show-overflow-tooltip="true" />
-      <el-table-column label="cron执行表达式" align="center" prop="cronExpression" />
+      <el-table-column label="调用目标字符串" width="300" align="center" prop="invokeTarget" />
+      <el-table-column label="cron执行表达式" width="150" align="center" prop="cronExpression" />
       <el-table-column label="开启任务" align="center">
         <template slot-scope="scope">
           <el-switch

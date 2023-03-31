@@ -3,12 +3,7 @@
     <el-form ref="user" :model="user" :rules="updateRules" class="modify-password-form">
       <h3 class="title">月尘博客后台管理系统</h3>
       <el-form-item prop="username">
-        <el-input 
-        v-model="user.username"
-         type="text" 
-         auto-complete="off" 
-         placeholder="邮箱账号"
-         clearable>
+        <el-input v-model="user.username" type="text" auto-complete="off" placeholder="邮箱账号" clearable>
           <svg-icon slot="prefix" icon-class="user" class="el-input__icon input-icon" />
         </el-input>
       </el-form-item>
@@ -85,6 +80,7 @@
 
 <script>
 import { resetPwdBySendEmail, resetUserPwd } from "@/api/login";
+import { encrypt } from "@/utils/jsencrypt";
 
 export default {
   name: "ModifyPassword",
@@ -148,7 +144,7 @@ export default {
         // 若没有错误信息，则验证成功
         if (!errorMessage) {
           this.countDown();
-          resetPwdBySendEmail( this.user.username ).then((res) => {
+          resetPwdBySendEmail(this.user.username).then((res) => {
             if (res.code === 200) {
               this.$modal.msgSuccess("邮件发送成功，请注意查收");
             }
@@ -173,6 +169,8 @@ export default {
       this.$refs.user.validate((valid) => {
         if (valid) {
           this.loading = true;
+          // 加密操作
+          this.user.newPassword = encrypt(this.user.newPassword);
           resetUserPwd(this.user)
             .then((res) => {
               const username = this.user.username;
