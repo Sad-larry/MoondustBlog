@@ -2,6 +2,7 @@ import tab from './tab'
 import auth from './auth'
 import cache from './cache'
 import modal from './modal'
+import documents from './documents'
 
 export default {
   install(Vue) {
@@ -13,5 +14,7 @@ export default {
     Vue.prototype.$cache = cache
     // 模态框对象
     Vue.prototype.$modal = modal
+    // 文件管理对象
+    Vue.prototype.$documents = documents
   }
 }

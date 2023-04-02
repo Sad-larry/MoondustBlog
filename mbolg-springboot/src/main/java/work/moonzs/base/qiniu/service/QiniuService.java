@@ -4,6 +4,7 @@ import org.springframework.web.multipart.MultipartFile;
 import work.moonzs.base.qiniu.config.QiniuManager;
 import work.moonzs.domain.vo.sys.SysQiniuFileVO;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -55,6 +56,16 @@ public interface QiniuService {
      * @return {@link SysQiniuFileVO}
      */
     List<SysQiniuFileVO> listFile(String bucket);
+
+    /**
+     * 获取空间文件列表
+     *
+     * @param prefix 前缀 父目录
+     * @param marker 标记
+     * @param limit  限制
+     * @return {@link HashMap}<{@link String}, {@link Object}>
+     */
+    HashMap<String, Object> listFile(String prefix, String marker, int limit);
 
     /**
      * 删除文件

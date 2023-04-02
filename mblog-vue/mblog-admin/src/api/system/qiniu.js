@@ -32,3 +32,12 @@ export function listFile(query) {
     params: query
   })
 }
+
+// 根据文件路径查询所有目录下文件列表
+export function getFileList(query) {
+  return request({
+    url: '/system/qiniu/file/listAll',
+    method: 'get',
+    params: query
+  })
+}

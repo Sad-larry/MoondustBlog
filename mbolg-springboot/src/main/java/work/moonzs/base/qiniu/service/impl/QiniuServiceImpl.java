@@ -9,6 +9,7 @@ import com.qiniu.http.Response;
 import com.qiniu.storage.BucketManager;
 import com.qiniu.storage.model.BatchStatus;
 import com.qiniu.storage.model.FileInfo;
+import com.qiniu.storage.model.FileListing;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,14 +21,12 @@ import work.moonzs.base.qiniu.config.QiniuManager;
 import work.moonzs.base.qiniu.service.QiniuService;
 import work.moonzs.base.utils.IFileUtil;
 import work.moonzs.base.web.common.BusinessAssert;
+import work.moonzs.domain.vo.sys.SysFileVO;
 import work.moonzs.domain.vo.sys.SysQiniuFileVO;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Moondust月尘
@@ -105,7 +104,7 @@ public class QiniuServiceImpl implements QiniuService {
     @Override
     public List<SysQiniuFileVO> listFile(String bucket) {
         List<FileInfo> result = new ArrayList<>();
-        BucketManager.FileListIterator fileListIterator = qiniuManager.getFileListIterator(bucket);
+        BucketManager.FileListIterator fileListIterator = qiniuManager.getFileListIterator(BUCKET);
         while (fileListIterator.hasNext()) {
             // 处理获取的file list结果
             FileInfo[] next = fileListIterator.next();
@@ -116,6 +115,52 @@ public class QiniuServiceImpl implements QiniuService {
         // 将结果格式化成树形结构
         List<SysQiniuFileVO> list = basicDealList(result);
         return buildFileTree(list);
+    }
+
+    @Override
+    public HashMap<String, Object> listFile(String prefix, String marker, int limit) {
+        HashMap<String, Object> result = new HashMap<>(3);
+        List<SysFileVO> fileVOS = new ArrayList<>();
+        try {
+            FileListing fileListing = qiniuManager.getFileListing(BUCKET, prefix, marker, limit, "/");
+            // 文件集
+            for (FileInfo info : fileListing.items) {
+                SysFileVO sysFileVO = new SysFileVO();
+                sysFileVO.setId(info.hash);
+                sysFileVO.setFilename(info.key.substring(prefix.length()));
+                sysFileVO.setExtension(IFileUtil.getImageType(info.mimeType));
+                sysFileVO.setPid(prefix);
+                sysFileVO.setFileSize(info.fsize);
+                sysFileVO.setUrl(this.publicDownload(info.key));
+                sysFileVO.setDir(false);
+                sysFileVO.setCreateTime(new Date(info.putTime / 10000L));
+                fileVOS.add(sysFileVO);
+            }
+            // 如果同级目录下还有其他目录，则添加
+            if (fileListing.commonPrefixes != null) {
+                for (String commonPrefix : fileListing.commonPrefixes) {
+                    SysFileVO sysFileVO = new SysFileVO();
+                    // 是查询目录的前缀
+                    sysFileVO.setId(commonPrefix);
+                    // 文件夹名是id截掉前缀并去除尾/
+                    sysFileVO.setFilename(commonPrefix.substring(prefix.length(), commonPrefix.length() - 1));
+                    sysFileVO.setPid(prefix);
+                    // 标记目录
+                    sysFileVO.setDir(true);
+                    fileVOS.add(sysFileVO);
+                }
+                // 返回可以浏览的目录文件
+                result.put("dirs", fileListing.commonPrefixes);
+            }
+            result.put("records", fileVOS);
+            if (null != fileListing.marker) {
+                // 如果目录文件还有其他文件，返回marker，查询下一页数据
+                result.put("marker", fileListing.marker);
+            }
+        } catch (QiniuException e) {
+            BusinessAssert.fail("获取文件列表异常");
+        }
+        return result;
     }
 
     /**
@@ -212,7 +257,7 @@ public class QiniuServiceImpl implements QiniuService {
      * @return {@link SysQiniuFileVO}
      */
     private SysQiniuFileVO copyFileInfoBean(FileInfo fileInfo) {
-        return SysQiniuFileVO.builder().key(fileInfo.key).hash(fileInfo.hash).fsize(fileInfo.fsize).putTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(fileInfo.putTime)).mimeType(fileInfo.mimeType).type(fileInfo.type).status(fileInfo.status).build();
+        return SysQiniuFileVO.builder().key(fileInfo.key).hash(fileInfo.hash).fsize(fileInfo.fsize).putTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(fileInfo.putTime / 10000L)).mimeType(fileInfo.mimeType).type(fileInfo.type).status(fileInfo.status).build();
     }
 
     @Override

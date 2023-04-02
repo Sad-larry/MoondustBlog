@@ -12,8 +12,13 @@ const getters = {
   role: state => state.user.role,
   permissions: state => state.user.permissions,
   permission_routes: state => state.permission.routes,
-  topbarRouters:state => state.permission.topbarRouters,
-  defaultRoutes:state => state.permission.defaultRoutes,
-  sidebarRouters:state => state.permission.sidebarRouters,
+  topbarRouters: state => state.permission.topbarRouters,
+  defaultRoutes: state => state.permission.defaultRoutes,
+  sidebarRouters: state => state.permission.sidebarRouters,
+  currentFileModel: state => state.documents.currentFileModel,
+  getFilePathList: state => state.documents.filePathList,
+  currentFilePath: state => state.documents.currentFilePath,
+  selectedColumnList: state => state.documents.selectedColumnList,
+  operaColumnExpand: state => state.documents.operaColumnExpand,
 }
 export default getters

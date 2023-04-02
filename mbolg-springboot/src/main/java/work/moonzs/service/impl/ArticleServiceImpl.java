@@ -343,8 +343,8 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
 
     @Override
     public Map<String, Object> getBlogContributeCount() {
-        // 获取截止今天结束日期
-        DateTime endDateTime = DateUtil.date();
+        // 获取截止今天结束日期，也就是明天之前，包括今天
+        DateTime endDateTime = DateUtil.offset(DateUtil.date(), DateField.DAY_OF_YEAR, 1);
         String endTime = endDateTime.toDateStr();
         // 获取当前时间前一年的日期
         DateTime startDateTime = DateUtil.offset(DateUtil.date(), DateField.YEAR, -1);

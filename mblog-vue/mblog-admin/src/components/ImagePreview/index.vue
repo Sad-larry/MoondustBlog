@@ -3,7 +3,8 @@
     :src="`${realSrc}`"
     fit="cover"
     :style="`width:${realWidth};height:${realHeight};`"
-    :preview-src-list="realSrcList"
+    :preview-src-list="srcList"
+    :initial-index="initialIndex"
   >
     <div slot="error" class="image-slot">
       <i class="el-icon-picture-outline"></i>
@@ -19,16 +20,24 @@ export default {
   props: {
     src: {
       type: String,
-      default: ""
+      default: "",
+    },
+    srcList: {
+      type: Array,
+      default: [],
+    },
+    initialIndex: {
+      type: Number,
+      default: 0,
     },
     width: {
       type: [Number, String],
-      default: ""
+      default: "",
     },
     height: {
       type: [Number, String],
-      default: ""
-    }
+      default: "",
+    },
   },
   computed: {
     realSrc() {
@@ -39,28 +48,14 @@ export default {
       if (isExternal(real_src)) {
         return real_src;
       }
-      return process.env.VUE_APP_BASE_API + real_src;
-    },
-    realSrcList() {
-      if (!this.src) {
-        return;
-      }
-      let real_src_list = this.src.split(",");
-      let srcList = [];
-      real_src_list.forEach(item => {
-        if (isExternal(item)) {
-          return srcList.push(item);
-        }
-        return srcList.push(process.env.VUE_APP_BASE_API + item);
-      });
-      return srcList;
+      return;
     },
     realWidth() {
       return typeof this.width == "string" ? this.width : `${this.width}px`;
     },
     realHeight() {
       return typeof this.height == "string" ? this.height : `${this.height}px`;
-    }
+    },
   },
 };
 </script>
@@ -69,7 +64,7 @@ export default {
 .el-image {
   border-radius: 5px;
   background-color: #ebeef5;
-  box-shadow: 0 0 5px 1px #ccc;
+  box-shadow: 0 0 5px 1px #ddd;
   ::v-deep .el-image__inner {
     transition: all 0.3s;
     cursor: pointer;

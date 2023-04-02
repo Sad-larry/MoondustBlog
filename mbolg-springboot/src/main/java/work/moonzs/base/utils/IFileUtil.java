@@ -17,6 +17,11 @@ public class IFileUtil {
     public static final String TYPE_JPG = "jpg";
     public static final String TYPE_PNG = "png";
     public static final String TYPE_GIF = "gif";
+    public static final String IMAGE_TYPE_JEPG = "image/jpeg";
+    public static final String IMAGE_TYPE_JPG = "image/jpg";
+    public static final String IMAGE_TYPE_PNG = "image/png";
+    public static final String IMAGE_TYPE_GIF = "image/gif";
+    public static final String IMAGE_TYPE_UNKNOWN = "unknown";
 
     /**
      * 是合法文件类型,jpeg,jpg,png,gif
@@ -87,5 +92,25 @@ public class IFileUtil {
         int index = filename.lastIndexOf(".");
         String fileType = filename.substring(index + 1);
         return isLegalFileType(fileType);
+    }
+
+    /**
+     * 得到图像类型
+     *
+     * @param mimeType mime类型
+     * @return {@link String}
+     */
+    public static String getImageType(String mimeType) {
+        if (IMAGE_TYPE_JEPG.equals(mimeType)) {
+            return TYPE_JEPG;
+        } else if (IMAGE_TYPE_JPG.equals(mimeType)) {
+            return TYPE_JPG;
+        } else if (IMAGE_TYPE_PNG.equals(mimeType)) {
+            return TYPE_PNG;
+        } else if (IMAGE_TYPE_GIF.equals(mimeType)) {
+            return TYPE_GIF;
+        } else {
+            return IMAGE_TYPE_UNKNOWN;
+        }
     }
 }

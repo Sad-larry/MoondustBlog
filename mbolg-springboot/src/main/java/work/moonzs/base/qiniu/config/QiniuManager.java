@@ -5,6 +5,7 @@ import com.qiniu.common.QiniuException;
 import com.qiniu.http.Response;
 import com.qiniu.storage.BucketManager;
 import com.qiniu.storage.model.BatchStatus;
+import com.qiniu.storage.model.FileListing;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 
@@ -135,5 +136,12 @@ public class QiniuManager {
      */
     public BucketManager.FileListIterator getFileListIterator(String bucket) {
         return qiniuConfig.bucketManager().createFileListIterator(bucket, "", LIST_SIZE, "");
+    }
+
+    /**
+     * 获取空间文件列表
+     */
+    public FileListing getFileListing(String bucket, String prefix, String marker, int limit, String delimiter) throws QiniuException {
+        return qiniuConfig.bucketManager().listFiles(bucket, prefix, marker, limit, delimiter);
     }
 }

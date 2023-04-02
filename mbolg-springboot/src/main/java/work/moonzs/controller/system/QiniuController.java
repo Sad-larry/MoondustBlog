@@ -3,9 +3,11 @@ package work.moonzs.controller.system;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.validator.constraints.Range;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import work.moonzs.base.annotation.SystemLog;
@@ -27,6 +29,7 @@ import java.util.Map;
 @RestController("SystemQiniuC")
 @RequestMapping("/system/qiniu")
 @RequiredArgsConstructor
+@Validated
 public class QiniuController {
     /**
      * 七牛云的存储空间，一般我都是存在一个空间里面，如果多个存储空间，就需要手动传参
@@ -93,6 +96,20 @@ public class QiniuController {
     @GetMapping("/file/list")
     public ResponseResult listFile() {
         return ResponseResult.success(qiniuService.listFile(BUCKET));
+    }
+
+    /**
+     * 获取存储空间文件列表
+     *
+     * @return {@link ResponseResult}
+     */
+    @SystemLog(businessName = "获取存储空间文件列表")
+    @GetMapping("/file/listAll")
+    public ResponseResult getFileList(
+            @RequestParam(defaultValue = "", required = false) String pid,
+            @RequestParam(defaultValue = "100", required = false) @Range(min = 1, max = 1000, message = "文件列表'限制数量'只能在1到1000之间") Integer limit,
+            @RequestParam(defaultValue = "", required = false) String marker) {
+        return ResponseResult.success(qiniuService.listFile(pid, marker, limit));
     }
 
     /**
