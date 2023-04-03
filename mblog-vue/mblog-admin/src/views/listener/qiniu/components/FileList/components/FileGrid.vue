@@ -70,7 +70,7 @@ export default {
   },
   data() {
     return {
-      fileListSorted: this.fileList,
+      fileListSorted: [],
       previewSrcList: [],
       //  移动文件模态框数据
       dialogMoveFile: {
@@ -95,14 +95,9 @@ export default {
   computed: {
     /**
      * selectedColumnList: 列显隐
-     * operaColumnExpand: 判断当前用户设置的操作列是否展开 0不展开 1展开
      * fileModel: 文件查看模式 0列表模式 1网格模式
      *  */
-    ...mapGetters([
-      "selectedColumnList",
-      "operaColumnExpand",
-      "currentFileModel",
-    ]),
+    ...mapGetters(["selectedColumnList", "currentFileModel"]),
     //  判断当前路径下是否有普通文件
     isIncludeNormalFile() {
       return this.fileList.map((data) => data.dir).includes(0);
@@ -144,6 +139,12 @@ export default {
         this.$emit("setSelectionFile", newValue);
       }
     },
+    // 批量操作模式 - 退出批量操作取消勾选
+    batchOperate(newValue) {
+      if (!newValue) {
+        this.fileListSorted.forEach((item) => (item.checked = false));
+      }
+    },
   },
   methods: {
     /** 文件右键事件 */
@@ -162,7 +163,6 @@ export default {
     clickFileName(row) {
       //  若是目录则进入目录
       if (row.dir) {
-        this.$store.dispatch("setFilePath", row.id);
         this.$router.push({
           query: {
             pid: row.id,
@@ -333,7 +333,7 @@ export default {
         height: 22px;
         line-height: 22px;
         font-size: 12px;
-        word-break: break-all;
+        word-wrap: break-word;
         text-overflow: ellipsis;
         overflow: hidden;
         -webkit-line-clamp: 1;

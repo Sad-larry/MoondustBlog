@@ -19,6 +19,5 @@ const getters = {
   getFilePathList: state => state.documents.filePathList,
   currentFilePath: state => state.documents.currentFilePath,
   selectedColumnList: state => state.documents.selectedColumnList,
-  operaColumnExpand: state => state.documents.operaColumnExpand,
 }
 export default getters

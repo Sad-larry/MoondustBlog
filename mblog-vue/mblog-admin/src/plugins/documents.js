@@ -4,14 +4,6 @@ const CHUNK_SIZE = 1024 * 1024;
 // 文件根目录ID
 const ROOT_PATH = null;
 
-// 操作类型，折叠，展开
-const FOLD_TYPE = {
-  // 展开
-  UNFOLD: true,
-  // 折叠
-  FOLD: false,
-}
-
 // 文件展示模式
 const FILE_MODEL = {
   // 列表
@@ -39,7 +31,6 @@ const FILE_IMG_MAP = {
 export default {
   CHUNK_SIZE,
   ROOT_PATH,
-  FOLD_TYPE,
   FILE_MODEL,
   IMG_TYPE_LIST,
   FILE_IMG_MAP,

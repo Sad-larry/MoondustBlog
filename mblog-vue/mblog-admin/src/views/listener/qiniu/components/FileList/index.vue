@@ -4,9 +4,10 @@
     <el-header>
       <OperationMenu
         :operationFile="operationFile"
-        :selectionFile="selectionFile"
-        :filePath="$documents.filePath().current()"
         :batchOperate.sync="batchOperate"
+        :selectionFile.sync="selectionFile"
+        :sortReverse.sync="sortReverse"
+        :filePath="$documents.filePath().current()"
         @getSearchFileList="getSearchFileList"
         @getTableDataByType="getTableDataByType"
         @setMoveFileDialogData="setMoveFileDialogData"
@@ -38,7 +39,13 @@
       @getTableDataByType="getTableDataByType"
     ></FileGrid>
     <!-- 图片-时间线模式 -->
-    <FileTimeLine class="image-model" v-if="$documents.fileModel().isTimeLine()" :fileList="fileList"></FileTimeLine>
+    <FileTimeLine
+      class="image-model"
+      :fileList="fileList"
+      :sortReverse="sortReverse"
+      v-if="$documents.fileModel().isTimeLine()"
+      @setSortReverse="setSortReverse"
+    ></FileTimeLine>
     <!-- 移动文件模态框 -->
     <!-- <MoveFileDialog
       :dialogMoveFile="dialogMoveFile"
@@ -97,6 +104,8 @@ export default {
       selectionFile: [],
       // 批量操作模式
       batchOperate: false,
+      // 时间线模式反向排序
+      sortReverse: true,
     };
   },
   computed: {
@@ -146,7 +155,9 @@ export default {
         marker: "",
       };
       // 查询当前目录
-      if (this.currentPath != null) {
+      if (this.currentPath !== undefined) {
+        this.$store.dispatch("setFilePath", this.currentPath);
+        // 空串是根目录
         queryParams.pid = this.currentPath;
       }
       getFileList(queryParams)
@@ -165,6 +176,10 @@ export default {
     /** 当前操作行 */
     setOperationFile(operationFile) {
       this.operationFile = operationFile;
+    },
+    /** 改变时间线展示排序 */
+    setSortReverse(sortReverse) {
+      this.sortReverse = sortReverse;
     },
     /** 设置移动文件模态框相关数据，isBatchMove为null时是确认移动，值由之前的值而定 */
     setMoveFileDialogData(isBatchMove, visible) {
@@ -236,6 +251,10 @@ export default {
     },
     /** 获取搜索文件结果列表 */
     getSearchFileList(filename) {
+      if (1 == 1) {
+        this.$modal.msg("搜索文件待开发..");
+        return;
+      }
       this.loading = true;
       searchFile({
         filename: filename,

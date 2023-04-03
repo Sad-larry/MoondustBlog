@@ -11,8 +11,6 @@ const documents = {
     currentFilePath: '',
     // 用户设置的操作列显隐
     selectedColumnList: JSON.parse(sessionStorage.getItem("SELECTED_COLUMN_LIST")) || [],
-    //  操作列是否展开
-    operaColumnExpand: sessionStorage.getItem("operaColumnExpand") || false,
   },
   mutations: {
     CHANGE_FILE_MODEL: (state, data) => {
@@ -44,9 +42,6 @@ const documents = {
         sessionStorage.setItem("SELECTED_COLUMN_LIST", JSON.stringify(data))
         state.selectedColumnList = data
       }
-    },
-    SET_OPERA_COLUMN_EXPAND: (state, data) => {
-      state.operaColumnExpand = data
     },
   },
   actions: {

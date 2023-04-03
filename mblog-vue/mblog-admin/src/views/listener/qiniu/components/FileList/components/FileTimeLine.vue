@@ -3,7 +3,7 @@
   <div class="image-timeline-wrapper">
     <div class="radio">
       排序：
-      <el-radio-group v-model="reverse">
+      <el-radio-group v-model="reverse" :disabled="!imageTimelineData.length" @change="changeReverse">
         <el-radio :label="true">倒序</el-radio>
         <el-radio :label="false">正序</el-radio>
       </el-radio-group>
@@ -13,22 +13,19 @@
         class="image-timeline-item"
         v-for="(item, index) in imageTimelineData"
         :key="index"
-        :timestamp="item.uploadDate"
+        :timestamp="item.createTime"
         color="#409EFF"
         placement="top"
       >
         <ul class="image-list">
           <li class="image-item" v-for="(image, imageIndex) in item.imageList" :key="`${index}-${imageIndex}`">
-            <img
-              class="image"
-              :src="image.url"
-              :alt="item | filenameComplete"
-            />
+            <img class="image" :src="image.url" :alt="item | filenameComplete" />
             <div class="image-name">{{ image | filenameComplete }}</div>
           </li>
         </ul>
       </el-timeline-item>
     </el-timeline>
+    <div v-else class="noData">当前目录暂无图片~</div>
   </div>
 </template>
 
@@ -37,33 +34,46 @@ export default {
   name: "FileTimeLine",
   props: {
     fileList: Array,
+    sortReverse: Boolean,
   },
   data() {
     return {
-      reverse: true,
+      reverse: this.sortReverse,
     };
   },
+  watch: {
+    sortReverse(newValue) {
+      this.reverse = newValue;
+    },
+  },
   computed: {
-    //  按年-月-日分组排序
+    // 因为都是同一天的文件，所以按时-分-秒分组排序
     imageTimelineData() {
       let res = [];
-      //  去重，获取返回的所有日期年-月-日
+      // 去重，获取返回的所有日期时-分-秒
       let uploadTimeSet = new Set(
         this.fileList
           .filter((item) => !item.dir)
-          .map((item) => item.createTime.split(" ")[0])
+          .map((item) => item.createTime.split(" ")[1])
       );
-      let uploadDate = [...uploadTimeSet];
+      // 一定要排序不然会乱掉
+      let createTime = [...uploadTimeSet].sort();
       //  分组
-      uploadDate.forEach((element) => {
+      createTime.forEach((element) => {
         res.push({
-          uploadDate: element,
+          createTime: element,
           imageList: this.fileList.filter(
-            (item) => !item.dir && item.createTime.split(" ")[0] === element
+            (item) => !item.dir && item.createTime.split(" ")[1] === element
           ), //  过滤
         });
       });
       return res;
+    },
+  },
+  methods: {
+    /** 改变排序方式 */
+    changeReverse(value) {
+      this.$emit("setSortReverse", value);
     },
   },
 };
@@ -71,9 +81,10 @@ export default {
 
 <style lang="scss" scoped>
 .image-timeline-wrapper {
-  margin-top: 20px;
+  margin-bottom: 20px;
   height: calc(100vh - 215px);
   overflow-y: auto;
+  // border-top: 1px solid #dcdfe6;
   &::-webkit-scrollbar {
     width: 6px;
   }
@@ -91,11 +102,14 @@ export default {
     -moz-border-radius: 2em;
     border-radius: 2em;
   }
-
-  .image-timeline-list {
+  .radio {
     margin-top: 10px;
+  }
+  .image-timeline-list {
+    margin-top: 20px;
 
     .image-timeline-item {
+      margin-left: 14px;
       .image-list {
         display: flex;
         flex-wrap: wrap;
@@ -105,6 +119,7 @@ export default {
           margin: 0 16px 16px 0;
           padding: 8px;
           text-align: center;
+          width: 200px;
 
           &:hover {
             background: #f5f7fa;
@@ -114,7 +129,7 @@ export default {
             }
           }
           .image {
-            height: 80px;
+            max-width: 100%;
           }
 
           .image-name {
@@ -146,6 +161,13 @@ export default {
         }
       }
     }
+  }
+  .noData {
+    margin: 20px 0;
+    font-size: 14px;
+    color: #ccc;
+    width: 100%;
+    text-align: center;
   }
 }
 </style>

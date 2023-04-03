@@ -55,10 +55,9 @@
         </el-radio-button>
       </el-radio-group>
     </div>
-
     <!-- 批量操作 -->
     <el-button
-      class="batch-opera-btn"
+      class="opera-btn"
       :type="batchOperate ? 'primary' : ''"
       icon="el-icon-finished"
       size="mini"
@@ -69,22 +68,22 @@
     <!-- 选择表格列 -->
     <SelectColumn class="select-column" v-if="$documents.fileModel().isTable()"></SelectColumn>
 
-    <!-- 多选文件下载，页面隐藏 -->
-    <a
-      target="_blank"
-      v-for="(item, index) in selectionFile"
-      :key="index"
-      :href="getDownloadPath(item.id)"
-      :download="item.filename + '.' + item.extension"
-      :title="'downloadLink' + index"
-      :ref="'downloadLink' + index"
-    ></a>
+    <!-- 时间线模式占位 -->
+    <el-button
+      class="opera-btn"
+      plain
+      :type="sortReverse ? 'primary' : 'info'"
+      :icon="sortReverse?'el-icon-sort-down':'el-icon-sort-up'"
+      size="mini"
+      v-if="$documents.fileModel().isTimeLine()"
+      @click="changeReverse($event)"
+    >{{ sortReverse ? '倒序排序' : '正序排序' }}</el-button>
   </div>
 </template>
 
 <script>
 // import {
-//   batchDeleteFile, batchRecoverRecycle, batchDeleteRecoveryFile, makeDir
+//   batchDeleteFile
 // } from '@/request/file.js'
 import SelectColumn from "./SelectColumn";
 
@@ -94,6 +93,7 @@ export default {
     selectionFile: Array,
     operationFile: Object,
     batchOperate: Boolean, //  批量操作模式
+    sortReverse: Boolean,
   },
   components: {
     SelectColumn,
@@ -106,7 +106,8 @@ export default {
       },
       fileTree: [],
       batchDeleteFileDialog: false,
-      fileGroupLable: this.$documents.FILE_MODEL.TABLE, //  文件展示模式
+      // 文件展示模式
+      fileGroupLable: this.$documents.FILE_MODEL.TABLE,
     };
   },
   computed: {
@@ -137,9 +138,15 @@ export default {
   methods: {
     upload() {
       // 打开文件选择框
-      this.$EventBus.$emit("openUploader", this.uploadFileData);
+      this.$modal.msg("上传文件待开发..");
     },
-    //  新建文件夹按钮：打开模态框
+    /**
+     * 新建文件夹
+     * 在七牛云中，没有创建文件夹这个概念，七牛存储模式是key-value模式，意思就是
+     * 所有文件的文件名都是以key值存储，而value就是文件存储内容，所以可以通过域名+key访问文件
+     * 如果要新建文件夹的话，文件夹也相当于文件，可以试试创建空内容的文件，文件名结尾要有 /
+     * 七牛云创建目录要求：不支持仅由英文句号 . 组成的名称； 不支持以 / 开头，不能包含连续的 /。
+     * */
     addFolder() {
       this.$prompt("请输入文件夹名称", "创建文件夹", {
         confirmButtonText: "确定",
@@ -148,15 +155,18 @@ export default {
         .then(({ value }) => {
           this.createFolder(value);
         })
-        .catch(() => {
+        .catch((err) => {
           this.$message({
             type: "info",
-            message: "取消输入",
+            message: err.message || "取消输入",
           });
         });
     },
     //  新建文件夹模态框-确定按钮
     createFolder(filename) {
+      if (1 == 1) {
+        throw new Error("新建文件夹待开发..");
+      }
       if (filename === null || filename === undefined || filename === "") {
         throw new Error("文件名不能为空");
       }
@@ -176,17 +186,15 @@ export default {
 
     //  批量操作-删除按钮
     deleteSelectedFile() {
+      if (1 == 1) {
+        this.$modal.msg("批量操作待开发..");
+        return;
+      }
       let data = {
         userFileIds: this.selectionFile.flatMap((row) => row.id),
       };
-      let deleteApi;
-      if (this.fileType().isNotRecycle()) {
-        deleteApi = batchDeleteFile;
-      } else {
-        deleteApi = batchDeleteRecoveryFile;
-      }
       //  批量删除接口
-      deleteApi(data)
+      batchDeleteFile(data)
         .then(() => {
           this.$message({
             message: "文件删除成功",
@@ -202,13 +210,29 @@ export default {
     //  批量操作-移动按钮
     moveSelectedFile() {
       this.$emit("setMoveFileDialogData", true, true);
+      if (1 == 1) {
+        this.$modal.msg("移动操作待开发..");
+        return;
+      }
     },
     //  批量操作：下载按钮
     downloadSelectedFile() {
-      for (let i = 0; i < this.selectionFile.length; i++) {
-        let name = "downloadLink" + i;
-        this.$refs[name][0].click();
-      }
+      this.$modal
+        .confirm("是否下载所选中文件")
+        .then(() => {
+          // 暂时只能下载图片，文件夹等以后下压缩的时候下载
+          this.selectionFile.forEach((item) => {
+            if (!item.dir) {
+              this.download(item.url, {}, item.id + "." + item.extension);
+            }
+          });
+        })
+        .catch((err) => {
+          this.$message({
+            type: "info",
+            message: "取消下载",
+          });
+        });
     },
     handleSearchInputChange(value) {
       if (value === "") {
@@ -220,6 +244,16 @@ export default {
     // 图片网格模式下 - 批量操作切换
     changeBatchOperate() {
       this.$emit("update:batchOperate", !this.batchOperate);
+      this.$emit("update:selectionFile", []);
+    },
+    // 切换排序方式
+    changeReverse(e) {
+      // 按钮恢复样式，让他处于失焦状态就可
+      e.target.blur();
+      if (e.target.nodeName == "SPAN") {
+        e.target.parentNode.blur();
+      }
+      this.$emit("update:sortReverse", !this.sortReverse);
     },
     // 切换文件查看模式
     changeFileDisplayModel(label) {
@@ -245,7 +279,7 @@ export default {
 
   .select-file-input {
     margin-right: 8px;
-    width: 200px;
+    width: 180px;
 
     .el-icon-search {
       cursor: pointer;
@@ -257,7 +291,7 @@ export default {
     }
   }
 
-  .batch-opera-btn {
+  .opera-btn {
     margin-right: 8px;
   }
 

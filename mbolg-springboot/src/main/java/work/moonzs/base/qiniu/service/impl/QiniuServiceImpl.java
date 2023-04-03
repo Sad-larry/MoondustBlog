@@ -126,7 +126,7 @@ public class QiniuServiceImpl implements QiniuService {
             // 文件集
             for (FileInfo info : fileListing.items) {
                 SysFileVO sysFileVO = new SysFileVO();
-                sysFileVO.setId(info.hash);
+                sysFileVO.setId(info.key);
                 sysFileVO.setFilename(info.key.substring(prefix.length()));
                 sysFileVO.setExtension(IFileUtil.getImageType(info.mimeType));
                 sysFileVO.setPid(prefix);

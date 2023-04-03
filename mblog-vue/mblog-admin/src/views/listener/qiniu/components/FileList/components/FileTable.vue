@@ -14,7 +14,7 @@
       @select="selectFileRow"
     >
       <el-table-column type="selection" width="55"></el-table-column>
-      <el-table-column prop="dir" width="60" align="center">
+      <el-table-column prop="dir" width="50" align="center">
         <template slot-scope="scope">
           <img :src="setFileImg(scope.row)" style="height: 30px" />
         </template>
@@ -29,7 +29,14 @@
           </div>
           <div v-else>
             <el-popover :ref="'popover-'+scope.row.id" placement="left-start" trigger="hover" :close-delay="0">
-              <el-image :src="scope.row.url" fit="contain" style="width: 150px;" />
+              <el-tooltip effect="dark" content="点击图片下载" placement="top-end">
+                <el-image
+                  :src="scope.row.url"
+                  fit="contain"
+                  style="width: 150px;cursor: pointer;"
+                  @click="downloadFile(scope.row)"
+                />
+              </el-tooltip>
               <div slot="reference" style="cursor:pointer;">{{ scope.row | filenameComplete }}</div>
             </el-popover>
           </div>
@@ -37,7 +44,7 @@
       </el-table-column>
       <el-table-column label="路径" width="150" prop="pid">
         <template slot-scope="scope">
-          <span v-text="scope.row.pid"></span>
+          <span v-text="'/' + scope.row.pid"></span>
         </template>
       </el-table-column>
       <el-table-column
@@ -78,24 +85,9 @@
         sortable
         v-if="selectedColumnList.includes('createTime')"
       ></el-table-column>
-      <el-table-column :width="operaColumnWidth">
-        <template slot="header">
-          <span>操作</span>
-          <i
-            class="el-icon-circle-plus"
-            title="展开操作列按钮"
-            @click="$store.commit('changeOperaColumnExpand', this.$documents.FOLD_TYPE.UNFOLD)"
-          ></i>
-          <i class="el-icon-remove" title="收起操作列按钮" @click="$store.commit('changeOperaColumnExpand', FOLD_TYPE.FOLD)"></i>
-        </template>
+      <el-table-column label="操作" width="100" align="center">
         <template slot-scope="scope">
-          <div v-if="operaColumnExpand">
-            <el-button type="danger" size="mini" @click.native="deleteFileBtn(scope.row)">删除</el-button>
-            <el-button type="primary" size="mini" @click.native="showMoveFileDialog(scope.row)">移动</el-button>
-            <el-button type="primary" size="mini" @click.native="renameFile(scope.row)">重命名</el-button>
-            <el-button type="success" size="mini" v-show="!scope.row.dir" @click.native="downloadFile(scope.row)">下载</el-button>
-          </div>
-          <el-dropdown trigger="click" v-else>
+          <el-dropdown trigger="click">
             <el-button size="mini">
               操作
               <i class="el-icon-arrow-down el-icon--right"></i>
@@ -109,12 +101,14 @@
           </el-dropdown>
         </template>
       </el-table-column>
+      <!-- 用来解决滚动条遮挡的方法，无效单元格 -->
+      <el-table-column width="20"></el-table-column>
     </el-table>
   </div>
 </template>
 
 <script>
-// import {unzipfile, deleteFile, renameFile, deleteRecoveryFile, recoverRecycleFile} from '@/request/file.js'
+// import { deleteFile, renameFile, recoverRecycleFile} from '@/request/file.js'
 import { mapGetters } from "vuex";
 
 export default {
@@ -139,8 +133,8 @@ export default {
     };
   },
   computed: {
-    //  selectedColumnList:列显隐, operaColumnExpand:判断当前用户设置的操作列是否展开
-    ...mapGetters(["selectedColumnList", "operaColumnExpand"]),
+    //  selectedColumnList:列显隐
+    ...mapGetters(["selectedColumnList"]),
     //  判断当前路径下是否有普通文件
     isIncludeNormalFile() {
       return this.fileList.map((data) => data.dir).includes(false);
@@ -151,13 +145,6 @@ export default {
         this.fileList.map((data) => data.extension).includes("zip") ||
         this.fileList.map((data) => data.extension).includes("rar")
       );
-    },
-    operaColumnWidth() {
-      return this.operaColumnExpand
-        ? this.isIncludeNormalFile
-          ? 290
-          : 220
-        : 100;
     },
   },
   methods: {
@@ -200,7 +187,6 @@ export default {
     clickFileName(row) {
       //  若是目录则进入目录
       if (row.dir) {
-        this.$store.dispatch("setFilePath", row.id);
         this.$router.push({
           query: {
             pid: row.id,
@@ -225,32 +211,14 @@ export default {
      */
     //  操作列-移动按钮：打开移动文件模态框
     showMoveFileDialog(file) {
+      if (1 == 1) {
+        this.$modal.msg("移动操作待开发..");
+        return;
+      }
       //  第一个参数: 是否批量移动；第二个参数：打开/关闭移动文件模态框
       this.$emit("setOperationFile", file);
       this.$emit("setMoveFileDialogData", false, true);
     },
-
-    //  操作列-解压缩按钮
-    unzipFile(fileInfo) {
-      const loading = this.$loading({
-        lock: true,
-        text: "正在解压缩，请稍等片刻...",
-        spinner: "el-icon-loading",
-        background: "rgba(0, 0, 0, 0.7)",
-      });
-      unzipfile(fileInfo)
-        .then(() => {
-          this.$emit("getTableDataByType");
-          this.$store.dispatch("showStorage");
-          this.$message.success("解压成功");
-          loading.close();
-        })
-        .catch((err) => {
-          console.log(err);
-          this.$message.error("系统忙，解压失败");
-        });
-    },
-
     /**
      * 恢复按钮事件
      */
@@ -287,69 +255,40 @@ export default {
 
     //  操作列-删除按钮
     deleteFileBtn(fileInfo) {
-      if (this.$documents.fileType().isRecycle()) {
-        //  回收站里 - 彻底删除
-        this.$confirm("此操作将永久删除该文件, 是否继续?", "提示", {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          type: "warning",
-        })
-          .then(() => {
-            this.confirmDeleteFile(fileInfo, true);
-          })
-          .catch(() => {
-            this.$message({
-              type: "info",
-              message: "已取消删除",
-            });
-          });
-      } else {
-        //  非回收站
-        this.$confirm("删除后可在回收站查看, 是否继续删除?", "提示", {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          type: "warning",
-        })
-          .then(() => {
-            this.confirmDeleteFile(fileInfo, false);
-          })
-          .catch(() => {
-            this.$message({
-              type: "info",
-              message: "已取消删除",
-            });
-          });
+      if (1 == 1) {
+        this.$modal.msg("删除操作待开发..");
+        return;
       }
+      //  非回收站
+      this.$confirm("删除后可在回收站查看, 是否继续删除?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(() => {
+          this.confirmDeleteFile(fileInfo);
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消删除",
+          });
+        });
     },
     //  删除文件模态框-确定按钮
-    confirmDeleteFile(fileInfo, type) {
+    confirmDeleteFile(fileInfo) {
       let data = { userFileId: fileInfo.id };
-      if (type) {
-        //  回收站中删除
-        deleteRecoveryFile(data)
-          .then(() => {
-            this.$emit("getTableDataByType");
-            this.$store.dispatch("showStorage");
-            this.$message.success("删除成功");
-            this.$store.dispatch("fetchPathTreeMap");
-          })
-          .catch((err) => {
-            console.error(err);
-            this.$message.error("系统忙，删除失败");
-          });
-      } else {
-        //  非回收站删除
-        deleteFile(data)
-          .then(() => {
-            this.$emit("getTableDataByType");
-            this.$store.dispatch("showStorage");
-            this.$message.success("删除成功");
-          })
-          .catch((err) => {
-            console.error(err);
-            this.$message.error("系统忙，删除失败");
-          });
-      }
+      //  非回收站删除
+      deleteFile(data)
+        .then(() => {
+          this.$emit("getTableDataByType");
+          this.$store.dispatch("showStorage");
+          this.$message.success("删除成功");
+        })
+        .catch((err) => {
+          console.error(err);
+          this.$message.error("系统忙，删除失败");
+        });
     },
     /** 下载图片 */
     downloadFile(fileInfo) {
@@ -357,6 +296,10 @@ export default {
     },
     // 文件重命名
     renameFile(fileInfo) {
+      if (1 == 1) {
+        this.$modal.msg("文件重命名操作待开发..");
+        return;
+      }
       let filename = filenameComplete(fileInfo);
       this.$prompt("请输入文件名", "提示", {
         confirmButtonText: "确定",
