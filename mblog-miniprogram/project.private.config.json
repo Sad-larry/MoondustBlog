@@ -4,5 +4,6 @@
   "setting": {
     "compileHotReLoad": true,
     "urlCheck": true
-  }
+  },
+  "libVersion": "2.27.3"
 }

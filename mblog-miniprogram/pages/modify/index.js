@@ -30,7 +30,6 @@ Page({
         })
       }
     })
-
   },
   // 保存按钮
   formSubmit(e) {
@@ -70,7 +69,7 @@ Page({
         if (res.code == 200) {
           this.setData({
             avatarBase64: avatarBase64,
-            avatar: res.data.avatar
+            avatar: res.data
           })
         } else {
           $Message({

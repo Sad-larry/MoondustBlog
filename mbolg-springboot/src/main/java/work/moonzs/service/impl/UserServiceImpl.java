@@ -1,6 +1,5 @@
 package work.moonzs.service.impl;
 
-import cn.hutool.core.util.ObjUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.digest.DigestUtil;
@@ -27,6 +26,7 @@ import work.moonzs.base.web.service.IOnlineUserService;
 import work.moonzs.base.web.service.ISaveUserService;
 import work.moonzs.base.web.service.ITokenService;
 import work.moonzs.config.security.authentication.WxmpLoginAuthenticationToken;
+import work.moonzs.domain.dto.user.WxmpUserDTO;
 import work.moonzs.domain.entity.LoginUser;
 import work.moonzs.domain.entity.MailEntity;
 import work.moonzs.domain.entity.User;
@@ -272,20 +272,24 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
-    public boolean registerUser6(String openId) {
-        UserAuth userAuth = UserAuth.builder()
+    public boolean registerUser6(WxmpUserDTO wxmpUserDTO) {
+        UserAuth userAuth = UserAuth
+                .builder()
                 // 这个应该是用户自己的昵称
-                .nickname("默认昵称")
+                .nickname(wxmpUserDTO.getNickname())
                 // 用户自己的头像，无需默认值
-                .avatar(systemConfigService.selectDefaultRegisterAvatar()).intro("介绍下你自己吧").build();
+                .avatar(wxmpUserDTO.getAvatar())
+                // 用户个人介绍
+                .intro(wxmpUserDTO.getIntro())
+                .build();
         int insert = userAuthMapper.insert(userAuth);
         if (insert > 0) {
             User user = new User();
-            user.setUsername(openId);
+            user.setUsername(wxmpUserDTO.getUsername());
             user.setLoginType(StatusConstants.LOGIN_TYPE_WXMP);
             user.setUserAuthId(userAuth.getId());
-            // 默认是普通用户
-            user.setRoleId(2L);
+            // 微信小程序角色无任何权限
+            user.setRoleId(3L);
             // 初始化基本信息
             initUserInfo(user);
             user.setLastLoginTime(new Date());
@@ -431,37 +435,49 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         return result;
     }
 
-    @Override
-    public String wxmpLogin(String code) {
+    /**
+     * 通过微信接口服务登录凭证校验接口，获取微信小程序用户的openId等参数
+     *
+     * @param code 代码
+     * @return {@link Map}<{@link String}, {@link Object}>
+     */
+    private Map<String, Object> getWxmpParams(String code) {
+        BusinessAssert.isFalse(StrUtil.isBlank(code), "用户凭证不能为空");
         // 获取用户 openId
         JSONObject resultJson = WxmpLoginUtil.getResultJson(code);
-        if (!resultJson.isNull("openid")) {
-            // 以 openid 和 sessionKey 生成 token返回
-            String openid = resultJson.getStr("openid");
-            String session_key = resultJson.getStr("session_key");
+        BusinessAssert.isFalse(resultJson.isNull("openid"), "无此微信小程序用户，请输入正确的登录凭证");
+        // 以 openid 和 sessionKey 生成 token返回
+        String openid = resultJson.getStr("openid");
+        String session_key = resultJson.getStr("session_key");
+        Map<String, Object> params = new HashMap<>();
+        params.put("openid", openid);
+        params.put("session_key", session_key);
+        return params;
+    }
 
-            // 直接通过微信小程序登录的用户，无需密码，其openId就是用户账号
-            User user = getUserByOpenId(openid);
-            // 查询用户为空，则进行默认注册
-            if (ObjUtil.isNull(user)) {
-                if (!registerUser6(openid)) {
-                    return null;
-                }
-            }
-            // 使用自定义的身份检验器，这里
-            Authentication authenticate = authenticationManager.authenticate(new WxmpLoginAuthenticationToken(openid, null));
-            LoginUser loginUser = (LoginUser) authenticate.getPrincipal();
-            getLoginUserInfo(loginUser);
-            Map<String, Object> params = new HashMap<>();
-            params.put("openid", openid);
-            params.put("session_key", session_key);
-            // 为 loginUser 手动赋值加后的 userUid
-            loginUser.setUserUid(DigestUtil.md5Hex(openid));
-            String token = iTokenService.createToken(loginUser, params);
-            iSaveUserService.saveUserToken(loginUser.getUserUid());
-            return token;
-        }
-        return null;
+
+    @Override
+    public String wxmpLogin(String code) {
+        Map<String, Object> wxmpParams = getWxmpParams(code);
+        String openid = wxmpParams.get("openid").toString();
+        // 直接通过微信小程序登录的用户，无需密码，其openId就是用户账号
+        // 使用自定义微信小程序登录身份检验器
+        Authentication authenticate = authenticationManager.authenticate(new WxmpLoginAuthenticationToken(openid, null));
+        LoginUser loginUser = (LoginUser) authenticate.getPrincipal();
+        getLoginUserInfo(loginUser);
+        // 为 loginUser 手动赋值加后的 userUid
+        loginUser.setUserUid(DigestUtil.md5Hex(openid));
+        String token = iTokenService.createToken(loginUser, wxmpParams);
+        iSaveUserService.saveUserToken(loginUser.getUserUid());
+        return token;
+    }
+
+    @Override
+    public boolean wxmpRegister(WxmpUserDTO wxmpUserDTO) {
+        Map<String, Object> wxmpParams = getWxmpParams(wxmpUserDTO.getCode());
+        String openid = wxmpParams.get("openid").toString();
+        wxmpUserDTO.setUsername(openid);
+        return registerUser6(wxmpUserDTO);
     }
 
     @Override

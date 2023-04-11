@@ -1,0 +1,30 @@
+<!--pages/my/login/index.wxml-->
+<!--全局提醒-->
+<i-message id="message" />
+<!--头像-->
+<view class="logo">
+  <!-- <view class="section-subject"> -->
+  <button class="avatar-btn" open-type="chooseAvatar" bindchooseavatar="onChooseAvatar">
+    <image class="image" mode="aspectFill" src="{{userInfo.avatar}}" />
+  </button>
+  <!-- </view> -->
+  <view class="title">用户头像<span class="necessary-item">*</span></view>
+</view>
+<view class="login-form">
+  <view class="item">
+    <view class="account">
+      <view class="input-item">用户昵称<span class="necessary-item">*</span></view>
+      <input type="nickname" name="nickname" class="weui-input" value="{{userInfo.nickname}}" placeholder="请输入昵称" bind:change="inputNickname" />
+    </view>
+  </view>
+  <view class="item">
+    <view class="account">
+      <view class="input-item">个人签名</view>
+      <input type="text" name="intro" placeholder-class="inp-palcehoder" value="{{userInfo.intro}}" placeholder="做个简单的自我介绍吧~" bindinput="inputIntro" />
+    </view>
+  </view>
+  <view>
+    <button class="authorized-btn" bindtap="handleRegister">注册</button>
+    <button class="to-idx-btn" bindtap="goBack">返回</button>
+  </view>
+</view>

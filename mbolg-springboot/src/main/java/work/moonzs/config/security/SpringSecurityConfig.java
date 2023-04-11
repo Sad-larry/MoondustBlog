@@ -1,4 +1,4 @@
-package work.moonzs.config;
+package work.moonzs.config.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -23,6 +23,7 @@ import work.moonzs.config.security.filter.JwtAuthenticationTokenFilter;
 import work.moonzs.config.security.handler.AccessDeniedHandlerImpl;
 import work.moonzs.config.security.handler.AuthenticationEntryPointImpl;
 
+import javax.annotation.Resource;
 import java.util.Arrays;
 import java.util.List;
 
@@ -39,8 +40,10 @@ public class SpringSecurityConfig {
     private AuthenticationEntryPointImpl authenticationEntryPoint;
     @Autowired
     private AccessDeniedHandlerImpl accessDeniedHandler;
-    @Autowired
-    private UserDetailsService userDetailsService;
+    @Resource(name = "UserDetailsServiceImplForDaoAuthentication")
+    private UserDetailsService userDetailsServiceImplForDaoAuthentication;
+    @Resource(name = "UserDetailsServiceImplForWxmpLogin")
+    private UserDetailsService userDetailsServiceImplForWxmpLogin;
 
     /**
      * 过滤器链配置
@@ -111,7 +114,7 @@ public class SpringSecurityConfig {
      */
     @Bean
     public WxmpLoginProvider wxmpLoginProvider() {
-        return new WxmpLoginProvider(userDetailsService);
+        return new WxmpLoginProvider(userDetailsServiceImplForWxmpLogin);
     }
 
     /**
@@ -122,7 +125,7 @@ public class SpringSecurityConfig {
     @Bean
     public DaoAuthenticationProvider daoAuthenticationProvider() {
         DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
-        daoAuthenticationProvider.setUserDetailsService(userDetailsService);
+        daoAuthenticationProvider.setUserDetailsService(userDetailsServiceImplForDaoAuthentication);
         daoAuthenticationProvider.setPasswordEncoder(passwordEncoder());
         return daoAuthenticationProvider;
     }

@@ -14,7 +14,7 @@
         <view class='tag-body'>
           <view class="postDate">
             <i-icon type="addressbook" color='#738a94' size='16' />
-            <text class='author'>{{detail.author}}</text>
+            <text class='author'>{{detail.author || '月塵'}}</text>
           </view>
           <view class="postDate">
             <i-icon type="browse" color='#738a94' size='18' />
@@ -34,14 +34,14 @@
       <!--内容-->
       <view class='content'>
         <view>
-          <htmltowxml text="{{detail.contentMd}}" type="markdown" highlightStyle="darcula" linenums="{{true}}" showLoading="{{false}}" bindWxmlTagATap="wxmlTagATap"></htmltowxml>
+          <htmltowxml text="{{detail.contentMd}}" type="markdown" highlightStyle="darcula" linenums="{{true}}" bindWxmlTagATap="wxmlTagATap"></htmltowxml>
         </view>
       </view>
     </view>
     <!--评论区-->
-    <view>
+    <view class="{{isShow?'comment-padding-out':''}}">
       <view wx:if="{{comment_count == 0}}" class="resp-head">暂无评论</view>
-      <view wx:else style='padding-bottom:60px;'>
+      <view wx:else style='padding-bottom:110rpx;'>
         <view class="resp-head1">全部评论（{{ comment_count }}）</view>
         <view class="comment" wx:for="{{comments}}" wx:for-item="item" wx:key="id">
           <view class="comment-info">
@@ -97,7 +97,7 @@
       </view>
     </view>
     <!--底部框-->
-    <view class='comment-fixed'>
+    <view class="comment-fixed">
       <form bindsubmit="formSubmit">
         <view class="comment-respond">
           <view class="comment-box">
@@ -110,7 +110,7 @@
               <image src='../../images/open.png' class='open'></image>
             </view>
           </view>
-          <view class="menu-box {{isShow?'emoji-move-in':'emoji-move-out'}} {{isLoad?'no-emoji-move':''}}">
+          <view class="menu-box {{isShow?'emoji-move-out':'emoji-move-in'}} {{isLoad?'no-emoji-move':''}}">
             <view class="iconList">
               <view class="iconLine">
                 <view class="icon-type">

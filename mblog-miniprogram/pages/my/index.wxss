@@ -5,7 +5,7 @@ page {
 }
 
 .i-header {
-  height: 300rpx;
+  height: 200rpx;
   background-color: white;
   text-align: center;
 }
@@ -15,16 +15,16 @@ page {
 }
 
 .g-bda-userinfo-30 {
-  width: 50%;
-  padding-top: 50rpx;
+  width: 40%;
+  padding-top: 10rpx;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
 .g-bda-userinfo-70 {
-  width: 50%;
-  padding-top: 25px;
+  width: 60%;
+  padding-top: 15px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -32,9 +32,8 @@ page {
 }
 
 .userinfo-avatar {
-  width: 90px;
-  height: 90px;
-  margin: 10px;
+  width: 70px;
+  height: 70px;
   margin-bottom: 1px;
   border-radius: 50%;
   border: 3px solid #aeeeee;

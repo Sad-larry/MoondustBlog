@@ -5,7 +5,8 @@
     "pages/my/index",
     "pages/detail/index",
     "pages/share/index",
-    "pages/modify/index"
+    "pages/modify/index",
+    "pages/my/register/index"
   ],
   "window": {
     "backgroundTextStyle": "light",

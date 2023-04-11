@@ -4,16 +4,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.context.support.MessageSourceAccessor;
-import org.springframework.security.authentication.AccountExpiredException;
-import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.DisabledException;
-import org.springframework.security.authentication.LockedException;
+import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.SpringSecurityMessageSource;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsChecker;
 import org.springframework.security.core.userdetails.UserDetailsService;
+
+import javax.annotation.Resource;
 
 /**
  * 自定义微信小程序登录身份验证处理器
@@ -27,6 +26,7 @@ public class WxmpLoginProvider implements AuthenticationProvider {
     protected MessageSourceAccessor messages = SpringSecurityMessageSource.getAccessor();
     private final UserDetailsChecker authenticationChecks = new WxmpLoginProvider.DefaultAuthenticationChecks();
     // 需要注入的用户信息查询服务
+    @Resource(name = "UserDetailsServiceImplForWxmpLogin")
     private UserDetailsService userDetailsService;
 
     public WxmpLoginProvider(UserDetailsService userDetailsService) {
@@ -41,7 +41,12 @@ public class WxmpLoginProvider implements AuthenticationProvider {
         if (!(authentication instanceof WxmpLoginAuthenticationToken wxmpLoginAuthenticationToken)) {
             return null;
         } else {
+            // 判断登录方式是否为 微信小程序 登录
             UserDetails userDetails = userDetailsService.loadUserByUsername((String) authentication.getPrincipal());
+            if (userDetails == null) {
+                throw new InternalAuthenticationServiceException(
+                        "UserDetailsService returned null, which is an interface contract violation");
+            }
             // 身份检验，判断是否锁定、过期等
             this.authenticationChecks.check(userDetails);
             return this.createSuccessAuthentication(userDetails, authentication);

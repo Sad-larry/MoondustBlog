@@ -13,6 +13,7 @@ import work.moonzs.domain.ResponseResult;
 import work.moonzs.domain.dto.LoginUserDTO;
 import work.moonzs.domain.dto.RegisterUserDTO;
 import work.moonzs.domain.dto.user.UserAuthDTO;
+import work.moonzs.domain.dto.user.WxmpUserDTO;
 import work.moonzs.domain.entity.User;
 import work.moonzs.domain.entity.UserAuth;
 import work.moonzs.service.UserService;
@@ -75,6 +76,19 @@ public class UserController {
         String token = userService.wxmpLogin(code);
         // 登录成功返回令牌
         return ResponseResult.success().put(SystemConstants.TOKEN, token);
+    }
+
+    /**
+     * 微信小程序注册
+     *
+     * @return {@link ResponseResult}
+     */
+    @SystemLog(businessName = "微信小程序注册")
+    @WebOperationLogger(value = "用户模块-微信小程序注册", type = "增加", desc = "用户注册")
+    @PostMapping("/wxmpRegister")
+    public ResponseResult wxmpRegister(@Validated @RequestBody WxmpUserDTO wxmpUserDTO) {
+        userService.wxmpRegister(wxmpUserDTO);
+        return ResponseResult.success();
     }
 
     /**

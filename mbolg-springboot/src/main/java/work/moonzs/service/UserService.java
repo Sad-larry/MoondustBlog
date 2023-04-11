@@ -3,6 +3,7 @@ package work.moonzs.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import work.moonzs.domain.dto.user.WxmpUserDTO;
 import work.moonzs.domain.entity.User;
 import work.moonzs.domain.entity.UserAuth;
 import work.moonzs.domain.vo.PageVO;
@@ -164,7 +165,7 @@ public interface UserService extends IService<User> {
     boolean registerUser1(User user);
 
     @Transactional
-    boolean registerUser6(String openId);
+    boolean registerUser6(WxmpUserDTO wxmpUserDTO);
 
     /**
      * 发送注册邮件验证码
@@ -228,6 +229,14 @@ public interface UserService extends IService<User> {
      * @return {@link String} token
      */
     String wxmpLogin(String code);
+
+    /**
+     * 微信小程序注册
+     *
+     * @param wxmpUserDTO 微信小程序用户dto
+     * @return boolean
+     */
+    boolean wxmpRegister(WxmpUserDTO wxmpUserDTO);
 
     /**
      * 微信小程序用户信息

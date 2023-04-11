@@ -3,17 +3,17 @@
   <!--全局提醒-->
   <i-message id="message" />
   <view class='i-header'>
-    <view class='g-bda-userinfo'>
+    <view class='g-bda-userinfo' bindtap="goLogin">
       <view class="g-bda-userinfo-30">
         <image class="userinfo-avatar" src="{{avatar}}"></image>
       </view>
       <view class="g-bda-userinfo-70">
-        <view wx:if="{{!hasLogin}}" class="userinfo-nickname" catchtap="login">{{nickname}}</view>
-        <view wx:else class="userinfo-nickname">{{nickname}}</view>
+        <view class="userinfo-nickname">{{nickname || '授权登录'}}</view>
         <view class="userinfo-intro">{{intro}}</view>
       </view>
     </view>
   </view>
+
   <view wx:if="{{hasLogin}}" class="contain">
     <i-cell-group>
       <i-cell title="修改资料" is-link url="/pages/modify/index">

@@ -2,9 +2,9 @@ package work.moonzs.controller.web;
 
 import cn.hutool.core.io.FileUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import work.moonzs.base.annotation.SystemLog;
 import work.moonzs.base.annotation.WebOperationLogger;
@@ -12,6 +12,7 @@ import work.moonzs.base.qiniu.service.QiniuService;
 import work.moonzs.base.utils.Base64Util;
 import work.moonzs.domain.ResponseResult;
 
+import javax.validation.constraints.NotBlank;
 import java.util.Map;
 
 /**
@@ -20,6 +21,7 @@ import java.util.Map;
 @RestController("WebUploadC")
 @RequestMapping("/web/upload")
 @RequiredArgsConstructor
+@Validated
 public class UploadController {
 
     private final QiniuService qiniuService;
@@ -33,7 +35,7 @@ public class UploadController {
     @SystemLog(businessName = "上传微信小程序用户头像")
     @WebOperationLogger(value = "上传模块-上传头像", type = "添加", desc = "用户头像")
     @PostMapping(path = "/wxmpAvatar")
-    public ResponseResult wxmpAvatar(@RequestParam String avatarBase64) {
+    public ResponseResult wxmpAvatar(@NotBlank String avatarBase64) {
         if (Base64Util.checkBase64(avatarBase64)) {
             // 提取主要数据
             String base64Str = Base64Util.data2Base64(avatarBase64);

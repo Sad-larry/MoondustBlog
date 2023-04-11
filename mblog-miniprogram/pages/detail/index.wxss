@@ -131,7 +131,7 @@
 
 .comment-fixed {
   position: fixed;
-  bottom: 0;
+  bottom: -150rpx;
   left: 0;
   right: 0;
   background-color: #fff;
@@ -211,7 +211,7 @@
   height: 80px;
   padding: 5px 0;
   box-sizing: border-box;
-  margin-bottom: -80px;
+  margin-bottom: -80rpx;
 }
 
 .emoji-move-in {
@@ -228,7 +228,7 @@
 
 @-webkit-keyframes emoji-move-in {
   0% {
-    margin-bottom: -80px;
+    margin-bottom: 150rpx;
   }
 
   100% {
@@ -238,7 +238,7 @@
 
 @keyframes emoji-move-in {
   0% {
-    margin-bottom: -80px;
+    margin-bottom: 150rpx;
   }
 
   100% {
@@ -252,7 +252,7 @@
   }
 
   100% {
-    margin-bottom: -80px;
+    margin-bottom: 150rpx;
   }
 }
 
@@ -262,7 +262,7 @@
   }
 
   100% {
-    margin-bottom: -80px;
+    margin-bottom: 150rpx;
   }
 }
 
@@ -315,11 +315,15 @@
   font-size: 16px;
 }
 
+.comment-padding-out {
+  padding-bottom: 150rpx;
+}
+
 .resp-head {
   color: #aaa;
   margin: 13px 0 13px 10px;
   font-size: 13px;
-  padding-bottom: 60px;
+  padding-bottom: 160rpx;
   text-align: center;
 }
 

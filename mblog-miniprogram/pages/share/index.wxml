@@ -4,8 +4,7 @@
     <painter customStyle='margin-left:40rpx' palette="{{createPoster}}" bind:imgOK="onImgOK" />
   </view>
   <view class='buttons'>
-    <button size="mini" class="button" bind:tap='saveImage'>保存图片</button>
-    <view class='text'>
-    </view>
+    <button size="mini" class="button" bindtap='saveImage'>保存图片</button>
+    <view class='text' bindtap="returnArticle">返回</view>
   </view>
 </view>

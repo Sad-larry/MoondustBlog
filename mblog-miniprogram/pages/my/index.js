@@ -13,9 +13,9 @@ Page({
     hasLogin: false,
     noReadNewsCount: 0,
     userId: 0,
-    avatar: app.globalData.defaultAvatarUrl,
-    nickname: '登录/注册>',
-    intro: '第一次登录则是直接注册哦~'
+    avatar: '../../images/avatar.png',
+    nickname: '',
+    intro: '',
   },
   onLoad: function (options) {
     // 判断是否登录过
@@ -33,7 +33,8 @@ Page({
     }
   },
   // 登录
-  login() {
+  goLogin() {
+    // 首先请求该用户，判断用户是否存在
     let token = wx.getStorageSync('token');
     // 若存在 token，可以用 token 直接获取用户
     if (!token) {
@@ -46,14 +47,33 @@ Page({
                 // 保存 token
                 wx.setStorageSync('token', res.token);
                 this.getUserInfo();
+              } else {
+                this.goRegister();
               }
             })
           }
         }
       })
     } else {
-      this.getUserInfo()
+      if (!this.data.hasLogin) {
+        this.getUserInfo()
+      }
     }
+  },
+  goRegister() {
+    let that = this
+    wx.showModal({
+      title: '提示',
+      content: '用户未注册，是否去注册用户',
+      success(res) {
+        if (res.confirm) {
+          // 用户未注册，是否去注册
+          wx.navigateTo({
+            url: "/pages/my/register/index",
+          });
+        }
+      }
+    })
   },
   // 获取用户信息
   getUserInfo() {
@@ -89,9 +109,9 @@ Page({
       this.setData({
         hasLogin: false,
         userId: 0,
-        avatar: app.globalData.defaultAvatarUrl,
-        nickname: '登录/注册>',
-        intro: '第一次登录则是直接注册哦~'
+        avatar: '../../images/avatar.png',
+        nickname: '',
+        intro: ''
       })
       $Message({
         content: '再见咯~',

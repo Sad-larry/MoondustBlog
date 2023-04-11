@@ -20,8 +20,8 @@ import java.util.Set;
 /**
  * @author Moondust月尘
  */
-@Service("userDetailsServiceImpl")
-public class UserDetailsServiceImpl implements UserDetailsService {
+@Service("UserDetailsServiceImplForDaoAuthentication")
+public class UserDetailsServiceImplForDaoAuthentication implements UserDetailsService {
     @Autowired
     private UserMapper userMapper;
     @Autowired

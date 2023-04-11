@@ -62,6 +62,17 @@ Page({
       this.getArticleList(this.data.pageSize, this.data.pagination);
     }
   },
+  /**
+   * 下拉刷新数据
+   */
+  onPullDownRefresh() {
+    this.setData({
+      'articles': [],
+      'pagination': 1,
+      'moreData': true
+    })
+    this.getArticleList(this.data.pageSize, this.data.pagination);
+  },
   onShareAppMessage() {
     return {
       title: '月尘博客',

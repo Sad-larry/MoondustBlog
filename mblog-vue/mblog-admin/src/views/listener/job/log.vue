@@ -2,7 +2,14 @@
   <div class="app-container">
     <el-form v-show="showSearch" :inline="true" ref="form" :model="queryParams" label-width="68px">
       <el-form-item label="任务名称">
-        <el-input style="width: 200px" size="small" v-model="queryParams.jobName" placeholder="请输入任务名称" />
+        <el-input
+          style="width: 200px"
+          size="small"
+          clearable
+          @clear="getList"
+          v-model="queryParams.jobName"
+          placeholder="请输入任务名称"
+        />
       </el-form-item>
       <el-form-item label="任务组名">
         <el-select
@@ -81,16 +88,18 @@
       </el-table-column>
       <el-table-column label="任务名称" align="center" prop="jobName" :show-overflow-tooltip="true" />
       <el-table-column label="任务组名" align="center" prop="jobGroup" :show-overflow-tooltip="true">
-        <template slot-scope="scope" v-for="(item, index) in jobDictList">
-          <el-tag :type="item.style" v-if="scope.row.jobGroup === item.value" :key="index">{{ item.label }}</el-tag>
+        <template slot-scope="scope">
+          <template v-for="(item, index) in jobDictList">
+            <el-tag :type="item.style" v-if="scope.row.jobGroup === item.value" :key="index">{{ item.label }}</el-tag>
+          </template>
         </template>
       </el-table-column>
       <el-table-column label="调用目标字符串" align="center" prop="invokeTarget" :show-overflow-tooltip="true" />
       <el-table-column label="日志信息" align="center" prop="jobMessage" :show-overflow-tooltip="true" />
       <el-table-column label="执行状态" align="center" prop="status">
         <template slot-scope="scope">
-          <el-tag v-if="scope.row.status === '0'" type="success">成功</el-tag>
-          <el-tag v-if="scope.row.status === '1'" type="danger">失败</el-tag>
+          <el-tag v-if="scope.row.status === 1" type="success">成功</el-tag>
+          <el-tag v-if="scope.row.status === 0" type="danger">失败</el-tag>
         </template>
       </el-table-column>
       <el-table-column sortable label="执行时间" align="center" prop="createTime" width="180">
@@ -111,7 +120,7 @@
       :total="total"
       :page.sync="queryParams.pageNum"
       :limit.sync="queryParams.pageSize"
-      @size-change="getList"
+      @pagination="getList"
     />
 
     <!-- 调度日志详细 -->

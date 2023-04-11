@@ -119,5 +119,8 @@ Page({
         }
       }
     })
+  },
+  returnArticle() {
+    wx.navigateBack()
   }
 })

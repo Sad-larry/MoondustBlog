@@ -144,6 +144,10 @@ public class ResponseResult extends HashMap<String, Object> {
         return fail(AppHttpCodeEnum.SERVER_INNER_ERR);
     }
 
+    public static ResponseResult fail(String msg) {
+        return fail(AppHttpCodeEnum.SERVER_INNER_ERR.getCode(), msg);
+    }
+
     public static ResponseResult fail(AppHttpCodeEnum responseEnum) {
         return fail(responseEnum, null);
     }

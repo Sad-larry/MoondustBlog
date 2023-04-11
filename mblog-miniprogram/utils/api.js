@@ -17,6 +17,17 @@ export const wxmpLogin = (code) => {
 }
 
 /**
+ * 用户注册
+ */
+export const wxmpRegister = (formData) => {
+  return request({
+    url: '/web/user/wxmpRegister',
+    method: 'post',
+    data: formData,
+  })
+}
+
+/**
  * 获取用户信息
  */
 export const wxmpUserInfo = () => {
@@ -52,7 +63,7 @@ export const wxmpAvatar = (avatarBase64) => {
     method: 'post',
     header: {
       'Authorization': 'Bearer ' + wx.getStorageSync('token'),
-      'Content-Type': 'x-www-form-urlencoded'
+      'content-type': 'application/x-www-form-urlencoded'
     },
     data: {
       avatarBase64

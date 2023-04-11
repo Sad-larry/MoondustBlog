@@ -130,7 +130,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
             List<Menu> children = menu.getChildren();
             if (CollUtil.isNotEmpty(children) && StatusConstants.TYPE_DIR.equals(menu.getType())) {
                 router.setAlwaysShow(true);
-                // router.setRedirect("noRedirect");
+                router.setRedirect("noRedirect");
                 router.setChildren(buildMenus(children));
             }
             routerVOList.add(router);

@@ -2,10 +2,7 @@ package work.moonzs.config.security.handler;
 
 import cn.hutool.json.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.DisabledException;
-import org.springframework.security.authentication.InsufficientAuthenticationException;
-import org.springframework.security.authentication.InternalAuthenticationServiceException;
+import org.springframework.security.authentication.*;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
@@ -42,7 +39,10 @@ public class AuthenticationEntryPointImpl implements AuthenticationEntryPoint {
         } else if (authException instanceof DisabledException) {
             // 用户已失效，不能使用了，被冻结了，请联系管理员
             result = ResponseResult.fail(AppHttpCodeEnum.USER_INVALID);
-        } else {
+        } else if (authException instanceof ProviderNotFoundException) {
+            // 用于认证用户登录的身份认证处理器未找到
+            result = ResponseResult.fail("身份认证处理器未找到");
+        }else {
             // TODO 不知名异常，等出现的时候再抛出
             result = ResponseResult.fail(45000, "认证又出异常啦，快来找问题");
         }

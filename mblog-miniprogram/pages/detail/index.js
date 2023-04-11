@@ -34,15 +34,15 @@ Page({
         hasLogin: hasLogin,
         userInfo: userInfo
       })
-    })
-    // 获取文章评论
-    wx.$api.getArticleComment(id).then(res => {
-      if (res.total) {
-        this.setData({
-          comment_count: res.total,
-          comments: res.records
-        })
-      }
+      // 获取文章评论
+      wx.$api.getArticleComment(id).then(res => {
+        if (res.total) {
+          this.setData({
+            comment_count: res.total,
+            comments: res.records
+          })
+        }
+      })
     })
   },
   showHideMenu: function () {
@@ -186,4 +186,7 @@ Page({
       imageUrl: '/images/blog.png'
     }
   },
+  wxmlTagATap(e) {
+    console.log("外部链接暂不能访问");
+  }
 })
